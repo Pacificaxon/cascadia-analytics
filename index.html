@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Cascadia Analytics — Equity Research</title>
+<meta name="description" content="Institutional-grade equity research: DCF valuations, market internals, and proprietary signals.">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand" id="brand-home">
+      <div class="brand-mark">C</div>
+      <div class="brand-name">Cascadia <span>Analytics</span></div>
+    </div>
+    <nav class="nav-links" id="main-nav">
+      <button data-route="home">Home</button>
+      <button data-route="screener">Screener</button>
+      <button class="pro-btn" id="pro-btn">Go Pro</button>
+    </nav>
+  </div>
+</header>
+<main class="container" id="app"></main>
+<footer class="site-footer">
+  <div class="disclaimer">
+    Cascadia Analytics provides research and analytics for informational purposes only.
+    Nothing on this site constitutes investment advice, an offer to buy or sell securities,
+    or a recommendation. Valuations are model-based estimates subject to uncertainty.
+  </div>
+  <div style="margin-top:8px;">&copy; 2026 Cascadia Analytics</div>
+</footer>
+<div id="modal-root"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
