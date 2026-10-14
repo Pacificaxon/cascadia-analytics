@@ -897,15 +897,22 @@
         "<tr><td>" + esc(m.label) + "</td><td><b>" + esc(m.value) + "</b><div class='ctx'>" + esc(m.context || "") + "</div></td></tr>").join("") + "</table>";
     }
     h += '<div class="panel-summary" style="margin-top:8px;">' + esc(v.explanation || "") + "</div></div>";
-    const caseBlock = (title, items, clsName) => {
+    const caseCol = (title, items, headerBg) => {
       if (!items || !items.length) return "";
-      return '<div class="card"><h3>' + title + "</h3>" + items.map((c) =>
-        '<div style="margin-bottom:12px;"><b>' + esc(c.title || "") + "</b><ul style='margin:6px 0 6px 18px;color:var(--muted);font-size:13.5px;'>" +
-        (c.bullets || []).map((b) => "<li>" + esc(b) + "</li>").join("") + "</ul>" +
-        (c.watch ? '<div style="font-size:13px;"><b>What to watch:</b> <span style="color:var(--muted)">' + esc(c.watch) + "</span></div>" : "") +
-        "</div>").join("") + "</div>";
+      return '<div style="flex:1;min-width:280px;border:1px solid var(--border);border-radius:8px;overflow:hidden;">' +
+        '<div style="background:' + headerBg + ';color:#fff;font-weight:700;padding:10px 14px;font-size:14px;">' + title + "</div>" +
+        '<div style="padding:12px 14px;">' + items.map((c) =>
+          '<div style="margin-bottom:12px;"><div style="font-size:13.5px;"><span style="color:' + headerBg + ';">●</span> <b>' + esc(c.title || "") + "</b></div>" +
+          '<ul style="margin:6px 0 6px 18px;color:var(--muted);font-size:13.5px;">' +
+          (c.bullets || []).map((b) => "<li>" + esc(b) + "</li>").join("") + "</ul>" +
+          (c.watch ? '<div style="font-size:13px;"><b>What to watch:</b> <span style="color:var(--muted)">' + esc(c.watch) + "</span></div>" : "") +
+          "</div>").join("") + "</div></div>";
     };
-    h += caseBlock("Bull Case", q.bull_case) + caseBlock("Bear Case", q.bear_case);
+    if ((q.bull_case && q.bull_case.length) || (q.bear_case && q.bear_case.length)) {
+      h += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;">' +
+        caseCol("What supports the bull case", q.bull_case, "#2d7a4f") +
+        caseCol("What supports the bear case", q.bear_case, "#a03a3a") + "</div>";
+    }
     if (q.guidance && q.guidance.length) {
       h += '<div class="card"><h3>Guidance</h3>' + q.guidance.map((g) =>
         '<div class="news-item"><div class="news-headline">' + esc(g.item || g.label || "") + "</div>" +
