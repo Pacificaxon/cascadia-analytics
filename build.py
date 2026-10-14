@@ -43,6 +43,10 @@ def main():
         earnings_history = load(os.path.join(MR, "earnings_history.json"))
     except FileNotFoundError:
         earnings_history = {}
+    try:
+        fcf_backfill = load(os.path.join(HERE, "fcf_backfill.json"))
+    except FileNotFoundError:
+        fcf_backfill = {}
 
     # --- Merge tickers: manifest is authoritative for targets (31), data.json for detail (11) ---
     tickers = {}
@@ -80,6 +84,14 @@ def main():
                 if t["shares_m"] is None and s.get("shares_m"):
                     t["shares_m"] = s["shares_m"]
                 t["wacc"] = t["wacc"] or s.get("wacc")
+        # Backfill FCF for tickers missing it from data.json scenarios
+        if tk in fcf_backfill and not t["fcf"].get("base", {}).get("fcf_m"):
+            for sc in ("bear", "base", "bull"):
+                if sc in fcf_backfill[tk]:
+                    t["fcf"][sc] = {
+                        "years": fcf_backfill[tk][sc]["years"],
+                        "fcf_m": fcf_backfill[tk][sc]["fcf_m"],
+                    }
         tickers[tk] = t
 
     # --- Copy chart images ---
