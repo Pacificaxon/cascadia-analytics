@@ -184,6 +184,21 @@ a:hover { text-decoration: underline; }
 /* ---------- coverage table ---------- */
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 4px; }
 table.coverage { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 700px; background: var(--card); }
+
+/* ---------- sum-of-the-parts table ---------- */
+table.sotp-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 560px; background: var(--card); }
+table.sotp-table th {
+  text-align: right; padding: 10px 14px;
+  font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--faint); border-bottom: 1px solid var(--border); white-space: nowrap; font-weight: 600;
+}
+table.sotp-table th:first-child, table.sotp-table td:first-child { text-align: left; }
+table.sotp-table td { padding: 12px 14px; border-bottom: 1px solid var(--border-soft); text-align: right; color: var(--text); vertical-align: top; }
+table.sotp-table td.num { font-family: var(--mono); font-size: 13px; white-space: nowrap; color: var(--gold); }
+.sotp-name { font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px; }
+.sotp-note { font-size: 12px; color: var(--muted); line-height: 1.5; max-width: 340px; }
+table.sotp-table tr.sotp-total td { border-bottom: none; border-top: 1px solid var(--gold); padding-top: 14px; }
+table.sotp-table tr.sotp-total .sotp-name { color: var(--gold); }
 table.coverage th {
   text-align: right; padding: 12px 14px;
   font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.2px;

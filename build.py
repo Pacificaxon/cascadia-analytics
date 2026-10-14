@@ -28,6 +28,32 @@ def esc(s):
     return html.escape("" if s is None else str(s), quote=True)
 
 
+# AXON sum-of-the-parts: five-segment bottom-up build (2036E).
+# Source: AXON client note "Full sum of the parts" (30 Sep 2026).
+AXON_SOTP = {
+    "as_of": "2036E",
+    "segments": [
+        {"name": "Dedrone (counter-drone)", "revenue_b": "3.4–3.8", "ebitda_b": "1.02–1.33",
+         "margin": "30–35%",
+         "note": "Counter-UAS via the DedroneTracker AI platform; exiting 2026 at ~$450M run-rate."},
+        {"name": "Mass surveillance (RTCC + ALPR)", "revenue_b": "~1.28", "ebitda_b": "0.45–0.49",
+         "margin": "35–38%",
+         "note": "Fusus RTCC + Fleet 3 ALPR + Axon Outposts; Flock-backlash haircut priced in."},
+        {"name": "Evidence.com & Cloud SaaS", "revenue_b": "18.5", "ebitda_b": "7.40–8.30",
+         "margin": "40–45%",
+         "note": "The profit engine: Evidence.com, Draft One, AI Era Plan."},
+        {"name": "TASER (Weapons & Cartridges)", "revenue_b": "4.0", "ebitda_b": "1.20–1.40",
+         "margin": "30–35%",
+         "note": "Legacy monopoly; razor-and-blades cartridge model."},
+        {"name": "Body Cameras & Sensors", "revenue_b": "2.3", "ebitda_b": "0.35–0.46",
+         "margin": "15–20%",
+         "note": "Loss-leader hardware funneling footage into Evidence.com."},
+    ],
+    "total_revenue_b": "29.5–29.9",
+    "total_ebitda_b": "10.4–12.0",
+}
+
+
 def main():
     # --- Load sources ---
     data_json = load(os.path.join(FG, "data.json"))
@@ -92,6 +118,9 @@ def main():
                         "years": fcf_backfill[tk][sc]["years"],
                         "fcf_m": fcf_backfill[tk][sc]["fcf_m"],
                     }
+        # AXON sum-of-the-parts (Pro-gated on the ticker page)
+        if tk == "AXON":
+            t["sotp"] = AXON_SOTP
         tickers[tk] = t
 
     # --- Copy chart images ---

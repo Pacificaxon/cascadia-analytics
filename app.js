@@ -431,6 +431,15 @@
     h += '<div class="card"><h3>Reverse DCF</h3><div class="section-sub">What the market is pricing in at the current quote.</div>' +
       reverseDcfHtml(t) + "</div>";
 
+    // Sum of the parts (AXON only, Pro-gated)
+    if (t.sotp) {
+      h += '<div class="section"><div class="section-title">Sum of the Parts</div>';
+      h += gated("Sum of the Parts — Pro",
+        "Axon's five-segment bottom-up build: 2036 revenue and EBITDA by business line.",
+        sotpHtml(t));
+      h += "</div>";
+    }
+
     // Moving averages (Pro)
     h += '<div class="section"><div class="section-title">Moving Averages</div>';
     h += gated("Moving Averages — Pro", "Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.", maHtml(tk));
@@ -499,6 +508,29 @@
       "The market is pricing in a bull-case outcome; limited upside to our targets at the current quote.";
     return '<div class="panel-summary">Base-case upside of <b class="' + cls(u) + '">' + fmtPct(u) + "</b> at " + fmt$(t.price) +
       ". " + verdict + "</div>";
+  }
+
+  function sotpHtml(t) {
+    const s = t.sotp;
+    if (!s || !s.segments) return '<p style="color:var(--muted)">Not available.</p>';
+    let h = '<div class="card"><h3>Full Sum of the Parts <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;letter-spacing:1px;">· ' + esc(s.as_of || "") + "</span></h3>" +
+      '<div class="section-sub">Bottom-up segment build. The parts sum to $' + esc(s.total_revenue_b) + 'B in 2036 revenue, landing just shy of the $30.3B Bull-case target.</div>' +
+      '<div class="table-wrap"><table class="sotp-table"><thead><tr>' +
+      "<th>Segment</th><th>2036 Revenue</th><th>2036 EBITDA</th><th>EBITDA Margin</th>" +
+      "</tr></thead><tbody>";
+    s.segments.forEach((sg) => {
+      h += "<tr><td><div class=\"sotp-name\">" + esc(sg.name) + "</div>" +
+        '<div class="sotp-note">' + esc(sg.note || "") + "</div></td>" +
+        '<td class="num">$' + esc(sg.revenue_b) + "B</td>" +
+        '<td class="num">$' + esc(sg.ebitda_b) + "B</td>" +
+        '<td class="num">' + esc(sg.margin || "—") + "</td></tr>";
+    });
+    h += '<tr class="sotp-total"><td><div class="sotp-name">Sum of the parts</div></td>' +
+      '<td class="num">$' + esc(s.total_revenue_b) + "B</td>" +
+      '<td class="num">$' + esc(s.total_ebitda_b) + "B</td>" +
+      '<td class="num">—</td></tr>';
+    h += "</tbody></table></div></div>";
+    return h;
   }
 
   function maHtml(tk) {
