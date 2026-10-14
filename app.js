@@ -32,8 +32,127 @@
     if (h < 24) return h + "h ago";
     return Math.floor(h / 24) + "d ago";
   };
-  const isPro = () => { try { return localStorage.getItem(PRO_KEY) === "1"; } catch (e) { return false; } };
+  const isPro = () => {
+    if (proVerified !== null) return proVerified;
+    try { return localStorage.getItem(PRO_KEY) === "1"; } catch (e) { return false; }
+  };
   const setPro = (v) => { try { v ? localStorage.setItem(PRO_KEY, "1") : localStorage.removeItem(PRO_KEY); } catch (e) {} };
+
+  /* ---------- Supabase Auth + server-verified Pro ---------- */
+  const SUPABASE_URL = "https://kflvslxwelvqtwxexhwi.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmbHZzbHh3ZWx2cXR3eGV4aHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5OTI4MTAsImV4cCI6MjEwNzU2ODgxMH0.FrF2CL__weDPo4J97cCApnyj9yM5hJZ-OnTQHtzu3U0";
+  const supa = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+  let authUser = null;
+  let proVerified = null; // null = not yet checked this load; true/false after Supabase lookup
+  let isAdmin = false;
+
+  async function refreshAuth() {
+    if (!supa) { proVerified = false; render(); return; }
+    try {
+      const { data: { session } } = await supa.auth.getSession();
+      authUser = session ? session.user : null;
+      if (authUser) {
+        const { data, error } = await supa.from("profiles")
+          .select("is_pro, is_admin").eq("user_id", authUser.id).single();
+        if (!error && data) {
+          isAdmin = !!data.is_admin;
+          proVerified = !!(data.is_pro || data.is_admin);
+        } else {
+          // No profile row yet (trigger may lag) — treat as non-Pro, retry next load
+          isAdmin = false;
+          proVerified = false;
+        }
+      } else {
+        isAdmin = false;
+        proVerified = false;
+      }
+    } catch (e) {
+      // Network/Supabase failure — fall back to localStorage cache
+      proVerified = null;
+    }
+    if (proVerified !== null) setPro(proVerified);
+    updateAuthBtn();
+    render();
+  }
+
+  // Listen for auth changes (login/logout in another tab, token refresh)
+  function initAuthListener() {
+    if (!supa) return;
+    supa.auth.onAuthStateChange(() => { refreshAuth(); });
+  }
+
+  function shortEmail(e) {
+    if (!e) return "";
+    return e.length > 22 ? e.slice(0, 20) + "…" : e;
+  }
+
+  function updateAuthBtn() {
+    const b = document.getElementById("auth-btn");
+    if (!b) return;
+    if (authUser) {
+      b.textContent = shortEmail(authUser.email);
+      b.classList.add("logged-in");
+      b.title = authUser.email + (isAdmin ? " (Admin)" : proVerified ? " (Pro)" : "") + " — click to log out";
+      b.onclick = () => { if (confirm("Log out of " + authUser.email + "?")) doLogout(); };
+    } else {
+      b.textContent = "Log in";
+      b.classList.remove("logged-in");
+      b.title = "";
+      b.onclick = () => showAuthModal("login");
+    }
+  }
+
+  async function doLogout() {
+    try { if (supa) await supa.auth.signOut(); } catch (e) {}
+    authUser = null; proVerified = false; isAdmin = false;
+    setPro(false);
+    document.getElementById("modal-root").innerHTML = "";
+    updateAuthBtn();
+    render();
+  }
+
+  function showAuthModal(mode) {
+    const root = document.getElementById("modal-root");
+    const isLogin = mode === "login";
+    root.innerHTML =
+      '<div class="modal-back" id="mb"><div class="modal">' +
+      "<h3>" + (isLogin ? "Log in" : "Create account") + "</h3>" +
+      "<p style='color:var(--muted);font-size:14px'>" +
+      (isLogin ? "Log in to access your Pro subscription." : "Create a free account. Upgrade to Pro anytime for $19/month.") + "</p>" +
+      '<input id="auth-email" type="email" placeholder="Email" autocomplete="email" style="margin-bottom:8px;">' +
+      '<input id="auth-pass" type="password" placeholder="Password" autocomplete="' + (isLogin ? "current-password" : "new-password") + '">' +
+      '<div class="err" id="auth-err"></div>' +
+      '<button class="btn" id="auth-go" style="width:100%">' + (isLogin ? "Log in" : "Sign up") + "</button>" +
+      '<button class="btn secondary" id="auth-switch" style="width:100%;margin-top:8px;">' +
+      (isLogin ? "Need an account? Sign up" : "Have an account? Log in") + "</button>" +
+      '<button class="btn secondary" id="auth-x" style="width:100%;margin-top:8px;">Close</button>' +
+      "</div></div>";
+    const close = () => { root.innerHTML = ""; };
+    document.getElementById("mb").onclick = (e) => { if (e.target.id === "mb" || e.target.id === "auth-x") close(); };
+    document.getElementById("auth-switch").onclick = () => showAuthModal(isLogin ? "signup" : "login");
+    const submit = async () => {
+      const email = document.getElementById("auth-email").value.trim();
+      const pass = document.getElementById("auth-pass").value;
+      const errEl = document.getElementById("auth-err");
+      errEl.textContent = "";
+      if (!email || !pass) { errEl.textContent = "Enter your email and password."; return; }
+      if (!supa) { errEl.textContent = "Auth unavailable. Try again later."; return; }
+      document.getElementById("auth-go").disabled = true;
+      try {
+        let res;
+        if (isLogin) res = await supa.auth.signInWithPassword({ email, password: pass });
+        else res = await supa.auth.signUp({ email, password: pass });
+        if (res.error) throw res.error;
+        close();
+        await refreshAuth();
+      } catch (e) {
+        errEl.textContent = e.message || "Something went wrong.";
+        document.getElementById("auth-go").disabled = false;
+      }
+    };
+    document.getElementById("auth-go").onclick = submit;
+    document.getElementById("auth-pass").addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
+  }
 
   /* ---------- Cascadia Score (v1: DCF upside based) ---------- */
   function cascadiaScore(t) {
@@ -76,28 +195,47 @@
   }
   function updateProBtn() {
     const b = document.getElementById("pro-btn");
-    if (isPro()) { b.textContent = "Pro Active"; b.classList.add("unlocked"); b.onclick = () => { if (confirm("Sign out of Pro on this device?")) { setPro(false); render(); } }; }
-    else { b.textContent = "Go Pro"; b.classList.remove("unlocked"); b.onclick = showProModal; }
+    if (!b) return;
+    updateAuthBtn();
+    if (isPro()) {
+      b.textContent = isAdmin ? "Admin" : "Pro Active";
+      b.classList.add("unlocked");
+      b.onclick = showProModal;
+    } else {
+      b.textContent = "Go Pro";
+      b.classList.remove("unlocked");
+      b.onclick = showProModal;
+    }
   }
   function showProModal() {
     const root = document.getElementById("modal-root");
+    let statusLine;
+    if (isPro()) {
+      statusLine = "<p style='color:var(--muted);font-size:14px'>" +
+        (authUser ? "Signed in as <b>" + esc(authUser.email) + "</b>. " : "") +
+        (isAdmin ? "Admin access is active." : "Your Pro subscription is active.") + "</p>";
+    } else if (authUser) {
+      statusLine = "<p style='color:var(--muted);font-size:14px'>Signed in as <b>" + esc(authUser.email) + "</b>. Subscribe below — your account upgrades automatically after checkout.</p>";
+    } else {
+      statusLine = "<p style='color:var(--muted);font-size:14px'>Log in or create an account first, then subscribe — your Pro access is tied to your account email.</p>";
+    }
     root.innerHTML =
       '<div class="modal-back" id="mb"><div class="modal">' +
       "<h3>Cascadia Analytics Pro</h3>" +
       "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, seasonality, Cascadia Scores, screener, exports, earnings history, and client notes. $19/month.</p>" +
-      '<a class="cta-btn" style="display:block;text-align:center;margin:14px 0;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Subscribe — $19/mo</a>' +
-      '<div style="font-size:13px;color:var(--muted);margin-bottom:6px;">Already subscribed? Enter your access code:</div>' +
-      '<input id="pro-code" placeholder="Access code" autocomplete="off">' +
-      '<div class="err" id="pro-err"></div>' +
-      '<button class="btn" id="pro-go" style="width:100%">Unlock</button>' +
+      statusLine +
+      (isPro()
+        ? '<button class="btn secondary" id="pro-logout" style="width:100%">Log out</button>'
+        : (authUser
+          ? '<a class="cta-btn" style="display:block;text-align:center;margin:14px 0;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Subscribe — $19/mo</a>'
+          : '<button class="btn" id="pro-login" style="width:100%">Log in / Sign up</button>')) +
       '<button class="btn secondary" id="pro-x" style="width:100%;margin-top:8px;">Close</button>' +
       "</div></div>";
     document.getElementById("mb").onclick = (e) => { if (e.target.id === "mb" || e.target.id === "pro-x") root.innerHTML = ""; };
-    document.getElementById("pro-go").onclick = () => {
-      const v = document.getElementById("pro-code").value.trim();
-      if (v.length >= 4) { setPro(true); root.innerHTML = ""; render(); }
-      else document.getElementById("pro-err").textContent = "Enter the code from your subscription email.";
-    };
+    const li = document.getElementById("pro-login");
+    if (li) li.onclick = () => showAuthModal("login");
+    const lo = document.getElementById("pro-logout");
+    if (lo) lo.onclick = () => doLogout();
   }
 
   document.getElementById("brand-home").onclick = () => nav("");
@@ -609,5 +747,17 @@
   });
 
   window.CA = { nav, isPro, cascadiaScore };
-  render();
+
+  // Initial load: render immediately from cache, then verify auth against Supabase.
+  // If returning from Stripe checkout, force a fresh Pro status check.
+  initAuthListener();
+  (function init() {
+    const params = new URLSearchParams(location.search);
+    if (params.get("checkout") === "success") {
+      // Returning from Stripe — clear the param and verify subscription status
+      history.replaceState(null, "", location.pathname + location.hash);
+    }
+    render();       // fast first paint from localStorage cache
+    refreshAuth();  // server-verified Pro status, re-renders when resolved
+  })();
 })();

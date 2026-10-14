@@ -72,6 +72,8 @@ a:hover { text-decoration: underline; }
 }
 .pro-btn:hover { filter: brightness(1.08); }
 .pro-btn.unlocked { background: var(--card) !important; color: var(--green) !important; border: 1px solid var(--green); box-shadow: none; }
+.auth-btn { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.auth-btn.logged-in { color: var(--green); }
 
 /* Layout */
 .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
