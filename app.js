@@ -566,15 +566,72 @@
   });
 
   function reverseDcfHtml(t) {
-    // Simplified reverse-DCF read: implied upside decomposition
     if (t.upside_base == null) return '<p style="color:var(--muted)">Not available.</p>';
     const u = t.upside_base;
     const verdict = u > 25 ? "The market is pricing in a bear-case outcome; the base case implies significant upside." :
       u > 10 ? "The market is pricing in below-base-case growth; moderate upside to the base target." :
       u > -10 ? "The market is pricing in roughly the base case; the stock screens as fairly valued on our numbers." :
       "The market is pricing in a bull-case outcome; limited upside to our targets at the current quote.";
-    return '<div class="panel-summary">Base-case upside of <b class="' + cls(u) + '">' + fmtPct(u) + "</b> at " + fmt$(t.price) +
+    let h = '<div class="panel-summary">Base-case upside of <b class="' + cls(u) + '">' + fmtPct(u) + "</b> at " + fmt$(t.price) +
       ". " + verdict + "</div>";
+
+    // Price vs targets visual
+    if (t.bear != null && t.base != null && t.bull != null && t.price != null) {
+      const lo = Math.min(t.bear, t.price) * 0.9, hi = Math.max(t.bull, t.price) * 1.05;
+      const pct = (v) => ((v - lo) / (hi - lo) * 100).toFixed(1);
+      const dot = (v, color, label) =>
+        '<div style="position:absolute;left:' + pct(v) + '%;top:-4px;bottom:-4px;width:2px;background:' + color + ';" title="' + esc(label + ": " + fmt$(v)) + '"></div>' +
+        '<div style="position:absolute;left:' + pct(v) + '%;top:-22px;transform:translateX(-50%);font-size:11px;color:' + color + ';white-space:nowrap;">' + esc(label) + '</div>';
+      h += '<div style="margin:18px 0 8px;"><div style="font-size:12px;color:var(--muted);margin-bottom:26px;">Price vs targets</div>' +
+        '<div style="position:relative;height:8px;background:#2a3448;border-radius:4px;margin:0 40px;">' +
+        dot(t.bear, "#f87171", "Bear " + fmt$(t.bear)) +
+        dot(t.base, "#c9a961", "Base " + fmt$(t.base)) +
+        dot(t.bull, "#6a9a6a", "Bull " + fmt$(t.bull)) +
+        '<div style="position:absolute;left:' + pct(t.price) + '%;top:-8px;width:12px;height:24px;background:var(--text);border-radius:3px;transform:translateX(-50%);" title="Current: ' + fmt$(t.price) + '"></div>' +
+        '<div style="position:absolute;left:' + pct(t.price) + '%;top:16px;transform:translateX(-50%);font-size:11px;color:var(--text);white-space:nowrap;font-weight:700;">' + fmt$(t.price) + '</div>' +
+        "</div></div>";
+    }
+
+    // Sensitivity table: implied price across revenue CAGR assumptions
+    // Uses base-case FCF shape scaled to each CAGR, discounted at WACC
+    const fcf = (t.fcf && t.fcf.base && t.fcf.base.fcf_m) || [];
+    const wacc = t.wacc || 0.10, shares = t.shares_m || 80;
+    if (fcf.length >= 2 && shares) {
+      const f0 = fcf[0] > 0 ? fcf[0] : fcf.find((v) => v > 0) || 100;
+      const n = fcf.length;
+      const implPrice = (g) => {
+        let pv = 0;
+        for (let y = 1; y <= n; y++) pv += (f0 * Math.pow(1 + g, y)) / Math.pow(1 + wacc, y);
+        const tv = (f0 * Math.pow(1 + g, n) * 1.03) / (wacc - 0.03) / Math.pow(1 + wacc, n);
+        return (pv + tv) / shares;
+      };
+      const cagrs = [0, 5, 10, 15, 20, 25, 30];
+      // find market-implied CAGR by interpolation
+      let implG = null;
+      const p0 = implPrice(0), pMax = implPrice(0.5);
+      if (t.price >= p0 && t.price <= pMax) {
+        let loG = 0, hiG = 0.5;
+        for (let i = 0; i < 40; i++) {
+          const mid = (loG + hiG) / 2;
+          if (implPrice(mid) < t.price) loG = mid; else hiG = mid;
+        }
+        implG = (loG + hiG) / 2;
+      }
+      h += '<div style="margin-top:16px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Implied price by revenue CAGR (base-case FCF margin, ' + (wacc * 100).toFixed(1) + '% WACC)</div>' +
+        '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>CAGR</th><th>Implied price</th><th>vs current</th></tr></thead><tbody>' +
+        cagrs.map((g) => {
+          const p = implPrice(g / 100);
+          const isImpl = implG != null && Math.abs(g / 100 - implG) < 0.03;
+          const chg = (p / t.price - 1) * 100;
+          return "<tr" + (isImpl ? ' style="background:rgba(201,169,97,0.12);"' : "") + "><td>" + g + "%" + (isImpl ? " ← market" : "") + "</td><td>" + fmt$(p) +
+            '</td><td class="' + cls(chg) + '">' + fmtPct(chg) + "</td></tr>";
+        }).join("") + "</tbody></table></div>";
+      if (implG != null)
+        h += '<div class="panel-asof">Market-implied 5-yr revenue CAGR: ~' + (implG * 100).toFixed(1) + '%</div>';
+      else
+        h += '<div class="panel-asof">Current price falls outside the 0–50% CAGR range.</div>';
+    }
+    return h;
   }
 
   function railsCompHtml(t) {
