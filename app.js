@@ -952,12 +952,18 @@
     }
     const wacc = t.wacc || 0.10;
     const shares = t.shares_m || 80;
+    // pick display unit from company scale: billions for large FCF, millions for small
+    const useB = base0 >= 500;
+    const uDiv = useB ? 1000 : 1, uSuf = useB ? "B" : "M";
+    const uFmt = (vM) => "$" + (vM / uDiv).toFixed(1) + uSuf;
+    const f0disp = (base0 / uDiv).toFixed(1);
+    const f0min = useB ? 0.1 : 1, f0max = useB ? 50 : 5000, f0step = useB ? 0.1 : 1;
 
     card.innerHTML =
       '<h3>Interactive Free Cash Flow Simulation</h3>' +
       '<div class="section-sub">Project ' + esc(t.name) + ' unlevered free cash flow from your own baseline. Drag the sliders.</div>' +
       '<div class="sandbox-stats">' +
-      '<div><div class="stat-v" id="sb-start">$' + base0 + '</div><div class="stat-l">Starting Base</div></div>' +
+      '<div><div class="stat-v" id="sb-start">' + uFmt(base0) + '</div><div class="stat-l">Starting Base</div></div>' +
       '<div class="stat-c"><div class="stat-v" id="sb-base-t" style="color:var(--base)">—</div><div class="stat-l" id="sb-base-l">Base terminal UFCF</div></div>' +
       '<div class="stat-c"><div class="stat-v" id="sb-bull-t" style="color:var(--bull)">—</div><div class="stat-l" id="sb-bull-l">Bull terminal UFCF</div></div>' +
       "</div>" +
@@ -969,7 +975,7 @@
       '<h3 style="margin-top:18px;">Adjust DCF Model Growth &amp; Margin Assumptions</h3>' +
       '<div class="collapsible-head" id="sb-coll">Parameters <span>&#9650;</span></div>' +
       '<div class="param-grid" id="sb-params">' +
-      sbParam("sb-fcf0", "Base UFCF ($M)", base0, 1, 5000, 1, "$" + base0) +
+      sbParam("sb-fcf0", "Base UFCF ($" + uSuf + ")", f0disp, f0min, f0max, f0step, uFmt(base0)) +
       sbParam("sb-gbear", "Bear UFCF Growth (%)", gBear, -20, 80, 1, gBear + "%") +
       sbParam("sb-gbase", "Base UFCF Growth (%)", gBase, -20, 80, 1, gBase + "%") +
       sbParam("sb-gbull", "Bull UFCF Growth (%)", gBull, -20, 80, 1, gBull + "%") +
@@ -998,17 +1004,17 @@
             padding: 12, titleFont: { weight: "bold" },
             callbacks: {
               title: (items) => "Year " + items[0].label,
-              label: (c) => " " + c.dataset.label + ": $" + Math.round(c.parsed.y).toLocaleString() + "M"
+              label: (c) => " " + c.dataset.label + ": " + uFmt(c.parsed.y * uDiv)
             }
           } },
         scales: { x: { title: { display: true, text: "Years", color: "#7a8494" }, ticks: { color: "#7a8494" }, grid: { display: false } },
-          y: { title: { display: true, text: "UFCF ($M)", color: "#7a8494" }, ticks: { color: "#7a8494" }, grid: { color: "#333f52" } } } }
+          y: { title: { display: true, text: "UFCF ($" + uSuf + ")", color: "#7a8494" }, ticks: { color: "#7a8494", callback: (v) => "$" + v + uSuf }, grid: { color: "#333f52" } } } }
     });
 
     function update() {
-      const f0 = +els.fcf0.value, gb = +els.gbear.value / 100, gn = +els.gbase.value / 100,
+      const f0dispV = +els.fcf0.value, f0 = f0dispV * uDiv, gb = +els.gbear.value / 100, gn = +els.gbase.value / 100,
         gu = +els.gbull.value / 100, hz = +els.horiz.value;
-      document.querySelector('#sb-fcf0').closest(".param").querySelector(".pval").textContent = "$" + f0;
+      document.querySelector('#sb-fcf0').closest(".param").querySelector(".pval").textContent = uFmt(f0);
       document.querySelector('#sb-gbear').closest(".param").querySelector(".pval").textContent = els.gbear.value + "%";
       document.querySelector('#sb-gbase').closest(".param").querySelector(".pval").textContent = els.gbase.value + "%";
       document.querySelector('#sb-gbull').closest(".param").querySelector(".pval").textContent = els.gbull.value + "%";
@@ -1016,24 +1022,24 @@
       const labels = [], bull = [], base = [], bear = [];
       for (let y = 0; y <= hz; y++) {
         labels.push(y);
-        bull.push(f0 * Math.pow(1 + gu, y));
-        base.push(f0 * Math.pow(1 + gn, y));
-        bear.push(f0 * Math.pow(1 + gb, y));
+        bull.push(f0 * Math.pow(1 + gu, y) / uDiv);
+        base.push(f0 * Math.pow(1 + gn, y) / uDiv);
+        bear.push(f0 * Math.pow(1 + gb, y) / uDiv);
       }
       sandboxChart.data.labels = labels;
       sandboxChart.data.datasets[0].data = bull;
       sandboxChart.data.datasets[1].data = base;
       sandboxChart.data.datasets[2].data = bear;
       sandboxChart.update();
-      $("sb-start").textContent = "$" + f0;
-      $("sb-base-t").textContent = "$" + Math.round(base[hz]);
-      $("sb-bull-t").textContent = "$" + Math.round(bull[hz]);
+      $("sb-start").textContent = uFmt(f0);
+      $("sb-base-t").textContent = uFmt(base[hz] * uDiv);
+      $("sb-bull-t").textContent = uFmt(bull[hz] * uDiv);
       $("sb-base-l").textContent = "Base Yr-" + hz + " UFCF";
       $("sb-bull-l").textContent = "Bull Yr-" + hz + " UFCF";
-      // implied value from base case
+      // implied value from base case (convert back to $M for valuation math)
       let pv = 0;
-      for (let y = 1; y <= hz; y++) pv += base[y] / Math.pow(1 + wacc, y);
-      const tv = (base[hz] * 1.03) / (wacc - 0.03) / Math.pow(1 + wacc, hz);
+      for (let y = 1; y <= hz; y++) pv += (base[y] * uDiv) / Math.pow(1 + wacc, y);
+      const tv = ((base[hz] * uDiv) * 1.03) / (wacc - 0.03) / Math.pow(1 + wacc, hz);
       const implied = (pv + tv) / shares;
       let iv = document.getElementById("sb-implied");
       if (!iv) {
@@ -1061,7 +1067,7 @@
       $("sb-coll").querySelector("span").innerHTML = open ? "&#9660;" : "&#9650;";
     });
     $("sb-csv").addEventListener("click", () => {
-      const f0 = +els.fcf0.value, gb = +els.gbear.value / 100, gn = +els.gbase.value / 100,
+      const f0 = +els.fcf0.value * uDiv, gb = +els.gbear.value / 100, gn = +els.gbase.value / 100,
         gu = +els.gbull.value / 100, hz = +els.horiz.value;
       let csv = "year,bear_fcf_m,base_fcf_m,bull_fcf_m\n";
       for (let y = 0; y <= hz; y++)
