@@ -73,6 +73,10 @@ def main():
         fcf_backfill = load(os.path.join(HERE, "fcf_backfill.json"))
     except FileNotFoundError:
         fcf_backfill = {}
+    try:
+        financials = load(os.path.join(HERE, "financials.json"))
+    except FileNotFoundError:
+        financials = {}
 
     # --- Merge tickers: manifest is authoritative for targets (31), data.json for detail (11) ---
     tickers = {}
@@ -121,6 +125,9 @@ def main():
         # AXON sum-of-the-parts (Pro-gated on the ticker page)
         if tk == "AXON":
             t["sotp"] = AXON_SOTP
+        # Financial statements (free for all users)
+        if tk in financials:
+            t["financials"] = financials[tk]
         tickers[tk] = t
 
     # --- Copy chart images ---

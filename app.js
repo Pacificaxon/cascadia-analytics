@@ -440,6 +440,13 @@
       h += "</div>";
     }
 
+    // Financial statements (free for all)
+    if (t.financials) {
+      h += '<div class="section"><div class="section-title">Financials</div>';
+      h += financialsHtml(t);
+      h += "</div>";
+    }
+
     // Moving averages (Pro)
     h += '<div class="section"><div class="section-title">Moving Averages</div>';
     h += gated("Moving Averages — Pro", "Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.", maHtml(tk));
@@ -496,6 +503,7 @@
     drawFcfChart(t);
     if (isPro()) initSandbox(tk, t);
     wireEarningsTabs(tk);
+    wireFinTabs(tk);
   });
 
   function reverseDcfHtml(t) {
@@ -508,6 +516,83 @@
       "The market is pricing in a bull-case outcome; limited upside to our targets at the current quote.";
     return '<div class="panel-summary">Base-case upside of <b class="' + cls(u) + '">' + fmtPct(u) + "</b> at " + fmt$(t.price) +
       ". " + verdict + "</div>";
+  }
+
+  function financialsHtml(t) {
+    const f = t.financials;
+    if (!f) return '<div class="card"><p style="color:var(--muted)">Financial statements not available.</p></div>';
+    // Line item definitions: [label, key, format]
+    const INC_ROWS = [
+      ["Revenue", "revenue", "$M"],
+      ["Gross Profit", "gross_profit", "$M"],
+      ["Operating Income", "operating_income", "$M"],
+      ["Net Income", "net_income", "$M"],
+      ["EBITDA", "ebitda", "$M"],
+      ["Diluted EPS", "diluted_eps", "$"],
+    ];
+    const BAL_ROWS = [
+      ["Total Assets", "total_assets", "$M"],
+      ["Total Liabilities", "total_liabilities", "$M"],
+      ["Total Equity", "total_equity", "$M"],
+      ["Cash & Equivalents", "cash", "$M"],
+      ["Long-Term Debt", "long_term_debt", "$M"],
+      ["Total Debt", "total_debt", "$M"],
+    ];
+    const CF_ROWS = [
+      ["Operating Cash Flow", "operating_cash_flow", "$M"],
+      ["Capital Expenditures", "capex", "$M"],
+      ["Free Cash Flow", "free_cash_flow", "$M"],
+      ["Financing Cash Flow", "financing_cash_flow", "$M"],
+    ];
+    function fmtVal(v, fmt) {
+      if (v == null) return "—";
+      if (fmt === "$") return "$" + Number(v).toFixed(2);
+      return (v < 0 ? "-$" : "$") + Math.abs(v / 1e6).toLocaleString("en-US", {maximumFractionDigits: 1}) + "M";
+    }
+    function yoy(rows, key, years) {
+      // YoY % change for the most recent year
+      if (years.length < 2) return "";
+      const cur = rows.find(r => r.year === years[0]);
+      const prev = rows.find(r => r.year === years[1]);
+      if (!cur || !prev) return "";
+      const c = cur[key], p = prev[key];
+      if (c == null || p == null || p === 0) return "";
+      const chg = (c - p) / Math.abs(p) * 100;
+      const cls = chg >= 0 ? "up" : "down";
+      const arrow = chg >= 0 ? "▲" : "▼";
+      return ' <span class="yoy ' + cls + '">' + arrow + " " + Math.abs(chg).toFixed(1) + "%</span>";
+    }
+    function stmtTable(rows, defs) {
+      if (!rows || !rows.length) return '<p style="color:var(--muted)">No data.</p>';
+      const years = rows.map(r => r.year).sort((a, b) => b - a);
+      let h = '<div class="table-wrap"><table class="fin-table"><thead><tr><th></th>';
+      years.forEach(y => { h += "<th class=\"num\">" + y + "</th>"; });
+      h += "</tr></thead><tbody>";
+      defs.forEach(([label, key, fmt]) => {
+        h += "<tr><td>" + label + "</td>";
+        years.forEach(y => {
+          const row = rows.find(r => r.year === y);
+          const v = row ? row[key] : null;
+          h += '<td class="num">' + fmtVal(v, fmt) + (y === years[0] ? yoy(rows, key, years) : "") + "</td>";
+        });
+        h += "</tr>";
+      });
+      h += "</tbody></table></div>";
+      return h;
+    }
+    const uid = "fin-" + t.ticker;
+    let h = '<div class="card"><h3>Financial Statements</h3>' +
+      '<div class="section-sub">Annual filings via Yahoo Finance. All values in $M unless noted. Free for all readers.</div>' +
+      '<div class="fin-tabs" id="' + uid + '-tabs">' +
+      '<button class="fin-tab active" data-fin="income">Income Statement</button>' +
+      '<button class="fin-tab" data-fin="balance">Balance Sheet</button>' +
+      '<button class="fin-tab" data-fin="cashflow">Cash Flow</button>' +
+      "</div>" +
+      '<div class="fin-panel" id="' + uid + '-income">' + stmtTable(f.income, INC_ROWS) + "</div>" +
+      '<div class="fin-panel" id="' + uid + '-balance" style="display:none">' + stmtTable(f.balance, BAL_ROWS) + "</div>" +
+      '<div class="fin-panel" id="' + uid + '-cashflow" style="display:none">' + stmtTable(f.cashflow, CF_ROWS) + "</div>" +
+      '<div class="panel-asof">Source: company filings via Yahoo Finance</div></div>';
+    return h;
   }
 
   function sotpHtml(t) {
@@ -614,6 +699,19 @@
       tabs.querySelectorAll("button").forEach((x) => x.classList.remove("active"));
       b.classList.add("active");
       document.querySelectorAll(".eq-pane").forEach((p) => p.style.display = p.dataset.qi === b.dataset.qi ? "" : "none");
+    }));
+  }
+  function wireFinTabs(tk) {
+    const tabs = document.getElementById("fin-" + tk + "-tabs");
+    if (!tabs) return;
+    tabs.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+      tabs.querySelectorAll("button").forEach((x) => x.classList.remove("active"));
+      b.classList.add("active");
+      const uid = "fin-" + tk;
+      ["income", "balance", "cashflow"].forEach((k) => {
+        const p = document.getElementById(uid + "-" + k);
+        if (p) p.style.display = k === b.dataset.fin ? "" : "none";
+      });
     }));
   }
 
