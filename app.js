@@ -448,6 +448,13 @@
       h += "</div>";
     }
 
+    // Rails three-way comparison (UNP/CSX/NSC, free)
+    if (t.rails_comp) {
+      h += '<div class="section"><div class="section-title">Class 1 Rails Comparison</div>' +
+        '<div class="section-sub">Side-by-side DCF targets for the three US Class 1 rails.</div>' +
+        '<div class="card">' + railsCompHtml(t) + "</div></div>";
+    }
+
     // Financial statements (free for all)
     if (t.financials) {
       h += '<div class="section"><div class="section-title">Financials</div>';
@@ -524,6 +531,33 @@
       "The market is pricing in a bull-case outcome; limited upside to our targets at the current quote.";
     return '<div class="panel-summary">Base-case upside of <b class="' + cls(u) + '">' + fmtPct(u) + "</b> at " + fmt$(t.price) +
       ". " + verdict + "</div>";
+  }
+
+  function railsCompHtml(t) {
+    const rc = t.rails_comp;
+    if (!rc) return "";
+    const tks = rc.tickers;
+    function fmtVal(v, format) {
+      if (v == null) return "—";
+      if (format === "currency") return fmt$(v);
+      if (format === "percent") return fmtPct(v * 100);
+      if (format === "multiple") return v.toFixed(1) + "x";
+      return String(v);
+    }
+    let h = '<div class="table-wrap"><table class="coverage"><thead><tr><th></th>' +
+      tks.map((tk) => "<th>" + tickerLink(tk) + "</th>").join("") + "</tr></thead><tbody>";
+    rc.metrics.forEach((m) => {
+      const rowCls = m.highlight ? ' class="sotp-total"' : "";
+      h += "<tr" + rowCls + "><td>" + esc(m.label) + "</td>" +
+        tks.map((tk) => {
+          const v = m[tk];
+          const cellCls = m.format === "percent" ? cls(v * 100) : "";
+          return '<td class="' + cellCls + '">' + fmtVal(v, m.format) + "</td>";
+        }).join("") + "</tr>";
+    });
+    h += "</tbody></table></div>";
+    h += '<div class="panel-summary">Best long (highest upside): <b>' + esc(rc.best_long) + "</b>. " + esc(rc.note) + "</div>";
+    return h;
   }
 
   function financialsHtml(t) {

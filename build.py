@@ -128,6 +128,12 @@ def main():
                 t["sotp"] = load(os.path.join(HERE, "axon_sotp_detail.json"))
             except FileNotFoundError:
                 t["sotp"] = AXON_SOTP
+        # Rails three-way comparison (free on UNP/CSX/NSC pages)
+        if tk in ("UNP", "CSX", "NSC"):
+            try:
+                t["rails_comp"] = load(os.path.join(HERE, "rails_comparison.json"))
+            except FileNotFoundError:
+                pass
         # Financial statements (free for all users)
         if tk in financials:
             t["financials"] = financials[tk]
