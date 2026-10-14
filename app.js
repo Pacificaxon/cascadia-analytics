@@ -601,6 +601,7 @@
   function sotpHtml(t) {
     const s = t.sotp;
     if (!s || !s.segments) return '<p style="color:var(--muted)">Not available.</p>';
+    if (s.years) return sotpDetailHtml(s);
     let h = '<div class="card"><h3>Full Sum of the Parts <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;letter-spacing:1px;">· ' + esc(s.as_of || "") + "</span></h3>" +
       '<div class="section-sub">Bottom-up segment build. The parts sum to $' + esc(s.total_revenue_b) + 'B in 2036 revenue, landing just shy of the $30.3B Bull-case target.</div>' +
       '<div class="table-wrap"><table class="sotp-table"><thead><tr>' +
@@ -618,6 +619,79 @@
       '<td class="num">$' + esc(s.total_ebitda_b) + "B</td>" +
       '<td class="num">—</td></tr>';
     h += "</tbody></table></div></div>";
+    return h;
+  }
+
+  function sotpDetailHtml(s) {
+    const years = s.years;
+    const yrHead = years.map(function(y) { return '<th class="num">' + y + '</th>'; }).join('');
+    const money = function(v) { return v == null ? '--' : '$' + Number(v).toLocaleString('en-US', { maximumFractionDigits: 0 }) + 'M'; };
+    const pct1 = function(v) { return v == null ? '--' : v.toFixed(1) + '%'; };
+    const segShort = ['Dedrone', 'Surveillance', 'Evidence.com', 'TASER', 'Body Cams'];
+
+    let h = '<div class="card"><h3>Full Sum of the Parts</h3>' +
+      '<div class="section-sub">Every segment modeled year by year: Revenue to EBITDA to EBIT to NOPAT to Unlevered FCF. ' +
+      '2026 baselines sum to $3.7B. The parts build to $29.5B revenue / $11.2B EBITDA in 2036.</div>';
+
+    h += '<h4 style="margin:18px 0 8px;color:var(--gold)">Revenue by Segment ($M)</h4>' +
+      '<div class="table-wrap"><table class="sotp-table sotp-wide"><thead><tr><th>Segment</th>' + yrHead + '</tr></thead><tbody>';
+    s.segments.forEach(function(sg, i) {
+      h += '<tr><td><div class="sotp-name">' + esc(segShort[i]) + '</div></td>' +
+        sg.revenue.map(function(v) { return '<td class="num">' + money(v) + '</td>'; }).join('') + '</tr>';
+    });
+    h += '<tr class="sotp-total"><td><div class="sotp-name">Total Revenue</div></td>' +
+      s.totals.revenue.map(function(v) { return '<td class="num">' + money(v) + '</td>'; }).join('') + '</tr>';
+    h += '</tbody></table></div>';
+
+    h += '<h4 style="margin:18px 0 8px;color:var(--gold)">EBITDA by Segment ($M)</h4>' +
+      '<div class="table-wrap"><table class="sotp-table sotp-wide"><thead><tr><th>Segment</th>' + yrHead + '</tr></thead><tbody>';
+    s.segments.forEach(function(sg, i) {
+      h += '<tr><td><div class="sotp-name">' + esc(segShort[i]) + '</div>' +
+        '<div class="sotp-note">' + pct1(sg.ebitda_margin[0]) + ' to ' + pct1(sg.ebitda_margin[10]) + ' margin</div></td>' +
+        sg.ebitda.map(function(v) { return '<td class="num">' + money(v) + '</td>'; }).join('') + '</tr>';
+    });
+    h += '<tr class="sotp-total"><td><div class="sotp-name">Total EBITDA</div>' +
+      '<div class="sotp-note">' + pct1(s.totals.ebitda_margin[0]) + ' to ' + pct1(s.totals.ebitda_margin[10]) + ' blended</div></td>' +
+      s.totals.ebitda.map(function(v) { return '<td class="num">' + money(v) + '</td>'; }).join('') + '</tr>';
+    h += '</tbody></table></div>';
+
+    h += '<h4 style="margin:18px 0 8px;color:var(--gold)">Unlevered FCF by Segment ($M)</h4>' +
+      '<div class="table-wrap"><table class="sotp-table sotp-wide"><thead><tr><th>Segment</th>' + yrHead + '</tr></thead><tbody>';
+    s.segments.forEach(function(sg, i) {
+      h += '<tr><td><div class="sotp-name">' + esc(segShort[i]) + '</div>' +
+        '<div class="sotp-note">FCF margin ' + pct1(sg.fcf_margin[0]) + ' to ' + pct1(sg.fcf_margin[10]) + '</div></td>' +
+        sg.fcf.map(function(v) { return '<td class="num">' + money(v) + '</td>'; }).join('') + '</tr>';
+    });
+    h += '<tr class="sotp-total"><td><div class="sotp-name">Total Unlevered FCF</div>' +
+      '<div class="sotp-note">' + pct1(s.totals.fcf_margin[0]) + ' to ' + pct1(s.totals.fcf_margin[10]) + ' blended</div></td>' +
+      s.totals.fcf.map(function(v) { return '<td class="num">' + money(v) + '</td>'; }).join('') + '</tr>';
+    h += '</tbody></table></div>';
+
+    h += '<h4 style="margin:18px 0 8px;color:var(--gold)">Revenue Mix (% of total)</h4>' +
+      '<div class="table-wrap"><table class="sotp-table sotp-wide"><thead><tr><th>Segment</th>' + yrHead + '</tr></thead><tbody>';
+    s.mix.forEach(function(m, i) {
+      h += '<tr><td><div class="sotp-name">' + esc(segShort[i]) + '</div></td>' +
+        m.mix.map(function(v) { return '<td class="num">' + pct1(v) + '</td>'; }).join('') + '</tr>';
+    });
+    h += '</tbody></table></div>';
+
+    const r = s.reconciliation;
+    h += '<h4 style="margin:18px 0 8px;color:var(--gold)">Reconciliation vs Bull Case</h4>' +
+      '<div class="table-wrap"><table class="sotp-table"><tbody>' +
+      '<tr><td><div class="sotp-name">SOTP 2036 revenue</div></td><td class="num">' + money(r.sotp_2036_revenue) + '</td></tr>' +
+      '<tr><td><div class="sotp-name">SOTP 2036 EBITDA</div></td><td class="num">' + money(r.sotp_2036_ebitda) + '</td></tr>' +
+      '<tr><td><div class="sotp-name">Bull-case 2036 revenue (DCF top-down)</div></td><td class="num">' + money(r.bull_case_2036_revenue) + '</td></tr>' +
+      '</tbody></table></div>';
+
+    h += '<div class="flock-callout">' +
+      '<div class="flock-title">Estimate of terminal revenue impact from flock backlash</div>' +
+      '<div class="flock-number">-' + money(Math.abs(r.gap)) + '</div>' +
+      '<div class="flock-desc">Revenue deficit in the SOTP total vs the Bull-case 2036 target, ' +
+      'attributed to the Flock controversy. The Bull case assumes full recovery of the ' +
+      'mass-surveillance pipeline; the SOTP prices in a permanent haircut to RTCC/ALPR adoption.</div>' +
+      '</div>';
+
+    h += '<div class="panel-asof">Source: AXON DCF workbook, Segment Build tab. All $ in millions.</div></div>';
     return h;
   }
 

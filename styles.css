@@ -222,6 +222,24 @@ table.sotp-table td.num { font-family: var(--mono); font-size: 13px; white-space
 .sotp-note { font-size: 12px; color: var(--muted); line-height: 1.5; max-width: 340px; }
 table.sotp-table tr.sotp-total td { border-bottom: none; border-top: 1px solid var(--gold); padding-top: 14px; }
 table.sotp-table tr.sotp-total .sotp-name { color: var(--gold); }
+/* wide SOTP year tables: horizontal scroll on narrow screens */
+table.sotp-table.sotp-wide { min-width: 1180px; }
+/* Flock Backlash Impact Forecast callout */
+.flock-callout {
+  margin: 20px 0 8px; padding: 22px 26px;
+  background: linear-gradient(135deg, rgba(201,169,97,0.10), rgba(201,169,97,0.03));
+  border: 1px solid var(--gold); border-left: 4px solid var(--gold);
+  border-radius: 8px;
+}
+.flock-title {
+  font-family: var(--mono); font-size: 11px; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--gold); margin-bottom: 8px;
+}
+.flock-number {
+  font-family: var(--serif); font-size: 38px; font-weight: 700;
+  color: #f87171; margin-bottom: 10px;
+}
+.flock-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; max-width: 640px; }
 table.coverage th {
   text-align: right; padding: 12px 14px;
   font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.2px;

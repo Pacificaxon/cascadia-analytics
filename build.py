@@ -122,9 +122,12 @@ def main():
                         "years": fcf_backfill[tk][sc]["years"],
                         "fcf_m": fcf_backfill[tk][sc]["fcf_m"],
                     }
-        # AXON sum-of-the-parts (Pro-gated on the ticker page)
+        # AXON sum-of-the-parts (Pro-gated on the ticker page) — full detailed model
         if tk == "AXON":
-            t["sotp"] = AXON_SOTP
+            try:
+                t["sotp"] = load(os.path.join(HERE, "axon_sotp_detail.json"))
+            except FileNotFoundError:
+                t["sotp"] = AXON_SOTP
         # Financial statements (free for all users)
         if tk in financials:
             t["financials"] = financials[tk]
