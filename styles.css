@@ -202,6 +202,7 @@ a:hover { text-decoration: underline; }
 @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
 .panel-chart { width: 100%; border-radius: 6px; margin: 12px 0; display: block; }
 .panel-summary { font-size: 14px; color: var(--muted); line-height: 1.65; }
+.panel-about { font-size: 13px; color: var(--faint); line-height: 1.6; font-style: italic; margin: 8px 0; padding: 8px 12px; border-left: 2px solid var(--border); background: rgba(255,255,255,0.02); border-radius: 0 4px 4px 0; }
 .panel-asof { font-family: var(--mono); font-size: 11px; color: var(--faint); margin-top: 10px; letter-spacing: 0.4px; }
 
 /* ---------- coverage table ---------- */

@@ -392,6 +392,7 @@
         }
         return '<div class="card"><h3>' + title + "</h3>" +
         (p.chart ? '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy">' : "") +
+        (p.about ? '<div class="panel-about">' + esc(p.about) + "</div>" : "") +
         '<div class="panel-summary">' + esc(p.summary || "") + "</div>" +
         '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>";
       }).join("") + "</div>");
