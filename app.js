@@ -348,12 +348,17 @@
       '<div class="section-sub">Breadth, valuation-vs-earnings, rotation, and credit signals.</div>';
     h += gated("Market Internals — Pro",
       "Breadth monitor, Alligator Jaw, theme rotation, and credit-spread-vs-volatility trackers.",
-      '<div class="grid-2">' + panels.map((p) =>
-        '<div class="card"><h3>' + esc(p.name) + "</h3>" +
+      '<div class="grid-2">' + panels.map((p) => {
+        let title = esc(p.name);
+        if (/alligator/i.test(p.name)) {
+          const isOpen = /jaw\s*open/i.test(p.summary || "");
+          title = (isOpen ? "🔴 " : "🟢 ") + title;
+        }
+        return '<div class="card"><h3>' + title + "</h3>" +
         (p.chart ? '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy">' : "") +
         '<div class="panel-summary">' + esc(p.summary || "") + "</div>" +
-        '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>"
-      ).join("") + "</div>");
+        '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>";
+      }).join("") + "</div>");
     h += "</div>";
 
     // coverage table
