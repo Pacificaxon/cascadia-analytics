@@ -953,16 +953,16 @@
     const wacc = t.wacc || 0.10;
     const shares = t.shares_m || 80;
     // pick display unit from company scale: billions for large FCF, millions for small
-    const useB = base0 >= 500;
+    const useB = Math.abs(base0) >= 500;
     const uDiv = useB ? 1000 : 1, uSuf = useB ? "B" : "M";
     const uFmt = (vM) => {
       const v = vM / uDiv;
       // for very large values, use compact formatting to avoid "$95,000M"
-      if (v >= 1000 && !useB) return "$" + (v / 1000).toFixed(1) + "B";
+      if (Math.abs(v) >= 1000 && !useB) return "$" + (v / 1000).toFixed(1) + "B";
       return "$" + v.toFixed(1) + uSuf;
     };
     const f0disp = (base0 / uDiv).toFixed(1);
-    // minimum is the TTM FCF (base0) — user can't go below actuals
+    // minimum is the TTM FCF (can be negative) — user can slide up to positive as the company grows
     const f0min = f0disp, f0max = useB ? 50 : 5000, f0step = useB ? 0.1 : 1;
 
     card.innerHTML =
