@@ -185,8 +185,9 @@
   }
   function render() {
     const r = currentRoute();
-    document.querySelectorAll("#main-nav button[data-route]").forEach((b) =>
+    document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
       b.classList.toggle("active", b.dataset.route === r.name));
+    syncCoveragePick(r);
     updateProBtn();
     window.scrollTo(0, 0);
     if (r.name === "ticker" && routes.ticker) routes.ticker(r.param);
@@ -239,9 +240,65 @@
   }
 
   document.getElementById("brand-home").onclick = () => nav("");
-  document.querySelectorAll("#main-nav button[data-route]").forEach((b) =>
+  document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
     b.addEventListener("click", () => nav(b.dataset.route === "home" ? "" : b.dataset.route)));
   window.addEventListener("hashchange", render);
+
+  /* ---------- artifact chrome: snapshot line + coverage selector ---------- */
+  function setSnapshot() {
+    const el = document.getElementById("snapshot-line");
+    if (!el) return;
+    let s = "MODEL SNAPSHOT";
+    if (D.generated_at) {
+      const d = new Date(D.generated_at);
+      if (!isNaN(d)) {
+        const M = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+        s = "MODEL SNAPSHOT · " + String(d.getUTCDate()).padStart(2, "0") + " " + M[d.getUTCMonth()] + " " + d.getUTCFullYear();
+      }
+    }
+    el.textContent = s;
+  }
+  function populateCoverage() {
+    const sel = document.getElementById("coverage-pick");
+    if (!sel) return;
+    sel.innerHTML = '<option value="">HOME · Macro &amp; market intelligence</option>' +
+      ORDER.map((tk) => '<option value="' + esc(tk) + '">' + esc(tk) + " — " + esc(TICKERS[tk].name) + "</option>").join("");
+    sel.addEventListener("change", () => {
+      if (sel.value) nav("ticker/" + sel.value);
+      else nav("");
+    });
+  }
+  function syncCoveragePick(r) {
+    const sel = document.getElementById("coverage-pick");
+    if (!sel) return;
+    sel.value = (r.name === "ticker" && TICKERS[r.param.toUpperCase()]) ? r.param.toUpperCase() : "";
+  }
+
+  /* ---------- artifact news layout ---------- */
+  function fmtTs(ts) {
+    if (!ts) return "";
+    try {
+      const p = {};
+      new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", month: "short", day: "numeric",
+        hour: "numeric", minute: "2-digit", hour12: true }).formatToParts(new Date(ts))
+        .forEach((x) => { p[x.type] = x.value; });
+      return p.month + " " + p.day + " at " + p.hour + ":" + p.minute + " " + p.dayPeriod + " PDT";
+    } catch (e) { return ""; }
+  }
+  function newsRow(o) {
+    return '<div class="news-row">' +
+      '<div>' + (o.badge ? '<span class="tk-badge">' + esc(o.badge) + "</span>" : "") + "</div>" +
+      '<div><div class="news-h">' + esc(o.headline) + "</div>" +
+      (o.sub ? '<div class="news-sub">' + esc(o.sub) + "</div>" : "") + "</div>" +
+      '<div class="news-ts">' + esc(o.ts) + " ·<br>" + esc(o.source) + "</div></div>";
+  }
+  function newsSection(id, label, title, tags, rowsHtml) {
+    return '<section class="news-sec" id="' + id + '">' +
+      '<div class="news-sec-head"><div><div class="mono-label">' + esc(label) + "</div>" +
+      '<div class="news-sec-title">' + esc(title) + "</div></div>" +
+      (tags ? '<div class="news-sec-tags">' + esc(tags) + "</div>" : "") + "</div>" +
+      (rowsHtml || '<div class="news-empty">No recent items.</div>') + "</section>";
+  }
 
   /* ---------- shared bits ---------- */
   function tickerLink(tk) { return '<a href="#/ticker/' + esc(tk) + '">' + esc(tk) + "</a>"; }
@@ -254,42 +311,37 @@
 
   /* ================= HOME ================= */
   route("home", function () {
-    const macro = (D.macro_feed || []).slice(0, 12);
-    const news = (D.company_news || []).slice(0, 10);
+    const macro = (D.macro_feed || []).slice(0, 14);
+    const news = (D.company_news || []).slice(0, 12);
     const panels = D.panels || [];
 
-    let h = '<div class="home-hero"><h1>Equity Research</h1>' +
-      "<p>Institutional-grade DCF valuations, market internals, and proprietary signals across " +
-      ORDER.length + " covered names.</p></div>";
-    h += '<div class="asof">Data as of ' + esc(D.generated_at ? D.generated_at.slice(0, 10) : "") + "</div>";
+    let h = '<div class="crumb">MACRO INTELLIGENCE · DCF COVERAGE · MARKET INTERNALS</div>';
+    h += '<div class="hero"><div>' +
+      '<h1 class="hero-h">The signals moving markets, in one research view.</h1>' +
+      "<p class='hero-sub'>Track major macro releases and central-bank commentary, then move directly into company " +
+      "valuation work and the market&rsquo;s internal risk signals.</p></div>" +
+      '<div class="hero-right">' +
+      '<div class="statbox"><div class="mono-label">Coverage</div><div class="statbox-v">' + ORDER.length + " DCF models</div></div>" +
+      '<div class="statbox"><div class="mono-label">Macro wire</div><div class="statbox-v">Newest first</div></div>' +
+      "</div></div>";
+    h += '<div class="hero-btns">' +
+      '<button class="btn-gold" id="btn-browse">Browse ticker coverage ↓</button>' +
+      '<button class="btn-dark" id="btn-internals">Open Market Internals ↓</button></div>';
 
-    // ticker quick select
-    h += '<div class="card"><h3>Research by Ticker</h3>' +
-      '<select class="ticker-select" id="ticker-pick" onchange="if(this.value)location.hash=\'#/ticker/\'+this.value">' +
-      '<option value="">Select a ticker…</option>' +
-      ORDER.map((tk) => '<option value="' + esc(tk) + '">' + esc(tk) + " — " + esc(TICKERS[tk].name) + "</option>").join("") +
-      "</select></div>";
+    // company news — artifact layout
+    h += newsSection("cn-sec", "SINGLE-COMPANY WIRE", "Company News", "Offerings · Regulation · Contracts",
+      news.length ? news.map((m) => newsRow({
+        badge: m.ticker, headline: m.headline, sub: m.summary, ts: fmtTs(m.timestamp), source: m.source
+      })).join("") : "");
 
-    // macro news
-    h += '<div class="section"><div class="section-title">Macro Wire</div>' +
-      '<div class="section-sub">Rates, inflation, growth, and geopolitics driving the tape.</div><div class="card">';
-    h += macro.map((m) =>
-      '<div class="news-item"><div class="news-headline">' + esc(m.headline) + "</div>" +
-      '<div class="news-meta"><span>' + esc(m.source || "") + "</span><span>" + timeAgo(m.timestamp) + "</span></div></div>"
-    ).join("") + "</div></div>";
-
-    // company news
-    h += '<div class="section"><div class="section-title">Company News</div>' +
-      '<div class="section-sub">Material developments at widely-followed companies.</div><div class="card">';
-    h += news.length ? news.map((m) =>
-      '<div class="news-item"><div><span class="news-tag">' + esc(m.ticker || "") + "</span>" +
-      '<span class="news-headline">' + esc(m.headline) + "</span></div>" +
-      '<div class="news-meta"><span>' + esc(m.source || "") + "</span><span>" + timeAgo(m.timestamp) + "</span></div></div>"
-    ).join("") : '<p style="color:var(--muted)">No recent items.</p>';
-    h += "</div></div>";
+    // macro wire — artifact layout
+    h += newsSection("macro-sec", "MACRO WIRE", "Macro Wire", "Rates · Inflation · Geopolitics",
+      macro.length ? macro.map((m) => newsRow({
+        badge: "", headline: m.headline, sub: m.detail, ts: fmtTs(m.timestamp), source: m.source
+      })).join("") : "");
 
     // market internals (Pro)
-    h += '<div class="section"><div class="section-title">Market Internals</div>' +
+    h += '<div class="section" id="internals-sec"><div class="section-title">Market Internals</div>' +
       '<div class="section-sub">Breadth, valuation-vs-earnings, rotation, and credit signals.</div>';
     h += gated("Market Internals — Pro",
       "Breadth monitor, Alligator Jaw, theme rotation, and credit-spread-vs-volatility trackers.",
@@ -302,7 +354,7 @@
     h += "</div>";
 
     // coverage table
-    h += '<div class="section"><div class="section-title">Coverage</div>' +
+    h += '<div class="section" id="coverage-sec"><div class="section-title">Coverage</div>' +
       '<div class="section-sub">' + ORDER.length + " names · click a row for full research</div>" +
       '<div class="table-wrap"><table class="coverage"><thead><tr>' +
       "<th>Ticker</th><th>Price</th><th>Bear</th><th>Base</th><th>Bull</th><th>Blended</th><th>Upside</th><th>Rating</th>" +
@@ -320,6 +372,10 @@
     app.innerHTML = h;
     app.querySelectorAll("tr[data-tk]").forEach((tr) =>
       tr.addEventListener("click", () => nav("ticker/" + tr.dataset.tk)));
+    const bb = document.getElementById("btn-browse");
+    if (bb) bb.addEventListener("click", () => document.getElementById("coverage-sec").scrollIntoView({ behavior: "smooth" }));
+    const bi = document.getElementById("btn-internals");
+    if (bi) bi.addEventListener("click", () => document.getElementById("internals-sec").scrollIntoView({ behavior: "smooth" }));
   });
 
   /* ================= TICKER ================= */
@@ -334,11 +390,12 @@
     if (sandboxChart) { sandboxChart.destroy(); sandboxChart = null; }
 
     const score = cascadiaScore(t);
-    let h = '<div class="ticker-head"><h1>' + esc(tk) + '</h1><span class="co-name">' + esc(t.name) + "</span>";
+    let h = '<div class="tk-kicker">DCF COVERAGE · SINGLE-NAME RESEARCH</div>';
+    h += '<div class="ticker-head"><h1>' + esc(tk) + '</h1><span class="co-name">' + esc(t.name) + "</span>";
     if (score != null && isPro()) h += ' <span class="score-badge ' + scoreClass(score) + '" title="Cascadia Score">' + score + "</span>";
     h += "</div>";
     h += '<div class="price-line"><span class="price-big">' + fmt$(t.price) + "</span>" +
-      '<span style="color:var(--muted);font-size:13px;">as of ' + esc(t.price_date || "") + "</span>" +
+      '<span class="price-date">AS OF ' + esc(t.price_date || "") + "</span>" +
       '<span class="' + ratingCls(t.rating) + '">' + esc(t.rating || "") + "</span></div>";
 
     // target cards
@@ -353,8 +410,8 @@
       ).join("") + "</div>";
     h += '<div class="blended-bar"><span class="blbl">Blended target (bear/base/bull probability-weighted)</span>' +
       '<span class="blval">' + fmt$(t.blended, 2) + "</span></div>";
-    if (t.wacc) h += '<div style="color:var(--muted);font-size:13px;margin-bottom:14px;">WACC ' + (t.wacc * 100).toFixed(2) + "%" +
-      (t.shares_m ? " · " + t.shares_m.toFixed(1) + "M diluted shares" : "") + "</div>";
+    if (t.wacc) h += '<div class="wacc-line">WACC ' + (t.wacc * 100).toFixed(2) + "%" +
+      (t.shares_m ? " · " + t.shares_m.toFixed(1) + "M DILUTED SHARES" : "") + "</div>";
 
     // price history
     if (t.history && t.history.length > 5) {
@@ -536,12 +593,12 @@
     priceChart = new Chart(el, {
       type: "line",
       data: { labels: pts.map((p) => new Date(p[0]).getFullYear() + "-" + (new Date(p[0]).getMonth() + 1)),
-        datasets: [{ data: pts.map((p) => p[1]), borderColor: "#4a9eff", borderWidth: 2, pointRadius: 0, fill: true,
-          backgroundColor: "rgba(74,158,255,0.08)", tension: 0.2 }] },
+        datasets: [{ data: pts.map((p) => p[1]), borderColor: "#d4a24e", borderWidth: 2, pointRadius: 0, fill: true,
+          backgroundColor: "rgba(212,162,78,0.08)", tension: 0.2 }] },
       options: { responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmt$(c.parsed.y) } } },
-        scales: { x: { ticks: { color: "#5c6a82", maxTicksLimit: 8 }, grid: { display: false } },
-          y: { ticks: { color: "#5c6a82", callback: (v) => "$" + v }, grid: { color: "#162033" } } } }
+        scales: { x: { ticks: { color: "#5c6678", maxTicksLimit: 8 }, grid: { display: false } },
+          y: { ticks: { color: "#5c6678", callback: (v) => "$" + v }, grid: { color: "#1a2233" } } } }
     });
   }
   function drawFcfChart(t) {
@@ -550,7 +607,7 @@
     if (!el || !fcf.base) return;
     const years = fcf.base.years || [];
     const ds = [];
-    const cfg = [["bear", "#facc15", "Bear"], ["base", "#4ade80", "Base"], ["bull", "#7fb3ff", "Bull"]];
+    const cfg = [["bear", "#f87171", "Bear"], ["base", "#d4a24e", "Base"], ["bull", "#4ade80", "Bull"]];
     cfg.forEach(([k, color, lbl]) => {
       if (fcf[k] && fcf[k].fcf_m) ds.push({ label: lbl, data: fcf[k].fcf_m, backgroundColor: color, borderRadius: 3 });
     });
@@ -558,10 +615,10 @@
       type: "bar",
       data: { labels: years, datasets: ds },
       options: { responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: "#8b98ad" } },
+        plugins: { legend: { labels: { color: "#8a94a6" } },
           tooltip: { callbacks: { label: (c) => " " + c.dataset.label + ": " + fmtM(c.parsed.y) } } },
-        scales: { x: { ticks: { color: "#5c6a82" }, grid: { display: false } },
-          y: { ticks: { color: "#5c6a82", callback: (v) => "$" + v + "M" }, grid: { color: "#162033" } } } }
+        scales: { x: { ticks: { color: "#5c6678" }, grid: { display: false } },
+          y: { ticks: { color: "#5c6678", callback: (v) => "$" + v + "M" }, grid: { color: "#1a2233" } } } }
     });
   }
 
@@ -622,14 +679,14 @@
     sandboxChart = new Chart(ctx, {
       type: "line",
       data: { labels: [], datasets: [
-        { label: "Bull", borderColor: "#7fb3ff", backgroundColor: "rgba(127,179,255,0.12)", fill: true, tension: 0.3, pointRadius: 0, data: [] },
-        { label: "Base", borderColor: "#4ade80", backgroundColor: "rgba(74,222,128,0.12)", fill: true, tension: 0.3, pointRadius: 0, data: [] },
-        { label: "Bear", borderColor: "#facc15", backgroundColor: "rgba(250,204,21,0.10)", fill: true, tension: 0.3, pointRadius: 0, data: [] }
+        { label: "Bull", borderColor: "#4ade80", backgroundColor: "rgba(74,222,128,0.12)", fill: true, tension: 0.3, pointRadius: 0, data: [] },
+        { label: "Base", borderColor: "#d4a24e", backgroundColor: "rgba(212,162,78,0.12)", fill: true, tension: 0.3, pointRadius: 0, data: [] },
+        { label: "Bear", borderColor: "#f87171", backgroundColor: "rgba(248,113,113,0.10)", fill: true, tension: 0.3, pointRadius: 0, data: [] }
       ]},
       options: { responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => " " + c.dataset.label + ": $" + Math.round(c.parsed.y) + "M" } } },
-        scales: { x: { title: { display: true, text: "Years", color: "#5c6a82" }, ticks: { color: "#5c6a82" }, grid: { display: false } },
-          y: { title: { display: true, text: "UFCF ($M)", color: "#5c6a82" }, ticks: { color: "#5c6a82" }, grid: { color: "#162033" } } } }
+        scales: { x: { title: { display: true, text: "Years", color: "#5c6678" }, ticks: { color: "#5c6678" }, grid: { display: false } },
+          y: { title: { display: true, text: "UFCF ($M)", color: "#5c6678" }, ticks: { color: "#5c6678" }, grid: { color: "#1a2233" } } } }
     });
 
     function update() {
@@ -752,6 +809,8 @@
   // If returning from Stripe checkout, force a fresh Pro status check.
   initAuthListener();
   (function init() {
+    setSnapshot();
+    populateCoverage();
     const params = new URLSearchParams(location.search);
     if (params.get("checkout") === "success") {
       // Returning from Stripe — clear the param and verify subscription status
