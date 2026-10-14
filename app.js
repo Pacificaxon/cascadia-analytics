@@ -1046,6 +1046,15 @@
         "</b> <span class='" + cls(t.price ? implied / t.price - 1 : 0) + "'>(" + fmtPct(t.price ? (implied / t.price - 1) * 100 : 0) + " vs " + fmt$(t.price) + ")</span>";
     }
     Object.values(els).forEach((el) => el.addEventListener("input", update));
+    // sync number inputs with sliders both ways
+    Object.keys(els).forEach((k) => {
+      const slider = els[k], num = $(slider.id + "-num");
+      if (!num) return;
+      const clamp = (v) => Math.max(+slider.min, Math.min(+slider.max, isNaN(v) ? +slider.value : v));
+      slider.addEventListener("input", () => { num.value = slider.value; });
+      num.addEventListener("input", () => { slider.value = clamp(+num.value); update(); });
+      num.addEventListener("change", () => { num.value = clamp(+num.value); slider.value = num.value; update(); });
+    });
     $("sb-coll").addEventListener("click", () => {
       const p = $("sb-params"), open = p.style.display !== "none";
       p.style.display = open ? "none" : "";
@@ -1063,7 +1072,8 @@
   }
   function sbParam(id, label, val, min, max, step, valTxt) {
     return '<div class="param"><label>' + esc(label) + ' <span class="pval">' + esc(valTxt) + "</span></label>" +
-      '<input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '"></div>';
+      '<div class="param-row"><input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '">' +
+      '<input type="number" id="' + id + '-num" class="param-num" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '" aria-label="' + esc(label) + ' value"></div></div>';
   }
   function dl(name, content, type) {
     const a = document.createElement("a");

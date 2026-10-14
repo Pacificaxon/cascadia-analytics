@@ -363,7 +363,10 @@ table.fin-table tr:last-child td { border-bottom: none; }
 @media (min-width: 768px) { .param-grid { grid-template-columns: 1fr 1fr; } }
 .param label { display: flex; justify-content: space-between; align-items: baseline; font-size: 13.5px; color: var(--muted); margin-bottom: 8px; }
 .param label .pval { color: var(--text); font-weight: 700; font-size: 14px; font-family: var(--mono); }
-.param input[type=range] { width: 100%; height: 28px; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.param input[type=range] { flex: 1; height: 28px; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.param-row { display: flex; gap: 12px; align-items: center; }
+.param-num { width: 84px; flex-shrink: 0; background: var(--card2, #1a2333); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 13px; padding: 6px 8px; text-align: right; }
+.param-num:focus { outline: none; border-color: var(--gold); }
 .param input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: #2a3448; }
 .param input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%;
