@@ -725,11 +725,27 @@
     const pts = t.history.filter((_, i) => i % 4 === 0);
     priceChart = new Chart(el, {
       type: "line",
-      data: { labels: pts.map((p) => new Date(p[0]).getFullYear() + "-" + (new Date(p[0]).getMonth() + 1)),
-        datasets: [{ data: pts.map((p) => p[1]), borderColor: "#c9a961", borderWidth: 2, pointRadius: 0, fill: true,
+      data: { labels: pts.map((p) => { const d = new Date(p[0]); return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); }),
+        datasets: [{ data: pts.map((p) => p[1]), borderColor: "#c9a961", borderWidth: 2, pointRadius: 0, pointHoverRadius: 5,
+          pointHoverBackgroundColor: "#c9a961", pointHoverBorderColor: "#fff", fill: true,
           backgroundColor: "rgba(201,169,97,0.08)", tension: 0.2 }] },
       options: { responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmt$(c.parsed.y) } } },
+        interaction: { mode: "index", intersect: false },
+        plugins: { legend: { display: false },
+          tooltip: { backgroundColor: "#253041", borderColor: "#c9a961", borderWidth: 1,
+            titleColor: "#ffffff", bodyColor: "#c9a961", padding: 12, displayColors: false,
+            callbacks: {
+              label: (c) => " Price: " + fmt$(c.parsed.y),
+              afterLabel: (c) => {
+                const i = c.dataIndex;
+                if (i > 0) {
+                  const prev = c.dataset.data[i - 1], cur = c.parsed.y;
+                  const chg = ((cur - prev) / prev * 100);
+                  return " Change: " + (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%";
+                }
+                return "";
+              }
+            } } },
         scales: { x: { ticks: { color: "#7a8494", maxTicksLimit: 8 }, grid: { display: false } },
           y: { ticks: { color: "#7a8494", callback: (v) => "$" + v }, grid: { color: "#333f52" } } } }
     });
