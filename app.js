@@ -1218,7 +1218,7 @@
       return;
     }
     let h = '<div class="section"><div class="section-title">Premium Screener</div>' +
-      '<div class="section-sub">Filter the coverage universe. Methodology: Cascadia Score v1 = 50 + base-case upside % (clamped 1–100).</div>';
+      '<div class="section-sub">Filter the coverage universe. Methodology: Cascadia Score = weighted multi-factor: valuation (base-case upside, 40%), price momentum (MA signals, 30%), earnings momentum (latest verdict, 20%), options flow sentiment (10%). Scored 1–100.</div>';
     h += '<div class="card"><div class="filter-bar">' +
       '<select id="f-rating"><option value="">Any rating</option><option>Buy</option><option>Hold</option><option>Sell</option></select>' +
       '<select id="f-score"><option value="">Any score</option><option value="65">Score 65+</option><option value="50">Score 50+</option><option value="40">Score 40+</option></select>' +
