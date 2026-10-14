@@ -631,16 +631,19 @@
     if (t.bear != null && t.base != null && t.bull != null && t.price != null) {
       const lo = Math.min(t.bear, t.price) * 0.9, hi = Math.max(t.bull, t.price) * 1.05;
       const pct = (v) => ((v - lo) / (hi - lo) * 100).toFixed(1);
-      const dot = (v, color, label) =>
-        '<div style="position:absolute;left:' + pct(v) + '%;top:-4px;bottom:-4px;width:2px;background:' + color + ';" title="' + esc(label + ": " + fmt$(v)) + '"></div>' +
-        '<div style="position:absolute;left:' + pct(v) + '%;top:-22px;transform:translateX(-50%);font-size:11px;color:' + color + ';white-space:nowrap;">' + esc(label) + '</div>';
-      h += '<div style="margin:18px 0 8px;"><div style="font-size:12px;color:var(--muted);margin-bottom:26px;">Price vs targets</div>' +
-        '<div style="position:relative;height:8px;background:#2a3448;border-radius:4px;margin:0 40px;">' +
-        dot(t.bear, "#f87171", "Bear " + fmt$(t.bear)) +
-        dot(t.base, "#c9a961", "Base " + fmt$(t.base)) +
-        dot(t.bull, "#6a9a6a", "Bull " + fmt$(t.bull)) +
-        '<div style="position:absolute;left:' + pct(t.price) + '%;top:-8px;width:12px;height:24px;background:var(--text);border-radius:3px;transform:translateX(-50%);" title="Current: ' + fmt$(t.price) + '"></div>' +
-        '<div style="position:absolute;left:' + pct(t.price) + '%;top:16px;transform:translateX(-50%);font-size:11px;color:var(--text);white-space:nowrap;font-weight:700;">' + fmt$(t.price) + '</div>' +
+      const dot = (v, color) =>
+        '<div style="position:absolute;left:' + pct(v) + '%;top:-4px;bottom:-4px;width:2px;background:' + color + ';" title="' + fmt$(v) + '"></div>';
+      h += '<div style="margin:20px 0 12px;">' +
+        '<div style="font-size:13px;color:#c8d0dc;margin-bottom:12px;font-weight:600;">Price vs targets</div>' +
+        '<div style="position:relative;height:10px;background:#2a3448;border-radius:5px;margin:0 12px;">' +
+        dot(t.bear, "#f87171") + dot(t.base, "#c9a961") + dot(t.bull, "#6a9a6a") +
+        '<div style="position:absolute;left:' + pct(t.price) + '%;top:-7px;width:14px;height:24px;background:#fff;border-radius:3px;transform:translateX(-50%);box-shadow:0 0 8px rgba(255,255,255,0.4);" title="Current: ' + fmt$(t.price) + '"></div>' +
+        "</div>" +
+        '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:10px;padding:0 4px;">' +
+        '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#f87171;margin-right:6px;"></span><span style="color:#e8ecf1;">Bear ' + fmt$(t.bear) + '</span></div>' +
+        '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#fff;margin-right:6px;"></span><span style="color:#e8ecf1;font-weight:700;">Current ' + fmt$(t.price) + '</span></div>' +
+        '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#c9a961;margin-right:6px;"></span><span style="color:#e8ecf1;">Base ' + fmt$(t.base) + '</span></div>' +
+        '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#6a9a6a;margin-right:6px;"></span><span style="color:#e8ecf1;">Bull ' + fmt$(t.bull) + '</span></div>' +
         "</div></div>";
     }
 
@@ -669,19 +672,19 @@
         }
         implG = (loG + hiG) / 2;
       }
-      h += '<div style="margin-top:16px;"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Implied price by revenue CAGR (base-case FCF margin, ' + (wacc * 100).toFixed(1) + '% WACC)</div>' +
-        '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>CAGR</th><th>Implied price</th><th>vs current</th></tr></thead><tbody>' +
+      h += '<div style="margin-top:20px;"><div style="font-size:13px;color:#c8d0dc;margin-bottom:10px;font-weight:600;">Implied price by revenue CAGR (base-case FCF margin, ' + (wacc * 100).toFixed(1) + '% WACC)</div>' +
+        '<div class="table-wrap"><table class="coverage ma-table" style="color:#e8ecf1;"><thead><tr><th style="color:#a8b0bc;">CAGR</th><th style="color:#a8b0bc;">Implied price</th><th style="color:#a8b0bc;">vs current</th></tr></thead><tbody>' +
         cagrs.map((g) => {
           const p = implPrice(g / 100);
           const isImpl = implG != null && Math.abs(g / 100 - implG) < 0.03;
           const chg = (p / t.price - 1) * 100;
-          return "<tr" + (isImpl ? ' style="background:rgba(201,169,97,0.12);"' : "") + "><td>" + g + "%" + (isImpl ? " ← market" : "") + "</td><td>" + fmt$(p) +
+          return "<tr" + (isImpl ? ' style="background:rgba(201,169,97,0.15);"' : "") + '><td style="color:#e8ecf1;">' + g + "%" + (isImpl ? " ← market" : "") + '</td><td style="color:#e8ecf1;">' + fmt$(p) +
             '</td><td class="' + cls(chg) + '">' + fmtPct(chg) + "</td></tr>";
         }).join("") + "</tbody></table></div>";
       if (implG != null)
-        h += '<div class="panel-asof">Market-implied 5-yr revenue CAGR: ~' + (implG * 100).toFixed(1) + '%</div>';
+        h += '<div class="panel-asof" style="color:#a8b0bc;">Market-implied 5-yr revenue CAGR: ~' + (implG * 100).toFixed(1) + '%</div>';
       else
-        h += '<div class="panel-asof">Current price falls outside the 0–50% CAGR range.</div>';
+        h += '<div class="panel-asof" style="color:#a8b0bc;">Current price falls outside the 0–50% CAGR range.</div>';
     }
     return h;
   }
