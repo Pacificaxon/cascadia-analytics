@@ -986,12 +986,21 @@
     sandboxChart = new Chart(ctx, {
       type: "line",
       data: { labels: [], datasets: [
-        { label: "Bull", borderColor: "#6a9a6a", backgroundColor: "rgba(106,154,106,0.12)", fill: true, tension: 0.3, pointRadius: 0, data: [] },
-        { label: "Base", borderColor: "#c9a961", backgroundColor: "rgba(201,169,97,0.12)", fill: true, tension: 0.3, pointRadius: 0, data: [] },
-        { label: "Bear", borderColor: "#f87171", backgroundColor: "rgba(248,113,113,0.10)", fill: true, tension: 0.3, pointRadius: 0, data: [] }
+        { label: "Bull", borderColor: "#6a9a6a", backgroundColor: "rgba(106,154,106,0.12)", fill: true, tension: 0.3, pointRadius: 0, pointHoverRadius: 5, data: [] },
+        { label: "Base", borderColor: "#c9a961", backgroundColor: "rgba(201,169,97,0.12)", fill: true, tension: 0.3, pointRadius: 0, pointHoverRadius: 5, data: [] },
+        { label: "Bear", borderColor: "#f87171", backgroundColor: "rgba(248,113,113,0.10)", fill: true, tension: 0.3, pointRadius: 0, pointHoverRadius: 5, data: [] }
       ]},
       options: { responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => " " + c.dataset.label + ": $" + Math.round(c.parsed.y) + "M" } } },
+        interaction: { mode: "index", intersect: false },
+        plugins: { legend: { display: false },
+          tooltip: {
+            titleColor: "#fff", bodyColor: "#dfe6ef", backgroundColor: "rgba(20,28,40,0.95)", borderColor: "#3a4658", borderWidth: 1,
+            padding: 12, titleFont: { weight: "bold" },
+            callbacks: {
+              title: (items) => "Year " + items[0].label,
+              label: (c) => " " + c.dataset.label + ": $" + Math.round(c.parsed.y).toLocaleString() + "M"
+            }
+          } },
         scales: { x: { title: { display: true, text: "Years", color: "#7a8494" }, ticks: { color: "#7a8494" }, grid: { display: false } },
           y: { title: { display: true, text: "UFCF ($M)", color: "#7a8494" }, ticks: { color: "#7a8494" }, grid: { color: "#333f52" } } } }
     });
