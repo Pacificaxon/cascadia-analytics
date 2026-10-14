@@ -256,6 +256,14 @@ table.coverage tbody tr:hover { background: rgba(212, 162, 78, 0.05); }
 .rating-sell { color: var(--red); font-weight: 700; font-family: var(--mono); font-size: 12px; letter-spacing: 0.8px; }
 .rating-hold { color: var(--gold); font-weight: 700; font-family: var(--mono); font-size: 12px; letter-spacing: 0.8px; }
 
+/* ---------- earnings calendar ---------- */
+table.earn-cal { min-width: 520px; }
+table.earn-cal tbody tr { cursor: default; }
+table.earn-cal td:nth-child(2) { text-align: left; }
+.earn-soon { color: var(--gold); font-weight: 700; }
+.earn-today { color: var(--green); font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.8px; }
+.earn-tbd { color: var(--muted); font-style: italic; }
+
 /* ---------- paywall ---------- */
 .locked-teaser {
   background: var(--card); border: 1px solid var(--border); border-radius: 4px;

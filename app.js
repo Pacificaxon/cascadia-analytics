@@ -305,6 +305,42 @@
 
   /* ---------- shared bits ---------- */
   function tickerLink(tk) { return '<a href="#/ticker/' + esc(tk) + '">' + esc(tk) + "</a>"; }
+  function earningsCalRows() {
+    const cal = D.earnings_calendar || {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const rows = [];
+    const tbd = [];
+    Object.keys(cal).forEach((tk) => {
+      const ds = cal[tk];
+      if (!ds || !/^\d{4}-\d{2}-\d{2}$/.test(ds)) { tbd.push(tk); return; }
+      const d = new Date(ds + "T12:00:00");
+      const days = Math.round((d - today) / 86400000);
+      if (days < 0) return; // past dates drop off
+      const t = (TICKERS[tk] || {});
+      rows.push({ tk: tk, name: t.name || tk, date: ds, days: days });
+    });
+    rows.sort((a, b) => a.days - b.days || (a.tk < b.tk ? -1 : 1));
+    let h = "";
+    rows.forEach((r) => {
+      const d = new Date(r.date + "T12:00:00");
+      const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      let cd;
+      if (r.days === 0) cd = '<span class="earn-today">today</span>';
+      else if (r.days === 1) cd = "tomorrow";
+      else cd = "in " + r.days + " days";
+      const urgent = r.days <= 7 ? ' class="earn-soon"' : "";
+      h += '<tr><td><span class="ticker-cell">' + tickerLink(r.tk) + "</span></td>" +
+        "<td>" + esc(r.name) + "</td><td>" + esc(dateStr) + "</td>" +
+        "<td" + urgent + ">" + cd + "</td></tr>";
+    });
+    tbd.sort().forEach((tk) => {
+      const t = (TICKERS[tk] || {});
+      h += '<tr><td><span class="ticker-cell">' + tickerLink(tk) + "</span></td>" +
+        "<td>" + esc(t.name || tk) + '</td><td class="earn-tbd">TBD</td><td class="earn-tbd">—</td></tr>';
+    });
+    return h || '<tr><td colspan="4">No upcoming earnings dates.</td></tr>';
+  }
   function ratingCls(r) {
     r = String(r || "").toLowerCase();
     if (r === "buy") return "rating-buy";
@@ -360,6 +396,13 @@
         '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>";
       }).join("") + "</div>");
     h += "</div>";
+
+    // upcoming earnings
+    h += '<div class="section" id="earnings-cal-sec"><div class="section-title">Upcoming Earnings</div>' +
+      '<div class="section-sub">Next reported earnings date per covered name, soonest first.</div>' +
+      '<div class="table-wrap"><table class="coverage earn-cal"><thead><tr>' +
+      "<th>Ticker</th><th>Company</th><th>Earnings Date</th><th>Countdown</th>" +
+      "</tr></thead><tbody>" + earningsCalRows() + "</tbody></table></div></div>";
 
     // coverage table
     h += '<div class="section" id="coverage-sec"><div class="section-title">Coverage</div>' +

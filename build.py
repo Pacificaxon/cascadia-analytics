@@ -77,6 +77,14 @@ def main():
         financials = load(os.path.join(HERE, "financials.json"))
     except FileNotFoundError:
         financials = {}
+    # --- Earnings calendar: next earnings date per ticker (YYYY-MM-DD).
+    # NOTE: when a new ticker is added to coverage, add its next earnings date here.
+    # Dates verified 2026-10-14 via Nasdaq calendar API + Zacks/MarketBeat/Finviz/company IR.
+    try:
+        earnings_cal_raw = load(os.path.join(HERE, "earnings_calendar.json"))
+    except FileNotFoundError:
+        earnings_cal_raw = {}
+    earnings_calendar = {k: v for k, v in earnings_cal_raw.items() if not k.startswith("_")}
 
     # --- Merge tickers: manifest is authoritative for targets (31), data.json for detail (11) ---
     tickers = {}
@@ -186,6 +194,7 @@ def main():
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
+        "earnings_calendar": earnings_calendar,
         "stripe_payment_link": "https://buy.stripe.com/28E00j5w3e4lb5c2pObbG01",
     }
 
