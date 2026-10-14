@@ -161,6 +161,13 @@
     return Math.max(1, Math.min(100, Math.round(50 + t.upside_base)));
   }
   function scoreClass(s) { return s >= 65 ? "score-hi" : s >= 40 ? "score-mid" : "score-lo"; }
+  function scoreTooltip(t) {
+    const s = cascadiaScore(t);
+    if (s == null) return "Cascadia Score: not available.";
+    const u = t.upside_base >= 0 ? "+" + t.upside_base.toFixed(1) : t.upside_base.toFixed(1);
+    return "Cascadia Score: " + s + "/100. 50 + base-case upside (" + u + "%) = " + s +
+      ". 50 is fair value; above 50 favors upside, below 50 favors downside. Capped at 1 and 100.";
+  }
 
   /* ---------- paywall ---------- */
   const UPGRADE_URL = D.stripe_payment_link || "#";
@@ -444,7 +451,7 @@
     const score = cascadiaScore(t);
     let h = '<div class="tk-kicker">DCF COVERAGE · SINGLE-NAME RESEARCH</div>';
     h += '<div class="ticker-head"><h1>' + esc(tk) + '</h1><span class="co-name">' + esc(t.name) + "</span>";
-    if (score != null && isPro()) h += ' <span class="score-badge ' + scoreClass(score) + '" title="Cascadia Score">' + score + "</span>";
+    if (score != null && isPro()) h += ' <span class="score-badge ' + scoreClass(score) + '" title="' + esc(scoreTooltip(t)) + '">' + score + "</span>";
     h += "</div>";
     h += '<div class="price-line"><span class="price-big">' + fmt$(t.price) + "</span>" +
       '<span class="price-date">AS OF ' + esc(t.price_date || "") + "</span>" +
@@ -1182,7 +1189,7 @@
     function draw() {
       body.innerHTML = rows().map((r) =>
         '<tr data-tk="' + esc(r.tk) + '"><td><span class="ticker-cell">' + esc(r.tk) + "</span></td>" +
-        "<td>" + (r.s != null ? '<span class="score-badge ' + scoreClass(r.s) + '" style="width:36px;height:36px;font-size:13px;">' + r.s + "</span>" : "—") + "</td>" +
+        "<td>" + (r.s != null ? '<span class="score-badge ' + scoreClass(r.s) + '" style="width:36px;height:36px;font-size:13px;" title="' + esc(scoreTooltip(r.t)) + '">' + r.s + "</span>" : "—") + "</td>" +
         "<td>" + fmt$(r.t.price) + "</td><td>" + fmt$(r.t.base, 0) + "</td>" +
         '<td class="' + cls(r.t.upside_base) + '">' + fmtPct(r.t.upside_base) + "</td>" +
         '<td class="' + ratingCls(r.t.rating) + '">' + esc(r.t.rating || "—") + "</td></tr>").join("") ||
