@@ -892,20 +892,65 @@
 
   function maHtml(tk) {
     const m = (D.ticker_ma || {})[tk];
+    const t = TICKERS[tk];
+    const hist = (t && t.history) || [];
     if (!m) return '<div class="card"><p style="color:var(--muted)">No moving-average data for this ticker.</p></div>';
     let h = "";
-    ["daily", "weekly", "monthly"].forEach((tf) => {
+    const chartIds = [];
+    ["daily", "weekly", "monthly"].forEach((tf, tfi) => {
       const d = m[tf];
       if (!d) return;
+      const cid = "ma-chart-" + tk + "-" + tf;
+      chartIds.push({ cid, tf });
       h += '<div class="card"><h3 style="text-transform:capitalize">' + tf + ' <span class="verdict ' +
         (String(d.signal || "").toLowerCase().includes("buy") ? "bullish" : String(d.signal || "").toLowerCase().includes("sell") ? "bearish" : "neutral") +
         '">' + esc(d.signal || "") + "</span></h3>" +
+        '<div style="position:relative;height:320px;margin-bottom:12px;"><canvas id="' + cid + '"></canvas></div>' +
         '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
         ["10", "20", "30", "50", "100", "200"].map((p) =>
           "<tr><td>" + p + "</td><td>" + fmt$((d.sma || {})[p]) + "</td><td>" + fmt$((d.ema || {})[p]) + "</td></tr>"
         ).join("") + "</tbody></table></div>" +
         '<div class="panel-asof">Price ' + fmt$(d.price) + " · as of " + esc(d.as_of || "") + "</div></div>";
     });
+    // render charts after DOM insert
+    setTimeout(() => {
+      chartIds.forEach(({ cid, tf }) => {
+        const cv = document.getElementById(cid);
+        if (!cv || !hist.length) return;
+        // aggregate history by timeframe
+        let prices = hist.map((p) => ({ t: p[0], c: p[1] }));
+        if (tf === "weekly") {
+          const wk = [];
+          prices.forEach((p) => { const w = Math.floor(p.t / (7 * 864e5)); if (!wk.length || wk[wk.length - 1].w !== w) wk.push({ w, t: p.t, c: p.c }); else wk[wk.length - 1].c = p.c; });
+          prices = wk;
+        } else if (tf === "monthly") {
+          const mo = [];
+          prices.forEach((p) => { const d = new Date(p.t), k = d.getFullYear() * 12 + d.getMonth(); if (!mo.length || mo[mo.length - 1].k !== k) mo.push({ k, t: p.t, c: p.c }); else mo[mo.length - 1].c = p.c; });
+          prices = mo;
+        }
+        const closes = prices.map((p) => p.c);
+        const labels = prices.map((p) => new Date(p.t).toLocaleDateString());
+        const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b) => a + b, 0) / n);
+        const ds = (label, data, color, w) => ({ label, data, borderColor: color, borderWidth: w, pointRadius: 0, tension: 0.1, spanGaps: true });
+        new Chart(cv, {
+          type: "line",
+          data: { labels, datasets: [
+            ds("Price", closes, "#e8ecf1", 2),
+            ds("10 MA", sma(10), "#f87171", 3),
+            ds("20 MA", sma(20), "#fbbf24", 3),
+            ds("50 MA", sma(50), "#60a5fa", 3.5),
+            ...(closes.length >= 100 ? [ds("100 MA", sma(100), "#a78bfa", 3.5)] : []),
+            ...(closes.length >= 200 ? [ds("200 MA", sma(200), "#34d399", 4)] : []),
+          ]},
+          options: { responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 20 } } },
+            scales: {
+              x: { ticks: { color: "#7a8494", maxTicksLimit: 8 }, grid: { color: "#2a3448" } },
+              y: { ticks: { color: "#c8d0dc", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "#2a3448" } }
+            } }
+        });
+      });
+    }, 100);
     return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>';
   }
 
