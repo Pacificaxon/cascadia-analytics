@@ -157,16 +157,61 @@
 
   /* ---------- Cascadia Score (v1: DCF upside based) ---------- */
   function cascadiaScore(t) {
-    if (t.upside_base == null) return null;
-    return Math.max(1, Math.min(100, Math.round(50 + t.upside_base)));
+    // Multi-factor score: valuation 40%, price momentum 30%, earnings momentum 20%, options flow 10%
+    let total = 0, weight = 0;
+
+    // 1. Valuation (40%): base-case upside mapped to 0-100
+    if (t.upside_base != null) {
+      const vScore = Math.max(0, Math.min(100, 50 + t.upside_base * 0.8));
+      total += vScore * 0.40; weight += 0.40;
+    }
+
+    // 2. Price momentum (30%): from MA signals
+    const tk = t.ticker;
+    const ma = (D.ticker_ma || {})[tk];
+    if (ma && ma.daily && ma.daily.signal) {
+      const sig = ma.daily.signal.toLowerCase();
+      const mScore = sig.includes("strong buy") ? 90 : sig.includes("strong sell") ? 10 :
+        sig.includes("buy") ? 70 : sig.includes("sell") ? 30 : 50;
+      total += mScore * 0.30; weight += 0.30;
+    }
+
+    // 3. Earnings momentum (20%): from most recent quarter verdict
+    const eh = (D.earnings_history || {})[tk];
+    if (eh && eh.length && eh[0].verdict) {
+      const v = (eh[0].verdict.label || "").toLowerCase();
+      const eScore = v.includes("bullish") ? 80 : v.includes("bearish") ? 20 : 50;
+      total += eScore * 0.20; weight += 0.20;
+    }
+
+    // 4. Options flow (10%): bullish vs bearish prints
+    const opt = (D.ticker_options || {})[tk];
+    if (opt && Array.isArray(opt) && opt.length) {
+      let bull = 0, bear = 0;
+      opt.forEach((o) => {
+        const d = (o.direction || "").toLowerCase();
+        if (d.includes("bull")) bull++; else if (d.includes("bear")) bear++;
+      });
+      if (bull + bear > 0) {
+        const oScore = 50 + (bull - bear) / (bull + bear) * 50;
+        total += oScore * 0.10; weight += 0.10;
+      }
+    }
+
+    if (!weight) return null;
+    return Math.max(1, Math.min(100, Math.round(total / weight)));
   }
   function scoreClass(s) { return s >= 65 ? "score-hi" : s >= 40 ? "score-mid" : "score-lo"; }
   function scoreTooltip(t) {
     const s = cascadiaScore(t);
     if (s == null) return "Cascadia Score: not available.";
-    const u = t.upside_base >= 0 ? "+" + t.upside_base.toFixed(1) : t.upside_base.toFixed(1);
-    return "Cascadia Score: " + s + "/100. 50 + base-case upside (" + u + "%) = " + s +
-      ". 50 is fair value; above 50 favors upside, below 50 favors downside. Capped at 1 and 100.";
+    const parts = [];
+    if (t.upside_base != null) parts.push("valuation " + (t.upside_base >= 0 ? "+" : "") + t.upside_base.toFixed(1) + "% upside (40%)");
+    const ma = (D.ticker_ma || {})[t.ticker];
+    if (ma && ma.daily && ma.daily.signal) parts.push("momentum: " + ma.daily.signal + " (30%)");
+    const eh = (D.earnings_history || {})[t.ticker];
+    if (eh && eh.length && eh[0].verdict) parts.push("earnings: " + eh[0].verdict.label + " (20%)");
+    return "Cascadia Score: " + s + "/100. Weighted: " + parts.join(", ") + ".";
   }
 
   /* ---------- paywall ---------- */
