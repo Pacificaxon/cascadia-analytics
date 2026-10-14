@@ -39,8 +39,8 @@
   const setPro = (v) => { try { v ? localStorage.setItem(PRO_KEY, "1") : localStorage.removeItem(PRO_KEY); } catch (e) {} };
 
   /* ---------- Supabase Auth + server-verified Pro ---------- */
-  const SUPABASE_URL = "https://kflvslxwelvqtwxexhwi.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmbHZzbHh3ZWx2cXR3eGV4aHdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5OTI4MTAsImV4cCI6MjEwNzU2ODgxMH0.FrF2CL__weDPo4J97cCApnyj9yM5hJZ-OnTQHtzu3U0";
+  const SUPABASE_URL = "https://tlrfqoqefltxodoynqmh.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRscmZxb3FlZmx0eG9kb3lucW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5ODc5MjIsImV4cCI6MjEwNzU2MzkyMn0.XB9l2J69wGVxkUF7cGTjCzCb4QBwCdiuoRMycoy4tW8";
   const supa = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
   let authUser = null;
   let proVerified = null; // null = not yet checked this load; true/false after Supabase lookup
