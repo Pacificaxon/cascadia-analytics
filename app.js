@@ -914,7 +914,7 @@
       const fs = +document.getElementById("f-score").value || 0;
       const fu = document.getElementById("f-upside").value === "" ? -999 : +document.getElementById("f-upside").value;
       return ORDER.map((tk) => ({ tk, t: TICKERS[tk], s: cascadiaScore(TICKERS[tk]) }))
-        .filter((r) => (!fr || r.t.rating === fr) && (r.s == null || r.s >= fs) && ((r.t.upside_base || -999) >= fu))
+        .filter((r) => (!fr || (r.t.rating || "").startsWith(fr)) && (r.s == null || r.s >= fs) && ((r.t.upside_base || -999) >= fu))
         .sort((a, b) => (b.s || 0) - (a.s || 0));
     }
     function draw() {
