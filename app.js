@@ -226,7 +226,8 @@
       "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, seasonality, Cascadia Scores, screener, exports, earnings history, and client notes. $19/month.</p>" +
       statusLine +
       (isPro()
-        ? '<button class="btn secondary" id="pro-logout" style="width:100%">Log out</button>'
+        ? '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-bottom:8px;text-decoration:none;">Manage subscription</a>' +
+          '<button class="btn secondary" id="pro-logout" style="width:100%">Log out</button>'
         : (authUser
           ? '<a class="cta-btn" style="display:block;text-align:center;margin:14px 0;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Subscribe — $19/mo</a>'
           : '<button class="btn" id="pro-login" style="width:100%">Log in / Sign up</button>')) +
