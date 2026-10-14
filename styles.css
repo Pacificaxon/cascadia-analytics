@@ -207,6 +207,8 @@ a:hover { text-decoration: underline; }
 /* ---------- coverage table ---------- */
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 4px; }
 table.coverage { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 700px; background: var(--card); }
+table.coverage.ma-table { min-width: 0; }
+table.coverage.ma-table th, table.coverage.ma-table td { padding: 10px 12px; white-space: nowrap; }
 
 /* ---------- sum-of-the-parts table ---------- */
 table.sotp-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 560px; background: var(--card); }
