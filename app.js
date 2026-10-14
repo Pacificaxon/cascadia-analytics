@@ -1206,20 +1206,28 @@
       $("sb-bull-t").textContent = uFmt(bull[hz] * uDiv);
       $("sb-base-l").textContent = "Base Yr-" + hz + " UFCF";
       $("sb-bull-l").textContent = "Bull Yr-" + hz + " UFCF";
-      // implied value from base case (convert back to $M for valuation math)
-      let pv = 0;
-      for (let y = 1; y <= hz; y++) pv += (base[y] * uDiv) / Math.pow(1 + wacc, y);
-      const tv = ((base[hz] * uDiv) * 1.03) / (wacc - 0.03) / Math.pow(1 + wacc, hz);
-      const implied = (pv + tv) / shares;
+      // implied price targets for all three scenarios
+      const implPrice = (arr) => {
+        let p = 0;
+        for (let y = 1; y <= hz; y++) p += (arr[y] * uDiv) / Math.pow(1 + wacc, y);
+        const tval = ((arr[hz] * uDiv) * 1.03) / (wacc - 0.03) / Math.pow(1 + wacc, hz);
+        return (p + tval) / shares;
+      };
+      const pBear = implPrice(bear), pBase = implPrice(base), pBull = implPrice(bull);
       let iv = document.getElementById("sb-implied");
       if (!iv) {
         const d = document.createElement("div");
         d.id = "sb-implied";
-        d.style.cssText = "margin-top:12px;font-size:14px;color:var(--muted)";
+        d.style.cssText = "margin-top:14px;";
         card.appendChild(d); iv = d;
       }
-      iv.innerHTML = "Implied base-case value at these assumptions: <b style='color:var(--text)'>" + fmt$(implied) +
-        "</b> <span class='" + cls(t.price ? implied / t.price - 1 : 0) + "'>(" + fmtPct(t.price ? (implied / t.price - 1) * 100 : 0) + " vs " + fmt$(t.price) + ")</span>";
+      const row = (label, p, color) =>
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">' +
+        '<span style="font-size:13px;color:' + color + ';font-weight:600;">' + label + '</span>' +
+        '<span style="font-size:15px;color:var(--text);font-weight:700;">' + fmt$(p) +
+        ' <span class="' + cls(t.price ? p / t.price - 1 : 0) + '" style="font-size:12px;font-weight:400;">(' + fmtPct(t.price ? (p / t.price - 1) * 100 : 0) + ')</span></span></div>';
+      iv.innerHTML = '<div style="font-size:13px;color:#c8d0dc;font-weight:600;margin-bottom:4px;">Implied price targets at these assumptions</div>' +
+        row("Bear case", pBear, "#f87171") + row("Base case", pBase, "#c9a961") + row("Bull case", pBull, "#6a9a6a");
     }
     Object.values(els).forEach((el) => el.addEventListener("input", update));
     // sync number inputs with sliders both ways
