@@ -170,7 +170,7 @@ def main():
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
-        "stripe_payment_link": "https://buy.stripe.com/test_dRm7sKfO4cSU5hY9WheZ200",
+        "stripe_payment_link": "https://buy.stripe.com/28E00j5w3e4lb5c2pObbG01",
     }
 
     # --- Write data.js ---
