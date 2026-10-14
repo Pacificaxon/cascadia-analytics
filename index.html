@@ -7,7 +7,9 @@
 <meta name="description" content="Independent equity research: DCF valuations, market internals, and proprietary signals.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -19,7 +21,7 @@
       <button data-route="home">Home</button>
       <button data-route="screener">Screener</button>
     </nav>
-    <div class="topbar-title" id="brand-home">Cascadia Analytics</div>
+    <div class="topbar-title" id="brand-home"><img class="brand-icon" src="logo-icon.png" alt="Cascadia Analytics"><span class="brand-word">CASCADIA <span>ANALYTICS</span></span></div>
     <nav class="topnav right">
       <button class="pro-btn" id="pro-btn">Go Pro</button>
       <button class="auth-btn" id="auth-btn">Log in</button>
@@ -39,6 +41,12 @@
   <hr class="rule">
   <main id="app"></main>
   <footer class="site-footer">
+    <div class="footer-brand">
+      <div class="brand-lockup">
+        <img src="logo-icon.png" alt="Cascadia Analytics">
+        <div class="brand-name">CASCADIA <span>ANALYTICS</span></div>
+      </div>
+    </div>
     <div class="disclaimer">
       Cascadia Analytics provides research and analytics for informational purposes only.
       Nothing on this site constitutes investment advice, an offer to buy or sell securities,

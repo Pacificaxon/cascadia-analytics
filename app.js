@@ -116,6 +116,7 @@
     const isLogin = mode === "login";
     root.innerHTML =
       '<div class="modal-back" id="mb"><div class="modal">' +
+      '<div class="modal-logo"><img src="logo-icon.png" alt="Cascadia Analytics"></div>' +
       "<h3>" + (isLogin ? "Log in" : "Create account") + "</h3>" +
       "<p style='color:var(--muted);font-size:14px'>" +
       (isLogin ? "Log in to access your Pro subscription." : "Create a free account. Upgrade to Pro anytime for $19/month.") + "</p>" +
@@ -222,6 +223,7 @@
     }
     root.innerHTML =
       '<div class="modal-back" id="mb"><div class="modal">' +
+      '<div class="modal-logo"><img src="logo-icon.png" alt="Cascadia Analytics"></div>' +
       "<h3>Cascadia Analytics Pro</h3>" +
       "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, seasonality, Cascadia Scores, screener, exports, earnings history, and client notes. $19/month.</p>" +
       statusLine +
@@ -724,12 +726,12 @@
     priceChart = new Chart(el, {
       type: "line",
       data: { labels: pts.map((p) => new Date(p[0]).getFullYear() + "-" + (new Date(p[0]).getMonth() + 1)),
-        datasets: [{ data: pts.map((p) => p[1]), borderColor: "#d4a24e", borderWidth: 2, pointRadius: 0, fill: true,
-          backgroundColor: "rgba(212,162,78,0.08)", tension: 0.2 }] },
+        datasets: [{ data: pts.map((p) => p[1]), borderColor: "#c9a961", borderWidth: 2, pointRadius: 0, fill: true,
+          backgroundColor: "rgba(201,169,97,0.08)", tension: 0.2 }] },
       options: { responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => fmt$(c.parsed.y) } } },
-        scales: { x: { ticks: { color: "#5c6678", maxTicksLimit: 8 }, grid: { display: false } },
-          y: { ticks: { color: "#5c6678", callback: (v) => "$" + v }, grid: { color: "#1a2233" } } } }
+        scales: { x: { ticks: { color: "#7a8494", maxTicksLimit: 8 }, grid: { display: false } },
+          y: { ticks: { color: "#7a8494", callback: (v) => "$" + v }, grid: { color: "#333f52" } } } }
     });
   }
   function drawFcfChart(t) {
@@ -738,7 +740,7 @@
     if (!el || !fcf.base) return;
     const years = fcf.base.years || [];
     const ds = [];
-    const cfg = [["bear", "#f87171", "Bear"], ["base", "#d4a24e", "Base"], ["bull", "#4ade80", "Bull"]];
+    const cfg = [["bear", "#f87171", "Bear"], ["base", "#c9a961", "Base"], ["bull", "#6a9a6a", "Bull"]];
     cfg.forEach(([k, color, lbl]) => {
       if (fcf[k] && fcf[k].fcf_m) ds.push({ label: lbl, data: fcf[k].fcf_m, backgroundColor: color, borderRadius: 3 });
     });
@@ -746,10 +748,10 @@
       type: "bar",
       data: { labels: years, datasets: ds },
       options: { responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: "#8a94a6" } },
+        plugins: { legend: { labels: { color: "#a8b0bd" } },
           tooltip: { callbacks: { label: (c) => " " + c.dataset.label + ": " + fmtM(c.parsed.y) } } },
-        scales: { x: { ticks: { color: "#5c6678" }, grid: { display: false } },
-          y: { ticks: { color: "#5c6678", callback: (v) => "$" + v + "M" }, grid: { color: "#1a2233" } } } }
+        scales: { x: { ticks: { color: "#7a8494" }, grid: { display: false } },
+          y: { ticks: { color: "#7a8494", callback: (v) => "$" + v + "M" }, grid: { color: "#333f52" } } } }
     });
   }
 
@@ -810,14 +812,14 @@
     sandboxChart = new Chart(ctx, {
       type: "line",
       data: { labels: [], datasets: [
-        { label: "Bull", borderColor: "#4ade80", backgroundColor: "rgba(74,222,128,0.12)", fill: true, tension: 0.3, pointRadius: 0, data: [] },
-        { label: "Base", borderColor: "#d4a24e", backgroundColor: "rgba(212,162,78,0.12)", fill: true, tension: 0.3, pointRadius: 0, data: [] },
+        { label: "Bull", borderColor: "#6a9a6a", backgroundColor: "rgba(106,154,106,0.12)", fill: true, tension: 0.3, pointRadius: 0, data: [] },
+        { label: "Base", borderColor: "#c9a961", backgroundColor: "rgba(201,169,97,0.12)", fill: true, tension: 0.3, pointRadius: 0, data: [] },
         { label: "Bear", borderColor: "#f87171", backgroundColor: "rgba(248,113,113,0.10)", fill: true, tension: 0.3, pointRadius: 0, data: [] }
       ]},
       options: { responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => " " + c.dataset.label + ": $" + Math.round(c.parsed.y) + "M" } } },
-        scales: { x: { title: { display: true, text: "Years", color: "#5c6678" }, ticks: { color: "#5c6678" }, grid: { display: false } },
-          y: { title: { display: true, text: "UFCF ($M)", color: "#5c6678" }, ticks: { color: "#5c6678" }, grid: { color: "#1a2233" } } } }
+        scales: { x: { title: { display: true, text: "Years", color: "#7a8494" }, ticks: { color: "#7a8494" }, grid: { display: false } },
+          y: { title: { display: true, text: "UFCF ($M)", color: "#7a8494" }, ticks: { color: "#7a8494" }, grid: { color: "#333f52" } } } }
     });
 
     function update() {
