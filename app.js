@@ -800,13 +800,14 @@
     const prints = (D.ticker_options || {})[tk] || [];
     if (!prints.length) return '<div class="card"><p style="color:var(--muted)">No unusual prints in the last 10 trading days.</p></div>';
     let h = '<div class="card"><div class="table-wrap"><table class="coverage"><thead><tr>' +
-      "<th>Date</th><th>Type</th><th>Strike</th><th>Exp</th><th>Premium</th><th>Side</th></tr></thead><tbody>";
+      "<th>Date</th><th>Type</th><th>Strike</th><th>Exp</th><th>Premium</th><th>Direction</th></tr></thead><tbody>";
     h += prints.map((p) => {
       const side = String(p.side || p.direction || "");
       const bull = /call|bought|bull/i.test(side);
+      const label = bull ? "Bullish" : "Bearish";
       return "<tr><td>" + esc(p.date || "") + "</td><td>" + esc(p.type || p.kind || "") + "</td><td>" +
         esc(p.strike || "") + "</td><td>" + esc(p.expiry || p.exp || "") + "</td><td>" +
-        fmtM(p.premium) + '</td><td class="' + (bull ? "pos" : "neg") + '">' + esc(side || "—") + "</td></tr>";
+        fmtM(p.premium) + '</td><td class="' + (bull ? "pos" : "neg") + '">' + label + "</td></tr>";
     }).join("");
     return h + "</tbody></table></div></div>";
   }
