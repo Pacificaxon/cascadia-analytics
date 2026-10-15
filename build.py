@@ -142,6 +142,11 @@ def main():
                         "years": fcf_backfill[tk][sc]["years"],
                         "fcf_m": fcf_backfill[tk][sc]["fcf_m"],
                     }
+        # Backfill shares outstanding (millions) for tickers missing it
+        # Sources: MarketBeat/Barchart Oct 2026
+        shares_backfill = {"UNP": 594.1, "CSX": 1852.5, "NSC": 224.6}
+        if t["shares_m"] is None and tk in shares_backfill:
+            t["shares_m"] = shares_backfill[tk]
         # AXON sum-of-the-parts (Pro-gated on the ticker page) — full detailed model
         if tk == "AXON":
             try:
