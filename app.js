@@ -39,7 +39,29 @@
  /* ---------- Supabase Auth + server-verified Pro ---------- */
  const SUPABASE_URL = "https://tlrfqoqefltxodoynqmh.supabase.co";
  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRscmZxb3FlZmx0eG9kb3lucW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5ODc5MjIsImV4cCI6MjEwNzU2MzkyMn0.XB9l2J69wGVxkUF7cGTjCzCb4QBwCdiuoRMycoy4tW8";
- const supa = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+ // Cookie-based storage for iOS Safari ITP compatibility (localStorage gets capped)
+ const cookieStorage = {
+  getItem: (key) => {
+   try {
+    const match = document.cookie.match(new RegExp('(^| )' + key + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
+   } catch (e) { return null; }
+  },
+  setItem: (key, value) => {
+   try {
+    document.cookie = key + '=' + encodeURIComponent(value) + '; path=/; max-age=31536000; SameSite=Lax; Secure';
+   } catch (e) {}
+  },
+  removeItem: (key) => {
+   try {
+    document.cookie = key + '=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+   } catch (e) {}
+  }
+ };
+ // Use cookie storage if available, fallback to default (localStorage)
+ const supa = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { storage: cookieStorage }
+ }) : null;
  let authUser = null;
  let proVerified = null; // null = not yet checked this load; true/false after server verification
  let isAdmin = false;
