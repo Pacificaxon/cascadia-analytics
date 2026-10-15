@@ -941,9 +941,8 @@
         const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b) => a + b, 0) / n);
         const ds = (label, data, color, w) => ({ label, data, borderColor: color, borderWidth: w, pointRadius: 0, tension: 0.1, spanGaps: true });
         new Chart(cv, {
-          type: "line",
           data: { labels, datasets: [
-            ds("Price", closes, "#e8ecf1", 2),
+            { label: "Price", data: closes, type: "bar", backgroundColor: "#3a4556", borderColor: "#5a6a80", borderWidth: 1, order: 2 },
             ds("10 MA", sma(10), "#f87171", 3),
             ds("20 MA", sma(20), "#fbbf24", 3),
             ds("50 MA", sma(50), "#60a5fa", 3.5),
