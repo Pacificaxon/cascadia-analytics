@@ -3694,11 +3694,12 @@
    '<li>✓ Interactive FCF simulation sandbox</li>' +
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ 31 client research notes (PDF, 5+ pages each)</li>' +
+   '<li>✓ Market Leadership tracker, automated S&P 500 leader scoring with rotation signals</li>' +
    '<li>✓ Email alerts, all 12 market internals monitors</li>' +
    '<li>✓ Moving average cross alerts, stocks and indices</li>' +
    '<li>✓ Custom price alerts, any covered ticker</li>' +
    '<li>✓ Stock screener with CSV export</li>' +
-   '<li style="color:#d4a017;">✓ <b>All future features included at no extra cost</b></li>' +
+   '<li style="color:#d4a017;">✓ <b>All future features included at no extra cost</b>, our team ships new trackers and tools constantly and Pro members get every one of them automatically</li>' +
    '<li style="color:#d4a017;">✓ <b>Legacy price lock</b>, your $19/mo rate is locked in. If prices increase in the future, you keep paying $19 as long as your subscription stays active.</li>' +
    "</ul>";
 
