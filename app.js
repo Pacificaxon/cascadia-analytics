@@ -924,30 +924,44 @@
     setTimeout(() => {
       chartIds.forEach(({ cid, tf }) => {
         const cv = document.getElementById(cid);
-        if (!cv || !hist.length) return;
-        // aggregate history by timeframe
-        let prices = hist.map((p) => ({ t: p[0], c: p[1] }));
+        const ohlcv = (D.ticker_ohlcv || {})[tk] || [];
+        if (!cv || !ohlcv.length) return;
+        try {
+        // use OHLCV: [ts, o, h, l, c, v]
+        let bars = ohlcv.map((r) => ({ t: r[0], o: r[1], h: r[2], l: r[3], c: r[4], v: r[5] || 0 }));
         if (tf === "weekly") {
           const wk = [];
-          prices.forEach((p) => { const w = Math.floor(p.t / (7 * 864e5)); if (!wk.length || wk[wk.length - 1].w !== w) wk.push({ w, t: p.t, c: p.c }); else wk[wk.length - 1].c = p.c; });
-          prices = wk;
+          bars.forEach((b) => {
+            const w = Math.floor(b.t / (7 * 864e5));
+            if (!wk.length || wk[wk.length - 1].w !== w) wk.push({ w, t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
+            else { const p = wk[wk.length - 1]; p.h = Math.max(p.h, b.h); p.l = Math.min(p.l, b.l); p.c = b.c; p.v += b.v; }
+          });
+          bars = wk;
         } else if (tf === "monthly") {
           const mo = [];
-          prices.forEach((p) => { const d = new Date(p.t), k = d.getFullYear() * 12 + d.getMonth(); if (!mo.length || mo[mo.length - 1].k !== k) mo.push({ k, t: p.t, c: p.c }); else mo[mo.length - 1].c = p.c; });
-          prices = mo;
+          bars.forEach((b) => {
+            const d = new Date(b.t), k = d.getFullYear() * 12 + d.getMonth();
+            if (!mo.length || mo[mo.length - 1].k !== k) mo.push({ k, t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
+            else { const p = mo[mo.length - 1]; p.h = Math.max(p.h, b.h); p.l = Math.min(p.l, b.l); p.c = b.c; p.v += b.v; }
+          });
+          bars = mo;
         }
-        const closes = prices.map((p) => p.c);
-        const labels = prices.map((p) => new Date(p.t).toLocaleDateString());
+        const closes = bars.map((b) => b.c);
+        const vols = bars.map((b) => b.v);
+        const labels = bars.map((b) => new Date(b.t).toLocaleDateString());
         const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b) => a + b, 0) / n);
-        const ds = (label, data, color, w) => ({ type: "line", label, data, borderColor: color, borderWidth: w, pointRadius: 0, tension: 0.1, spanGaps: true, order: 1 });
-        // green/red bars based on up/down vs prior close (TradingView style)
-        const barColors = closes.map((c, i) => i === 0 ? "#5a6a80" : c >= closes[i - 1] ? "#26a69a" : "#ef5350");
-        const barBorders = closes.map((c, i) => i === 0 ? "#5a6a80" : c >= closes[i - 1] ? "#1d7a72" : "#b71c1c");
-        try {
+        const ds = (label, data, color, w) => ({ type: "line", label, data, borderColor: color, borderWidth: w, pointRadius: 0, tension: 0.1, spanGaps: true, order: 1, yAxisID: "y" });
+        // TradingView green/red: close >= open
+        const up = bars.map((b) => b.c >= b.o);
+        const priceColors = up.map((u) => u ? "#26a69a" : "#ef5350");
+        const priceBorders = up.map((u) => u ? "#1d7a72" : "#b71c1c");
+        const volColors = up.map((u) => u ? "rgba(38,166,154,0.5)" : "rgba(239,83,80,0.5)");
+        const fmtVol = (v) => v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : String(v);
         new Chart(cv, {
           type: "bar",
           data: { labels, datasets: [
-            { label: "Price", data: closes, type: "bar", backgroundColor: barColors, borderColor: barBorders, borderWidth: 1, order: 2 },
+            { label: "Price", data: closes, type: "bar", backgroundColor: priceColors, borderColor: priceBorders, borderWidth: 1, order: 2, yAxisID: "y" },
+            { label: "Volume", data: vols, type: "bar", backgroundColor: volColors, borderWidth: 0, order: 3, yAxisID: "y1" },
             ds("10 MA", sma(10), "#f87171", 3),
             ds("20 MA", sma(20), "#fbbf24", 3),
             ds("50 MA", sma(50), "#60a5fa", 3.5),
@@ -957,18 +971,22 @@
           options: { responsive: true, maintainAspectRatio: false,
             interaction: { mode: "index", intersect: false },
             plugins: {
-              legend: { labels: { color: "#c8d0dc", boxWidth: 20 } },
+              legend: { labels: { color: "#c8d0dc", boxWidth: 20, filter: (l) => l.text !== "Volume" } },
               tooltip: {
                 backgroundColor: "#1a2332", borderColor: "#3a4556", borderWidth: 1,
                 titleColor: "#e8ecf1", bodyColor: "#c8d0dc", padding: 12,
+                filter: (t) => t.dataset.label !== "Volume" || true,
                 callbacks: {
-                  label: (c) => " " + c.dataset.label + ": $" + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "—")
+                  label: (c) => c.dataset.label === "Volume"
+                    ? " Volume: " + fmtVol(c.parsed.y)
+                    : " " + c.dataset.label + ": $" + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "—")
                 }
               }
             },
             scales: {
               x: { ticks: { color: "#7a8494", maxTicksLimit: 8 }, grid: { color: "#2a3448" } },
-              y: { ticks: { color: "#c8d0dc", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "#2a3448" } }
+              y: { ticks: { color: "#c8d0dc", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "#2a3448" } },
+              y1: { position: "right", display: false, max: Math.max(...vols, 1) * 4, grid: { display: false } }
             } }
         });
         } catch (e) { console.error("MA chart error for " + tk + " " + tf, e); }

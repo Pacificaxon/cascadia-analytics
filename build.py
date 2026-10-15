@@ -63,6 +63,10 @@ def main():
     ticker_macro = load(os.path.join(MR, "ticker_macro.json"))
     internals = load(os.path.join(MR, "market_internals.json"))
     ticker_ma = load(os.path.join(MR, "ticker_ma.json"))
+    try:
+        ticker_ohlcv = load(os.path.join(MR, "ticker_ohlcv.json"))
+    except FileNotFoundError:
+        ticker_ohlcv = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
@@ -195,6 +199,7 @@ def main():
         "ticker_macro": {k: v[:8] for k, v in ticker_macro.items()},
         "panels": panels,
         "ticker_ma": ticker_ma,
+        "ticker_ohlcv": ticker_ohlcv,
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
