@@ -426,6 +426,29 @@
    b.classList.remove("unlocked");
    b.onclick = showPricingModal;
   }
+  // Debug: long-press the Pro button to see auth status (admin only)
+  let pressTimer = null;
+  b.onpointerdown = () => {
+   pressTimer = setTimeout(() => {
+    if (isAdmin) showDebugPanel();
+   }, 1000);
+  };
+  b.onpointerup = b.onpointerleave = () => {
+   if (pressTimer) clearTimeout(pressTimer);
+  };
+ }
+ // Debug panel for iOS troubleshooting (admin only)
+ function showDebugPanel() {
+  const info = [
+   "isPro(): " + isPro(),
+   "proVerified: " + proVerified,
+   "isAdmin: " + isAdmin,
+   "authUser: " + (authUser ? authUser.email : "null"),
+   "PRO_DATA: " + (PRO_DATA ? "loaded (" + Object.keys(PRO_DATA).length + " keys)" : "null"),
+   "Route: " + (location.hash || "#/"),
+   "Time: " + new Date().toLocaleTimeString()
+  ].join("\n");
+  alert("DEBUG INFO:\n\n" + info + "\n\nCopy this and send to support if Pro is locked.");
  }
  function showProModal() {
   const root = document.getElementById("modal-root");
