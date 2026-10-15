@@ -220,7 +220,7 @@
     return '<div class="locked-teaser">' +
       '<div class="lock-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>' +
       "<h3>" + esc(title) + "</h3><p>" + esc(desc) + "</p>" +
-      '<a class="cta-btn" href="#/pricing">See Pro Plans</a>' +
+      '<a class="cta-btn" href="javascript:void(0)" id="teaser-pricing">See Pro Plans</a>' +
       '<div class="pro-price">Cascadia Analytics Pro — $19/month. Cancel anytime.</div></div>';
   }
   function gated(title, desc, innerHtml) {
@@ -258,7 +258,7 @@
     } else {
       b.textContent = "Go Pro";
       b.classList.remove("unlocked");
-      b.onclick = () => nav("pricing");
+      b.onclick = showPricingModal;
     }
   }
   function showProModal() {
@@ -298,6 +298,13 @@
   document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
     b.addEventListener("click", () => nav(b.dataset.route === "home" ? "" : b.dataset.route)));
   window.addEventListener("hashchange", render);
+  // Delegated handler for Pro teaser "See Pro Plans" links
+  document.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "teaser-pricing") {
+      e.preventDefault();
+      showPricingModal();
+    }
+  });
 
   /* ---------- artifact chrome: snapshot line + coverage selector ---------- */
   function setSnapshot() {
@@ -3418,14 +3425,19 @@
   });
 
   /* ================= PRICING ================= */
-  route("pricing", function () {
+  function showPricingModal() {
     const proActive = isPro();
-    let h = '<div class="crumb">MEMBERSHIP</div>';
-    h += '<div class="hero"><div>' +
-      '<h1 class="hero-h">Choose your plan.</h1>' +
-      "<p class='hero-sub'>Free forever for the essentials. Pro for the full institutional toolkit.</p></div></div>";
+    const root = document.getElementById("modal-root");
+    let h = '<div class="modal-back" id="pricing-back" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;padding:4vh 4vw;cursor:pointer;overflow-y:auto;">' +
+      '<div id="pricing-modal" style="background:#131722;border-radius:16px;width:100%;max-width:960px;max-height:92vh;overflow-y:auto;padding:32px;cursor:default;position:relative;" onclick="event.stopPropagation()">' +
+      '<button id="pricing-x" style="position:absolute;top:16px;right:16px;background:#2a3448;border:0;color:#c8d0dc;font-size:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;line-height:1;">&times;</button>' +
+      '<div style="text-align:center;margin-bottom:24px;">' +
+      '<div style="font-size:13px;font-weight:700;letter-spacing:3px;color:#e8ecf1;margin-bottom:8px;">MEMBERSHIP</div>' +
+      '<h1 style="font-size:32px;font-weight:800;color:#fff;margin:0 0 8px;">Choose your plan.</h1>' +
+      "<p style='color:#e8ecf1;opacity:0.7;font-size:15px;margin:0;'>Free forever for the essentials. Pro for the full institutional toolkit.</p></div>";
 
-    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;margin:0 auto 32px;">';
+    h += '<div class="pricing-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;margin:0 auto 32px;">' +
+      '<style>@media (max-width:640px){.pricing-grid{grid-template-columns:1fr !important;}}</style>';
 
     // FREE column
     h += '<div class="card" style="padding:28px;">' +
@@ -3488,12 +3500,16 @@
       "<li>If you choose to <b>re-subscribe</b> after cancelling, you will pay the then-current price, not your previous legacy rate.</li>" +
       "</ul></div>";
 
-    app.innerHTML = h;
-    window.scrollTo(0, 0);
+    h += "</div></div>";
+    root.innerHTML = h;
+    document.body.style.overflow = "hidden";
+    const close = () => { root.innerHTML = ""; document.body.style.overflow = ""; };
+    document.getElementById("pricing-back").addEventListener("click", close);
+    document.getElementById("pricing-x").addEventListener("click", close);
 
     const loginBtn = document.getElementById("pricing-login");
-    if (loginBtn) loginBtn.addEventListener("click", () => showProModal());
-  });
+    if (loginBtn) loginBtn.addEventListener("click", () => { close(); showProModal(); });
+  }
 
   window.CA = { nav, isPro, cascadiaScore };
 
