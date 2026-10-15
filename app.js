@@ -652,7 +652,7 @@
           "The <b>horizontal axis</b> shows how the theme is doing versus the S&amp;P 500 over a longer window — right means outperforming. " +
           "The <b>vertical axis</b> shows its recent momentum — up means accelerating.</p>" +
           "<p><b>The four quadrants.</b> <b style='color:#3fb950'>LEADING</b> (top-right): beating the market and accelerating — the current winners. " +
-          "<b style='color:#58a6ff'>IMPROVING</b> (top-left): still behind but turning up — potential future leaders. " +
+          "<b style='color:#c678dd'>IMPROVING</b> (top-left): still behind but turning up — potential future leaders. " +
           "<b style='color:#d29922'>WEAKENING</b> (bottom-right): ahead but fading — take profits here. " +
           "<b style='color:#f85149'>LAGGING</b> (bottom-left): behind and getting worse — avoid.</p>" +
           "<p><b>Where things stand today.</b> Leading: <b>" + esc(fmtQ("Leading")) + "</b>. " +
@@ -847,7 +847,7 @@
           const { left, right, top, bottom } = chartArea;
           ctx.save();
           ctx.fillStyle = "rgba(63,185,80,0.06)";  ctx.fillRect(x0, top, right - x0, y0 - top);      // leading
-          ctx.fillStyle = "rgba(88,166,255,0.06)"; ctx.fillRect(left, top, x0 - left, y0 - top);      // improving
+          ctx.fillStyle = "rgba(198,120,221,0.06)"; ctx.fillRect(left, top, x0 - left, y0 - top);     // improving
           ctx.fillStyle = "rgba(210,153,34,0.06)"; ctx.fillRect(x0, y0, right - x0, bottom - y0);     // weakening
           ctx.fillStyle = "rgba(248,81,73,0.06)";  ctx.fillRect(left, y0, x0 - left, bottom - y0);    // lagging
           // zero axes
@@ -869,7 +869,7 @@
         try {
           const latest = trh.history[trh.history.length - 1];
           const themes = latest.themes || {};
-          const qColors = { Leading: "#3fb950", Improving: "#58a6ff", Weakening: "#d29922", Lagging: "#f85149" };
+          const qColors = { Leading: "#3fb950", Improving: "#c678dd", Weakening: "#d29922", Lagging: "#f85149" };
           // symmetric axis range so all four quadrants always show
           const xs = Object.values(themes).map((v) => v.x), ys = Object.values(themes).map((v) => v.y);
           const maxAbs = Math.max(Math.abs(Math.min(...xs)), Math.abs(Math.max(...xs)), Math.abs(Math.min(...ys)), Math.abs(Math.max(...ys)), 5);
@@ -1107,7 +1107,7 @@
               const trh = D.theme_rot_history;
               const latest = trh.history[trh.history.length - 1];
               const themes = latest.themes || {};
-              const qColors = { Leading: "#3fb950", Improving: "#58a6ff", Weakening: "#d29922", Lagging: "#f85149" };
+              const qColors = { Leading: "#3fb950", Improving: "#c678dd", Weakening: "#d29922", Lagging: "#f85149" };
               const xs = Object.values(themes).map((v) => v.x), ys = Object.values(themes).map((v) => v.y);
               const maxAbs = Math.max(Math.abs(Math.min(...xs)), Math.abs(Math.max(...xs)), Math.abs(Math.min(...ys)), Math.abs(Math.max(...ys)), 5);
               const pad = Math.ceil(maxAbs * 1.15);
