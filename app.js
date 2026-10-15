@@ -312,6 +312,14 @@
  }
  function render() {
   const r = currentRoute();
+  // Destroy all existing Chart.js instances before re-rendering (prevents "canvas already in use" errors)
+  try {
+   if (typeof Chart !== "undefined" && Chart.instances) {
+    Object.values(Chart.instances).forEach((chart) => {
+     try { chart.destroy(); } catch (e) {}
+    });
+   }
+  } catch (e) {}
   // Save scroll position of the route we're leaving
   try {
     const prevHash = sessionStorage.getItem("__last_hash");
