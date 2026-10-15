@@ -186,13 +186,16 @@
    console.warn("Auth refresh failed, keeping previous Pro status:", e.message);
   }
   // Fetch Pro data from server-gated API if verified
+  // Never clear existing PRO_DATA on failure, only update on success
   if (proVerified === true) {
-   PRO_DATA = await fetchProData();
-   // If API fetch failed but Supabase says Pro, still treat as Pro for UI
-   // (data sections will show teasers until fetch succeeds)
-  } else {
-   PRO_DATA = null;
+   const newData = await fetchProData();
+   if (newData) {
+    PRO_DATA = newData;
+   }
+   // If API fetch failed but we have cached data, keep it
+   // If API fetch failed and no cached data, PRO_DATA stays as-is (may be null)
   }
+  // Do NOT set PRO_DATA = null here - preserves data across navigations
   refreshTickers();
   updateAuthBtn();
   render();
@@ -235,6 +238,7 @@
  async function doLogout() {
   try { if (supa) await supa.auth.signOut(); } catch (e) {}
   authUser = null; proVerified = false; isAdmin = false;
+  PRO_DATA = null; // Clear Pro data on explicit logout
   setPro(false);
   document.getElementById("modal-root").innerHTML = "";
   updateAuthBtn();
