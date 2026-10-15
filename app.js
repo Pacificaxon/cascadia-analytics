@@ -312,14 +312,6 @@
  }
  function render() {
   const r = currentRoute();
-  // Destroy all existing Chart.js instances before re-rendering (prevents "canvas already in use" errors)
-  try {
-   if (typeof Chart !== "undefined" && Chart.instances) {
-    Object.values(Chart.instances).forEach((chart) => {
-     try { chart.destroy(); } catch (e) {}
-    });
-   }
-  } catch (e) {}
   // Save scroll position of the route we're leaving
   try {
     const prevHash = sessionStorage.getItem("__last_hash");
@@ -2482,12 +2474,12 @@
      document.querySelector(".card").innerHTML = prev.html +
       '<div style="margin-top:20px;"><a href="javascript:void(0)" id="back-current" style="color:#58a6ff;">← Back to current report</a></div>';
      document.getElementById("back-current").addEventListener("click", () => render());
-     setTimeout(embedAnalysisVisuals, 100);
+     embedAnalysisVisuals();
     }
    });
   });
-  // Embed any visuals referenced in the report (deferred to ensure DOM is ready)
-  setTimeout(embedAnalysisVisuals, 100);
+  // Embed any visuals referenced in the report
+  embedAnalysisVisuals();
  });
 
  route("alerts", function () {
