@@ -115,18 +115,23 @@
     if (!error && data) {
      isAdmin = !!data.is_admin;
      proVerified = !!(data.is_pro || data.is_admin);
+    } else if (error) {
+     // Query failed (network/RLS) - keep previous Pro status, don't fail closed
+     // on transient errors. Only reset if we get a definitive non-Pro response.
+     console.warn("Pro status check failed, keeping previous:", error.message);
     } else {
      // No profile row yet (trigger may lag), treat as non-Pro, retry next load
      isAdmin = false;
      proVerified = false;
     }
    } else {
+    // No session - user is logged out
     isAdmin = false;
     proVerified = false;
    }
   } catch (e) {
-   // Network/Supabase failure: fail closed (not Pro)
-   proVerified = false;
+   // Network/Supabase failure: keep previous Pro status (don't fail closed on transient errors)
+   console.warn("Auth refresh failed, keeping previous Pro status:", e.message);
   }
   // Fetch Pro data from server-gated API if verified
   if (proVerified === true) {
