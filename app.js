@@ -406,11 +406,11 @@
     const news = (D.company_news || []).slice(0, 12);
     const panels = D.panels || [];
 
-    let h = '<div class="crumb">MACRO INTELLIGENCE · DCF COVERAGE · MARKET INTERNALS</div>';
+    let h = '<div class="crumb">MACRO INTELLIGENCE · DCF COVERAGE</div>';
     h += '<div class="hero"><div>' +
       '<h1 class="hero-h">The signals moving markets, in one research view.</h1>' +
       "<p class='hero-sub'>Track major macro releases and central-bank commentary, then move directly into company " +
-      "valuation work and the market&rsquo;s internal risk signals.</p></div>" +
+      "valuation work.</p></div>" +
       '<div class="hero-right">' +
       '<div class="statbox"><div class="mono-label">Coverage</div><div class="statbox-v">' + ORDER.length + " DCF models</div></div>" +
       '<div class="statbox"><div class="mono-label">Macro wire</div><div class="statbox-v">Newest first</div></div>' +
@@ -430,6 +430,46 @@
       macro.length ? macro.map((m) => newsRow({
         badge: "", headline: m.headline, sub: m.detail, ts: fmtTs(m.timestamp), source: m.source
       })).join("") : "");
+
+
+    // upcoming earnings
+    h += '<div class="section" id="earnings-cal-sec"><div class="section-title">Upcoming Earnings</div>' +
+      '<div class="section-sub">Next reported earnings date per covered name, soonest first.</div>' +
+      '<div class="table-wrap"><table class="coverage earn-cal"><thead><tr>' +
+      "<th>Ticker</th><th>Company</th><th>Earnings Date</th><th>Countdown</th>" +
+      "</tr></thead><tbody>" + earningsCalRows() + "</tbody></table></div></div>";
+
+    // coverage table
+    h += '<div class="section" id="coverage-sec"><div class="section-title">Coverage</div>' +
+      '<div class="section-sub">' + ORDER.length + " names · click a row for full research</div>" +
+      '<div class="table-wrap"><table class="coverage"><thead><tr>' +
+      "<th>Ticker</th><th>Price</th><th>Bear</th><th>Base</th><th>Bull</th><th>Blended</th><th>Upside</th><th>Rating</th>" +
+      "</tr></thead><tbody>";
+    h += ORDER.map((tk) => {
+      const t = TICKERS[tk];
+      return '<tr data-tk="' + esc(tk) + '"><td><span class="ticker-cell">' + esc(tk) + "</span></td>" +
+        "<td>" + fmt$(t.price) + "</td><td>" + fmt$(t.bear, 0) + "</td><td>" + fmt$(t.base, 0) +
+        "</td><td>" + fmt$(t.bull, 0) + "</td><td>" + fmt$(t.blended, 0) + "</td>" +
+        '<td class="' + cls(t.upside_base) + '">' + fmtPct(t.upside_base) + "</td>" +
+        '<td class="' + ratingCls(t.rating) + '">' + esc(t.rating || "—") + "</td></tr>";
+    }).join("");
+    h += "</tbody></table></div></div>";
+
+    app.innerHTML = h;
+    app.querySelectorAll("tr[data-tk]").forEach((tr) =>
+      tr.addEventListener("click", () => nav("ticker/" + tr.dataset.tk)));
+    const bb = document.getElementById("btn-browse");
+    if (bb) bb.addEventListener("click", () => document.getElementById("coverage-sec").scrollIntoView({ behavior: "smooth" }));
+    const bi = document.getElementById("btn-internals");
+    if (bi) bi.addEventListener("click", () => nav("monitor"));
+  });
+
+  route("monitor", function () {
+    let h = '<div class="crumb">MARKET INTERNALS · VOLATILITY · MACRO</div>';
+    h += '<div class="hero"><div>' +
+      '<h1 class="hero-h">Market Internals.</h1>' +
+      "<p class='hero-sub'>Breadth, positioning, volatility, and macro — the market\u2019s internal risk signals in one view.</p></div>" +
+      '</div>';
 
     // market internals (Pro)
     h += '<div class="section" id="internals-sec"><div class="section-title">Market Internals</div>' +
@@ -1914,36 +1954,7 @@
         "</div></div>";
     }
 
-    // upcoming earnings
-    h += '<div class="section" id="earnings-cal-sec"><div class="section-title">Upcoming Earnings</div>' +
-      '<div class="section-sub">Next reported earnings date per covered name, soonest first.</div>' +
-      '<div class="table-wrap"><table class="coverage earn-cal"><thead><tr>' +
-      "<th>Ticker</th><th>Company</th><th>Earnings Date</th><th>Countdown</th>" +
-      "</tr></thead><tbody>" + earningsCalRows() + "</tbody></table></div></div>";
-
-    // coverage table
-    h += '<div class="section" id="coverage-sec"><div class="section-title">Coverage</div>' +
-      '<div class="section-sub">' + ORDER.length + " names · click a row for full research</div>" +
-      '<div class="table-wrap"><table class="coverage"><thead><tr>' +
-      "<th>Ticker</th><th>Price</th><th>Bear</th><th>Base</th><th>Bull</th><th>Blended</th><th>Upside</th><th>Rating</th>" +
-      "</tr></thead><tbody>";
-    h += ORDER.map((tk) => {
-      const t = TICKERS[tk];
-      return '<tr data-tk="' + esc(tk) + '"><td><span class="ticker-cell">' + esc(tk) + "</span></td>" +
-        "<td>" + fmt$(t.price) + "</td><td>" + fmt$(t.bear, 0) + "</td><td>" + fmt$(t.base, 0) +
-        "</td><td>" + fmt$(t.bull, 0) + "</td><td>" + fmt$(t.blended, 0) + "</td>" +
-        '<td class="' + cls(t.upside_base) + '">' + fmtPct(t.upside_base) + "</td>" +
-        '<td class="' + ratingCls(t.rating) + '">' + esc(t.rating || "—") + "</td></tr>";
-    }).join("");
-    h += "</tbody></table></div></div>";
-
     app.innerHTML = h;
-    app.querySelectorAll("tr[data-tk]").forEach((tr) =>
-      tr.addEventListener("click", () => nav("ticker/" + tr.dataset.tk)));
-    const bb = document.getElementById("btn-browse");
-    if (bb) bb.addEventListener("click", () => document.getElementById("coverage-sec").scrollIntoView({ behavior: "smooth" }));
-    const bi = document.getElementById("btn-internals");
-    if (bi) bi.addEventListener("click", () => document.getElementById("internals-sec").scrollIntoView({ behavior: "smooth" }));
   });
 
   /* ================= TICKER ================= */
