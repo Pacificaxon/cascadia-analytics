@@ -71,6 +71,10 @@ def main():
         vol_div_history = load(os.path.join(MR, "vol_divergence_history.json"))
     except FileNotFoundError:
         vol_div_history = {}
+    try:
+        jaw_history = load(os.path.join(MR, "alligator_jaw_history.json"))
+    except FileNotFoundError:
+        jaw_history = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
@@ -212,6 +216,7 @@ def main():
         "ticker_ma": ticker_ma,
         "ticker_ohlcv": ticker_ohlcv,
         "vol_div_history": vol_div_history,
+        "jaw_history": jaw_history,
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,

@@ -446,6 +446,8 @@
         let chartHtml = "";
         if (/volatility divergence/i.test(p.name) && D.vol_div_history && (D.vol_div_history.history || []).length) {
           chartHtml = '<div style="position:relative;height:280px;margin-bottom:8px;"><canvas id="voldiv-chart"></canvas></div>';
+        } else if (/alligator/i.test(p.name) && D.jaw_history && (D.jaw_history.history || []).length) {
+          chartHtml = '<div style="position:relative;height:280px;margin-bottom:8px;"><canvas id="jaw-chart"></canvas></div>';
         } else if (p.chart) {
           chartHtml = '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy">';
         }
@@ -492,6 +494,51 @@
             } }
         });
       } catch (e) { console.error("VolDiv chart error", e); }
+      // Alligator Jaw interactive chart: price vs forward EPS (dual axis)
+      const jc = document.getElementById("jaw-chart");
+      const jh = D.jaw_history;
+      if (jc && jh && (jh.history || []).length) {
+        try {
+          const hist = jh.history;
+          const labels = hist.map((r) => r.date);
+          const prices = hist.map((r) => r.price);
+          const eps = hist.map((r) => r.forward_eps);
+          // shade jaw-open periods
+          const jawOpen = hist.map((r) => r.jaw_open);
+          new Chart(jc, {
+            type: "line",
+            data: { labels, datasets: [
+              { label: "S&P 500", data: prices, borderColor: "#58a6ff", borderWidth: 2,
+                pointRadius: 0, tension: 0.1, yAxisID: "y", order: 1 },
+              { label: "Forward 12m EPS", data: eps, borderColor: "#3fb950", borderWidth: 2,
+                pointRadius: 0, tension: 0.1, yAxisID: "y1", order: 1 },
+            ]},
+            options: { responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "index", intersect: false },
+              plugins: {
+                legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
+                tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+                  titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+                  callbacks: {
+                    label: (c) => {
+                      const r = hist[c.dataIndex];
+                      if (c.dataset.label === "S&P 500")
+                        return "  Price: " + c.parsed.y.toFixed(0) + " (" + (r.pct_below_high * 100).toFixed(1) + "% below high)";
+                      return "  Fwd EPS: $" + c.parsed.y.toFixed(2) + " (4w chg " + (r.eps_chg4w * 100).toFixed(1) + "%)" +
+                        (r.jaw_open ? "  [JAW OPEN]" : "");
+                    }
+                  } }
+              },
+              scales: {
+                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { type: "linear", position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "S&P 500", color: "#58a6ff", font: { size: 11 } } },
+                y1: { type: "linear", position: "right", ticks: { color: "#3fb950" }, grid: { display: false },
+                  title: { display: true, text: "Fwd EPS ($)", color: "#3fb950", font: { size: 11 } } }
+              } }
+          });
+        } catch (e) { console.error("Jaw chart error", e); }
+      }
     }, 200);
     h += "</div>";
 
