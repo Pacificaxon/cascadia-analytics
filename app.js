@@ -442,12 +442,57 @@
           const isOpen = /jaw\s*open/i.test(p.summary || "");
           title = (isOpen ? "🔴 " : "🟢 ") + title;
         }
-        return '<div class="card"><h3>' + title + "</h3>" +
-        (p.chart ? '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy">' : "") +
+        // interactive VIX vs MOVE divergence tracker (live data, not static image)
+        let chartHtml = "";
+        if (/volatility divergence/i.test(p.name) && D.vol_div_history && (D.vol_div_history.history || []).length) {
+          chartHtml = '<div style="position:relative;height:280px;margin-bottom:8px;"><canvas id="voldiv-chart"></canvas></div>';
+        } else if (p.chart) {
+          chartHtml = '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy">';
+        }
+        return '<div class="card"><h3>' + title + "</h3>" + chartHtml +
         (p.about ? '<div class="panel-about">' + esc(p.about) + "</div>" : "") +
         '<div class="panel-summary">' + esc(p.summary || "") + "</div>" +
         '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>";
       }).join("") + "</div>");
+    // render interactive vol divergence chart after DOM insert
+    setTimeout(() => {
+      const cv = document.getElementById("voldiv-chart");
+      const vd = D.vol_div_history;
+      if (!cv || !vd || !(vd.history || []).length) return;
+      try {
+        const hist = vd.history;
+        const labels = hist.map((r) => r.date);
+        const div = hist.map((r) => r.divergence);
+        const vz = hist.map((r) => r.vix_z);
+        const mz = hist.map((r) => r.move_z);
+        new Chart(cv, {
+          type: "line",
+          data: { labels, datasets: [
+            { label: "Divergence (MOVE z − VIX z)", data: div, borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)",
+              borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true, order: 1 },
+            { label: "MOVE z-score", data: mz, borderColor: "#ff9800", borderWidth: 1.5,
+              pointRadius: 0, tension: 0.1, borderDash: [5, 3], order: 2 },
+            { label: "VIX z-score", data: vz, borderColor: "#2962ff", borderWidth: 1.5,
+              pointRadius: 0, tension: 0.1, borderDash: [5, 3], order: 2 },
+          ]},
+          options: { responsive: true, maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+              legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
+              tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+                titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+                callbacks: {
+                  label: (c) => "  " + c.dataset.label + ": " + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "—")
+                } }
+            },
+            scales: {
+              x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+              y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
+                title: { display: true, text: "z-score", color: "#787b86", font: { size: 11 } } }
+            } }
+        });
+      } catch (e) { console.error("VolDiv chart error", e); }
+    }, 200);
     h += "</div>";
 
     // upcoming earnings

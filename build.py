@@ -67,6 +67,10 @@ def main():
         ticker_ohlcv = load(os.path.join(MR, "ticker_ohlcv.json"))
     except FileNotFoundError:
         ticker_ohlcv = {}
+    try:
+        vol_div_history = load(os.path.join(MR, "vol_divergence_history.json"))
+    except FileNotFoundError:
+        vol_div_history = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
@@ -200,6 +204,7 @@ def main():
         "panels": panels,
         "ticker_ma": ticker_ma,
         "ticker_ohlcv": ticker_ohlcv,
+        "vol_div_history": vol_div_history,
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
