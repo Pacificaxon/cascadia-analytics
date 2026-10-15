@@ -579,20 +579,33 @@
         '<span style="width:22px;height:22px;border-radius:50%;background:' + m.color + ';display:inline-block;"></span>' +
         esc(m.label) + "</button>"
       ).join("");
-      // Analyst report (right-hand side)
-      const report = d.analyst_report || {};
+      // Analyst report (right-hand side) — scrollable with history
+      const reportHistory = d.report_history || [];
+      const latestReport = reportHistory[reportHistory.length - 1] || {};
+      const reportOpts = reportHistory.map((r, i) =>
+        '<option value="' + i + '"' + (i === reportHistory.length - 1 ? " selected" : "") + ">" +
+        esc(r.date || "") + "</option>"
+      ).join("");
+      const reportSectionsHtml = (latestReport.report && latestReport.report.sections || []).map((s) =>
+        '<div style="margin-bottom:14px;">' +
+        '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">' + esc(s.heading) + "</div>" +
+        '<div style="font-size:13px;color:#e8ecf1;opacity:0.85;line-height:1.6;">' + s.body + "</div></div>"
+      ).join("");
       const reportHtml =
-        '<div style="background:#161b26;border-radius:12px;padding:20px;height:100%;">' +
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
+        '<div style="background:#161b26;border-radius:12px;padding:20px;display:flex;flex-direction:column;max-height:640px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
         '<span style="font-size:14px;">📊</span>' +
         '<span style="font-size:15px;font-weight:700;color:#fff;">Macro Analyst Report</span></div>' +
-        '<div style="font-size:11px;color:#e8ecf1;opacity:0.6;margin-bottom:12px;">' + esc(report.as_of || d.as_of || "") + "</div>" +
-        (report.sections || []).map((s) =>
-          '<div style="margin-bottom:14px;">' +
-          '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">' + esc(s.heading) + "</div>" +
-          '<div style="font-size:13px;color:#e8ecf1;opacity:0.85;line-height:1.6;">' + s.body + "</div></div>"
-        ).join("") +
-        "</div>";
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
+        '<span style="font-size:12px;color:#e8ecf1;opacity:0.7;">Report date:</span>' +
+        '<select id="macro-report-date" style="background:#0f1420;color:#e8ecf1;border:1px solid #2a4a73;border-radius:6px;' +
+        'padding:4px 8px;font-size:12px;cursor:pointer;max-width:200px;">' + reportOpts + "</select></div>" +
+        '<div id="macro-report-body" style="overflow-y:auto;flex:1;padding-right:6px;">' +
+        '<div id="macro-report-date-label" style="font-size:11px;color:#e8ecf1;opacity:0.6;margin-bottom:12px;">' +
+        esc(latestReport.date || "") + (latestReport.data_through ? " — " + esc(latestReport.data_through) : "") + "</div>" +
+        '<div id="macro-report-sections">' + reportSectionsHtml + "</div>" +
+        "</div></div>" +
+        '<script>window.__macroReportHistory = ' + JSON.stringify(reportHistory) + ';</script>';
       return '<div style="margin-bottom:12px;">' +
         '<h2 style="color:#fff;font-size:20px;margin:0 0 4px;">Economic Trends & Macro Indicators</h2>' +
         '<p style="color:#e8ecf1;opacity:0.6;font-size:13px;margin:0 0 16px;">Compare trends across CPI, PPI, Retail Sales & PMI to detect leading vs. lagging signals.</p>' +
@@ -1554,6 +1567,28 @@
           };
           if (normBtn) normBtn.addEventListener("click", (e) => { e.stopPropagation(); setMode(true); });
           if (rawBtn) rawBtn.addEventListener("click", (e) => { e.stopPropagation(); setMode(false); });
+          // Report date selector — swap between historical reports
+          const reportSel = document.getElementById("macro-report-date");
+          if (reportSel && window.__macroReportHistory) {
+            reportSel.addEventListener("change", (e) => {
+              e.stopPropagation();
+              const idx = parseInt(reportSel.value);
+              const r = window.__macroReportHistory[idx];
+              if (!r) return;
+              const label = document.getElementById("macro-report-date-label");
+              const sections = document.getElementById("macro-report-sections");
+              const body = document.getElementById("macro-report-body");
+              if (label) label.textContent = (r.date || "") + (r.data_through ? " — " + r.data_through : "");
+              if (sections && r.report && r.report.sections) {
+                sections.innerHTML = r.report.sections.map((s) =>
+                  '<div style="margin-bottom:14px;">' +
+                  '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">' + s.heading.replace(/</g, "&lt;") + "</div>" +
+                  '<div style="font-size:13px;color:#e8ecf1;opacity:0.85;line-height:1.6;">' + s.body + "</div></div>"
+                ).join("");
+              }
+              if (body) body.scrollTop = 0;
+            });
+          }
           // Metric pills toggle datasets
           document.querySelectorAll("[data-macro-idx]").forEach((pill) => {
             pill.addEventListener("click", (e) => {
