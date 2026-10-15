@@ -220,7 +220,7 @@
     return '<div class="locked-teaser">' +
       '<div class="lock-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>' +
       "<h3>" + esc(title) + "</h3><p>" + esc(desc) + "</p>" +
-      '<a class="cta-btn" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Upgrade to Pro</a>' +
+      '<a class="cta-btn" href="#/pricing">See Pro Plans</a>' +
       '<div class="pro-price">Cascadia Analytics Pro — $19/month. Cancel anytime.</div></div>';
   }
   function gated(title, desc, innerHtml) {
@@ -258,7 +258,7 @@
     } else {
       b.textContent = "Go Pro";
       b.classList.remove("unlocked");
-      b.onclick = showProModal;
+      b.onclick = () => nav("pricing");
     }
   }
   function showProModal() {
@@ -3415,6 +3415,84 @@
       dl("cascadia_screener.csv", csv, "text/csv");
     });
     draw();
+  });
+
+  /* ================= PRICING ================= */
+  route("pricing", function () {
+    const proActive = isPro();
+    let h = '<div class="crumb">MEMBERSHIP</div>';
+    h += '<div class="hero"><div>' +
+      '<h1 class="hero-h">Choose your plan.</h1>' +
+      "<p class='hero-sub'>Free forever for the essentials. Pro for the full institutional toolkit.</p></div></div>";
+
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;margin:0 auto 32px;">';
+
+    // FREE column
+    h += '<div class="card" style="padding:28px;">' +
+      '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#e8ecf1;margin-bottom:8px;">FREE</div>' +
+      '<div style="font-size:36px;font-weight:800;color:#fff;margin-bottom:4px;">$0</div>' +
+      '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">forever</div>' +
+      '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
+      '<li>✓ Full DCF valuation coverage — 31 tickers with Bear/Base/Bull targets</li>' +
+      '<li>✓ Interactive price charts with moving averages (10/20/50/100/200-day)</li>' +
+      '<li>✓ AAII Investor Sentiment tracker (weekly)</li>' +
+      '<li>✓ COT Positioning tracker — commercial, large spec, small spec (weekly)</li>' +
+      '<li>✓ Company news feed with ticker navigation</li>' +
+      '<li>✓ Macro news wire</li>' +
+      '<li>✓ Earnings calendar</li>' +
+      '<li>✓ Coverage table with ratings and upside</li>' +
+      "</ul></div>";
+
+    // PRO column
+    h += '<div class="card" style="padding:28px;border:2px solid #d4a017;position:relative;">' +
+      '<div style="position:absolute;top:-14px;right:20px;background:#d4a017;color:#0a0f0a;font-size:11px;font-weight:800;padding:4px 12px;border-radius:12px;letter-spacing:1px;">MOST POPULAR</div>' +
+      '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#d4a017;margin-bottom:8px;">PRO</div>' +
+      '<div style="font-size:36px;font-weight:800;color:#fff;margin-bottom:4px;">$19<span style="font-size:16px;font-weight:400;color:#e8ecf1;">/month</span></div>' +
+      '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
+      '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
+      '<li>✓ <b>Everything in Free</b>, plus:</li>' +
+      '<li>✓ Gamma Exposure (GEX) — indices + per-ticker dealer positioning with strike-level charts</li>' +
+      '<li>✓ Volatility Skew — put/call fear gauge for indices and tickers</li>' +
+      '<li>✓ All 7 Pro market internals: Volatility Divergence, Alligator Jaw, Credit Spreads, Market Breadth, Theme Rotation, Small/Mid Cap, RSI Cyclicals vs Defensives</li>' +
+      '<li>✓ Macroeconomic Analysis — CPI, PPI, retail sales, PMI with analyst writeups</li>' +
+      '<li>✓ Unusual options flow tracker (10 trading days per ticker)</li>' +
+      '<li>✓ Reverse DCF — what the market is pricing in</li>' +
+      '<li>✓ Interactive FCF simulation sandbox</li>' +
+      '<li>✓ Cascadia Score — multi-factor rating (valuation, momentum, earnings, options)</li>' +
+      '<li>✓ 31 client research notes (PDF, 5+ pages each)</li>' +
+      '<li>✓ Email alerts — all 12 market internals monitors</li>' +
+      '<li>✓ Moving average cross alerts — stocks and indices</li>' +
+      '<li>✓ Custom price alerts — any covered ticker</li>' +
+      '<li>✓ Stock screener with CSV export</li>' +
+      '<li style="color:#d4a017;">✓ <b>All future features included at no extra cost</b></li>' +
+      '<li style="color:#d4a017;">✓ <b>Legacy price lock</b> — your $19/mo rate is locked in. If prices increase in the future, you keep paying $19 as long as your subscription stays active.</li>' +
+      "</ul>";
+
+    if (proActive) {
+      h += '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-top:20px;text-decoration:none;">Manage subscription</a>';
+    } else if (authUser) {
+      h += '<a class="cta-btn" style="display:block;text-align:center;margin-top:20px;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Subscribe — $19/mo</a>';
+    } else {
+      h += '<button class="btn" id="pricing-login" style="width:100%;margin-top:20px;">Log in / Sign up to subscribe</button>';
+    }
+    h += "</div></div>";
+
+    // Price lock terms
+    h += '<div class="card" style="max-width:900px;margin:0 auto;padding:24px;">' +
+      '<div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;">Legacy Price Lock — Terms</div>' +
+      '<ul style="font-size:13px;color:#e8ecf1;display:flex;flex-direction:column;gap:8px;padding-left:20px;margin:0;">' +
+      "<li>Your subscription rate of <b>$19/month</b> is locked in for as long as your Pro membership remains continuously active.</li>" +
+      "<li>If Cascadia Analytics raises prices in the future, <b>you will not pay the higher price</b> — your legacy rate is grandfathered.</li>" +
+      "<li>All new Pro features released during your membership are <b>included at no extra cost</b>.</li>" +
+      "<li>If you <b>cancel</b> your membership, you forfeit the legacy price lock.</li>" +
+      "<li>If you choose to <b>re-subscribe</b> after cancelling, you will pay the then-current price, not your previous legacy rate.</li>" +
+      "</ul></div>";
+
+    app.innerHTML = h;
+    window.scrollTo(0, 0);
+
+    const loginBtn = document.getElementById("pricing-login");
+    if (loginBtn) loginBtn.addEventListener("click", () => showProModal());
   });
 
   window.CA = { nav, isPro, cascadiaScore };
