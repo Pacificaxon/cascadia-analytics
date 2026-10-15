@@ -599,7 +599,7 @@
     }
    } catch (e) {
     console.error("Failed to embed visual:", key, e);
-    el.innerHTML = '<p style="color:#f85149;">Failed to load visual.</p>';
+    el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.</p>';
    }
   });
  }
