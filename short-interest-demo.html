@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Short Interest Chart Demo</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="short-interest-chart.js"></script>
+<style>
+body { background: #0a0a0a; color: #fff; font-family: system-ui, sans-serif; margin: 0; padding: 24px; }
+h1 { font-size: 20px; margin-bottom: 24px; }
+.chart-slot { margin-bottom: 32px; max-width: 900px; }
+.controls { margin-bottom: 24px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.controls input { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 14px; }
+.controls button { background: #4ade80; border: none; color: #000; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Short Interest Charts</h1>
+<div class="controls">
+<input id="ticker-input" placeholder="Ticker (e.g. AXON)" value="AXON">
+<input id="apikey-input" placeholder="FMP API key" style="width:280px;">
+<button onclick="addChart()">Add Chart</button>
+</div>
+<div id="charts"></div>
+<script>
+// Demo with synthetic data (no API key needed)
+function demoData() {
+  var rows = [];
+  var base = new Date(2026, 7, 17);
+  var si = 3.65e6, sf = 0.0475;
+  for (var i = 0; i < 40; i++) {
+    var d = new Date(base.getTime() + i * 864e5);
+    si += (Math.random() - 0.52) * 120e3;
+    sf += (Math.random() - 0.5) * 0.002;
+    rows.push({
+      date: d.toISOString().slice(0, 10),
+      shortInterest: Math.round(si),
+      shortFloat: Math.max(0.02, sf)
+    });
+  }
+  return rows;
+}
+var chartsEl = document.getElementById("charts");
+function addChart() {
+  var ticker = document.getElementById("ticker-input").value.trim().toUpperCase() || "AXON";
+  var apiKey = document.getElementById("apikey-input").value.trim();
+  var slot = document.createElement("div");
+  slot.className = "chart-slot";
+  chartsEl.appendChild(slot);
+  // Use live API if key provided, otherwise demo data
+  var opts = { ticker: ticker };
+  if (apiKey) { opts.apiKey = apiKey; }
+  else { opts.data = demoData(); }
+  ShortInterestChart.render(slot, opts);
+}
+addChart();
+</script>
+</body>
+</html>
