@@ -1,9 +1,7 @@
 /* Cascadia Analytics, single-page app */
 (function () {
  "use strict";
- const D = window.SITE_DATA || {};
- const TICKERS = D.tickers || {};
- const ORDER = D.ticker_order || Object.keys(TICKERS).sort();
+ // D is defined below as a Proxy (after PRO_DATA/fetchProData) merging free + Pro API data
  const app = document.getElementById("app");
  const PRO_KEY = "cascadia_pro";
 
@@ -43,8 +41,64 @@
  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRscmZxb3FlZmx0eG9kb3lucW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5ODc5MjIsImV4cCI6MjEwNzU2MzkyMn0.XB9l2J69wGVxkUF7cGTjCzCb4QBwCdiuoRMycoy4tW8";
  const supa = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
  let authUser = null;
- let proVerified = null; // null = not yet checked this load; true/false after Supabase lookup
+ let proVerified = null; // null = not yet checked this load; true/false after server verification
  let isAdmin = false;
+ let PRO_DATA = null; // Pro-only data fetched from /api/pro-data (never in public bundle)
+
+ async function fetchProData() {
+  if (!supa) return null;
+  try {
+   const { data: { session } } = await supa.auth.getSession();
+   if (!session) return null;
+   const res = await fetch("/api/pro-data", {
+    headers: { "Authorization": "Bearer " + session.access_token }
+   });
+   if (!res.ok) return null;
+   const json = await res.json();
+   const sections = json.sections || {};
+   // Flatten to match SITE_DATA shape
+   const flat = {};
+   if (sections.gex) {
+    flat.gex_data = sections.gex.gex_data;
+    flat.ticker_gex = sections.gex.ticker_gex;
+   }
+   if (sections.volatility_skew) {
+    flat.skew_data = sections.volatility_skew.skew_data;
+    flat.ticker_skew = sections.volatility_skew.ticker_skew;
+   }
+   if (sections.unusual_options_flow) flat.ticker_options = sections.unusual_options_flow;
+   if (sections.market_leadership) flat.leadership = sections.market_leadership;
+   if (sections.macro_analysis) flat.market_analysis_report = sections.macro_analysis;
+   if (sections.rsi_cyclical_defensive) flat.rsi_cd_history = sections.rsi_cyclical_defensive;
+   // DCF targets merged per-ticker
+   flat._dcf_targets = sections.dcf_targets || {};
+   flat._fcf_projections = sections.fcf_projections || {};
+   return flat;
+  } catch (e) { return null; }
+ }
+ // Proxy D to fall back to PRO_DATA for Pro sections
+ const _D_raw = window.SITE_DATA || {};
+ const D = new Proxy(_D_raw, {
+  get(target, prop) {
+   if (prop === "_dcf_targets" || prop === "_fcf_projections") return undefined;
+   // Pro sections from API
+   if (PRO_DATA && PRO_DATA[prop] !== undefined) return PRO_DATA[prop];
+   // DCF targets per ticker
+   if (prop === "tickers" && PRO_DATA && PRO_DATA._dcf_targets) {
+    const merged = {};
+    for (const tk in target.tickers) {
+     merged[tk] = { ...target.tickers[tk], ...(PRO_DATA._dcf_targets[tk] || {}) };
+     if (PRO_DATA._fcf_projections[tk]) merged[tk].fcf = PRO_DATA._fcf_projections[tk];
+    }
+    return merged;
+   }
+   return target[prop];
+  }
+ });
+
+ // Tickers/order derived from D (Proxy merges free + Pro API data when available)
+ const TICKERS = D.tickers || {};
+ const ORDER = D.ticker_order || Object.keys(TICKERS).sort();
 
  async function refreshAuth() {
   if (!supa) { proVerified = false; render(); return; }
@@ -67,10 +121,17 @@
     proVerified = false;
    }
   } catch (e) {
-   // Network/Supabase failure, fall back to localStorage cache
-   proVerified = null;
+   // Network/Supabase failure: fail closed (not Pro)
+   proVerified = false;
   }
-  if (proVerified !== null) setPro(proVerified);
+  // Fetch Pro data from server-gated API if verified
+  if (proVerified === true) {
+   PRO_DATA = await fetchProData();
+   // If API fetch failed but Supabase says Pro, still treat as Pro for UI
+   // (data sections will show teasers until fetch succeeds)
+  } else {
+   PRO_DATA = null;
+  }
   updateAuthBtn();
   render();
  }

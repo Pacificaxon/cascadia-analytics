@@ -300,6 +300,31 @@ def main():
         "stripe_payment_link": "https://buy.stripe.com/28E00j5w3e4lb5c2pObbG01",
     }
 
+    # --- Split Pro data to functions/pro-data.json (server-gated) ---
+    # These sections are only served via /api/pro-data to verified Pro users
+    pro_sections = {
+        "gex": {"gex_data": site.pop("gex_data", {}), "ticker_gex": site.pop("ticker_gex", {})},
+        "volatility_skew": {"skew_data": site.pop("skew_data", {}), "ticker_skew": site.pop("ticker_skew", {})},
+        "unusual_options_flow": site.pop("ticker_options", {}),
+        "market_leadership": site.pop("leadership", {}),
+        "macro_analysis": site.pop("market_analysis_report", {}),
+        "rsi_cyclical_defensive": site.pop("rsi_cd_history", {}),
+    }
+    # DCF targets per ticker (bear/base/bull/blended)
+    dcf_targets = {}
+    fcf_projections = {}
+    for tk, t in site.get("tickers", {}).items():
+        dcf_targets[tk] = {k: t.pop(k, None) for k in ["bear", "base", "bull", "blended", "rating", "wacc", "upside_base", "shares_m"]}
+        if "fcf" in t:
+            fcf_projections[tk] = t.pop("fcf")
+    pro_sections["dcf_targets"] = dcf_targets
+    pro_sections["fcf_projections"] = fcf_projections
+
+    pro_out = {"generated_at": site.get("generated_at"), "sections": pro_sections}
+    with open(os.path.join(HERE, "functions", "pro-data.json"), "w") as pf:
+        json.dump(pro_out, pf)
+    print(f"Wrote functions/pro-data.json ({len(json.dumps(pro_out))//1024} KB)", flush=True)
+
     # --- Write data.js ---
     out_path = os.path.join(HERE, "data.js")
     with open(out_path, "w", encoding="utf-8") as f:
