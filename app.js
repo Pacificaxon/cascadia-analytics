@@ -426,16 +426,21 @@
    b.classList.remove("unlocked");
    b.onclick = showPricingModal;
   }
-  // Debug: long-press the Pro button to see auth status (admin only)
-  let pressTimer = null;
-  b.onpointerdown = () => {
-   pressTimer = setTimeout(() => {
+  // Debug: double-tap the Pro button to see auth status (admin only)
+  b.ondblclick = (e) => {
+   e.preventDefault();
+   if (isAdmin) showDebugPanel();
+  };
+  // Also support double-tap via touch for iOS
+  let lastTap = 0;
+  b.addEventListener("touchend", (e) => {
+   const now = Date.now();
+   if (now - lastTap < 400) {
+    e.preventDefault();
     if (isAdmin) showDebugPanel();
-   }, 1000);
-  };
-  b.onpointerup = b.onpointerleave = () => {
-   if (pressTimer) clearTimeout(pressTimer);
-  };
+   }
+   lastTap = now;
+  });
  }
  // Debug panel for iOS troubleshooting (admin only)
  function showDebugPanel() {
