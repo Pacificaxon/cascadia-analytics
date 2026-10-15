@@ -597,13 +597,43 @@
         } catch (e) { console.error("Jaw chart error", e); }
       }
       // Theme Rotation interactive chart: scatter of themes (x = vs 70d avg, y = 20d momentum)
+      // Quadrant backgrounds: green=leading (top-right), blue=improving (top-left),
+      // amber=weakening (bottom-right), red=lagging (bottom-left)
+      const quadBg = {
+        id: "quadBg",
+        beforeDraw(chart) {
+          const { ctx, chartArea, scales } = chart;
+          const x0 = scales.x.getPixelForValue(0), y0 = scales.y.getPixelForValue(0);
+          const { left, right, top, bottom } = chartArea;
+          ctx.save();
+          ctx.fillStyle = "rgba(63,185,80,0.06)";  ctx.fillRect(x0, top, right - x0, y0 - top);      // leading
+          ctx.fillStyle = "rgba(88,166,255,0.06)"; ctx.fillRect(left, top, x0 - left, y0 - top);      // improving
+          ctx.fillStyle = "rgba(210,153,34,0.06)"; ctx.fillRect(x0, y0, right - x0, bottom - y0);     // weakening
+          ctx.fillStyle = "rgba(248,81,73,0.06)";  ctx.fillRect(left, y0, x0 - left, bottom - y0);    // lagging
+          // zero axes
+          ctx.strokeStyle = "rgba(200,208,220,0.5)"; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(x0, top); ctx.lineTo(x0, bottom); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(left, y0); ctx.lineTo(right, y0); ctx.stroke();
+          // quadrant labels
+          ctx.fillStyle = "rgba(200,208,220,0.55)"; ctx.font = "11px sans-serif"; ctx.textAlign = "center";
+          ctx.fillText("LEADING", (x0 + right) / 2, top + 16);
+          ctx.fillText("IMPROVING", (left + x0) / 2, top + 16);
+          ctx.fillText("WEAKENING", (x0 + right) / 2, bottom - 8);
+          ctx.fillText("LAGGING", (left + x0) / 2, bottom - 8);
+          ctx.restore();
+        }
+      };
       const trc = document.getElementById("themerot-chart");
       const trh = D.theme_rot_history;
       if (trc && trh && (trh.history || []).length) {
         try {
           const latest = trh.history[trh.history.length - 1];
           const themes = latest.themes || {};
-          const qColors = { leading: "#3fb950", improving: "#58a6ff", weakening: "#d29922", lagging: "#f85149" };
+          const qColors = { Leading: "#3fb950", Improving: "#58a6ff", Weakening: "#d29922", Lagging: "#f85149" };
+          // symmetric axis range so all four quadrants always show
+          const xs = Object.values(themes).map((v) => v.x), ys = Object.values(themes).map((v) => v.y);
+          const maxAbs = Math.max(Math.abs(Math.min(...xs)), Math.abs(Math.max(...xs)), Math.abs(Math.min(...ys)), Math.abs(Math.max(...ys)), 5);
+          const pad = Math.ceil(maxAbs * 1.15);
           const datasets = Object.entries(themes).map(([name, vals]) => ({
             label: name,
             data: [{ x: vals.x, y: vals.y }],
@@ -615,19 +645,21 @@
             data: { datasets },
             options: { responsive: true, maintainAspectRatio: false,
               plugins: {
-                legend: { labels: { color: "#c8d0dc", boxWidth: 12, font: { size: 10 } } },
+                legend: { display: false },
                 tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
                   titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
                   callbacks: {
-                    label: (c) => "  " + c.dataset.label + ": (" + c.parsed.x.toFixed(1) + "%, " + c.parsed.y.toFixed(1) + "%)"
+                    title: (items) => items[0].dataset.label + " (" + (themes[items[0].dataset.label] || {}).q + ")",
+                    label: (c) => "  RS vs 70d avg: " + c.parsed.x.toFixed(1) + "%, 20d momentum: " + c.parsed.y.toFixed(1) + "%"
                   } }
               },
               scales: {
-                x: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
-                  title: { display: true, text: "vs 70d avg (%))", color: "#787b86", font: { size: 11 } } },
-                y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
-                  title: { display: true, text: "20d momentum (%)", color: "#787b86", font: { size: 11 } } }
-              } }
+                x: { min: -pad, max: pad, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#787b86", font: { size: 11 } } },
+                y: { min: -pad, max: pad, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "20d momentum (%) →", color: "#787b86", font: { size: 11 } } }
+              } },
+            plugins: [quadBg]
           });
         } catch (e) { console.error("ThemeRot chart error", e); }
       }
@@ -813,7 +845,10 @@
               const trh = D.theme_rot_history;
               const latest = trh.history[trh.history.length - 1];
               const themes = latest.themes || {};
-              const qColors = { leading: "#3fb950", improving: "#58a6ff", weakening: "#d29922", lagging: "#f85149" };
+              const qColors = { Leading: "#3fb950", Improving: "#58a6ff", Weakening: "#d29922", Lagging: "#f85149" };
+              const xs = Object.values(themes).map((v) => v.x), ys = Object.values(themes).map((v) => v.y);
+              const maxAbs = Math.max(Math.abs(Math.min(...xs)), Math.abs(Math.max(...xs)), Math.abs(Math.min(...ys)), Math.abs(Math.max(...ys)), 5);
+              const pad = Math.ceil(maxAbs * 1.15);
               new Chart(zc, {
                 type: "scatter",
                 data: { datasets: Object.entries(themes).map(([name, vals]) => ({
@@ -821,11 +856,16 @@
                   backgroundColor: qColors[vals.q] || "#787b86", pointRadius: 9, pointHoverRadius: 12,
                 }))},
                 options: { responsive: true, maintainAspectRatio: false,
-                  plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
-                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+                  plugins: { legend: { display: false },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+                      callbacks: {
+                        title: (items) => items[0].dataset.label + " (" + (themes[items[0].dataset.label] || {}).q + ")",
+                        label: (c) => "  RS vs 70d avg: " + c.parsed.x.toFixed(1) + "%, 20d momentum: " + c.parsed.y.toFixed(1) + "%"
+                      } } },
                   scales: {
-                    x: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "vs 70d avg (%)", color: "#787b86" } },
-                    y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "20d momentum (%)", color: "#787b86" } } } }
+                    x: { min: -pad, max: pad, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#787b86" } },
+                    y: { min: -pad, max: pad, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "20d momentum (%) →", color: "#787b86" } } } },
+                plugins: [quadBg]
               });
             } else if (kind === "smcap") {
               const hist = D.smcap_history.history;
