@@ -475,6 +475,53 @@
 
     /* ---------- tracker explainers (visual first, explanation after) ---------- */
     /* ---------- GEX tracker HTML (Pro-gated) ---------- */
+    function tickerGexHtml(tk, d) {
+      const isPos = d.regime === "positive";
+      const regimeColor = isPos ? "#3fb950" : "#f85149";
+      const regimeLabel = isPos ? "POSITIVE — volatility dampener" : "NEGATIVE — volatility amplifier";
+      const regimeIcon = isPos ? "🟢" : "🔴";
+      const unit = d.gex_unit || "M";
+      const spotVsZG = d.zero_gamma != null
+        ? (d.spot >= d.zero_gamma
+          ? '<span style="color:#3fb950">above</span> zero gamma — dealers dampening moves'
+          : '<span style="color:#f85149">below</span> zero gamma — dealers amplifying moves')
+        : "—";
+      // Interactive GEX bar: visual split of call vs put gamma
+      const total = Math.abs(d.call_gex) + Math.abs(d.put_gex);
+      const callPct = total > 0 ? (Math.abs(d.call_gex) / total * 100).toFixed(1) : 50;
+      const putPct = total > 0 ? (Math.abs(d.put_gex) / total * 100).toFixed(1) : 50;
+      return '<div class="zoomable-chart" data-chart="gex-ticker" data-ticker="' + esc(tk) + '" style="position:relative;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom">' +
+        '<div style="display:flex;height:28px;border-radius:6px;overflow:hidden;margin:12px 0;" title="Call GEX vs Put GEX">' +
+        '<div style="width:' + callPct + '%;background:#3fb950;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0a0f0a;" title="Call GEX: +' + d.call_gex.toFixed(2) + unit + '">+' + d.call_gex.toFixed(1) + unit + '</div>' +
+        '<div style="width:' + putPct + '%;background:#f85149;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;" title="Put GEX: ' + d.put_gex.toFixed(2) + unit + '">' + d.put_gex.toFixed(1) + unit + '</div>' +
+        "</div>" +
+        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+        '<div style="text-align:center;margin-bottom:12px;"><span style="font-size:13px;color:' + regimeColor + ';font-weight:700;">' + regimeIcon + " " + regimeLabel + "</span></div>" +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
+        '<div><div style="font-size:11px;color:#787b86;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
+        '<div><div style="font-size:11px;color:#787b86;">NET GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
+        (d.total_gex >= 0 ? "+" : "") + d.total_gex.toFixed(2) + unit + "</div></div>" +
+        '<div><div style="font-size:11px;color:#787b86;">ZERO GAMMA</div><div style="font-size:15px;font-weight:600;color:#e8ecf1;">' +
+        (d.zero_gamma != null ? "$" + d.zero_gamma.toFixed(2) : "—") + "</div>" +
+        '<div style="font-size:12px;color:#787b86;">Spot ' + spotVsZG + "</div></div>" +
+        '<div><div style="font-size:11px;color:#787b86;">WALLS</div><div style="font-size:15px;font-weight:600;">' +
+        '<span style="color:#3fb950;" title="Call wall (resistance)">C $' + (d.call_wall != null ? d.call_wall.toFixed(0) : "—") + "</span>" +
+        ' <span style="color:#787b86;">/</span> ' +
+        '<span style="color:#f85149;" title="Put wall (support)">P $' + (d.put_wall != null ? d.put_wall.toFixed(0) : "—") + "</span></div></div>" +
+        "</div>" +
+        '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
+        "<p><b>What is this?</b> Gamma exposure measures how options dealers will hedge as " + esc(tk) + " moves. " +
+        "Dealers who sold options must buy/sell shares to stay neutral — their hedging pushes the stock.</p>" +
+        (isPos
+          ? "<p><b style='color:#3fb950'>Positive GEX</b> — dealers buy dips and sell rips, <i>dampening</i> volatility. Expect choppy, range-bound action. Favor mean-reversion: buy support, sell resistance quickly.</p>"
+          : "<p><b style='color:#f85149'>Negative GEX</b> — dealers sell into declines and buy into rallies, <i>amplifying</i> moves. Expect wider swings and trending action. Favor momentum/breakouts; widen stops and reduce size.</p>") +
+        "<p><b>Zero gamma ($" + (d.zero_gamma != null ? d.zero_gamma.toFixed(2) : "—") + ")</b> is the flip point — above it dealers stabilize, below it they accelerate. " +
+        "The <b style='color:#3fb950'>call wall</b> acts as resistance and the <b style='color:#f85149'>put wall</b> as support.</p>" +
+        "</div>" +
+        '<div style="font-size:12px;color:#787b86;">' + d.contracts_analyzed.toLocaleString() + " contracts analyzed</div>" +
+        '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
+    }
+
     function gexTrackerHtml(gexData) {
       const indices = gexData.indices || {};
       // Prefer QQQ and SPY (SPX often blocked); fall back to whatever is available
@@ -980,8 +1027,30 @@
             smcap: "Small/Mid Cap — vs 200-Day MA",
             creditvol: "Credit Spreads vs VIX",
             breadth: "Market Breadth",
-            rsicd: "RSI: Cyclicals vs Defensives (XLY/XLP)"
+            rsicd: "RSI: Cyclicals vs Defensives (XLY/XLP)",
+            "gex-ticker": "Gamma Exposure — " + (el.dataset.ticker || "")
           };
+          // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
+          if (kind === "gex-ticker") {
+            const tk = el.dataset.ticker;
+            const tg = (D.ticker_gex || {})[tk];
+            if (!tg || !tg.available) return;
+            let modal = document.getElementById("chart-zoom-modal");
+            if (modal) modal.remove();
+            modal = document.createElement("div");
+            modal.id = "chart-zoom-modal";
+            modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;overflow-y:auto;";
+            modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
+              '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+              '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Gamma Exposure — ' + esc(tk) + '</div>' +
+              '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+              tickerGexHtml(tk, tg) + "</div>";
+            document.body.appendChild(modal);
+            const close = () => modal.remove();
+            modal.addEventListener("click", close);
+            document.getElementById("zoom-close").addEventListener("click", close);
+            return;
+          }
           // build modal
           let modal = document.getElementById("chart-zoom-modal");
           if (modal) modal.remove();
@@ -1258,6 +1327,16 @@
     h += '<div class="section"><div class="section-title">Unusual Options Flow</div>';
     h += gated("Options Flow — Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
     h += "</div>";
+
+    // Gamma Exposure (Pro) — per-ticker dealer positioning
+    const tg = (D.ticker_gex || {})[tk];
+    if (tg && tg.available) {
+      h += '<div class="section"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+      h += gated("Gamma Exposure — Pro",
+        "Live dealer gamma positioning for " + tk + " — see whether market makers will dampen or amplify the next move.",
+        tickerGexHtml(tk, tg));
+      h += "</div>";
+    }
 
     // Macro takes (free)
     const takes = (D.ticker_macro || {})[tk] || [];
