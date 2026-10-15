@@ -103,6 +103,14 @@ def main():
         ticker_gex = load(os.path.join(MR, "ticker_gex.json"))
     except FileNotFoundError:
         ticker_gex = {}
+    try:
+        skew_data = load(os.path.join(MR, "skew_history.json"))
+    except FileNotFoundError:
+        skew_data = {}
+    try:
+        ticker_skew = load(os.path.join(MR, "ticker_skew.json"))
+    except FileNotFoundError:
+        ticker_skew = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
@@ -252,6 +260,8 @@ def main():
         "rsi_cd_history": rsi_cd_history,
         "gex_data": gex_data,
         "ticker_gex": ticker_gex,
+        "skew_data": skew_data,
+        "ticker_skew": ticker_skew,
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
