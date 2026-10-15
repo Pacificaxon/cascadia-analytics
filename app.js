@@ -738,43 +738,45 @@
     return;
    }
    if (!placeholders.length) return;
-   placeholders.forEach((el) => {
-   let key = null;
-   try {
-    key = el.getAttribute("data-embed-visual");
-   } catch (e) {
-    key = null;
-   }
-   if (!key) {
-    el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.</p>';
-    return;
-   }
-   try {
-    if (key === "fed-funds" && D.fed_funds && D.fed_funds.available) {
-     el.innerHTML = fedFundsHtml(D.fed_funds);
-    } else if (key === "macro" && D.macro_indicators) {
-     el.innerHTML = macroAnalysisHtml(D.macro_indicators);
-     try { drawMacroSnapshot(); } catch (drawErr) { console.error("Macro chart draw failed:", drawErr); }
-    } else if (key === "gex" && D.gex_data && D.gex_data.indices) {
-     el.innerHTML = gexTrackerHtml(D.gex_data);
-     try { drawGexStrikeCharts(); } catch (drawErr) { console.error("GEX chart draw failed:", drawErr); }
-    } else if (key === "skew" && D.skew_data && D.skew_data.indices) {
-     el.innerHTML = skewTrackerHtml(D.skew_data);
-    } else {
-     // Show specific reason in debug mode
-     let reason = "";
-     if (location.hash.includes("debug=1")) {
-      if (key === "fed-funds") reason = " (fed_funds.available=" + !!(D.fed_funds && D.fed_funds.available) + ")";
-      if (key === "macro") reason = " (macro_indicators=" + !!D.macro_indicators + ")";
-      if (key === "gex") reason = " (gex_data.indices=" + !!(D.gex_data && D.gex_data.indices) + ")";
-      if (key === "skew") reason = " (skew_data.indices=" + !!(D.skew_data && D.skew_data.indices) + ")";
+   // Gemini's diagnostic patch: shows the real reason on screen
+   function renderVisual(el, key) {
+    const gens = {
+     "fed-funds": () => D.fed_funds && D.fed_funds.available ? fedFundsHtml(D.fed_funds) : null,
+     "macro": () => D.macro_indicators ? macroAnalysisHtml(D.macro_indicators) : null,
+     "gex": () => D.gex_data && D.gex_data.indices ? gexTrackerHtml(D.gex_data) : null,
+     "skew": () => D.skew_data && D.skew_data.indices ? skewTrackerHtml(D.skew_data) : null
+    };
+    try {
+     const html = gens[key] ? gens[key]() : null;
+     if (html == null) {
+      const keys = PRO_DATA ? Object.keys(PRO_DATA).join(",") : "null";
+      el.textContent = key + ": no data. connected=" + el.isConnected + " keys=" + keys;
+      return;
      }
-     el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.' + reason + '</p>';
+     el.innerHTML = html;
+     // Draw charts after HTML insertion
+     try {
+      if (key === "macro") drawMacroSnapshot();
+      if (key === "gex") drawGexStrikeCharts();
+     } catch (drawErr) {
+      console.error("Chart draw failed:", key, drawErr);
+     }
+    } catch (e) {
+     el.textContent = key + " threw: " + (e && e.message ? e.message : e);
     }
-   } catch (e) {
-    console.error("Failed to embed visual:", key, e);
-    el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.</p>';
    }
+   placeholders.forEach((el) => {
+    let key = null;
+    try {
+     key = el.getAttribute("data-embed-visual");
+    } catch (e) {
+     key = null;
+    }
+    if (!key) {
+     el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.</p>';
+     return;
+    }
+    renderVisual(el, key);
    });
   });
  }
