@@ -974,22 +974,17 @@
   function seasonalityHtml(tk) {
     const t = TICKERS[tk];
     const hist = (t && t.history) || [];
-    if (hist.length < 60) return '<div class="card"><p style="color:var(--muted)">Not enough price history for seasonality.</p></div>';
-    // group by calendar month, compute monthly returns
+    if (hist.length < 24) return '<div class="card"><p style="color:var(--muted)">Not enough price history for seasonality.</p></div>';
+    // history is monthly closes; compute MoM return for each point, group by calendar month
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     const rets = months.map(() => []);
-    // build month-start prices
-    let prevMonth = -1, monthStart = null;
     const sorted = [...hist].sort((a, b) => a[0] - b[0]);
-    for (let i = 0; i < sorted.length; i++) {
-      const d = new Date(sorted[i][0]), m = d.getMonth();
-      if (m !== prevMonth) {
-        if (monthStart !== null && prevMonth >= 0) {
-          const r = (sorted[i - 1][1] / monthStart - 1) * 100;
-          if (isFinite(r) && Math.abs(r) < 50) rets[prevMonth].push(r);
-        }
-        monthStart = sorted[i][1]; prevMonth = m;
-      }
+    for (let i = 1; i < sorted.length; i++) {
+      const prev = sorted[i - 1][1], cur = sorted[i][1];
+      if (!prev || !cur) continue;
+      const r = (cur / prev - 1) * 100;
+      if (!isFinite(r) || Math.abs(r) > 50) continue;
+      rets[new Date(sorted[i][0]).getMonth()].push(r);
     }
     const avg = (a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
     const avgs = rets.map(avg);
