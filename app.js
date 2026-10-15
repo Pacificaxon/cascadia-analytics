@@ -902,22 +902,19 @@
     const m = (D.ticker_ma || {})[tk];
     if (!m) return '<div class="card"><p style="color:var(--muted)">No moving-average data for this ticker.</p></div>';
     let h = "";
-    // TradingView iframe embeds (work with dynamic injection, unlike script embeds)
-    const tvSym = tk === "RNMBY" ? "OTC%3ARNMBY" : tk === "RBRK" ? "NASDAQ%3ARBRK" : "NASDAQ%3A" + tk;
+    // TradingView widgets via JS API (supports pre-loaded MA studies)
+    const tvSym = tk === "RNMBY" ? "OTC:RNMBY" : "NASDAQ:" + tk;
     const intervals = { daily: "D", weekly: "W", monthly: "M" };
+    const tvCharts = [];
     ["daily", "weekly", "monthly"].forEach((tf) => {
       const d = m[tf];
       if (!d) return;
-      // TV iframe with MA studies: symbol, interval, theme, studies
-      const tvUrl = "https://www.tradingview.com/widgetembed/?frameElementId=tradingview_" + tk + "_" + tf +
-        "&symbol=" + tvSym + "&interval=" + intervals[tf] + "&hidesidetoolbar=0&hidetoptoolbar=0" +
-        "&symboledit=0&saveimage=0&toolbarbg=1a2332&studies=%5B%7B%22id%22%3A%22MA%40tv-basicstudies%22%2C%22inputs%22%3A%7B%22length%22%3A10%7D%7D%2C%7B%22id%22%3A%22MA%40tv-basicstudies%22%2C%22inputs%22%3A%7B%22length%22%3A20%7D%7D%2C%7B%22id%22%3A%22MA%40tv-basicstudies%22%2C%22inputs%22%3A%7B%22length%22%3A50%7D%7D%2C%7B%22id%22%3A%22MA%40tv-basicstudies%22%2C%22inputs%22%3A%7B%22length%22%3A200%7D%7D%5D" +
-        "&theme=dark&style=1&timezone=America%2FLos_Angeles&withdateranges=0&showpopupbutton=0&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=en";
+      const cid = "tv-" + tk + "-" + tf;
+      tvCharts.push({ cid, tf });
       h += '<div class="card"><h3 style="text-transform:capitalize">' + tf + ' <span class="verdict ' +
         (String(d.signal || "").toLowerCase().includes("buy") ? "bullish" : String(d.signal || "").toLowerCase().includes("sell") ? "bearish" : "neutral") +
         '">' + esc(d.signal || "") + "</span></h3>" +
-        '<div style="height:420px;width:100%;margin-bottom:12px;">' +
-        '<iframe src="' + tvUrl + '" style="width:100%;height:100%;border:0;border-radius:8px;" allowtransparency="true" scrolling="no" allowfullscreen></iframe></div>' +
+        '<div id="' + cid + '" style="height:420px;width:100%;margin-bottom:12px;"></div>' +
         '<div style="font-size:12px;color:#a8b0bc;margin-bottom:10px;">Overlays: <b style="color:#c8d0dc;">SMA 10</b> · <b style="color:#c8d0dc;">SMA 20</b> · <b style="color:#c8d0dc;">SMA 50</b> · <b style="color:#c8d0dc;">SMA 200</b> (simple moving averages)</div>' +
         '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
         ["10", "20", "30", "50", "100", "200"].map((p) =>
@@ -925,6 +922,36 @@
         ).join("") + "</tbody></table></div>" +
         '<div class="panel-asof">Price ' + fmt$(d.price) + " · as of " + esc(d.as_of || "") + " · Chart by TradingView</div></div>";
     });
+    // init TradingView widgets after DOM insert
+    setTimeout(() => {
+      if (typeof TradingView === "undefined") {
+        const s = document.createElement("script");
+        s.src = "https://s3.tradingview.com/tv.js";
+        s.onload = initTV;
+        document.head.appendChild(s);
+      } else { initTV(); }
+      function initTV() {
+        tvCharts.forEach(({ cid, tf }) => {
+          const el = document.getElementById(cid);
+          if (!el || el.dataset.tvInit) return;
+          el.dataset.tvInit = "1";
+          try {
+            new TradingView.widget({
+              container_id: cid, symbol: tvSym, interval: intervals[tf],
+              theme: "dark", style: "1", locale: "en", toolbar_bg: "#1a2332",
+              hide_side_toolbar: false, allow_symbol_change: false,
+              studies: [
+                { id: "MA@tv-basicstudies", inputs: { length: 10 } },
+                { id: "MA@tv-basicstudies", inputs: { length: 20 } },
+                { id: "MA@tv-basicstudies", inputs: { length: 50 } },
+                { id: "MA@tv-basicstudies", inputs: { length: 200 } }
+              ],
+              autosize: true
+            });
+          } catch (e) { console.error("TV widget error", e); }
+        });
+      }
+    }, 200);
     return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>';
   }
 
