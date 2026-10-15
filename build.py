@@ -100,6 +100,14 @@ def main():
     except FileNotFoundError:
         gex_data = {}
     try:
+        fed_funds = load(os.path.join(MR, "fed_funds.json"))
+    except FileNotFoundError:
+        fed_funds = {}
+    try:
+        market_analysis_report = load(os.path.join(MR, "market_analysis_report.json"))
+    except FileNotFoundError:
+        market_analysis_report = {}
+    try:
         ticker_gex = load(os.path.join(MR, "ticker_gex.json"))
     except FileNotFoundError:
         ticker_gex = {}
@@ -271,6 +279,8 @@ def main():
         "breadth_history": breadth_history,
         "rsi_cd_history": rsi_cd_history,
         "gex_data": gex_data,
+        "fed_funds": fed_funds,
+        "market_analysis_report": market_analysis_report,
         "ticker_gex": ticker_gex,
         "skew_data": skew_data,
         "ticker_skew": ticker_skew,

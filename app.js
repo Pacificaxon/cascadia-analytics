@@ -464,6 +464,77 @@
       "</div>";
   }
 
+  /* Embed visuals into Market Analysis reports.
+     The report HTML contains <div data-embed-visual="key"></div> placeholders.
+     Supported keys: fed-funds, macro, gex, skew */
+  function embedAnalysisVisuals() {
+    const placeholders = document.querySelectorAll("[data-embed-visual]");
+    if (!placeholders.length) return;
+    placeholders.forEach((el) => {
+      const key = el.dataset.embedVisual;
+      try {
+        if (key === "fed-funds" && D.fed_funds && D.fed_funds.available) {
+          el.innerHTML = fedFundsHtml(D.fed_funds);
+        } else if (key === "macro" && D.macro_indicators) {
+          el.innerHTML = macroAnalysisHtml(D.macro_indicators);
+          drawMacroSnapshot();
+        } else if (key === "gex" && D.gex_data && D.gex_data.indices) {
+          el.innerHTML = gexTrackerHtml(D.gex_data);
+          drawGexStrikeCharts();
+        } else if (key === "skew" && D.skew_data && D.skew_data.indices) {
+          el.innerHTML = skewTrackerHtml(D.skew_data);
+        } else {
+          el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.</p>';
+        }
+      } catch (e) {
+        console.error("Failed to embed visual:", key, e);
+        el.innerHTML = '<p style="color:#f85149;">Failed to load visual.</p>';
+      }
+    });
+  }
+
+  /* Simplified macro chart snapshot for embedding in analysis reports */
+  function drawMacroSnapshot() {
+    const cv = document.getElementById("macro-chart");
+    const d = D.macro_indicators;
+    if (!cv || !d || !(d.history || []).length || typeof Chart === "undefined") return;
+    if (cv.dataset.drawn) return;
+    cv.dataset.drawn = "1";
+    const hist = d.history;
+    const labels = hist.map((r) => {
+      const parts = (r.month || "").split("-");
+      return parts.length === 2 ? ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][parseInt(parts[1])-1] : r.month;
+    });
+    const series = [
+      { key: "cpi_yoy", label: "CPI YoY %", color: "#7dd3fc" },
+      { key: "ppi_yoy", label: "PPI YoY %", color: "#a5b4fc" },
+      { key: "retail_mom", label: "Retail MoM %", color: "#22c55e" },
+      { key: "pmi", label: "PMI", color: "#a3e635" },
+    ];
+    new Chart(cv, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: series.map((s) => ({
+          label: s.label,
+          data: hist.map((r) => r[s.key]),
+          borderColor: s.color,
+          backgroundColor: s.color,
+          borderWidth: 2, pointRadius: 2, tension: 0.3,
+        })),
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: { legend: { labels: { color: "#e8ecf1", boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { ticks: { color: "#e8ecf1", maxTicksLimit: 8 }, grid: { color: "rgba(255,255,255,0.06)" } },
+          y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(255,255,255,0.06)" } },
+        },
+      },
+    });
+  }
+
   function drawGexStrikeCharts() {
     if (typeof Chart === "undefined") return;
     Object.keys(gexStrikeChartData).forEach((chartId) => {
@@ -678,6 +749,10 @@
     // COT Positioning — FREE, at the top
     if (D.cot_data && D.cot_data.markets) {
       h += cotHtml(D.cot_data);
+    }
+    // FOMC Fed Funds Futures — FREE, updates every morning
+    if (D.fed_funds && D.fed_funds.available) {
+      h += fedFundsHtml(D.fed_funds);
     }
     h += gated("Market Internals — Pro",
       "Breadth monitor, Alligator Jaw, theme rotation, and credit-spread-vs-volatility trackers.",
@@ -906,6 +981,65 @@
         "Divergences (price makes new highs but specs reduce longs) signal a trap.</p>" +
         "<p><b>The lag:</b> Data is as of Tuesday, published Friday — use as a structural backdrop, not for timing entries.</p>" +
         "</div></div>";
+    }
+
+    /* ---------- Fed Funds Futures HTML (FREE) ---------- */
+    function fedFundsHtml(d) {
+      if (!d || !d.available) return '<p style="color:#e8ecf1">Fed funds futures data unavailable.</p>';
+      const meetings = (d.meetings || []).slice(0, 6);
+      // Build probability table
+      const rows = meetings.map((m) => {
+        const probs = m.probabilities || {};
+        // Sort by probability desc
+        const sorted = Object.entries(probs).sort((a, b) => b[1] - a[1]);
+        const top = sorted[0];
+        const cells = sorted.map(([range, pct]) => {
+          const isTop = range === top[0];
+          const bg = isTop ? "background:rgba(47,111,237,0.25);" : "";
+          const fw = isTop ? "font-weight:700;" : "";
+          return '<td style="padding:8px 12px;text-align:center;' + bg + fw + 'color:#e8ecf1;font-size:13px;">' +
+            esc(range) + '<br><span style="font-size:15px;">' + pct.toFixed(1) + '%</span></td>';
+        }).join("");
+        // Format date
+        let dateStr = m.date;
+        try {
+          const dt = new Date(m.date + "T12:00:00");
+          dateStr = dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+        } catch (e) {}
+        return '<tr style="border-bottom:1px solid rgba(255,255,255,0.06);">' +
+          '<td style="padding:8px 12px;color:#fff;font-weight:600;font-size:13px;white-space:nowrap;">' + esc(dateStr) + "</td>" + cells + "</tr>";
+      }).join("");
+
+      // Collect all unique ranges for header
+      const allRanges = [];
+      meetings.forEach((m) => {
+        Object.keys(m.probabilities || {}).forEach((r) => {
+          if (!allRanges.includes(r)) allRanges.push(r);
+        });
+      });
+      // Sort ranges numerically
+      allRanges.sort((a, b) => parseFloat(a) - parseFloat(b));
+
+      return '<div class="section" style="max-width:none;"><div class="section-title">FOMC Fed Funds Futures <span style="font-size:11px;background:#3fb950;color:#0a0f0a;padding:2px 8px;border-radius:4px;vertical-align:middle;">FREE</span></div>' +
+        '<div class="section-sub">What the futures market is pricing for upcoming FOMC meetings. Updates every morning.</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
+        '<div class="card" style="padding:16px;"><div style="font-size:11px;color:#e8ecf1;margin-bottom:4px;">EFFECTIVE FED FUNDS RATE</div>' +
+        '<div style="font-size:28px;font-weight:800;color:#fff;">' + (d.effr != null ? d.effr.toFixed(2) + "%" : "—") + "</div></div>" +
+        '<div class="card" style="padding:16px;"><div style="font-size:11px;color:#e8ecf1;margin-bottom:4px;">CURRENT TARGET RANGE</div>' +
+        '<div style="font-size:28px;font-weight:800;color:#fff;">' + esc(d.current_target || "—") + "</div></div></div>" +
+        '<div style="overflow-x:auto;margin-bottom:12px;"><table style="width:100%;border-collapse:collapse;min-width:600px;">' +
+        '<thead><tr style="border-bottom:2px solid rgba(255,255,255,0.1);">' +
+        '<th style="padding:8px 12px;text-align:left;color:#e8ecf1;font-size:12px;">FOMC Meeting</th>' +
+        allRanges.map((r) => '<th style="padding:8px 12px;text-align:center;color:#e8ecf1;font-size:12px;">' + esc(r) + "</th>").join("") +
+        "</tr></thead><tbody>" + rows + "</tbody></table></div>" +
+        '<div class="panel-about" style="text-align:left;max-width:none;">' +
+        "<p><b>What is this?</b> The CME FedWatch tool translates 30-Day Fed Funds futures prices into probabilities for each possible target range at upcoming FOMC meetings. " +
+        "It's the market's consensus on where rates are headed.</p>" +
+        "<p><b>How to read it:</b> Each row is an FOMC meeting. The highlighted cell is the highest-probability outcome. " +
+        "When probabilities shift sharply day-over-day, it usually maps to a specific data release (CPI, jobs) or Fed-speak.</p>" +
+        '<p><a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank" rel="noopener" style="color:#58a6ff;">View on CME FedWatch →</a></p>' +
+        "</div>" +
+        '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + " ET · Trade date " + esc(d.trade_date || "") + "</div></div>";
     }
 
     /* ---------- AAII Sentiment HTML (FREE) ---------- */
@@ -2166,6 +2300,49 @@
     { key: "volatility_skew", name: "Volatility Skew", desc: "Put/call skew — notified on significant fear spikes." },
     { key: "macro_analysis", name: "Macroeconomic Analysis", desc: "CPI, PPI, retail sales, PMI, energy — notified when new reports are released." },
   ];
+
+  route("analysis", function () {
+    const r = D.market_analysis_report;
+    let h = '<div class="crumb">MARKET ANALYSIS</div>';
+    h += '<div class="hero"><div>' +
+      '<h1 class="hero-h">Morning Market Analysis.</h1>' +
+      "<p class='hero-sub'>Institutional-grade briefing synthesizing macro, internals, and derivatives positioning. Updated every trading morning.</p></div></div>";
+    if (r && r.available) {
+      h += '<div class="section" style="max-width:none;">' +
+        '<div class="section-sub">Published ' + esc((r.as_of || "").slice(0, 16).replace("T", " ")) + " ET</div>" +
+        '<div class="card" style="padding:28px;line-height:1.7;font-size:15px;color:#e8ecf1;">' +
+        r.html +
+        "</div></div>";
+      // Previous reports
+      if (r.previous && r.previous.length) {
+        h += '<div class="section"><div class="section-title">Previous Reports</div>' +
+          r.previous.map((p) =>
+            '<div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);">' +
+            '<a href="javascript:void(0)" data-report="' + esc(p.date) + '" style="color:#58a6ff;font-size:14px;">' +
+            esc(p.date) + " — " + esc(p.headline) + "</a></div>"
+          ).join("") + "</div>";
+      }
+    } else {
+      h += '<div class="card"><p style="color:#e8ecf1;">The morning briefing has not been generated yet. Check back after the morning refresh.</p></div>';
+    }
+    app.innerHTML = h;
+    window.scrollTo(0, 0);
+    // Wire previous report links
+    document.querySelectorAll("[data-report]").forEach((a) => {
+      a.addEventListener("click", () => {
+        const date = a.dataset.report;
+        const prev = (D.market_analysis_report.previous || []).find((p) => p.date === date);
+        if (prev && prev.html) {
+          document.querySelector(".card").innerHTML = prev.html +
+            '<div style="margin-top:20px;"><a href="javascript:void(0)" id="back-current" style="color:#58a6ff;">← Back to current report</a></div>';
+          document.getElementById("back-current").addEventListener("click", () => render());
+          embedAnalysisVisuals();
+        }
+      });
+    });
+    // Embed any visuals referenced in the report
+    embedAnalysisVisuals();
+  });
 
   route("alerts", function () {
     if (!isPro()) {
