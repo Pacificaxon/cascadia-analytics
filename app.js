@@ -3756,12 +3756,15 @@
   let h = '<div class="card"><div class="table-wrap"><table class="coverage"><thead><tr>' +
    "<th>Date</th><th>Type</th><th>Strike</th><th>Exp</th><th>Premium</th><th>Direction</th></tr></thead><tbody>";
   h += prints.map((p) => {
-   const side = String(p.side || p.direction || "");
-   const bull = /call|bought|bull/i.test(side);
-   const label = bull ? "Bullish" : "Bearish";
+   // Use the collector's sentiment directly (bought put = bearish, sold put = bullish, etc.)
+   const sentiment = String(p.sentiment || "").toLowerCase();
+   const bull = sentiment === "bullish";
+   const label = sentiment ? (bull ? "Bullish" : "Bearish") : " - ";
+   // Premium is in dollars; convert to millions for fmtM
+   const premM = p.premium != null ? p.premium / 1e6 : null;
    return "<tr><td>" + esc(p.date || "") + "</td><td>" + esc(p.type || p.kind || "") + "</td><td>" +
     esc(p.strike || "") + "</td><td>" + esc(p.expiry || p.exp || "") + "</td><td>" +
-    fmtM(p.premium) + '</td><td class="' + (bull ? "pos" : "neg") + '">' + label + "</td></tr>";
+    fmtM(premM) + '</td><td class="' + (bull ? "pos" : "neg") + '">' + label + "</td></tr>";
   }).join("");
   return h + "</tbody></table></div></div>";
  }
