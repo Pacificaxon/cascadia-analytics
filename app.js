@@ -454,22 +454,37 @@
         let chartHtml = "";
         if (/volatility divergence/i.test(p.name) && D.vol_div_history && (D.vol_div_history.history || []).length) {
           chartHtml = '<div class="zoomable-chart" data-chart="voldiv" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="voldiv-chart"></canvas>' +
-            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
         } else if (/alligator/i.test(p.name) && D.jaw_history && (D.jaw_history.history || []).length) {
           chartHtml = '<div class="zoomable-chart" data-chart="jaw" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="jaw-chart"></canvas>' +
-            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
         } else if (/theme rotation/i.test(p.name) && D.theme_rot_history && (D.theme_rot_history.history || []).length) {
           chartHtml = '<div class="zoomable-chart" data-chart="themerot" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="themerot-chart"></canvas>' +
-            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
         } else if (/small.*mid|mid.*cap/i.test(p.name) && D.smcap_history && (D.smcap_history.history || []).length) {
           chartHtml = '<div class="zoomable-chart" data-chart="smcap" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="smcap-chart"></canvas>' +
-            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
         } else if (/credit spread/i.test(p.name) && D.credit_vol_history && (D.credit_vol_history.history || []).length) {
           chartHtml = '<div class="zoomable-chart" data-chart="creditvol" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="creditvol-chart"></canvas>' +
-            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
         } else if (/market breadth/i.test(p.name) && D.breadth_history && (D.breadth_history.history || []).length) {
           chartHtml = '<div class="zoomable-chart" data-chart="breadth" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="breadth-chart"></canvas>' +
-            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+          // 52-week highs/lows stat bar (from breadth_history.json current)
+          const bh = D.breadth_history;
+          if (bh && bh.current && bh.current.new_highs != null) {
+            const nh = bh.current.new_highs, nl = bh.current.new_lows;
+            const total = nh + nl;
+            const nhPct = total > 0 ? (nh / total * 100).toFixed(0) : 50;
+            chartHtml += '<div style="display:flex;align-items:center;gap:12px;margin:8px 0;padding:10px;background:#1a2030;border-radius:8px;">' +
+              '<div style="text-align:center;"><div style="font-size:11px;color:#e8ecf1;">NEW HIGHS</div>' +
+              '<div style="font-size:20px;font-weight:700;color:#3fb950;">' + nh + "</div></div>" +
+              '<div style="flex:1;height:24px;background:#1a2030;border-radius:4px;overflow:hidden;display:flex;">' +
+              '<div style="width:' + nhPct + '%;background:#3fb950;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0a0f0a;">' + (nh > 0 ? nh : "") + "</div>" +
+              '<div style="flex:1;background:#f85149;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">' + (nl > 0 ? nl : "") + "</div></div>" +
+              '<div style="text-align:center;"><div style="font-size:11px;color:#e8ecf1;">NEW LOWS</div>' +
+              '<div style="font-size:20px;font-weight:700;color:#f85149;">' + nl + "</div></div></div>";
+          }
         } else if (p.chart) {
           chartHtml = '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy">';
         }
@@ -500,7 +515,7 @@
             const w = Math.min(pct * 4, 100); // scale for visibility
             const dir = grp.net >= 0 ? "long" : "short";
             return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-              '<span style="font-size:11px;color:#787b86;width:110px;">' + label + '</span>' +
+              '<span style="font-size:11px;color:#e8ecf1;width:110px;">' + label + '</span>' +
               '<div style="flex:1;height:20px;background:#1a2030;border-radius:4px;position:relative;overflow:hidden;">' +
               '<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#363c4e;"></div>' +
               '<div style="position:absolute;top:0;bottom:0;' +
@@ -508,7 +523,7 @@
               'background:' + color + ';display:flex;align-items:center;' +
               (grp.net >= 0 ? "justify-content:flex-start;padding-left:6px;" : "justify-content:flex-end;padding-right:6px;") +
               'font-size:10px;font-weight:700;color:#fff;white-space:nowrap;">' + fmt(grp.net) + "</div></div>" +
-              '<span style="font-size:10px;color:#787b86;width:70px;text-align:right;">net ' + dir + "</span></div>";
+              '<span style="font-size:10px;color:#e8ecf1;width:70px;text-align:right;">net ' + dir + "</span></div>";
           };
           // Extreme badges
           const extBadge = (grp) => {
@@ -536,14 +551,14 @@
             bar("Small Specs 👥", s, "#d29922") +
             "</div>" +
             '<div style="font-size:12px;color:#c8d0dc;margin:8px 0;">' + read + "</div>" +
-            '<div style="font-size:11px;color:#787b86;">' +
+            '<div style="font-size:11px;color:#e8ecf1;">' +
             "Commercials" + extBadge(c) + " · Large Specs" + extBadge(l) + " · Small Specs" + extBadge(s) + "</div>" +
             '<div class="panel-asof">CFTC data as of ' + esc(d.report_date || "") + " (published Friday, 3-day lag)</div></div>";
         }).join("");
       return '<div class="card" style="margin-bottom:16px;"><h3>Commitments of Traders (COT) <span style="font-size:10px;background:#3fb950;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">FREE</span></h3>' +
         '<div class="section-sub">Where is institutional capital positioned? Weekly CFTC futures data.</div>' +
         '<div class="zoomable-chart" data-chart="cot" style="position:relative;height:240px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="cot-chart"></canvas>' +
-        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
         cards +
         '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
         "<p><b>What is this?</b> The CFTC's weekly Commitments of Traders report reveals how three groups are positioned in futures: " +
@@ -580,20 +595,20 @@
       return '<div class="card" style="margin-bottom:16px;"><h3>AAII Investor Sentiment <span style="font-size:10px;background:#3fb950;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">FREE</span></h3>' +
         '<div class="section-sub">Weekly survey of individual investors — are they bullish or bearish on stocks over the next 6 months?</div>' +
         '<div class="zoomable-chart" data-chart="aaii" style="position:relative;height:220px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="aaii-chart"></canvas>' +
-        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;text-align:center;">' +
-        '<div><div style="font-size:11px;color:#787b86;">🐂 BULLISH</div>' +
+        '<div><div style="font-size:11px;color:#e8ecf1;">🐂 BULLISH</div>' +
         '<div style="font-size:22px;font-weight:700;color:#3fb950;">' + b.toFixed(1) + "%" + "</div>" +
-        '<div style="font-size:11px;color:#787b86;">avg ' + (avg.bullish != null ? avg.bullish.toFixed(1) : "—") + "%" + chg(d.bullish_change) + "</div></div>" +
-        '<div><div style="font-size:11px;color:#787b86;">➖ NEUTRAL</div>' +
+        '<div style="font-size:11px;color:#e8ecf1;">avg ' + (avg.bullish != null ? avg.bullish.toFixed(1) : "—") + "%" + chg(d.bullish_change) + "</div></div>" +
+        '<div><div style="font-size:11px;color:#e8ecf1;">➖ NEUTRAL</div>' +
         '<div style="font-size:22px;font-weight:700;color:#c8d0dc;">' + n.toFixed(1) + "%" + "</div>" +
-        '<div style="font-size:11px;color:#787b86;">avg ' + (avg.neutral != null ? avg.neutral.toFixed(1) : "—") + "%</div></div>" +
-        '<div><div style="font-size:11px;color:#787b86;">🐻 BEARISH</div>' +
+        '<div style="font-size:11px;color:#e8ecf1;">avg ' + (avg.neutral != null ? avg.neutral.toFixed(1) : "—") + "%</div></div>" +
+        '<div><div style="font-size:11px;color:#e8ecf1;">🐻 BEARISH</div>' +
         '<div style="font-size:22px;font-weight:700;color:#f85149;">' + br.toFixed(1) + "%" + "</div>" +
-        '<div style="font-size:11px;color:#787b86;">avg ' + (avg.bearish != null ? avg.bearish.toFixed(1) : "—") + "%" + chg(d.bearish_change) + "</div></div>" +
+        '<div style="font-size:11px;color:#e8ecf1;">avg ' + (avg.bearish != null ? avg.bearish.toFixed(1) : "—") + "%" + chg(d.bearish_change) + "</div></div>" +
         "</div>" +
         '<div style="text-align:center;margin:8px 0;">' +
-        '<span style="font-size:13px;color:#787b86;">Bull-Bear Spread: </span>' +
+        '<span style="font-size:13px;color:#e8ecf1;">Bull-Bear Spread: </span>' +
         '<span style="font-size:16px;font-weight:700;color:' + spreadColor + ';">' + (spread >= 0 ? "+" : "") + spread.toFixed(1) + "%</span></div>" +
         '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
         "<p><b>What is this?</b> Every week, the American Association of Individual Investors asks its members: " +
@@ -620,7 +635,7 @@
             extreme_fear: "#f85149", elevated_fear: "#d29922",
             normal: "#58a6ff", complacent: "#3fb950",
           };
-          const rc = regimeColors[d.regime] || "#787b86";
+          const rc = regimeColors[d.regime] || "#e8ecf1";
           const trendIcon = d.trend === "steepening" ? "📈" : d.trend === "flattening" ? "📉" : "➡️";
           const trendLabel = d.trend === "steepening" ? "Steepening (fear rising)" :
             d.trend === "flattening" ? "Flattening (fear fading)" : "Stable";
@@ -631,22 +646,22 @@
             ' <span style="font-size:12px;color:' + rc + ';">' + esc(d.regime_label || "") + "</span></h3>" +
             '<div style="margin:12px 0;">' +
             '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-            '<span style="font-size:11px;color:#787b86;width:70px;">Put IV</span>' +
+            '<span style="font-size:11px;color:#e8ecf1;width:70px;">Put IV</span>' +
             '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
             '<div style="width:' + putPct + '%;height:100%;background:#f85149;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#fff;">' + d.put_iv.toFixed(1) + "%</div></div></div>" +
             '<div style="display:flex;align-items:center;gap:8px;">' +
-            '<span style="font-size:11px;color:#787b86;width:70px;">Call IV</span>' +
+            '<span style="font-size:11px;color:#e8ecf1;width:70px;">Call IV</span>' +
             '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
             '<div style="width:' + callPct + '%;height:100%;background:#3fb950;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#0a0f0a;">' + d.call_iv.toFixed(1) + "%</div></div></div>" +
             "</div>" +
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-            '<div><div style="font-size:11px;color:#787b86;">SKEW</div>' +
+            '<div><div style="font-size:11px;color:#e8ecf1;">SKEW</div>' +
             '<div style="font-size:20px;font-weight:700;color:' + rc + ';">+' + d.skew.toFixed(1) + " vp</div></div>" +
-            '<div><div style="font-size:11px;color:#787b86;">TREND</div>' +
+            '<div><div style="font-size:11px;color:#e8ecf1;">TREND</div>' +
             '<div style="font-size:14px;font-weight:600;color:#e8ecf1;">' + trendIcon + " " + trendLabel + "</div>" +
-            (d.skew_change != null ? '<div style="font-size:11px;color:#787b86;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs 5d avg</div>" : "") + "</div>" +
+            (d.skew_change != null ? '<div style="font-size:11px;color:#e8ecf1;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs 5d avg</div>" : "") + "</div>" +
             "</div>" +
-            '<div style="font-size:12px;color:#787b86;">Put $' + d.put_strike.toFixed(0) + " / Call $" + d.call_strike.toFixed(0) + " · " + d.dte + " DTE</div>" +
+            '<div style="font-size:12px;color:#e8ecf1;">Put $' + d.put_strike.toFixed(0) + " / Call $" + d.call_strike.toFixed(0) + " · " + d.dte + " DTE</div>" +
             '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div></div>";
         }).join("");
       return cards || '<p style="color:var(--muted)">Skew data unavailable.</p>';
@@ -672,18 +687,18 @@
         '<div style="width:' + callPct + '%;background:#3fb950;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0a0f0a;" title="Call GEX: +' + d.call_gex.toFixed(2) + unit + '">+' + d.call_gex.toFixed(1) + unit + '</div>' +
         '<div style="width:' + putPct + '%;background:#f85149;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;" title="Put GEX: ' + d.put_gex.toFixed(2) + unit + '">' + d.put_gex.toFixed(1) + unit + '</div>' +
         "</div>" +
-        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
         '<div style="text-align:center;margin-bottom:12px;"><span style="font-size:13px;color:' + regimeColor + ';font-weight:700;">' + regimeIcon + " " + regimeLabel + "</span></div>" +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-        '<div><div style="font-size:11px;color:#787b86;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
-        '<div><div style="font-size:11px;color:#787b86;">NET GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
+        '<div><div style="font-size:11px;color:#e8ecf1;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
+        '<div><div style="font-size:11px;color:#e8ecf1;">NET GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
         (d.total_gex >= 0 ? "+" : "") + d.total_gex.toFixed(2) + unit + "</div></div>" +
-        '<div><div style="font-size:11px;color:#787b86;">ZERO GAMMA</div><div style="font-size:15px;font-weight:600;color:#e8ecf1;">' +
+        '<div><div style="font-size:11px;color:#e8ecf1;">ZERO GAMMA</div><div style="font-size:15px;font-weight:600;color:#e8ecf1;">' +
         (d.zero_gamma != null ? "$" + d.zero_gamma.toFixed(2) : "—") + "</div>" +
-        '<div style="font-size:12px;color:#787b86;">Spot ' + spotVsZG + "</div></div>" +
-        '<div><div style="font-size:11px;color:#787b86;">WALLS</div><div style="font-size:15px;font-weight:600;">' +
+        '<div style="font-size:12px;color:#e8ecf1;">Spot ' + spotVsZG + "</div></div>" +
+        '<div><div style="font-size:11px;color:#e8ecf1;">WALLS</div><div style="font-size:15px;font-weight:600;">' +
         '<span style="color:#3fb950;" title="Call wall (resistance)">C $' + (d.call_wall != null ? d.call_wall.toFixed(0) : "—") + "</span>" +
-        ' <span style="color:#787b86;">/</span> ' +
+        ' <span style="color:#e8ecf1;">/</span> ' +
         '<span style="color:#f85149;" title="Put wall (support)">P $' + (d.put_wall != null ? d.put_wall.toFixed(0) : "—") + "</span></div></div>" +
         "</div>" +
         '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
@@ -695,7 +710,7 @@
         "<p><b>Zero gamma ($" + (d.zero_gamma != null ? d.zero_gamma.toFixed(2) : "—") + ")</b> is the flip point — above it dealers stabilize, below it they accelerate. " +
         "The <b style='color:#3fb950'>call wall</b> acts as resistance and the <b style='color:#f85149'>put wall</b> as support.</p>" +
         "</div>" +
-        '<div style="font-size:12px;color:#787b86;">' + d.contracts_analyzed.toLocaleString() + " contracts analyzed</div>" +
+        '<div style="font-size:12px;color:#e8ecf1;">' + d.contracts_analyzed.toLocaleString() + " contracts analyzed</div>" +
         '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
     }
 
@@ -704,7 +719,7 @@
         extreme_fear: "#f85149", elevated_fear: "#d29922",
         normal: "#58a6ff", complacent: "#3fb950",
       };
-      const rc = regimeColors[d.regime] || "#787b86";
+      const rc = regimeColors[d.regime] || "#e8ecf1";
       const trendIcon = d.trend === "steepening" ? "📈" : d.trend === "flattening" ? "📉" : "➡️";
       const trendText = d.trend === "steepening" ? "Steepening — fear rising" :
         d.trend === "flattening" ? "Flattening — fear fading" : "Stable";
@@ -714,22 +729,22 @@
       return '<div class="zoomable-chart" data-chart="skew-ticker" data-ticker="' + esc(tk) + '" style="position:relative;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom">' +
         '<div style="margin:12px 0;">' +
         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-        '<span style="font-size:11px;color:#787b86;width:70px;">Put IV</span>' +
+        '<span style="font-size:11px;color:#e8ecf1;width:70px;">Put IV</span>' +
         '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
         '<div style="width:' + putPct + '%;height:100%;background:#f85149;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#fff;">' + d.put_iv.toFixed(1) + "%</div></div></div>" +
         '<div style="display:flex;align-items:center;gap:8px;">' +
-        '<span style="font-size:11px;color:#787b86;width:70px;">Call IV</span>' +
+        '<span style="font-size:11px;color:#e8ecf1;width:70px;">Call IV</span>' +
         '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
         '<div style="width:' + callPct + '%;height:100%;background:#3fb950;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#0a0f0a;">' + d.call_iv.toFixed(1) + "%</div></div></div>" +
         "</div>" +
-        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-        '<div><div style="font-size:11px;color:#787b86;">SKEW</div>' +
+        '<div><div style="font-size:11px;color:#e8ecf1;">SKEW</div>' +
         '<div style="font-size:20px;font-weight:700;color:' + rc + ';">+' + d.skew.toFixed(1) + " vp</div>" +
         '<div style="font-size:12px;color:' + rc + ';">' + esc(d.regime_label || "") + "</div></div>" +
-        '<div><div style="font-size:11px;color:#787b86;">TREND</div>' +
+        '<div><div style="font-size:11px;color:#e8ecf1;">TREND</div>' +
         '<div style="font-size:14px;font-weight:600;color:#e8ecf1;">' + trendIcon + " " + trendText + "</div>" +
-        (d.skew_change != null ? '<div style="font-size:11px;color:#787b86;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs prior</div>" : "") + "</div>" +
+        (d.skew_change != null ? '<div style="font-size:11px;color:#e8ecf1;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs prior</div>" : "") + "</div>" +
         "</div>" +
         '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
         "<p><b>What is this?</b> Volatility skew compares what investors pay for downside puts versus upside calls on " + esc(tk) + ". " +
@@ -740,7 +755,7 @@
           ? "<p><b style='color:#3fb950'>Flat skew</b> — complacency. Downside protection is cheap — good time to hedge if bearish. But extreme flatness can signal euphoric tops.</p>"
           : "<p>Skew is in the normal range for equities. No extreme positioning to fade.</p>") +
         "</div>" +
-        '<div style="font-size:12px;color:#787b86;">Put $' + d.put_strike.toFixed(2) + " / Call $" + d.call_strike.toFixed(2) + " · " + d.dte + " DTE</div>" +
+        '<div style="font-size:12px;color:#e8ecf1;">Put $' + d.put_strike.toFixed(2) + " / Call $" + d.call_strike.toFixed(2) + " · " + d.dte + " DTE</div>" +
         '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
     }
 
@@ -765,18 +780,18 @@
           return '<div class="card" style="margin-bottom:12px;"><h3>' + esc(d.symbol) +
             ' <span style="font-size:12px;color:' + regimeColor + ';">' + regimeIcon + " " + regimeLabel + "</span></h3>" +
             '<div class="zoomable-chart" data-chart="gex-index" data-symbol="' + esc(d.symbol) + '" style="position:relative;height:200px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + chartId + '"></canvas>' +
-            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-            '<div><div style="font-size:11px;color:#787b86;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
-            '<div><div style="font-size:11px;color:#787b86;">TOTAL GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
+            '<div><div style="font-size:11px;color:#e8ecf1;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
+            '<div><div style="font-size:11px;color:#e8ecf1;">TOTAL GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
             (d.total_gex >= 0 ? "+" : "") + d.total_gex.toFixed(2) + "B</div></div>" +
-            '<div><div style="font-size:11px;color:#787b86;">ZERO GAMMA</div><div style="font-size:16px;font-weight:600;color:#e8ecf1;">' +
-            (d.zero_gamma != null ? "$" + d.zero_gamma.toFixed(2) + " <span style='font-size:12px;color:#787b86;'>(spot " + spotVsZG + ")</span>" : "—") + "</div></div>" +
-            '<div><div style="font-size:11px;color:#787b86;">CALL WALL / PUT WALL</div><div style="font-size:16px;font-weight:600;color:#e8ecf1;">' +
-            (d.call_wall != null ? "$" + d.call_wall.toFixed(0) : "—") + ' <span style="color:#787b86;">/</span> ' +
+            '<div><div style="font-size:11px;color:#e8ecf1;">ZERO GAMMA</div><div style="font-size:16px;font-weight:600;color:#e8ecf1;">' +
+            (d.zero_gamma != null ? "$" + d.zero_gamma.toFixed(2) + " <span style='font-size:12px;color:#e8ecf1;'>(spot " + spotVsZG + ")</span>" : "—") + "</div></div>" +
+            '<div><div style="font-size:11px;color:#e8ecf1;">CALL WALL / PUT WALL</div><div style="font-size:16px;font-weight:600;color:#e8ecf1;">' +
+            (d.call_wall != null ? "$" + d.call_wall.toFixed(0) : "—") + ' <span style="color:#e8ecf1;">/</span> ' +
             (d.put_wall != null ? "$" + d.put_wall.toFixed(0) : "—") + "</div></div>" +
             "</div>" +
-            '<div style="font-size:12px;color:#787b86;margin-top:8px;">Call GEX +' + d.call_gex.toFixed(2) + "B · Put GEX " + d.put_gex.toFixed(2) + "B · " +
+            '<div style="font-size:12px;color:#e8ecf1;margin-top:8px;">Call GEX +' + d.call_gex.toFixed(2) + "B · Put GEX " + d.put_gex.toFixed(2) + "B · " +
             d.contracts_analyzed.toLocaleString() + " contracts</div>" +
             '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div></div>";
         }).join("");
@@ -857,6 +872,7 @@
           "That\u2019s a narrow, fragile market — the kind that breaks hard when the leaders stumble.</p>" +
           "<p><b>What does today\u2019s reading mean?</b> Breadth spread is <b>" + cur.breadth_spread.toFixed(1) + "pp</b>, " +
           cur.pct_above_50d.toFixed(0) + "% of stocks above their 50-day MA and " + cur.pct_above_200d.toFixed(0) + "% above their 200-day MA. " +
+          (cur.new_highs != null ? "<b>" + cur.new_highs + " stocks hit new 52-week highs</b> vs <b>" + cur.new_lows + " hitting new 52-week lows</b>. " : "") +
           (cur.breadth_spread <= -10
             ? "Breadth is extremely narrow — the index is masking broad weakness underneath. Rallies built this narrow have a poor track record of lasting."
             : cur.breadth_spread <= -5
@@ -939,7 +955,7 @@
         '<p style="color:var(--muted);font-size:12px;"><b>One caveat:</b> defensive stocks (especially utilities and staples) are sensitive to interest rates — they behave a bit like bonds. A sudden spike in rates can crush defensives and make the ratio jump even when the economy is not actually accelerating. Always check this signal against the broader market internals above.</p>' +
         '</div>';
       const rsiHtml = '<div class="zoomable-chart" data-chart="rsicd" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="rsicd-chart"></canvas>' +
-        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
         '<div class="panel-summary">XLY ÷ XLP ratio with 14-period RSI. Current RSI ' + rsiVal +
         ' (' + rsiSignal + '). Ratio ' + ratioVal +
         ' vs 50-day MA ' + maVal + '.</div>' +
@@ -1032,9 +1048,9 @@
                 } }
             },
             scales: {
-              x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-              y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
-                title: { display: true, text: "z-score", color: "#787b86", font: { size: 11 } } }
+              x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+              y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
+                title: { display: true, text: "z-score", color: "#e8ecf1", font: { size: 11 } } }
             } }
         });
       } catch (e) { console.error("VolDiv chart error", e); }
@@ -1074,7 +1090,7 @@
                   } }
               },
               scales: {
-                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
                 y: { type: "linear", position: "left", ticks: { color: "#ffd60a" }, grid: { color: "rgba(42,46,57,0.4)" },
                   title: { display: true, text: "S&P 500", color: "#ffd60a", font: { size: 11 } } },
                 y1: { type: "linear", position: "right", ticks: { color: "#00e676" }, grid: { display: false },
@@ -1124,7 +1140,7 @@
           const datasets = Object.entries(themes).map(([name, vals]) => ({
             label: name,
             data: [{ x: vals.x, y: vals.y }],
-            backgroundColor: qColors[vals.q] || "#787b86",
+            backgroundColor: qColors[vals.q] || "#e8ecf1",
             pointRadius: 7, pointHoverRadius: 10,
           }));
           new Chart(trc, {
@@ -1141,10 +1157,10 @@
                   } }
               },
               scales: {
-                x: { min: -pad, max: pad, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
-                  title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#787b86", font: { size: 11 } } },
-                y: { min: -pad, max: pad, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
-                  title: { display: true, text: "20d momentum (%) →", color: "#787b86", font: { size: 11 } } }
+                x: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#e8ecf1", font: { size: 11 } } },
+                y: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "20d momentum (%) →", color: "#e8ecf1", font: { size: 11 } } }
               } },
             plugins: [quadBg]
           });
@@ -1170,8 +1186,8 @@
                   titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 }
               },
               scales: {
-                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                y: { ticks: { color: "#787b86", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
+                x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
               } }
           });
         } catch (e) { console.error("SmCap chart error", e); }
@@ -1194,8 +1210,8 @@
               plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
                 tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 } },
               scales: {
-                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#787b86", font: { size: 11 } } } } }
+                x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#e8ecf1", font: { size: 11 } } } } }
           });
         } catch (e) { console.error("CreditVol chart error", e); }
       }
@@ -1217,9 +1233,9 @@
               plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
                 tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 } },
               scales: {
-                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
                 y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" } },
-                y1: { position: "right", ticks: { color: "#787b86", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
+                y1: { position: "right", ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
           });
         } catch (e) { console.error("Breadth chart error", e); }
       }
@@ -1254,9 +1270,9 @@
                   } }
               },
               scales: {
-                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                y: { min: 0, max: 100, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
-                  title: { display: true, text: "RSI", color: "#787b86", font: { size: 11 } } }
+                x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { min: 0, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "RSI", color: "#e8ecf1", font: { size: 11 } } }
               } }
           });
         } catch (e) { console.error("RSICD chart error", e); }
@@ -1283,9 +1299,9 @@
                   callbacks: { label: (c) => "  " + c.dataset.label + ": " + c.parsed.y.toFixed(1) + "%" } }
               },
               scales: {
-                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                y: { ticks: { color: "#787b86", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
-                  title: { display: true, text: "Sentiment %", color: "#787b86", font: { size: 11 } } }
+                x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "Sentiment %", color: "#e8ecf1", font: { size: 11 } } }
               } }
           });
         } catch (e) { console.error("AAII chart error", e); }
@@ -1314,9 +1330,9 @@
                   callbacks: { label: (c) => "  " + c.dataset.label + ": " + (c.parsed.y >= 0 ? "+" : "") + Math.round(c.parsed.y).toLocaleString() + " contracts" } }
               },
               scales: {
-                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                y: { ticks: { color: "#787b86", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
-                  title: { display: true, text: "Net contracts", color: "#787b86", font: { size: 11 } } }
+                x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { ticks: { color: "#e8ecf1", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "Net contracts", color: "#e8ecf1", font: { size: 11 } } }
               } }
           });
         } catch (e) { console.error("COT chart error", e); }
@@ -1356,7 +1372,7 @@
                     callbacks: { label: (c) => "  $" + c.parsed.x.toFixed(2) } },
                 },
                 scales: {
-                  x: { ticks: { color: "#787b86", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
+                  x: { ticks: { color: "#e8ecf1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
                   y: { ticks: { color: "#c8d0dc", font: { size: 11 } }, grid: { display: false } },
                 },
               },
@@ -1472,7 +1488,7 @@
                       callbacks: { label: (c) => "  $" + c.parsed.x.toFixed(2) } },
                   },
                   scales: {
-                    x: { ticks: { color: "#787b86", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    x: { ticks: { color: "#e8ecf1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
                     y: { ticks: { color: "#c8d0dc" }, grid: { display: false } },
                   },
                 },
@@ -1511,7 +1527,7 @@
                   plugins: { legend: { labels: { color: "#c8d0dc" } },
                     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
                   scales: {
-                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
                     y: { position: "left", ticks: { color: "#ffd60a" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "S&P 500", color: "#ffd60a" } },
                     y1: { position: "right", ticks: { color: "#00e676" }, grid: { display: false }, title: { display: true, text: "Fwd EPS ($)", color: "#00e676" } } } }
               });
@@ -1529,8 +1545,8 @@
                   plugins: { legend: { labels: { color: "#c8d0dc" } },
                     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
                   scales: {
-                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                    y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#787b86" } } } }
+                    x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#e8ecf1" } } } }
               });
             } else if (kind === "themerot") {
               const trh = D.theme_rot_history;
@@ -1544,7 +1560,7 @@
                 type: "scatter",
                 data: { datasets: Object.entries(themes).map(([name, vals]) => ({
                   label: name, data: [{ x: vals.x, y: vals.y }],
-                  backgroundColor: qColors[vals.q] || "#787b86", pointRadius: 9, pointHoverRadius: 12,
+                  backgroundColor: qColors[vals.q] || "#e8ecf1", pointRadius: 9, pointHoverRadius: 12,
                 }))},
                 options: { responsive: true, maintainAspectRatio: false,
                   plugins: { legend: { display: false },
@@ -1554,8 +1570,8 @@
                         label: (c) => "  RS vs 70d avg: " + c.parsed.x.toFixed(1) + "%, 20d momentum: " + c.parsed.y.toFixed(1) + "%"
                       } } },
                   scales: {
-                    x: { min: -pad, max: pad, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#787b86" } },
-                    y: { min: -pad, max: pad, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "20d momentum (%) →", color: "#787b86" } } } },
+                    x: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#e8ecf1" } },
+                    y: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "20d momentum (%) →", color: "#e8ecf1" } } } },
                 plugins: [quadBg]
               });
             } else if (kind === "smcap") {
@@ -1571,8 +1587,8 @@
                   plugins: { legend: { labels: { color: "#c8d0dc" } },
                     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
                   scales: {
-                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                    y: { ticks: { color: "#787b86", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
+                    x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
               });
             } else if (kind === "creditvol") {
               const hist = D.credit_vol_history.history;
@@ -1588,8 +1604,8 @@
                   plugins: { legend: { labels: { color: "#c8d0dc" } },
                     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
                   scales: {
-                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                    y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#787b86" } } } }
+                    x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#e8ecf1" } } } }
               });
             } else if (kind === "breadth") {
               const hist = D.breadth_history.history;
@@ -1605,9 +1621,9 @@
                   plugins: { legend: { labels: { color: "#c8d0dc" } },
                     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
                   scales: {
-                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
                     y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" } },
-                    y1: { position: "right", ticks: { color: "#787b86", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
+                    y1: { position: "right", ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
               });
             } else if (kind === "rsicd") {
               const hist = D.rsi_cd_history.history;
@@ -1623,9 +1639,9 @@
                   plugins: { legend: { labels: { color: "#c8d0dc" } },
                     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
                   scales: {
-                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                    y: { min: 0, max: 100, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
-                      title: { display: true, text: "RSI", color: "#787b86" } } } }
+                    x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { min: 0, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
+                      title: { display: true, text: "RSI", color: "#e8ecf1" } } } }
               });
             } else if (kind === "aaii") {
               const hist = (D.aaii_sentiment.history || []);
@@ -1642,9 +1658,9 @@
                     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
                       callbacks: { label: (c) => "  " + c.dataset.label + ": " + c.parsed.y.toFixed(1) + "%" } } },
                   scales: {
-                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                    y: { ticks: { color: "#787b86", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
-                      title: { display: true, text: "Sentiment %", color: "#787b86" } } } }
+                    x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+                      title: { display: true, text: "Sentiment %", color: "#e8ecf1" } } } }
               });
             } else if (kind === "cot") {
               const hist = (D.cot_data.history || []);
@@ -1662,9 +1678,9 @@
                     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
                       callbacks: { label: (c) => "  " + c.dataset.label + ": " + (c.parsed.y >= 0 ? "+" : "") + Math.round(c.parsed.y).toLocaleString() } } },
                   scales: {
-                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                    y: { ticks: { color: "#787b86", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
-                      title: { display: true, text: "Net contracts", color: "#787b86" } } } }
+                    x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#e8ecf1", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
+                      title: { display: true, text: "Net contracts", color: "#e8ecf1" } } } }
               });
             }
           } catch (e) { console.error("Zoom chart error", e); }
@@ -2263,8 +2279,8 @@
                 }
               },
               scales: {
-                x: { ticks: { color: "#787b86", maxTicksLimit: 8, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.5)" } },
-                y: { position: "right", ticks: { color: "#787b86", callback: (v) => v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.5)" } },
+                x: { ticks: { color: "#e8ecf1", maxTicksLimit: 8, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.5)" } },
+                y: { position: "right", ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.5)" } },
                 y1: { position: "right", display: false, max: Math.max(...vols, 1) * 5, grid: { display: false } }
               }
             },
