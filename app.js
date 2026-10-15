@@ -309,7 +309,7 @@
   } catch (e) {}
   // Clear GEX strike chart registry for fresh render
   Object.keys(gexStrikeChartData).forEach((k) => delete gexStrikeChartData[k]);
-  document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
+  document.querySelectorAll(".topnav a[data-route]").forEach((b) =>
    b.classList.toggle("active", b.dataset.route === r.name));
   syncCoveragePick(r);
   updateProBtn();
@@ -367,8 +367,7 @@
  }
 
  document.getElementById("brand-home").onclick = () => nav("");
- document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
-  b.addEventListener("click", () => nav(b.dataset.route === "home" ? "" : b.dataset.route)));
+ // Topnav uses direct <a href="#/..."> links; no JS click handlers needed
  window.addEventListener("hashchange", render);
  // Save scroll position when tab is hidden (mobile tab switch)
  document.addEventListener("visibilitychange", () => {
