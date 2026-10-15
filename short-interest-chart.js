@@ -7,7 +7,7 @@
   "use strict";
 
   var instanceCounter = 0;
-  var CHART_GREEN = "#4ade80";
+  var CHART_RED = "#ef4444";
   var CHART_WHITE = "#ffffff";
   var BG_COLOR = "#000000";
   var GRID_COLOR = "rgba(255,255,255,0.12)";
@@ -92,7 +92,7 @@
           {
             label: "Short interest",
             data: bars,
-            backgroundColor: CHART_GREEN,
+            backgroundColor: CHART_RED,
             borderRadius: 2,
             yAxisID: "y",
             order: 2
@@ -179,7 +179,7 @@
       (opts.showTicker === false ? "" : ' <span style="font-size:13px;color:' + TEXT_COLOR + ';font-weight:400;">' + escapeHtml(ticker) + "</span>") +
       "</div>" +
       '<div style="display:flex;gap:24px;margin-bottom:8px;font-size:13px;color:' + TEXT_COLOR + ';">' +
-      '<span><span style="display:inline-block;width:24px;height:4px;background:' + CHART_GREEN + ';border-radius:2px;vertical-align:middle;margin-right:8px;"></span>Short interest</span>' +
+      '<span><span style="display:inline-block;width:24px;height:4px;background:' + CHART_RED + ';border-radius:2px;vertical-align:middle;margin-right:8px;"></span>Short interest</span>' +
       '<span><span style="display:inline-block;width:24px;height:4px;background:' + CHART_WHITE + ';border-radius:2px;vertical-align:middle;margin-right:8px;"></span>Short float</span>' +
       "</div>" +
       '<div id="' + id + '-body" style="position:relative;height:300px;"></div>' +
