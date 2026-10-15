@@ -70,6 +70,10 @@ def main():
     except FileNotFoundError:
         earnings_history = {}
     try:
+        earnings_revisions = load(os.path.join(MR, "earnings_revisions.json"))
+    except FileNotFoundError:
+        earnings_revisions = {}
+    try:
         fcf_backfill = load(os.path.join(HERE, "fcf_backfill.json"))
     except FileNotFoundError:
         fcf_backfill = {}
@@ -194,6 +198,7 @@ def main():
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
+        "earnings_revisions": earnings_revisions,
         "earnings_calendar": earnings_calendar,
         "stripe_payment_link": "https://buy.stripe.com/28E00j5w3e4lb5c2pObbG01",
     }
