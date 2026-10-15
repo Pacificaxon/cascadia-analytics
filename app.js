@@ -739,12 +739,54 @@
    }
    if (!placeholders.length) return;
    // Gemini's diagnostic patch: shows the real reason on screen
+   // Uses simple summary cards (nested tracker functions aren't in scope here)
    function renderVisual(el, key) {
     const gens = {
-     "fed-funds": () => D.fed_funds && D.fed_funds.available ? fedFundsHtml(D.fed_funds) : null,
-     "macro": () => D.macro_indicators ? macroAnalysisHtml(D.macro_indicators) : null,
-     "gex": () => D.gex_data && D.gex_data.indices ? gexTrackerHtml(D.gex_data) : null,
-     "skew": () => D.skew_data && D.skew_data.indices ? skewTrackerHtml(D.skew_data) : null
+     "fed-funds": () => {
+      const d = D.fed_funds;
+      if (!d || !d.available) return null;
+      return '<div class="card" style="padding:16px;"><h4>Fed Funds Futures</h4>' +
+       '<p style="font-size:13px;">EFFR: ' + esc(d.effr || "-") + ' | Target: ' + esc(d.target_range || "-") + '</p>' +
+       '<p style="font-size:12px;color:var(--muted);">See Market Internals for full probability table.</p></div>';
+     },
+     "macro": () => {
+      const d = D.macro_indicators;
+      if (!d) return null;
+      const hist = d.history || [];
+      const latest = hist[hist.length - 1] || {};
+      return '<div class="card" style="padding:16px;"><h4>Macro Snapshot</h4>' +
+       '<p style="font-size:13px;">CPI: ' + (latest.cpi_yoy != null ? latest.cpi_yoy.toFixed(1) + "%" : "-") +
+       ' | PPI: ' + (latest.ppi_yoy != null ? latest.ppi_yoy.toFixed(1) + "%" : "-") +
+       ' | PMI: ' + (latest.pmi != null ? latest.pmi.toFixed(1) : "-") + '</p>' +
+       '<p style="font-size:12px;color:var(--muted);">See Market Internals for full chart.</p></div>';
+     },
+     "gex": () => {
+      const d = D.gex_data;
+      if (!d || !d.indices) return null;
+      let h = '<div class="card" style="padding:16px;"><h4>Gamma Positioning</h4>';
+      ["QQQ", "SPY"].forEach((idx) => {
+       const g = d.indices[idx];
+       if (g) {
+        h += '<p style="font-size:13px;"><b>' + idx + ':</b> Spot $' + (g.spot != null ? g.spot.toFixed(2) : "-") +
+         ' | Net GEX ' + (g.net_gex != null ? g.net_gex.toFixed(2) : "-") + '</p>';
+       }
+      });
+      h += '<p style="font-size:12px;color:var(--muted);">See Market Internals for full GEX charts.</p></div>';
+      return h;
+     },
+     "skew": () => {
+      const d = D.skew_data;
+      if (!d || !d.indices) return null;
+      let h = '<div class="card" style="padding:16px;"><h4>Volatility Skew</h4>';
+      ["QQQ", "SPY"].forEach((idx) => {
+       const s = d.indices[idx];
+       if (s) {
+        h += '<p style="font-size:13px;"><b>' + idx + ':</b> Skew ' + (s.skew != null ? s.skew.toFixed(1) : "-") + '</p>';
+       }
+      });
+      h += '<p style="font-size:12px;color:var(--muted);">See Market Internals for full skew charts.</p></div>';
+      return h;
+     }
     };
     try {
      const html = gens[key] ? gens[key]() : null;
