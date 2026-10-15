@@ -4032,8 +4032,8 @@
   render();    // fast first paint from localStorage cache
   refreshAuth(); // server-verified Pro status, re-renders when resolved
   // Debug mode: add ?debug=1 to URL to see auth status (for iOS troubleshooting)
-  if (location.search.includes("debug=1")) {
-   setTimeout(() => {
+  if (location.search.includes("debug=1") || location.hash.includes("debug=1")) {
+   const showDebug = () => {
     const info = [
      "isPro(): " + isPro(),
      "proVerified: " + proVerified,
@@ -4042,8 +4042,21 @@
      "PRO_DATA: " + (PRO_DATA ? "loaded" : "null"),
      "Route: " + (location.hash || "#/")
     ].join("\n");
-    alert("DEBUG:\n\n" + info);
-   }, 2000);
+    // Show as a fixed banner instead of alert (more reliable on iOS)
+    let banner = document.getElementById("debug-banner");
+    if (!banner) {
+     banner = document.createElement("div");
+     banner.id = "debug-banner";
+     banner.style.cssText = "position:fixed;top:0;left:0;right:0;background:#000;color:#0f0;padding:10px;font-family:monospace;font-size:12px;z-index:99999;white-space:pre-wrap;max-height:50vh;overflow:auto;";
+     document.body.appendChild(banner);
+    }
+    banner.textContent = "DEBUG (tap to dismiss):\n" + info;
+    banner.onclick = () => banner.remove();
+   };
+   // Try multiple times to catch auth completion
+   setTimeout(showDebug, 2000);
+   setTimeout(showDebug, 5000);
+   setTimeout(showDebug, 8000);
   }
  })();
 })();
