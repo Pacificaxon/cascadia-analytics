@@ -931,10 +931,6 @@
     });
     return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>';
   }
-    return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>;
-  }
-    return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>';
-  }
 
   function seasonalityHtml(tk) {
     const t = TICKERS[tk];
