@@ -556,19 +556,34 @@
    The report HTML contains <div data-embed-visual="key"></div> placeholders.
    Supported keys: fed-funds, macro, gex, skew */
  function embedAnalysisVisuals() {
-  const placeholders = document.querySelectorAll("[data-embed-visual]");
+  let placeholders;
+  try {
+   placeholders = document.querySelectorAll("[data-embed-visual]");
+  } catch (e) {
+   console.error("Visual placeholder query failed:", e);
+   return;
+  }
   if (!placeholders.length) return;
   placeholders.forEach((el) => {
-   const key = el.dataset.embedVisual;
+   let key = null;
+   try {
+    key = el.getAttribute("data-embed-visual");
+   } catch (e) {
+    key = null;
+   }
+   if (!key) {
+    el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.</p>';
+    return;
+   }
    try {
     if (key === "fed-funds" && D.fed_funds && D.fed_funds.available) {
      el.innerHTML = fedFundsHtml(D.fed_funds);
     } else if (key === "macro" && D.macro_indicators) {
      el.innerHTML = macroAnalysisHtml(D.macro_indicators);
-     drawMacroSnapshot();
+     try { drawMacroSnapshot(); } catch (drawErr) { console.error("Macro chart draw failed:", drawErr); }
     } else if (key === "gex" && D.gex_data && D.gex_data.indices) {
      el.innerHTML = gexTrackerHtml(D.gex_data);
-     drawGexStrikeCharts();
+     try { drawGexStrikeCharts(); } catch (drawErr) { console.error("GEX chart draw failed:", drawErr); }
     } else if (key === "skew" && D.skew_data && D.skew_data.indices) {
      el.innerHTML = skewTrackerHtml(D.skew_data);
     } else {
