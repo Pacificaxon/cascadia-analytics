@@ -485,7 +485,7 @@
     }
     h += gated("Market Internals — Pro",
       "Breadth monitor, Alligator Jaw, theme rotation, and credit-spread-vs-volatility trackers.",
-      '<div class="grid-2">' + panels.map((p) => {
+      '<div style="display:flex;flex-direction:column;gap:16px;">' + panels.map((p) => {
         let title = esc(p.name);
         if (/alligator/i.test(p.name)) {
           const isOpen = /jaw\s*open/i.test(p.summary || "");
@@ -1131,11 +1131,10 @@
         're-simulating every option\u2019s gamma via Black-Scholes across hypothetical price levels and finding where total GEX crosses zero. ' +
         'Data: CBOE delayed options chains, refreshed hourly during market hours.</p>' +
         "</div>";
-      h += '<div class="section"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+      h += '<div class="section" style="max-width:none;"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
         '<div class="section-sub">Options dealer positioning — will market makers dampen or amplify the next move? Updates hourly.</div>' +
-        '<div class="grid-2">' +
         gated("Gamma Exposure (GEX)", "Live dealer gamma positioning for QQQ and SPY — spot the volatility regime before it shifts.", gexHtml + gexExplainer) +
-        "</div></div>";
+        "</div>";
     }
 
     // Volatility Skew — Pro-gated, indices on homepage
@@ -1154,11 +1153,10 @@
         'Watch the trend: <i>steepening</i> skew into a selloff often marks capitulation bottoms.</p>' +
         '<p><b>Data:</b> CBOE delayed options chains, refreshed daily. SPY used as SPX proxy (SPX chain often blocked).</p>' +
         "</div>";
-      h += '<div class="section"><div class="section-title">Volatility Skew <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+      h += '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
         '<div class="section-sub">Put vs call implied volatility — what is smart money paying for? Updates daily.</div>' +
-        '<div class="grid-2">' +
         gated("Volatility Skew", "Live put/call IV skew for QQQ and SPY — read institutional fear in real time.", skewHtml + skewExplainer) +
-        "</div></div>";
+        "</div>";
     }
     // render interactive vol divergence chart after DOM insert
     setTimeout(() => {
