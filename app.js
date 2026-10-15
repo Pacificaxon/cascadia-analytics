@@ -238,13 +238,20 @@
  }
  function render() {
   const r = currentRoute();
+  // Save scroll position of the route we're leaving
+  try {
+    const prevHash = sessionStorage.getItem("__last_hash");
+    if (prevHash && prevHash !== location.hash) {
+      sessionStorage.setItem("__scroll_" + prevHash, String(window.scrollY || 0));
+    }
+    sessionStorage.setItem("__last_hash", location.hash);
+  } catch (e) {}
   // Clear GEX strike chart registry for fresh render
   Object.keys(gexStrikeChartData).forEach((k) => delete gexStrikeChartData[k]);
   document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
    b.classList.toggle("active", b.dataset.route === r.name));
   syncCoveragePick(r);
   updateProBtn();
-  window.scrollTo(0, 0);
   if (r.name === "ticker" && routes.ticker) routes.ticker(r.param);
   else if (routes[r.name]) routes[r.name]();
   else routes.home();
@@ -302,6 +309,14 @@
  document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
   b.addEventListener("click", () => nav(b.dataset.route === "home" ? "" : b.dataset.route)));
  window.addEventListener("hashchange", render);
+ // Save scroll position when tab is hidden (mobile tab switch)
+ document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+   try {
+    sessionStorage.setItem("__scroll_" + location.hash, String(window.scrollY || 0));
+   } catch (e) {}
+  }
+ });
  // Delegated handler for Pro teaser "See Pro Plans" links
  document.addEventListener("click", (e) => {
   if (e.target && e.target.id === "teaser-pricing") {
@@ -2353,7 +2368,6 @@
    h += '<div class="card"><p style="color:#e8ecf1;">The morning briefing has not been generated yet. Check back after the morning refresh.</p></div>';
   }
   app.innerHTML = h;
-  window.scrollTo(0, 0);
   // Wire previous report links
   document.querySelectorAll("[data-report]").forEach((a) => {
    a.addEventListener("click", () => {
