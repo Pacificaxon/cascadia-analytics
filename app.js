@@ -594,12 +594,15 @@
   } catch (e) { return ""; }
  }
  function newsRow(o) {
-  const clickable = o.badge ? ' data-news-tk="' + esc(o.badge) + '"' : "";
-  const style = (o.badge || o.url) ? ' style="cursor:pointer;"' : "";
-  const urlAttr = o.url ? ' data-news-url="' + esc(o.url) + '"' : "";
-  return '<div class="news-row"' + clickable + urlAttr + style + '>' +
-   '<div>' + (o.badge ? '<span class="tk-badge">' + esc(o.badge) + "</span>" : "") + "</div>" +
-   '<div><div class="news-h">' + esc(o.headline) + "</div>" +
+  const badgeHtml = o.badge
+   ? '<a href="#/ticker/' + esc(o.badge) + '" class="tk-badge" data-tk-link style="text-decoration:none;cursor:pointer;" onclick="event.stopPropagation()">' + esc(o.badge) + "</a>"
+   : "";
+  const headHtml = o.url
+   ? '<a href="' + esc(o.url) + '" target="_blank" rel="noopener" class="news-h" style="text-decoration:none;color:inherit;cursor:pointer;" onclick="event.stopPropagation()">' + esc(o.headline) + "</a>"
+   : '<div class="news-h">' + esc(o.headline) + "</div>";
+  return '<div class="news-row">' +
+   "<div>" + badgeHtml + "</div>" +
+   "<div>" + headHtml +
    (o.sub ? '<div class="news-sub">' + esc(o.sub) + "</div>" : "") + "</div>" +
    '<div class="news-ts">' + esc(o.ts) + " ·<br>" + esc(o.source) + "</div></div>";
  }
@@ -714,17 +717,8 @@
   app.innerHTML = h;
   app.querySelectorAll("tr[data-tk]").forEach((tr) =>
    tr.addEventListener("click", () => nav("ticker/" + tr.dataset.tk)));
-  app.querySelectorAll(".news-row[data-news-tk]").forEach((row) =>
-   row.addEventListener("click", () => nav("ticker/" + row.dataset.newsTk)));
-  // Seeking Alpha articles have direct URLs, open in new tab
-  app.querySelectorAll('.news-row[data-news-url]').forEach((row) =>
-   row.addEventListener("click", (e) => {
-    // If it also has a ticker, prioritize the URL for SA articles
-    if (row.dataset.newsUrl && row.querySelector(".news-ts").textContent.includes("Seeking Alpha")) {
-     window.open(row.dataset.newsUrl, "_blank", "noopener");
-     e.stopPropagation();
-    }
-   }));
+  // News rows use inline links: ticker badge -> ticker page, headline -> external article.
+  // No row-level handlers needed.
   const bb = document.getElementById("btn-browse");
   if (bb) bb.addEventListener("click", () => document.getElementById("coverage-sec").scrollIntoView({ behavior: "smooth" }));
   const bi = document.getElementById("btn-internals");
