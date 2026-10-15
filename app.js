@@ -450,7 +450,7 @@
       "</tr></thead><tbody>";
     h += ORDER.map((tk) => {
       const t = TICKERS[tk];
-      return '<tr data-tk="' + esc(tk) + '"><td><span class="ticker-cell">' + esc(tk) + "</span></td>" +
+      return '<tr data-tk="' + esc(tk) + '"><td><a href="#/ticker/' + esc(tk) + '" class="ticker-cell" style="text-decoration:none;">' + esc(tk) + "</a></td>" +
         "<td>" + fmt$(t.price) + "</td><td>" + fmt$(t.bear, 0) + "</td><td>" + fmt$(t.base, 0) +
         "</td><td>" + fmt$(t.bull, 0) + "</td><td>" + fmt$(t.blended, 0) + "</td>" +
         '<td class="' + cls(t.upside_base) + '">' + fmtPct(t.upside_base) + "</td>" +
@@ -3184,7 +3184,7 @@
     }
     function draw() {
       body.innerHTML = rows().map((r) =>
-        '<tr data-tk="' + esc(r.tk) + '"><td><span class="ticker-cell">' + esc(r.tk) + "</span></td>" +
+        '<tr data-tk="' + esc(r.tk) + '"><td><a href="#/ticker/' + esc(r.tk) + '" class="ticker-cell" style="text-decoration:none;">' + esc(r.tk) + "</a></td>" +
         "<td>" + (r.s != null ? '<span class="score-badge ' + scoreClass(r.s) + '" style="width:36px;height:36px;font-size:13px;" title="' + esc(scoreTooltip(r.t)) + '">' + r.s + "</span>" : "—") + "</td>" +
         "<td>" + fmt$(r.t.price) + "</td><td>" + fmt$(r.t.base, 0) + "</td>" +
         '<td class="' + cls(r.t.upside_base) + '">' + fmtPct(r.t.upside_base) + "</td>" +
