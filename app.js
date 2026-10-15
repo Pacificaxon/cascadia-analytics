@@ -962,7 +962,7 @@
             type: "line",
             data: { labels: hist.map((r) => r.date), datasets: [
               { label: "Breadth spread (pp)", data: hist.map((r) => r.breadth_spread), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
-              { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#3fb950", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+              { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
               { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
             ]},
             options: { responsive: true, maintainAspectRatio: false,
@@ -1168,7 +1168,7 @@
                 type: "line",
                 data: { labels: hist.map((r) => r.date), datasets: [
                   { label: "Breadth spread (pp)", data: hist.map((r) => r.breadth_spread), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
-                  { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#3fb950", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+                  { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
                   { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
                 ]},
                 options: { responsive: true, maintainAspectRatio: false,
