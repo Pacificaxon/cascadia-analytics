@@ -238,19 +238,14 @@
   }
   function render() {
     const r = currentRoute();
-    try {
-      document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
-        b.classList.toggle("active", b.dataset.route === r.name));
-      syncCoveragePick(r);
-      updateProBtn();
-      window.scrollTo(0, 0);
-      if (r.name === "ticker" && routes.ticker) routes.ticker(r.param);
-      else if (routes[r.name]) routes[r.name]();
-      else routes.home();
-    } catch (e) {
-      console.error("Render error:", e);
-      app.innerHTML = '<div class="card"><h3>Error loading page</h3><p>' + esc(e.message) + '</p><p><a href="#/">Back home</a></p></div>';
-    }
+    document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
+      b.classList.toggle("active", b.dataset.route === r.name));
+    syncCoveragePick(r);
+    updateProBtn();
+    window.scrollTo(0, 0);
+    if (r.name === "ticker" && routes.ticker) routes.ticker(r.param);
+    else if (routes[r.name]) routes[r.name]();
+    else routes.home();
   }
   function updateProBtn() {
     const b = document.getElementById("pro-btn");
@@ -332,6 +327,99 @@
     const sel = document.getElementById("coverage-pick");
     if (!sel) return;
     sel.value = (r.name === "ticker" && TICKERS[r.param.toUpperCase()]) ? r.param.toUpperCase() : "";
+  }
+
+
+  function tickerGexHtml(tk, d) {
+    const isPos = d.regime === "positive";
+    const regimeColor = isPos ? "#3fb950" : "#f85149";
+    const regimeLabel = isPos ? "POSITIVE — volatility dampener" : "NEGATIVE — volatility amplifier";
+    const regimeIcon = isPos ? "🟢" : "🔴";
+    const unit = d.gex_unit || "M";
+    const spotVsZG = d.zero_gamma != null
+      ? (d.spot >= d.zero_gamma
+        ? '<span style="color:#3fb950">above</span> zero gamma — dealers dampening moves'
+        : '<span style="color:#f85149">below</span> zero gamma — dealers amplifying moves')
+      : "—";
+    // Interactive GEX bar: visual split of call vs put gamma
+    const total = Math.abs(d.call_gex) + Math.abs(d.put_gex);
+    const callPct = total > 0 ? (Math.abs(d.call_gex) / total * 100).toFixed(1) : 50;
+    const putPct = total > 0 ? (Math.abs(d.put_gex) / total * 100).toFixed(1) : 50;
+    return '<div class="zoomable-chart" data-chart="gex-ticker" data-ticker="' + esc(tk) + '" style="position:relative;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom">' +
+      '<div style="display:flex;height:28px;border-radius:6px;overflow:hidden;margin:12px 0;" title="Call GEX vs Put GEX">' +
+      '<div style="width:' + callPct + '%;background:#3fb950;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0a0f0a;" title="Call GEX: +' + d.call_gex.toFixed(2) + unit + '">+' + d.call_gex.toFixed(1) + unit + '</div>' +
+      '<div style="width:' + putPct + '%;background:#f85149;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;" title="Put GEX: ' + d.put_gex.toFixed(2) + unit + '">' + d.put_gex.toFixed(1) + unit + '</div>' +
+      "</div>" +
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+      '<div style="text-align:center;margin-bottom:12px;"><span style="font-size:13px;color:' + regimeColor + ';font-weight:700;">' + regimeIcon + " " + regimeLabel + "</span></div>" +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
+      '<div><div style="font-size:11px;color:#e8ecf1;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
+      '<div><div style="font-size:11px;color:#e8ecf1;">NET GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
+      (d.total_gex >= 0 ? "+" : "") + d.total_gex.toFixed(2) + unit + "</div></div>" +
+      '<div><div style="font-size:11px;color:#e8ecf1;">ZERO GAMMA</div><div style="font-size:15px;font-weight:600;color:#e8ecf1;">' +
+      (d.zero_gamma != null ? "$" + d.zero_gamma.toFixed(2) : "—") + "</div>" +
+      '<div style="font-size:12px;color:#e8ecf1;">Spot ' + spotVsZG + "</div></div>" +
+      '<div><div style="font-size:11px;color:#e8ecf1;">WALLS</div><div style="font-size:15px;font-weight:600;">' +
+      '<span style="color:#3fb950;" title="Call wall (resistance)">C $' + (d.call_wall != null ? d.call_wall.toFixed(0) : "—") + "</span>" +
+      ' <span style="color:#e8ecf1;">/</span> ' +
+      '<span style="color:#f85149;" title="Put wall (support)">P $' + (d.put_wall != null ? d.put_wall.toFixed(0) : "—") + "</span></div></div>" +
+      "</div>" +
+      '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
+      "<p><b>What is this?</b> Gamma exposure measures how options dealers will hedge as " + esc(tk) + " moves. " +
+      "Dealers who sold options must buy/sell shares to stay neutral — their hedging pushes the stock.</p>" +
+      (isPos
+        ? "<p><b style='color:#3fb950'>Positive GEX</b> — dealers buy dips and sell rips, <i>dampening</i> volatility. Expect choppy, range-bound action. Favor mean-reversion: buy support, sell resistance quickly.</p>"
+        : "<p><b style='color:#f85149'>Negative GEX</b> — dealers sell into declines and buy into rallies, <i>amplifying</i> moves. Expect wider swings and trending action. Favor momentum/breakouts; widen stops and reduce size.</p>") +
+      "<p><b>Zero gamma ($" + (d.zero_gamma != null ? d.zero_gamma.toFixed(2) : "—") + ")</b> is the flip point — above it dealers stabilize, below it they accelerate. " +
+      "The <b style='color:#3fb950'>call wall</b> acts as resistance and the <b style='color:#f85149'>put wall</b> as support.</p>" +
+      "</div>" +
+      '<div style="font-size:12px;color:#e8ecf1;">' + d.contracts_analyzed.toLocaleString() + " contracts analyzed</div>" +
+      '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
+  }
+
+  function tickerSkewHtml(tk, d) {
+    const regimeColors = {
+      extreme_fear: "#f85149", elevated_fear: "#d29922",
+      normal: "#58a6ff", complacent: "#3fb950",
+    };
+    const rc = regimeColors[d.regime] || "#e8ecf1";
+    const trendIcon = d.trend === "steepening" ? "📈" : d.trend === "flattening" ? "📉" : "➡️";
+    const trendText = d.trend === "steepening" ? "Steepening — fear rising" :
+      d.trend === "flattening" ? "Flattening — fear fading" : "Stable";
+    const maxIV = Math.max(d.put_iv, d.call_iv, 1);
+    const putPct = (d.put_iv / maxIV * 100).toFixed(1);
+    const callPct = (d.call_iv / maxIV * 100).toFixed(1);
+    return '<div class="zoomable-chart" data-chart="skew-ticker" data-ticker="' + esc(tk) + '" style="position:relative;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom">' +
+      '<div style="margin:12px 0;">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+      '<span style="font-size:11px;color:#e8ecf1;width:70px;">Put IV</span>' +
+      '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
+      '<div style="width:' + putPct + '%;height:100%;background:#f85149;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#fff;">' + d.put_iv.toFixed(1) + "%</div></div></div>" +
+      '<div style="display:flex;align-items:center;gap:8px;">' +
+      '<span style="font-size:11px;color:#e8ecf1;width:70px;">Call IV</span>' +
+      '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
+      '<div style="width:' + callPct + '%;height:100%;background:#3fb950;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#0a0f0a;">' + d.call_iv.toFixed(1) + "%</div></div></div>" +
+      "</div>" +
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
+      '<div><div style="font-size:11px;color:#e8ecf1;">SKEW</div>' +
+      '<div style="font-size:20px;font-weight:700;color:' + rc + ';">+' + d.skew.toFixed(1) + " vp</div>" +
+      '<div style="font-size:12px;color:' + rc + ';">' + esc(d.regime_label || "") + "</div></div>" +
+      '<div><div style="font-size:11px;color:#e8ecf1;">TREND</div>' +
+      '<div style="font-size:14px;font-weight:600;color:#e8ecf1;">' + trendIcon + " " + trendText + "</div>" +
+      (d.skew_change != null ? '<div style="font-size:11px;color:#e8ecf1;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs prior</div>" : "") + "</div>" +
+      "</div>" +
+      '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
+      "<p><b>What is this?</b> Volatility skew compares what investors pay for downside puts versus upside calls on " + esc(tk) + ". " +
+      "A high skew means puts are expensive — institutions are aggressively hedging.</p>" +
+      (d.regime === "extreme_fear" || d.regime === "elevated_fear"
+        ? "<p><b style='color:#f85149'>Steep skew</b> — fear is elevated. If you're bullish, consider selling put spreads to collect inflated premium. Capitulation bottoms often form when skew peaks.</p>"
+        : d.regime === "complacent"
+        ? "<p><b style='color:#3fb950'>Flat skew</b> — complacency. Downside protection is cheap — good time to hedge if bearish. But extreme flatness can signal euphoric tops.</p>"
+        : "<p>Skew is in the normal range for equities. No extreme positioning to fade.</p>") +
+      "</div>" +
+      '<div style="font-size:12px;color:#e8ecf1;">Put $' + d.put_strike.toFixed(2) + " / Call $" + d.call_strike.toFixed(2) + " · " + d.dte + " DTE</div>" +
+      '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
   }
 
   /* ---------- artifact news layout ---------- */
@@ -826,97 +914,6 @@
       return cards || '<p style="color:var(--muted)">Skew data unavailable.</p>';
     }
 
-    function tickerGexHtml(tk, d) {
-      const isPos = d.regime === "positive";
-      const regimeColor = isPos ? "#3fb950" : "#f85149";
-      const regimeLabel = isPos ? "POSITIVE — volatility dampener" : "NEGATIVE — volatility amplifier";
-      const regimeIcon = isPos ? "🟢" : "🔴";
-      const unit = d.gex_unit || "M";
-      const spotVsZG = d.zero_gamma != null
-        ? (d.spot >= d.zero_gamma
-          ? '<span style="color:#3fb950">above</span> zero gamma — dealers dampening moves'
-          : '<span style="color:#f85149">below</span> zero gamma — dealers amplifying moves')
-        : "—";
-      // Interactive GEX bar: visual split of call vs put gamma
-      const total = Math.abs(d.call_gex) + Math.abs(d.put_gex);
-      const callPct = total > 0 ? (Math.abs(d.call_gex) / total * 100).toFixed(1) : 50;
-      const putPct = total > 0 ? (Math.abs(d.put_gex) / total * 100).toFixed(1) : 50;
-      return '<div class="zoomable-chart" data-chart="gex-ticker" data-ticker="' + esc(tk) + '" style="position:relative;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom">' +
-        '<div style="display:flex;height:28px;border-radius:6px;overflow:hidden;margin:12px 0;" title="Call GEX vs Put GEX">' +
-        '<div style="width:' + callPct + '%;background:#3fb950;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0a0f0a;" title="Call GEX: +' + d.call_gex.toFixed(2) + unit + '">+' + d.call_gex.toFixed(1) + unit + '</div>' +
-        '<div style="width:' + putPct + '%;background:#f85149;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;" title="Put GEX: ' + d.put_gex.toFixed(2) + unit + '">' + d.put_gex.toFixed(1) + unit + '</div>' +
-        "</div>" +
-        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
-        '<div style="text-align:center;margin-bottom:12px;"><span style="font-size:13px;color:' + regimeColor + ';font-weight:700;">' + regimeIcon + " " + regimeLabel + "</span></div>" +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-        '<div><div style="font-size:11px;color:#e8ecf1;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
-        '<div><div style="font-size:11px;color:#e8ecf1;">NET GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
-        (d.total_gex >= 0 ? "+" : "") + d.total_gex.toFixed(2) + unit + "</div></div>" +
-        '<div><div style="font-size:11px;color:#e8ecf1;">ZERO GAMMA</div><div style="font-size:15px;font-weight:600;color:#e8ecf1;">' +
-        (d.zero_gamma != null ? "$" + d.zero_gamma.toFixed(2) : "—") + "</div>" +
-        '<div style="font-size:12px;color:#e8ecf1;">Spot ' + spotVsZG + "</div></div>" +
-        '<div><div style="font-size:11px;color:#e8ecf1;">WALLS</div><div style="font-size:15px;font-weight:600;">' +
-        '<span style="color:#3fb950;" title="Call wall (resistance)">C $' + (d.call_wall != null ? d.call_wall.toFixed(0) : "—") + "</span>" +
-        ' <span style="color:#e8ecf1;">/</span> ' +
-        '<span style="color:#f85149;" title="Put wall (support)">P $' + (d.put_wall != null ? d.put_wall.toFixed(0) : "—") + "</span></div></div>" +
-        "</div>" +
-        '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
-        "<p><b>What is this?</b> Gamma exposure measures how options dealers will hedge as " + esc(tk) + " moves. " +
-        "Dealers who sold options must buy/sell shares to stay neutral — their hedging pushes the stock.</p>" +
-        (isPos
-          ? "<p><b style='color:#3fb950'>Positive GEX</b> — dealers buy dips and sell rips, <i>dampening</i> volatility. Expect choppy, range-bound action. Favor mean-reversion: buy support, sell resistance quickly.</p>"
-          : "<p><b style='color:#f85149'>Negative GEX</b> — dealers sell into declines and buy into rallies, <i>amplifying</i> moves. Expect wider swings and trending action. Favor momentum/breakouts; widen stops and reduce size.</p>") +
-        "<p><b>Zero gamma ($" + (d.zero_gamma != null ? d.zero_gamma.toFixed(2) : "—") + ")</b> is the flip point — above it dealers stabilize, below it they accelerate. " +
-        "The <b style='color:#3fb950'>call wall</b> acts as resistance and the <b style='color:#f85149'>put wall</b> as support.</p>" +
-        "</div>" +
-        '<div style="font-size:12px;color:#e8ecf1;">' + d.contracts_analyzed.toLocaleString() + " contracts analyzed</div>" +
-        '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
-    }
-
-    function tickerSkewHtml(tk, d) {
-      const regimeColors = {
-        extreme_fear: "#f85149", elevated_fear: "#d29922",
-        normal: "#58a6ff", complacent: "#3fb950",
-      };
-      const rc = regimeColors[d.regime] || "#e8ecf1";
-      const trendIcon = d.trend === "steepening" ? "📈" : d.trend === "flattening" ? "📉" : "➡️";
-      const trendText = d.trend === "steepening" ? "Steepening — fear rising" :
-        d.trend === "flattening" ? "Flattening — fear fading" : "Stable";
-      const maxIV = Math.max(d.put_iv, d.call_iv, 1);
-      const putPct = (d.put_iv / maxIV * 100).toFixed(1);
-      const callPct = (d.call_iv / maxIV * 100).toFixed(1);
-      return '<div class="zoomable-chart" data-chart="skew-ticker" data-ticker="' + esc(tk) + '" style="position:relative;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom">' +
-        '<div style="margin:12px 0;">' +
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-        '<span style="font-size:11px;color:#e8ecf1;width:70px;">Put IV</span>' +
-        '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
-        '<div style="width:' + putPct + '%;height:100%;background:#f85149;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#fff;">' + d.put_iv.toFixed(1) + "%</div></div></div>" +
-        '<div style="display:flex;align-items:center;gap:8px;">' +
-        '<span style="font-size:11px;color:#e8ecf1;width:70px;">Call IV</span>' +
-        '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
-        '<div style="width:' + callPct + '%;height:100%;background:#3fb950;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#0a0f0a;">' + d.call_iv.toFixed(1) + "%</div></div></div>" +
-        "</div>" +
-        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-        '<div><div style="font-size:11px;color:#e8ecf1;">SKEW</div>' +
-        '<div style="font-size:20px;font-weight:700;color:' + rc + ';">+' + d.skew.toFixed(1) + " vp</div>" +
-        '<div style="font-size:12px;color:' + rc + ';">' + esc(d.regime_label || "") + "</div></div>" +
-        '<div><div style="font-size:11px;color:#e8ecf1;">TREND</div>' +
-        '<div style="font-size:14px;font-weight:600;color:#e8ecf1;">' + trendIcon + " " + trendText + "</div>" +
-        (d.skew_change != null ? '<div style="font-size:11px;color:#e8ecf1;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs prior</div>" : "") + "</div>" +
-        "</div>" +
-        '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
-        "<p><b>What is this?</b> Volatility skew compares what investors pay for downside puts versus upside calls on " + esc(tk) + ". " +
-        "A high skew means puts are expensive — institutions are aggressively hedging.</p>" +
-        (d.regime === "extreme_fear" || d.regime === "elevated_fear"
-          ? "<p><b style='color:#f85149'>Steep skew</b> — fear is elevated. If you're bullish, consider selling put spreads to collect inflated premium. Capitulation bottoms often form when skew peaks.</p>"
-          : d.regime === "complacent"
-          ? "<p><b style='color:#3fb950'>Flat skew</b> — complacency. Downside protection is cheap — good time to hedge if bearish. But extreme flatness can signal euphoric tops.</p>"
-          : "<p>Skew is in the normal range for equities. No extreme positioning to fade.</p>") +
-        "</div>" +
-        '<div style="font-size:12px;color:#e8ecf1;">Put $' + d.put_strike.toFixed(2) + " / Call $" + d.call_strike.toFixed(2) + " · " + d.dte + " DTE</div>" +
-        '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
-    }
 
     function gexTrackerHtml(gexData) {
       const indices = gexData.indices || {};
