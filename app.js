@@ -936,17 +936,20 @@
           if (!el || el.dataset.tvInit) return;
           el.dataset.tvInit = "1";
           try {
-            new TradingView.widget({
+            const widget = new TradingView.widget({
               container_id: cid, symbol: tvSym, interval: intervals[tf],
               theme: "dark", style: "1", locale: "en", toolbar_bg: "#1a2332",
               hide_side_toolbar: false, allow_symbol_change: false,
-              studies: [
-                { id: "MASimple@tv-basicstudies", inputs: { length: 10 } },
-                { id: "MASimple@tv-basicstudies", inputs: { length: 20 } },
-                { id: "MASimple@tv-basicstudies", inputs: { length: 50 } },
-                { id: "MASimple@tv-basicstudies", inputs: { length: 200 } }
-              ],
-              autosize: true
+              autosize: true,
+              // add MA studies once chart is ready
+              onChartReady: function() {
+                try {
+                  const chart = widget.chart();
+                  [10, 20, 50, 200].forEach((len) => {
+                    chart.createStudy("Moving Average Simple", false, false, { length: len });
+                  });
+                } catch (e) { console.error("TV study error", e); }
+              }
             });
           } catch (e) { console.error("TV widget error", e); }
         });
