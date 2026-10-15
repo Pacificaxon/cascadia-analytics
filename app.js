@@ -145,11 +145,12 @@
   refreshTickers();
   updateAuthBtn();
   render();
-  // If Pro state changed during auth resolution, force a second render
+  // If Pro state changed during auth resolution, force re-renders
   // to ensure the route picks up the new state (fixes iOS race condition
   // where initial render happens before auth completes)
   if (prevProState !== isPro()) {
-   setTimeout(() => render(), 50);
+   setTimeout(() => render(), 100);
+   setTimeout(() => render(), 500);
   }
  }
 
