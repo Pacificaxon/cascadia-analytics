@@ -953,14 +953,15 @@
           // limit to last 120 bars for readability
           if (bars.length > 120) bars = bars.slice(-120);
           const up = bars.map((b) => b.c >= b.o);
-          const bodies = bars.map((b) => ({ x: b.t, y: [Math.min(b.o, b.c), Math.max(b.o, b.c)] }));
+          const labels = bars.map((b) => new Date(b.t).toLocaleDateString("en-US", { month: "short", day: "numeric" }));
+          const bodies = bars.map((b) => [Math.min(b.o, b.c), Math.max(b.o, b.c)]);
           const closes = bars.map((b) => b.c);
           const vols = bars.map((b) => b.v);
           const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b2) => a + b2, 0) / n);
           const smaDs = (label, data, color) => ({
-            type: "line", label, data: data.map((v, i) => v == null ? null : { x: bars[i].t, y: v }),
+            type: "line", label, data,
             borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0, spanGaps: true,
-            order: 1, yAxisID: "y", parsing: false
+            order: 1, yAxisID: "y"
           });
           const UP = "#26a69a", DN = "#ef5350";
           const wickPlugin = {
@@ -985,13 +986,13 @@
           const fmtVol = (v) => v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : String(Math.round(v));
           new Chart(cv, {
             type: "bar",
-            data: { datasets: [
+            data: { labels, datasets: [
               { label: "Price", data: bodies, backgroundColor: up.map((u) => u ? UP : DN),
                 borderColor: up.map((u) => u ? UP : DN), borderWidth: 1,
-                order: 2, yAxisID: "y", parsing: false, barPercentage: 0.65, categoryPercentage: 0.9 },
-              { label: "Volume", data: vols.map((v, i) => ({ x: bars[i].t, y: v })), type: "bar",
+                order: 2, yAxisID: "y", barPercentage: 0.65, categoryPercentage: 0.9 },
+              { label: "Volume", data: vols, type: "bar",
                 backgroundColor: up.map((u) => u ? "rgba(38,166,154,0.45)" : "rgba(239,83,80,0.45)"),
-                borderWidth: 0, order: 3, yAxisID: "y1", parsing: false, barPercentage: 0.65, categoryPercentage: 0.9 },
+                borderWidth: 0, order: 3, yAxisID: "y1", barPercentage: 0.65, categoryPercentage: 0.9 },
               smaDs("SMA 10", sma(10), "#f23645"),
               smaDs("SMA 20", sma(20), "#ff9800"),
               smaDs("SMA 50", sma(50), "#2962ff"),
@@ -1006,7 +1007,7 @@
                   backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
                   titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10, displayColors: false,
                   callbacks: {
-                    title: (items) => items.length ? new Date(items[0].parsed.x).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "",
+                    title: (items) => items.length ? labels[items[0].dataIndex] : "",
                     label: (c) => {
                       if (c.dataset.label === "Volume") return "  Volume: " + fmtVol(c.parsed.y);
                       if (c.dataset.label === "Price") {
@@ -1019,8 +1020,7 @@
                 }
               },
               scales: {
-                x: { type: "time", time: { unit: tf === "monthly" ? "month" : tf === "weekly" ? "week" : "month" },
-                  ticks: { color: "#787b86", maxTicksLimit: 8, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.5)" } },
+                x: { ticks: { color: "#787b86", maxTicksLimit: 8, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.5)" } },
                 y: { position: "right", ticks: { color: "#787b86", callback: (v) => v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.5)" } },
                 y1: { position: "right", display: false, max: Math.max(...vols, 1) * 5, grid: { display: false } }
               }
