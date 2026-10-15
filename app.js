@@ -941,10 +941,10 @@
               theme: "dark", style: "1", locale: "en", toolbar_bg: "#1a2332",
               hide_side_toolbar: false, allow_symbol_change: false,
               studies: [
-                { id: "MA@tv-basicstudies", inputs: { length: 10 } },
-                { id: "MA@tv-basicstudies", inputs: { length: 20 } },
-                { id: "MA@tv-basicstudies", inputs: { length: 50 } },
-                { id: "MA@tv-basicstudies", inputs: { length: 200 } }
+                { id: "MASimple@tv-basicstudies", inputs: { length: 10 } },
+                { id: "MASimple@tv-basicstudies", inputs: { length: 20 } },
+                { id: "MASimple@tv-basicstudies", inputs: { length: 50 } },
+                { id: "MASimple@tv-basicstudies", inputs: { length: 200 } }
               ],
               autosize: true
             });
@@ -1200,6 +1200,10 @@
       const gb = cagr(fcf.base.fcf_m); if (gb != null) gBase = Math.round(Math.max(-20, Math.min(80, gb)));
       if (fcf.bear) { const g = cagr(fcf.bear.fcf_m || []); if (g != null) gBear = Math.round(Math.max(-20, Math.min(80, g))); }
       if (fcf.bull) { const g = cagr(fcf.bull.fcf_m || []); if (g != null) gBull = Math.round(Math.max(-20, Math.min(80, g))); }
+      // enforce ordering: bear <= base <= bull (bull must always have highest target)
+      gBear = Math.min(gBear, gBase, gBull);
+      gBull = Math.max(gBear, gBase, gBull);
+      gBase = Math.max(gBear, Math.min(gBase, gBull));
       horizon = Math.max(5, Math.min(10, n));
     }
     const wacc = t.wacc || 0.10;
