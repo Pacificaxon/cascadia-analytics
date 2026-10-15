@@ -95,6 +95,10 @@ def main():
         rsi_cd_history = load(os.path.join(MR, "rsi_cyclical_defensive_history.json"))
     except FileNotFoundError:
         rsi_cd_history = {}
+    try:
+        gex_data = load(os.path.join(MR, "gex_history.json"))
+    except FileNotFoundError:
+        gex_data = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
@@ -242,6 +246,7 @@ def main():
         "credit_vol_history": credit_vol_history,
         "breadth_history": breadth_history,
         "rsi_cd_history": rsi_cd_history,
+        "gex_data": gex_data,
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,

@@ -474,6 +474,45 @@
       }).join("") + "</div>");
 
     /* ---------- tracker explainers (visual first, explanation after) ---------- */
+    /* ---------- GEX tracker HTML (Pro-gated) ---------- */
+    function gexTrackerHtml(gexData) {
+      const indices = gexData.indices || {};
+      // Prefer QQQ and SPY (SPX often blocked); fall back to whatever is available
+      const order = ["QQQ", "SPY", "SPX"];
+      const cards = order
+        .map((sym) => indices[sym])
+        .filter((d) => d && d.available)
+        .map((d) => {
+          const isPos = d.regime === "positive";
+          const regimeColor = isPos ? "#3fb950" : "#f85149";
+          const regimeLabel = isPos ? "POSITIVE — volatility dampener" : "NEGATIVE — volatility amplifier";
+          const regimeIcon = isPos ? "🟢" : "🔴";
+          const spotVsZG = d.zero_gamma != null
+            ? (d.spot >= d.zero_gamma
+              ? '<span style="color:#3fb950">above</span>'
+              : '<span style="color:#f85149">below</span>')
+            : "—";
+          return '<div class="card" style="margin-bottom:12px;"><h3>' + esc(d.symbol) +
+            ' <span style="font-size:12px;color:' + regimeColor + ';">' + regimeIcon + " " + regimeLabel + "</span></h3>" +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
+            '<div><div style="font-size:11px;color:#787b86;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
+            '<div><div style="font-size:11px;color:#787b86;">TOTAL GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
+            (d.total_gex >= 0 ? "+" : "") + d.total_gex.toFixed(2) + "B</div></div>" +
+            '<div><div style="font-size:11px;color:#787b86;">ZERO GAMMA</div><div style="font-size:16px;font-weight:600;color:#e8ecf1;">' +
+            (d.zero_gamma != null ? "$" + d.zero_gamma.toFixed(2) + " <span style='font-size:12px;color:#787b86;'>(spot " + spotVsZG + ")</span>" : "—") + "</div></div>" +
+            '<div><div style="font-size:11px;color:#787b86;">CALL WALL / PUT WALL</div><div style="font-size:16px;font-weight:600;color:#e8ecf1;">' +
+            (d.call_wall != null ? "$" + d.call_wall.toFixed(0) : "—") + ' <span style="color:#787b86;">/</span> ' +
+            (d.put_wall != null ? "$" + d.put_wall.toFixed(0) : "—") + "</div></div>" +
+            "</div>" +
+            '<div style="font-size:12px;color:#787b86;margin-top:8px;">Call GEX +' + d.call_gex.toFixed(2) + "B · Put GEX " + d.put_gex.toFixed(2) + "B · " +
+            d.contracts_analyzed.toLocaleString() + " contracts</div>" +
+            '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div></div>";
+        }).join("");
+      if (!cards) return '<p style="color:var(--muted)">GEX data unavailable.</p>';
+      // Regime gauge: visual bar showing positive vs negative
+      return cards;
+    }
+
     function trackerExplainer(p) {
       const wrap = (inner) => '<div class="panel-about" style="text-align:left;max-width:720px;margin:0 auto 12px;">' + inner + "</div>";
       const name = (p.name || "").toLowerCase();
@@ -639,6 +678,33 @@
         '<div class="grid-2"><div class="card"><h3>Cyclical / Defensive RSI</h3>' +
         gated("RSI: Cyclicals vs Defensives", "14-period RSI on the XLY÷XLP ratio — spot sector rotation extremes before they reverse.", rsiHtml + explainer) +
         "</div></div></div>";
+    }
+
+    // GEX (Gamma Exposure) — Pro-gated, hourly refresh
+    if (D.gex_data && D.gex_data.indices) {
+      const gexHtml = gexTrackerHtml(D.gex_data);
+      const gexExplainer =
+        '<div class="panel-about" style="text-align:left;max-width:720px;margin:0 auto 12px;">' +
+        '<p><b>What am I looking at?</b> Gamma exposure (GEX) estimates how much market makers will be forced to buy or sell ' +
+        'as prices move. Market makers take the opposite side of options trades and must hedge to stay delta-neutral. ' +
+        'GEX tells you which direction their hedging will push the market.</p>' +
+        '<p><b>The two regimes.</b> <b style="color:#3fb950">Positive GEX</b> (green) means dealers are long gamma — ' +
+        'they buy dips and sell rips, dampening volatility. Breakouts tend to fail; mean-reversion works. ' +
+        '<b style="color:#f85149">Negative GEX</b> (red) means dealers are short gamma — they sell into declines and buy into rallies, ' +
+        'amplifying moves. Trends run further; breakouts are more likely to stick. Widen stops and reduce size.</p>' +
+        '<p><b>Key levels.</b> <b>Zero Gamma</b> is the price where GEX flips sign — crossing it often marks a regime change. ' +
+        '<b>Call Wall</b> (resistance) and <b>Put Wall</b> (support) are strikes with the heaviest gamma concentration — ' +
+        'they act as magnets or barriers for price.</p>' +
+        '<p><b>How we calculate it.</b> GEX per contract = option gamma × open interest × 100 × spot price. ' +
+        'Calls add positive GEX, puts add negative GEX (dealers assumed short both). The zero gamma level is found by ' +
+        're-simulating every option\u2019s gamma via Black-Scholes across hypothetical price levels and finding where total GEX crosses zero. ' +
+        'Data: CBOE delayed options chains, refreshed hourly during market hours.</p>' +
+        "</div>";
+      h += '<div class="section"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+        '<div class="section-sub">Options dealer positioning — will market makers dampen or amplify the next move? Updates hourly.</div>' +
+        '<div class="grid-2">' +
+        gated("Gamma Exposure (GEX)", "Live dealer gamma positioning for QQQ and SPY — spot the volatility regime before it shifts.", gexHtml + gexExplainer) +
+        "</div></div>";
     }
     // render interactive vol divergence chart after DOM insert
     setTimeout(() => {
