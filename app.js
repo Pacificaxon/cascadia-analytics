@@ -33,10 +33,10 @@
   return Math.floor(h / 24) + "d ago";
  };
  const isPro = () => {
-  if (proVerified !== null) return proVerified;
-  try { return localStorage.getItem(PRO_KEY) === "1"; } catch (e) { return false; }
+  // Server-verified only. No localStorage fallback (prevents devtools bypass).
+  return proVerified === true;
  };
- const setPro = (v) => { try { v ? localStorage.setItem(PRO_KEY, "1") : localStorage.removeItem(PRO_KEY); } catch (e) {} };
+ const setPro = (v) => { /* no-op: Pro status comes from Supabase only */ };
 
  /* ---------- Supabase Auth + server-verified Pro ---------- */
  const SUPABASE_URL = "https://tlrfqoqefltxodoynqmh.supabase.co";
