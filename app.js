@@ -238,14 +238,19 @@
   }
   function render() {
     const r = currentRoute();
-    document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
-      b.classList.toggle("active", b.dataset.route === r.name));
-    syncCoveragePick(r);
-    updateProBtn();
-    window.scrollTo(0, 0);
-    if (r.name === "ticker" && routes.ticker) routes.ticker(r.param);
-    else if (routes[r.name]) routes[r.name]();
-    else routes.home();
+    try {
+      document.querySelectorAll(".topnav button[data-route]").forEach((b) =>
+        b.classList.toggle("active", b.dataset.route === r.name));
+      syncCoveragePick(r);
+      updateProBtn();
+      window.scrollTo(0, 0);
+      if (r.name === "ticker" && routes.ticker) routes.ticker(r.param);
+      else if (routes[r.name]) routes[r.name]();
+      else routes.home();
+    } catch (e) {
+      console.error("Render error:", e);
+      app.innerHTML = '<div class="card"><h3>Error loading page</h3><p>' + esc(e.message) + '</p><p><a href="#/">Back home</a></p></div>';
+    }
   }
   function updateProBtn() {
     const b = document.getElementById("pro-btn");
