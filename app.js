@@ -2690,20 +2690,46 @@
     '<div class="card" style="padding:28px;line-height:1.7;font-size:15px;color:#e8ecf1;">' +
     r.html +
     "</div></div>";
-   // Previous reports
+   // Previous reports dropdown (identical style to macro analysis section)
    if (r.previous && r.previous.length) {
-    h += '<div class="section"><div class="section-title">Previous Reports</div>' +
-     r.previous.map((p) =>
-      '<div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);">' +
-      '<a href="javascript:void(0)" data-report="' + esc(p.date) + '" style="color:#58a6ff;font-size:14px;">' +
-      esc(p.date) + ", " + esc(p.headline) + "</a></div>"
-     ).join("") + "</div>";
+    const briefingOpts = '<option value="0">Current (' + esc((r.as_of || "").slice(0, 10)) + ')</option>' +
+     r.previous.map((p, i) =>
+      '<option value="' + (i + 1) + '">' + esc(p.date) + ' - ' + esc((p.headline || "").slice(0, 40)) + '</option>'
+     ).join("");
+    h += '<div class="section"><div class="section-title">Previous Briefings</div>' +
+     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
+     '<span style="font-size:12px;color:#e8ecf1;opacity:0.7;">Select date:</span>' +
+     '<select id="briefing-date" style="background:#0f1420;color:#e8ecf1;border:1px solid #2a4a73;border-radius:6px;' +
+     'padding:4px 8px;font-size:12px;cursor:pointer;max-width:300px;">' + briefingOpts + "</select></div>" +
+     '<div id="briefing-body">' +
+     '<div id="briefing-content">' + r.html + "</div>" +
+     "</div>" +
+     '<script>window.__briefingHistory = ' + JSON.stringify([{ date: r.as_of, headline: r.headline, html: r.html }].concat(r.previous)) + ';</script>' +
+     "</div>";
    }
   } else {
    h += '<div class="card"><p style="color:#e8ecf1;">The morning briefing has not been generated yet. Check back after the morning refresh.</p></div>';
   }
   app.innerHTML = h;
-  // Wire previous report links
+  // Wire briefing date dropdown (identical to macro analysis section)
+  const briefingSel = document.getElementById("briefing-date");
+  if (briefingSel && window.__briefingHistory) {
+   briefingSel.addEventListener("change", (e) => {
+    e.stopPropagation();
+    const idx = parseInt(briefingSel.value);
+    const b = window.__briefingHistory[idx];
+    if (!b) return;
+    const content = document.getElementById("briefing-content");
+    if (content && b.html) {
+     content.innerHTML = b.html;
+     embedAnalysisVisuals();
+     // Scroll to top of briefing
+     const body = document.getElementById("briefing-body");
+     if (body) body.scrollTop = 0;
+    }
+   });
+  }
+  // Legacy: wire previous report links (if any remain)
   document.querySelectorAll("[data-report]").forEach((a) => {
    a.addEventListener("click", () => {
     const date = a.dataset.report;
