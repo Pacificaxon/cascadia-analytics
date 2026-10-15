@@ -310,6 +310,7 @@ def main():
         "macro_analysis": site.pop("market_analysis_report", {}),
         "rsi_cyclical_defensive": site.pop("rsi_cd_history", {}),
         "ticker_ma": site.pop("ticker_ma", {}),
+        "ticker_ohlcv": site.pop("ticker_ohlcv", {}),
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}

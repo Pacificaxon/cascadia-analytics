@@ -163,6 +163,7 @@
    if (sections.macro_analysis) flat.market_analysis_report = sections.macro_analysis;
    if (sections.rsi_cyclical_defensive) flat.rsi_cd_history = sections.rsi_cyclical_defensive;
    if (sections.ticker_ma) flat.ticker_ma = sections.ticker_ma;
+   if (sections.ticker_ohlcv) flat.ticker_ohlcv = sections.ticker_ohlcv;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
