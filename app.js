@@ -610,7 +610,7 @@
         '<h2 style="color:#fff;font-size:20px;margin:0 0 4px;">Economic Trends & Macro Indicators</h2>' +
         '<p style="color:#e8ecf1;opacity:0.6;font-size:13px;margin:0 0 16px;">Compare trends across CPI, PPI, Retail Sales & PMI to detect leading vs. lagging signals.</p>' +
         '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' + cardsHtml + "</div>" +
-        '<div style="display:grid;grid-template-columns:1fr 380px;gap:16px;align-items:start;">' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">' +
         '<div style="background:#161b26;border-radius:12px;padding:20px;min-width:0;">' +
         '<div style="font-size:13px;color:#e8ecf1;margin-bottom:8px;">Metrics</div>' +
         '<div style="margin-bottom:16px;">' + pillsHtml + "</div>" +
