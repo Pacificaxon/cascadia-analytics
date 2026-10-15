@@ -702,8 +702,10 @@
 
     // Sensitivity table: implied price across revenue CAGR assumptions
     // Uses base-case FCF shape scaled to each CAGR, discounted at WACC
+    // shares_m must come from market data — never default to a hardcoded value
     const fcf = (t.fcf && t.fcf.base && t.fcf.base.fcf_m) || [];
-    const wacc = t.wacc || 0.10, shares = t.shares_m || 80;
+    const wacc = t.wacc || 0.10, shares = t.shares_m;
+    if (!shares) return h + '<p style="color:var(--muted)">Share count unavailable — reverse DCF cannot be computed.</p>';
     if (fcf.length >= 2 && shares) {
       const f0 = fcf[0] > 0 ? fcf[0] : fcf.find((v) => v > 0) || 100;
       const n = fcf.length;
@@ -1329,7 +1331,9 @@
       horizon = Math.max(5, Math.min(10, n));
     }
     const wacc = t.wacc || 0.10;
-    const shares = t.shares_m || 80;
+    // shares_m must come from market data — never default to a hardcoded value
+    const shares = t.shares_m;
+    if (!shares) return '<div class="card"><p style="color:var(--muted)">Share count unavailable — simulator cannot compute implied prices.</p></div>';
     // pick display unit from company scale: billions for large FCF, millions for small
     const useB = Math.abs(base0) >= 500;
     const uDiv = useB ? 1000 : 1, uSuf = useB ? "B" : "M";
