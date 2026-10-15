@@ -2099,7 +2099,7 @@
     if (!listEl || !authUser) return;
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supa
         .from("alert_subscriptions")
         .select("tracker_key, is_active")
         .eq("user_id", authUser.id)
@@ -2149,7 +2149,7 @@
     if (!authUser) return;
     try {
       // Upsert: update if exists, insert if not
-      const { data: existing } = await supabase
+      const { data: existing } = await supa
         .from("alert_subscriptions")
         .select("id")
         .eq("user_id", authUser.id)
@@ -2158,12 +2158,12 @@
         .single();
 
       if (existing) {
-        await supabase
+        await supa
           .from("alert_subscriptions")
           .update({ is_active: isActive })
           .eq("id", existing.id);
       } else {
-        await supabase
+        await supa
           .from("alert_subscriptions")
           .insert({
             user_id: authUser.id,
