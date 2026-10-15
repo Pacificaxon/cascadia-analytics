@@ -445,9 +445,11 @@
         // interactive VIX vs MOVE divergence tracker (live data, not static image)
         let chartHtml = "";
         if (/volatility divergence/i.test(p.name) && D.vol_div_history && (D.vol_div_history.history || []).length) {
-          chartHtml = '<div style="position:relative;height:280px;margin-bottom:8px;"><canvas id="voldiv-chart"></canvas></div>';
+          chartHtml = '<div class="zoomable-chart" data-chart="voldiv" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="voldiv-chart"></canvas>' +
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
         } else if (/alligator/i.test(p.name) && D.jaw_history && (D.jaw_history.history || []).length) {
-          chartHtml = '<div style="position:relative;height:280px;margin-bottom:8px;"><canvas id="jaw-chart"></canvas></div>';
+          chartHtml = '<div class="zoomable-chart" data-chart="jaw" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="jaw-chart"></canvas>' +
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
         } else if (p.chart) {
           chartHtml = '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy">';
         }
@@ -539,6 +541,68 @@
           });
         } catch (e) { console.error("Jaw chart error", e); }
       }
+      // Click/tap to zoom: open modal with larger chart
+      document.querySelectorAll(".zoomable-chart").forEach((el) => {
+        if (el.dataset.zoomBound) return;
+        el.dataset.zoomBound = "1";
+        el.addEventListener("click", () => {
+          const kind = el.dataset.chart;
+          // build modal
+          let modal = document.getElementById("chart-zoom-modal");
+          if (modal) modal.remove();
+          modal = document.createElement("div");
+          modal.id = "chart-zoom-modal";
+          modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
+          modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:20px;width:100%;max-width:1000px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+            '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (kind === "jaw" ? "Alligator Jaw — S&P 500 vs Forward EPS" : "Volatility Divergence — VIX vs MOVE") + '</div>' +
+            '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+            '<div style="position:relative;flex:1;min-height:400px;"><canvas id="zoom-chart"></canvas></div></div>';
+          document.body.appendChild(modal);
+          const close = () => modal.remove();
+          modal.addEventListener("click", close);
+          document.getElementById("zoom-close").addEventListener("click", close);
+          // render enlarged chart
+          const zc = document.getElementById("zoom-chart");
+          try {
+            if (kind === "jaw") {
+              const hist = D.jaw_history.history;
+              new Chart(zc, {
+                type: "line",
+                data: { labels: hist.map((r) => r.date), datasets: [
+                  { label: "S&P 500", data: hist.map((r) => r.price), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
+                  { label: "Forward 12m EPS", data: hist.map((r) => r.forward_eps), borderColor: "#3fb950", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
+                ]},
+                options: { responsive: true, maintainAspectRatio: false,
+                  interaction: { mode: "index", intersect: false },
+                  plugins: { legend: { labels: { color: "#c8d0dc" } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+                  scales: {
+                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "S&P 500", color: "#58a6ff" } },
+                    y1: { position: "right", ticks: { color: "#3fb950" }, grid: { display: false }, title: { display: true, text: "Fwd EPS ($)", color: "#3fb950" } } } }
+              });
+            } else {
+              const hist = D.vol_div_history.history;
+              new Chart(zc, {
+                type: "line",
+                data: { labels: hist.map((r) => r.date), datasets: [
+                  { label: "Divergence (MOVE z − VIX z)", data: hist.map((r) => r.divergence), borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
+                  { label: "MOVE z-score", data: hist.map((r) => r.move_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+                  { label: "VIX z-score", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+                ]},
+                options: { responsive: true, maintainAspectRatio: false,
+                  interaction: { mode: "index", intersect: false },
+                  plugins: { legend: { labels: { color: "#c8d0dc" } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+                  scales: {
+                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#787b86" } } } }
+              });
+            }
+          } catch (e) { console.error("Zoom chart error", e); }
+        });
+      });
     }, 200);
     h += "</div>";
 
