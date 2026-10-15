@@ -341,8 +341,10 @@
     } catch (e) { return ""; }
   }
   function newsRow(o) {
-    const clickable = o.badge ? ' data-news-tk="' + esc(o.badge) + '" style="cursor:pointer;"' : "";
-    return '<div class="news-row"' + clickable + '>' +
+    const clickable = o.badge ? ' data-news-tk="' + esc(o.badge) + '"' : "";
+    const style = (o.badge || o.url) ? ' style="cursor:pointer;"' : "";
+    const urlAttr = o.url ? ' data-news-url="' + esc(o.url) + '"' : "";
+    return '<div class="news-row"' + clickable + urlAttr + style + '>' +
       '<div>' + (o.badge ? '<span class="tk-badge">' + esc(o.badge) + "</span>" : "") + "</div>" +
       '<div><div class="news-h">' + esc(o.headline) + "</div>" +
       (o.sub ? '<div class="news-sub">' + esc(o.sub) + "</div>" : "") + "</div>" +
@@ -423,7 +425,7 @@
     // company news — artifact layout
     h += newsSection("cn-sec", "SINGLE-COMPANY WIRE", "Company News", "Offerings · Regulation · Contracts",
       news.length ? news.map((m) => newsRow({
-        badge: m.ticker, headline: m.headline, sub: m.summary, ts: fmtTs(m.timestamp), source: m.source
+        badge: m.ticker, headline: m.headline, sub: m.summary, ts: fmtTs(m.timestamp), source: m.source, url: m.url
       })).join("") : "");
 
     // macro wire — artifact layout
@@ -461,6 +463,15 @@
       tr.addEventListener("click", () => nav("ticker/" + tr.dataset.tk)));
     app.querySelectorAll(".news-row[data-news-tk]").forEach((row) =>
       row.addEventListener("click", () => nav("ticker/" + row.dataset.newsTk)));
+    // Seeking Alpha articles have direct URLs — open in new tab
+    app.querySelectorAll('.news-row[data-news-url]').forEach((row) =>
+      row.addEventListener("click", (e) => {
+        // If it also has a ticker, prioritize the URL for SA articles
+        if (row.dataset.newsUrl && row.querySelector(".news-ts").textContent.includes("Seeking Alpha")) {
+          window.open(row.dataset.newsUrl, "_blank", "noopener");
+          e.stopPropagation();
+        }
+      }));
     const bb = document.getElementById("btn-browse");
     if (bb) bb.addEventListener("click", () => document.getElementById("coverage-sec").scrollIntoView({ behavior: "smooth" }));
     const bi = document.getElementById("btn-internals");
