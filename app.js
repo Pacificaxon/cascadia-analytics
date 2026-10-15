@@ -943,6 +943,7 @@
  });
 
  route("monitor", function () {
+  try {
   const panels = D.panels || [];
   let h = '<div class="crumb">MARKET INTERNALS · VOLATILITY · MACRO</div>';
   h += '<div class="hero"><div>' +
@@ -2534,7 +2535,11 @@
   }
 
   app.innerHTML = h;
-  drawLeadershipChart();
+  try { drawLeadershipChart(); } catch (e) { console.error("Leadership chart failed:", e); }
+  } catch (routeErr) {
+   console.error("Monitor route failed:", routeErr);
+   app.innerHTML = '<div class="card"><h3>Market Internals</h3><p style="color:#f85149;">Failed to load: ' + esc(routeErr.message) + '</p><p>Please refresh the page.</p></div>';
+  }
  });
 
  /* ================= ALERTS ================= */
