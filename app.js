@@ -972,16 +972,18 @@
   let h = '<div class="card"><h3>Market Leadership <span class="pro-badge">PRO</span></h3>';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Top ' + d.leaders.length + ' leaders from ' + (d.universe_size || "S&P 500") + ' stocks · As of ' + esc((d.as_of || "").slice(0, 10)) + '</div>';
   h += '<div class="table-wrap"><table class="coverage"><thead><tr>' +
-   '<th>Ticker</th><th>Name</th><th>Sector</th><th>MLS</th><th>RS</th><th>Trend</th><th>Price</th><th>vs 50-day</th>' +
+   '<th>Ticker</th><th>Name</th><th>Sector</th><th>MLS</th><th>RS %</th><th>Trend</th><th>Price</th><th>vs 50-day</th>' +
    '</tr></thead><tbody>';
   d.leaders.forEach((l) => {
    const vsSma = l.sma50 ? ((l.price / l.sma50 - 1) * 100) : null;
    const vsCls = vsSma == null ? "" : (vsSma >= 0 ? "pos" : "neg");
+   // Show RS percentile (more differentiated than capped rs_score)
+   const rsDisplay = l.rs_percentile != null ? l.rs_percentile.toFixed(1) : (l.rs_score != null ? l.rs_score : "-");
    h += '<tr><td><b>' + esc(l.ticker) + '</b></td>' +
     '<td>' + esc(l.name || "") + '</td>' +
     '<td style="font-size:11px;">' + esc(l.sector || "") + '</td>' +
     '<td class="pos"><b>' + (l.mls != null ? l.mls.toFixed(1) : "-") + '</b></td>' +
-    '<td>' + (l.rs_score != null ? l.rs_score : "-") + '</td>' +
+    '<td>' + rsDisplay + '</td>' +
     '<td>' + (l.trend_score != null ? l.trend_score.toFixed(1) : "-") + '</td>' +
     '<td>' + fmt$(l.price) + '</td>' +
     '<td class="' + vsCls + '">' + (vsSma == null ? "-" : (vsSma >= 0 ? "+" : "") + vsSma.toFixed(1) + "%") + '</td></tr>';
