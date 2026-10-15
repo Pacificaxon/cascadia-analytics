@@ -860,9 +860,10 @@
   if (D.fed_funds && D.fed_funds.available) {
    h += fedFundsHtml(D.fed_funds);
   }
-  h += gated("Market Internals, Pro",
-   "Breadth monitor, Alligator Jaw, theme rotation, and credit-spread-vs-volatility trackers.",
-   '<div style="display:flex;flex-direction:column;gap:16px;">' + panels.map((p) => {
+  // Market Internals trackers - each individually Pro-locked with badge
+  h += '<div class="section"><div class="section-title">Market Internals Trackers</div>' +
+   '<div class="section-sub">Breadth, positioning, volatility, and rotation signals. Free users see previews below.</div></div>';
+  h += '<div style="display:flex;flex-direction:column;gap:16px;">' + panels.map((p) => {
     let title = esc(p.name);
     if (/alligator/i.test(p.name)) {
      const isOpen = /jaw\s*open/i.test(p.summary || "");
@@ -918,11 +919,13 @@
     // Explainer: visual first, then plain-English explanation of what the user is seeing
     const explainerHtml = trackerExplainer(p);
     const proBadge = ' <span style="font-size:10px;background:#7d4fc9;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">PRO</span>';
-    return '<div class="card"><h3>' + title + proBadge + "</h3>" + chartHtml + explainerHtml +
+    const panelHtml = '<div class="card"><h3>' + title + proBadge + "</h3>" + chartHtml + explainerHtml +
     (p.about ? '<div class="panel-about">' + esc(p.about) + "</div>" : "") +
     '<div class="panel-summary">' + esc(p.summary || "") + "</div>" +
     '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>";
-   }).join("") + "</div>");
+    // Each tracker individually Pro-locked
+    return gated(p.name, esc(p.summary || "Pro market internals tracker"), panelHtml);
+   }).join("") + "</div>";
 
   /* ---------- tracker explainers (visual first, explanation after) ---------- */
   /* ---------- GEX tracker HTML (Pro-gated) ---------- */
