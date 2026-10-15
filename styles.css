@@ -89,6 +89,7 @@ a:hover { text-decoration: underline; }
 .pro-btn {
   border: 1px solid var(--gold) !important; color: var(--gold) !important;
   border-radius: 6px !important; padding: 7px 14px !important;
+  -webkit-touch-callout: none !important; -webkit-user-select: none !important; user-select: none !important;
 }
 .pro-btn.unlocked { background: var(--gold-dim) !important; }
 .auth-btn { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

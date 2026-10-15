@@ -4031,6 +4031,20 @@
   }
   render();    // fast first paint from localStorage cache
   refreshAuth(); // server-verified Pro status, re-renders when resolved
+  // Debug mode: add ?debug=1 to URL to see auth status (for iOS troubleshooting)
+  if (location.search.includes("debug=1")) {
+   setTimeout(() => {
+    const info = [
+     "isPro(): " + isPro(),
+     "proVerified: " + proVerified,
+     "isAdmin: " + isAdmin,
+     "authUser: " + (authUser ? authUser.email : "null"),
+     "PRO_DATA: " + (PRO_DATA ? "loaded" : "null"),
+     "Route: " + (location.hash || "#/")
+    ].join("\n");
+    alert("DEBUG:\n\n" + info);
+   }, 2000);
+  }
  })();
 })();
 
