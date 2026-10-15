@@ -97,8 +97,12 @@
  });
 
  // Tickers/order derived from D (Proxy merges free + Pro API data when available)
- const TICKERS = D.tickers || {};
+ let TICKERS = D.tickers || {};
  const ORDER = D.ticker_order || Object.keys(TICKERS).sort();
+ // Refresh TICKERS after Pro data loads (merges DCF targets)
+ function refreshTickers() {
+  TICKERS = D.tickers || {};
+ }
 
  async function refreshAuth() {
   if (!supa) { proVerified = false; render(); return; }
@@ -132,6 +136,7 @@
   } else {
    PRO_DATA = null;
   }
+  refreshTickers();
   updateAuthBtn();
   render();
  }
@@ -790,7 +795,7 @@
   // macro wire, artifact layout
   h += newsSection("macro-sec", "MACRO WIRE", "Macro Wire", "Rates · Inflation · Geopolitics",
    macro.length ? macro.map((m) => newsRow({
-    badge: "", headline: m.headline, sub: m.detail, ts: fmtTs(m.timestamp), source: m.source
+    badge: "", headline: m.headline, sub: m.detail, ts: fmtTs(m.timestamp), source: m.source, url: m.url
    })).join("") : "");
 
 
