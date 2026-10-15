@@ -106,6 +106,7 @@
 
  async function refreshAuth() {
   if (!supa) { proVerified = false; render(); return; }
+  const prevProState = isPro();
   try {
    const { data: { session } } = await supa.auth.getSession();
    authUser = session ? session.user : null;
@@ -144,6 +145,12 @@
   refreshTickers();
   updateAuthBtn();
   render();
+  // If Pro state changed during auth resolution, force a second render
+  // to ensure the route picks up the new state (fixes iOS race condition
+  // where initial render happens before auth completes)
+  if (prevProState !== isPro()) {
+   setTimeout(() => render(), 50);
+  }
  }
 
  // Listen for auth changes (login/logout in another tab, token refresh)
@@ -322,6 +329,18 @@
  }
  function render() {
   const r = currentRoute();
+  // Destroy existing Chart.js instances before re-rendering (prevents "canvas already in use")
+  // Uses Chart.getChart() official API to find charts by canvas element
+  try {
+   if (typeof Chart !== "undefined" && Chart.getChart) {
+    document.querySelectorAll("canvas").forEach((cv) => {
+     try {
+      const chart = Chart.getChart(cv);
+      if (chart) chart.destroy();
+     } catch (e) {}
+    });
+   }
+  } catch (e) {}
   // Save scroll position of the route we're leaving
   try {
     const prevHash = sessionStorage.getItem("__last_hash");
@@ -568,7 +587,9 @@
  function embedAnalysisVisuals() {
   let placeholders;
   try {
-   placeholders = document.querySelectorAll("[data-embed-visual]");
+   // Query within the app container to avoid detached nodes from previous renders
+   const container = document.getElementById("app") || document;
+   placeholders = container.querySelectorAll("[data-embed-visual]");
   } catch (e) {
    console.error("Visual placeholder query failed:", e);
    return;
