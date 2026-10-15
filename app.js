@@ -1028,19 +1028,21 @@
     const r = (D.earnings_revisions || {})[tk];
     if (!r) return '<div class="card"><p style="color:var(--muted)">No revision data available.</p></div>';
     const row = (label, p) => {
-      if (!p || p.consensus == null) return "<tr><td>" + esc(label) + '</td><td colspan="4" style="color:var(--muted)">No estimates</td></tr>';
+      if (!p || p.consensus == null) return "<tr><td>" + esc(label) + '</td><td colspan="5" style="color:var(--muted)">No estimates</td></tr>';
+      const up7 = p.up_7d || 0, dn7 = p.down_7d || 0;
       const up30 = p.up_30d || 0, dn30 = p.down_30d || 0;
       const drift = p.drift_90d_pct;
       const driftCls = drift == null ? "" : drift > 0.5 ? "bullish" : drift < -0.5 ? "bearish" : "neutral";
       const driftTxt = drift == null ? "—" : (drift >= 0 ? "+" : "") + drift.toFixed(1) + "%";
+      const rev = (u, d) => '<span style="color:#6a9a6a;">▲' + u + '</span> <span style="color:#f87171;">▼' + d + '</span>';
       return "<tr><td><b>" + esc(p.label || label) + "</b><div style='font-size:11px;color:var(--muted);'>" + (p.analysts || 0) + " analysts</div></td>" +
         "<td>$" + p.consensus.toFixed(2) + "</td>" +
-        '<td><span style="color:#6a9a6a;">▲' + up30 + '</span> <span style="color:#f87171;">▼' + dn30 + '</span><div style="font-size:11px;color:var(--muted);">30d</div></td>' +
-        '<td class="' + driftCls + '">' + driftTxt + '<div style="font-size:11px;color:var(--muted);">90d drift</div></td></tr>';
+        "<td>" + rev(up7, dn7) + '</td><td>' + rev(up30, dn30) + "</td>" +
+        '<td class="' + driftCls + '">' + driftTxt + "</td></tr>";
     };
     return '<div class="card"><div style="font-size:13px;color:#c8d0dc;margin-bottom:10px;">Analyst EPS estimate revisions — up/down counts and 90-day consensus drift.</div>' +
       '<div class="table-wrap"><table class="coverage ma-table" style="color:#e8ecf1;"><thead><tr>' +
-      '<th style="color:#a8b0bc;">Period</th><th style="color:#a8b0bc;">Consensus EPS</th><th style="color:#a8b0bc;">Revisions</th><th style="color:#a8b0bc;">Trend</th>' +
+      '<th style="color:#a8b0bc;">Period</th><th style="color:#a8b0bc;">Consensus EPS</th><th style="color:#a8b0bc;">7-day</th><th style="color:#a8b0bc;">30-day</th><th style="color:#a8b0bc;">90-day drift</th>' +
       "</tr></thead><tbody>" +
       row("Upcoming quarter", r.quarter) + row("Full year", r.annual) +
       '</tbody></table></div><div class="panel-asof" style="color:#a8b0bc;">As of ' + esc(r.as_of || "") + " · Source: Yahoo Finance</div></div>";
