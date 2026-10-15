@@ -579,11 +579,26 @@
         '<span style="width:22px;height:22px;border-radius:50%;background:' + m.color + ';display:inline-block;"></span>' +
         esc(m.label) + "</button>"
       ).join("");
+      // Analyst report (right-hand side)
+      const report = d.analyst_report || {};
+      const reportHtml =
+        '<div style="background:#161b26;border-radius:12px;padding:20px;height:100%;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
+        '<span style="font-size:14px;">📊</span>' +
+        '<span style="font-size:15px;font-weight:700;color:#fff;">Macro Analyst Report</span></div>' +
+        '<div style="font-size:11px;color:#e8ecf1;opacity:0.6;margin-bottom:12px;">' + esc(report.as_of || d.as_of || "") + "</div>" +
+        (report.sections || []).map((s) =>
+          '<div style="margin-bottom:14px;">' +
+          '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">' + esc(s.heading) + "</div>" +
+          '<div style="font-size:13px;color:#e8ecf1;opacity:0.85;line-height:1.6;">' + s.body + "</div></div>"
+        ).join("") +
+        "</div>";
       return '<div style="margin-bottom:12px;">' +
         '<h2 style="color:#fff;font-size:20px;margin:0 0 4px;">Economic Trends & Macro Indicators</h2>' +
         '<p style="color:#e8ecf1;opacity:0.6;font-size:13px;margin:0 0 16px;">Compare trends across CPI, PPI, Retail Sales & PMI to detect leading vs. lagging signals.</p>' +
         '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' + cardsHtml + "</div>" +
-        '<div style="background:#161b26;border-radius:12px;padding:20px;">' +
+        '<div style="display:grid;grid-template-columns:1fr 380px;gap:16px;align-items:start;">' +
+        '<div style="background:#161b26;border-radius:12px;padding:20px;min-width:0;">' +
         '<div style="font-size:13px;color:#e8ecf1;margin-bottom:8px;">Metrics</div>' +
         '<div style="margin-bottom:16px;">' + pillsHtml + "</div>" +
         '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
@@ -595,6 +610,8 @@
         '<div class="zoomable-chart" data-chart="macro" style="position:relative;height:320px;cursor:zoom-in;" title="Click to zoom"><canvas id="macro-chart"></canvas>' +
         '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
         '<div id="macro-legend" style="display:flex;justify-content:center;gap:20px;margin-top:12px;flex-wrap:wrap;"></div>' +
+        "</div>" +
+        reportHtml +
         "</div>" +
         '<div style="background:#161b26;border-radius:8px;padding:14px;margin-top:12px;">' +
         '<span style="font-size:13px;font-weight:700;color:#fff;">Leading Signal: </span>' +
