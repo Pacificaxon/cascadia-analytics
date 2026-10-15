@@ -10,7 +10,7 @@
 // static asset because it lives inside functions/).
 
 import { verifyPro, jsonResponse, handleOptions } from "./_auth.js";
-import proData from "../pro-data.json" with { type: "json" };
+import proData from "../pro-data.json";
 
 export async function onRequest(context) {
   const { request, env } = context;
