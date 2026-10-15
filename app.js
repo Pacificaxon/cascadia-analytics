@@ -900,125 +900,39 @@
 
   function maHtml(tk) {
     const m = (D.ticker_ma || {})[tk];
-    const t = TICKERS[tk];
-    const hist = (t && t.history) || [];
     if (!m) return '<div class="card"><p style="color:var(--muted)">No moving-average data for this ticker.</p></div>';
     let h = "";
-    const chartIds = [];
-    ["daily", "weekly", "monthly"].forEach((tf, tfi) => {
+    // TradingView symbol: handle special cases
+    const tvSym = tk === "RNMBY" ? "OTC:RNMBY" : tk === "RBRK" ? "NASDAQ:RBRK" : "NASDAQ:" + tk;
+    const intervals = { daily: "D", weekly: "W", monthly: "M" };
+    ["daily", "weekly", "monthly"].forEach((tf) => {
       const d = m[tf];
       if (!d) return;
-      const cid = "ma-chart-" + tk + "-" + tf;
-      chartIds.push({ cid, tf });
+      // TradingView embed with MA studies (10, 20, 50, 200)
+      const widgetConfig = {
+        symbol: tvSym, interval: intervals[tf], theme: "dark", style: "1",
+        locale: "en", toolbar_bg: "#1a2332", enable_publishing: false,
+        hide_side_toolbar: false, allow_symbol_change: false,
+        studies: ["MA@tv-basicstudies", "MA@tv-basicstudies", "MA@tv-basicstudies", "MA@tv-basicstudies"],
+        container_id: "tv-" + tk + "-" + tf
+      };
       h += '<div class="card"><h3 style="text-transform:capitalize">' + tf + ' <span class="verdict ' +
         (String(d.signal || "").toLowerCase().includes("buy") ? "bullish" : String(d.signal || "").toLowerCase().includes("sell") ? "bearish" : "neutral") +
         '">' + esc(d.signal || "") + "</span></h3>" +
-        '<div style="position:relative;height:320px;margin-bottom:12px;"><canvas id="' + cid + '"></canvas></div>' +
+        '<div class="tradingview-widget-container" style="height:420px;width:100%;margin-bottom:12px;">' +
+        '<div id="tv-' + tk + '-' + tf + '" style="height:100%;width:100%;"></div>' +
+        '<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>' +
+        JSON.stringify(widgetConfig) + "</scr" + "ipt></div>" +
         '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
         ["10", "20", "30", "50", "100", "200"].map((p) =>
           "<tr><td>" + p + "</td><td>" + fmt$((d.sma || {})[p]) + "</td><td>" + fmt$((d.ema || {})[p]) + "</td></tr>"
         ).join("") + "</tbody></table></div>" +
-        '<div class="panel-asof">Price ' + fmt$(d.price) + " · as of " + esc(d.as_of || "") + "</div></div>";
+        '<div class="panel-asof">Price ' + fmt$(d.price) + " · as of " + esc(d.as_of || "") + " · Chart by TradingView</div></div>";
     });
-    // render charts after DOM insert
-    setTimeout(() => {
-      chartIds.forEach(({ cid, tf }) => {
-        const cv = document.getElementById(cid);
-        const ohlcv = (D.ticker_ohlcv || {})[tk] || [];
-        if (!cv || !ohlcv.length) return;
-        try {
-        // use OHLCV: [ts, o, h, l, c, v]
-        let bars = ohlcv.map((r) => ({ t: r[0], o: r[1], h: r[2], l: r[3], c: r[4], v: r[5] || 0 }));
-        if (tf === "weekly") {
-          const wk = [];
-          bars.forEach((b) => {
-            const w = Math.floor(b.t / (7 * 864e5));
-            if (!wk.length || wk[wk.length - 1].w !== w) wk.push({ w, t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
-            else { const p = wk[wk.length - 1]; p.h = Math.max(p.h, b.h); p.l = Math.min(p.l, b.l); p.c = b.c; p.v += b.v; }
-          });
-          bars = wk;
-        } else if (tf === "monthly") {
-          const mo = [];
-          bars.forEach((b) => {
-            const d = new Date(b.t), k = d.getFullYear() * 12 + d.getMonth();
-            if (!mo.length || mo[mo.length - 1].k !== k) mo.push({ k, t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
-            else { const p = mo[mo.length - 1]; p.h = Math.max(p.h, b.h); p.l = Math.min(p.l, b.l); p.c = b.c; p.v += b.v; }
-          });
-          bars = mo;
-        }
-        // Manual candlesticks: floating bars for bodies + custom plugin for wicks
-        const up = bars.map((b) => b.c >= b.o);
-        const bodies = bars.map((b) => ({ x: b.t, y: [Math.min(b.o, b.c), Math.max(b.o, b.c)] }));
-        const bodyColors = up.map((u) => u ? "#26a69a" : "#ef5350");
-        const bodyBorders = up.map((u) => u ? "#1d7a72" : "#b71c1c");
-        const closes = bars.map((b) => b.c);
-        const vols = bars.map((b) => b.v);
-        const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b) => a + b, 0) / n);
-        const ds = (label, data, color, w) => ({ type: "line", label, data: data.map((v, i) => v == null ? null : { x: bars[i].t, y: v }), borderColor: color, borderWidth: w, pointRadius: 0, tension: 0.1, spanGaps: true, order: 1, yAxisID: "y", parsing: false });
-        const volColors = up.map((u) => u ? "rgba(38,166,154,0.5)" : "rgba(239,83,80,0.5)");
-        const fmtVol = (v) => v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : String(v);
-        // wick plugin: draws high-low line through each candle
-        const wickPlugin = {
-          id: "wicks",
-          afterDatasetsDraw(chart) {
-            const ctx = chart.ctx, yS = chart.scales.y, xS = chart.scales.x;
-            const meta = chart.getDatasetMeta(0);
-            bars.forEach((b, i) => {
-              const el = meta.data[i];
-              if (!el) return;
-              const x = el.x, w = el.width;
-              ctx.save();
-              ctx.strokeStyle = bodyBorders[i]; ctx.lineWidth = 1.5;
-              ctx.beginPath();
-              ctx.moveTo(x, yS.getPixelForValue(b.h));
-              ctx.lineTo(x, yS.getPixelForValue(b.l));
-              ctx.stroke(); ctx.restore();
-            });
-          }
-        };
-        new Chart(cv, {
-          type: "bar",
-          data: { datasets: [
-            { label: "Price", data: bodies, type: "bar", backgroundColor: bodyColors, borderColor: bodyBorders, borderWidth: 1,
-              order: 2, yAxisID: "y", parsing: false, barPercentage: 0.7, categoryPercentage: 0.8,
-              _bars: bars },
-            { label: "Volume", data: vols.map((v, i) => ({ x: bars[i].t, y: v })), type: "bar", backgroundColor: volColors, borderWidth: 0, order: 3, yAxisID: "y1", parsing: false },
-            ds("10 MA", sma(10), "#f87171", 3),
-            ds("20 MA", sma(20), "#fbbf24", 3),
-            ds("50 MA", sma(50), "#60a5fa", 3.5),
-            ...(closes.length >= 100 ? [ds("100 MA", sma(100), "#a78bfa", 3.5)] : []),
-            ...(closes.length >= 200 ? [ds("200 MA", sma(200), "#34d399", 4)] : []),
-          ]},
-          options: { responsive: true, maintainAspectRatio: false,
-            interaction: { mode: "index", intersect: false },
-            plugins: {
-              legend: { labels: { color: "#c8d0dc", boxWidth: 20, filter: (l) => l.text !== "Volume" } },
-              tooltip: {
-                backgroundColor: "#1a2332", borderColor: "#3a4556", borderWidth: 1,
-                titleColor: "#e8ecf1", bodyColor: "#c8d0dc", padding: 12,
-                callbacks: {
-                  title: (items) => items.length ? new Date(items[0].parsed.x).toLocaleDateString() : "",
-                  label: (c) => {
-                    if (c.dataset.label === "Volume") return " Volume: " + fmtVol(c.parsed.y);
-                    if (c.dataset.label === "Price") {
-                      const b = bars[c.dataIndex];
-                      if (b) return " O: $" + b.o.toFixed(2) + " H: $" + b.h.toFixed(2) + " L: $" + b.l.toFixed(2) + " C: $" + b.c.toFixed(2);
-                    }
-                    return " " + c.dataset.label + ": $" + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "—");
-                  }
-                }
-              }
-            },
-            scales: {
-              x: { type: "time", time: { unit: tf === "monthly" ? "month" : tf === "weekly" ? "week" : "day" }, ticks: { color: "#7a8494", maxTicksLimit: 8 }, grid: { color: "#2a3448" } },
-              y: { ticks: { color: "#c8d0dc", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "#2a3448" } },
-              y1: { position: "right", display: false, max: Math.max(...vols, 1) * 4, grid: { display: false } }
-            } },
-          plugins: [wickPlugin]
-        });
-        } catch (e) { console.error("MA chart error for " + tk + " " + tf, e); }
-      });
-    }, 100);
+    return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>';
+  }
+    return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>;
+  }
     return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>';
   }
 
