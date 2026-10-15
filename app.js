@@ -942,6 +942,46 @@
   // btn-internals is now a direct <a href="#/monitor"> link, no JS handler needed
  });
 
+ /* ---------- Market Leadership HTML (Pro-gated) ---------- */
+ function leadershipHtml(d) {
+  if (!d || !d.available || !(d.leaders || []).length) {
+   return '<div class="card"><p style="color:var(--muted)">No leadership data available.</p></div>';
+  }
+  let h = '<div class="card"><h3>Market Leadership <span class="pro-badge">PRO</span></h3>';
+  h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Top ' + d.leaders.length + ' leaders from ' + (d.universe_size || "S&P 500") + ' stocks · As of ' + esc((d.as_of || "").slice(0, 10)) + '</div>';
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr>' +
+   '<th>Ticker</th><th>Name</th><th>Sector</th><th>MLS</th><th>RS</th><th>Trend</th><th>Price</th><th>vs 50-day</th>' +
+   '</tr></thead><tbody>';
+  d.leaders.forEach((l) => {
+   const vsSma = l.sma50 ? ((l.price / l.sma50 - 1) * 100) : null;
+   const vsCls = vsSma == null ? "" : (vsSma >= 0 ? "pos" : "neg");
+   h += '<tr><td><b>' + esc(l.ticker) + '</b></td>' +
+    '<td>' + esc(l.name || "") + '</td>' +
+    '<td style="font-size:11px;">' + esc(l.sector || "") + '</td>' +
+    '<td class="pos"><b>' + (l.mls != null ? l.mls.toFixed(1) : "-") + '</b></td>' +
+    '<td>' + (l.rs_score != null ? l.rs_score : "-") + '</td>' +
+    '<td>' + (l.trend_score != null ? l.trend_score.toFixed(1) : "-") + '</td>' +
+    '<td>' + fmt$(l.price) + '</td>' +
+    '<td class="' + vsCls + '">' + (vsSma == null ? "-" : (vsSma >= 0 ? "+" : "") + vsSma.toFixed(1) + "%") + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  // Rotation signals
+  const rots = d.rotations || [];
+  if (rots.length) {
+   h += '<div style="margin-top:12px;"><div style="font-size:13px;font-weight:600;margin-bottom:6px;">Rotation Signals</div>';
+   rots.slice(0, 5).forEach((r) => {
+    const actionColor = r.action === "ADDED" ? "pos" : (r.action === "REMOVED" ? "neg" : "");
+    h += '<div style="font-size:12px;margin-bottom:4px;"><span class="' + actionColor + '"><b>' + esc(r.action) + '</b></span> ' +
+     '<b>' + esc(r.ticker) + '</b> <span style="color:var(--muted);">' + esc(r.date || "") + ' · ' + esc(r.reason || "") + '</span></div>';
+   });
+   h += '</div>';
+  }
+  h += '<div class="panel-about"><p><b>What is this?</b> The Market Leadership Score (MLS) identifies the strongest stocks in the S&P 500 using relative strength, trend, and volume. ' +
+   'Stocks scoring 85+ with RS percentile above 95 are flagged as leaders. New additions signal emerging strength; removals warn of fading momentum.</p></div>';
+  h += '</div>';
+  return h;
+ }
+
  route("monitor", function () {
   try {
   const panels = D.panels || [];
@@ -2528,11 +2568,11 @@
     "</div>";
   }
 
-  // Market Leadership, Pro-gated (TODO: implement leadershipHtml function)
-  // if (D.leadership && D.leadership.available && (D.leadership.leaders || []).length) {
-  //   h += gated("Market Leadership", "Automated S&P 500 leader tracking with composite scoring and rotation signals.",
-  //     leadershipHtml(D.leadership));
-  // }
+  // Market Leadership, Pro-gated
+  if (D.leadership && D.leadership.available && (D.leadership.leaders || []).length) {
+   h += gated("Market Leadership", "Automated S&P 500 leader tracking with composite scoring and rotation signals.",
+    leadershipHtml(D.leadership));
+  }
 
   app.innerHTML = h;
   try { drawLeadershipChart(); } catch (e) { console.error("Leadership chart failed:", e); }
