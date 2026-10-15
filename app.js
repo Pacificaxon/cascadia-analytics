@@ -422,6 +422,49 @@
       '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
   }
 
+  /* Barchart-style Gamma Exposure by Strike chart.
+     Bars: net GEX per strike (blue=positive/call-heavy, orange=negative/put-heavy).
+     Line: aggregate (cumulative) GEX. Vertical markers: spot, zero gamma (flip),
+     call wall, put wall. Background shading: green above flip, pink below. */
+  let gexStrikeChart = null;
+  function gexStrikeChartHtml(tk, d, chartId) {
+    if (!d.strikes || !d.strikes.length) return '<p style="color:#e8ecf1">Strike-level data unavailable.</p>';
+    const unit = d.gex_unit || "M";
+    return '<div class="zoomable-chart" style="position:relative;margin:12px 0;cursor:zoom-in;" title="Click to zoom">' +
+      '<canvas id="' + chartId + '" style="max-height:380px;"></canvas>' +
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+      '<div style="font-size:12px;color:#e8ecf1;text-align:center;margin-bottom:8px;">' +
+      '<span style="color:#2f6fed;">■</span> Net GEX by strike &nbsp; ' +
+      '<span style="color:#58a6ff;">—</span> Aggregate GEX &nbsp; ' +
+      '<span style="color:#3fb950;">—</span> Spot $' + d.spot.toFixed(2) + ' &nbsp; ' +
+      '<span style="color:#f85149;">—</span> Gamma flip $' + (d.zero_gamma != null ? d.zero_gamma.toFixed(2) : "—") +
+      "</div>" +
+      '<script>(function(){' +
+      'var d=' + JSON.stringify({strikes: d.strikes, agg: d.agg_curve || [], spot: d.spot, zero_gamma: d.zero_gamma, call_wall: d.call_wall, put_wall: d.put_wall, unit: unit}) + ';' +
+      'var ctx=document.getElementById("' + chartId + '"); if(!ctx||typeof Chart==="undefined")return;' +
+      'var labels=d.strikes.map(function(s){return s.strike;});' +
+      'var barData=d.strikes.map(function(s){return s.net_gex;});' +
+      'var barColors=d.strikes.map(function(s){return s.net_gex>=0?"#2f6fed":"#f0a030";});' +
+      'var aggMap={}; d.agg.forEach(function(a){aggMap[a.strike]=a.agg_gex;});' +
+      'var aggData=labels.map(function(k){return aggMap[k]!==undefined?aggMap[k]:null;});' +
+      'var ann={};' +
+      'if(d.spot!=null)ann.spot={type:"line",xMin:d.spot,xMax:d.spot,borderColor:"#3fb950",borderWidth:2,label:{display:true,content:"Spot",position:"start",color:"#3fb950",font:{size:10}}};' +
+      'if(d.zero_gamma!=null)ann.flip={type:"line",xMin:d.zero_gamma,xMax:d.zero_gamma,borderColor:"#f85149",borderWidth:2,borderDash:[6,4],label:{display:true,content:"Flip",position:"start",color:"#f85149",font:{size:10}}};' +
+      'if(d.call_wall!=null)ann.cwall={type:"line",xMin:d.call_wall,xMax:d.call_wall,borderColor:"#3fb950",borderWidth:1,borderDash:[3,3],label:{display:true,content:"C wall",position:"end",color:"#3fb950",font:{size:9}}};' +
+      'if(d.put_wall!=null)ann.pwall={type:"line",xMin:d.put_wall,xMax:d.put_wall,borderColor:"#f85149",borderWidth:1,borderDash:[3,3],label:{display:true,content:"P wall",position:"end",color:"#f85149",font:{size:9}}};' +
+      'new Chart(ctx,{type:"bar",data:{labels:labels,datasets:[' +
+      '{type:"bar",label:"Net GEX by strike ("+d.unit+")",data:barData,backgroundColor:barColors,borderWidth:0,barPercentage:0.9,categoryPercentage:0.9,yAxisID:"y"},' +
+      '{type:"line",label:"Aggregate GEX ("+d.unit+")",data:aggData,borderColor:"#58a6ff",borderWidth:2,pointRadius:0,tension:0.3,yAxisID:"y1"}' +
+      ']},options:{responsive:true,maintainAspectRatio:true,interaction:{mode:"index",intersect:false},' +
+      'plugins:{legend:{labels:{color:"#e8ecf1",boxWidth:12,font:{size:11}}},' +
+      'tooltip:{callbacks:{label:function(c){var s=d.strikes[c.dataIndex];if(s===undefined)return "";return " Net: "+s.net_gex+d.unit+" (C +"+s.call_gex+d.unit+" / P "+s.put_gex+d.unit+") · OI "+s.total_oi.toLocaleString();}}},' +
+      'annotation:{annotations:ann}},' +
+      'scales:{x:{title:{display:true,text:"Strike Price",color:"#e8ecf1"},ticks:{color:"#e8ecf1",maxTicksLimit:12},grid:{color:"rgba(255,255,255,0.06)"}},' +
+      'y:{title:{display:true,text:"Net GEX ("+d.unit+")",color:"#e8ecf1"},ticks:{color:"#e8ecf1"},grid:{color:"rgba(255,255,255,0.06)"}},' +
+      'y1:{position:"right",title:{display:true,text:"Aggregate ("+d.unit+")",color:"#58a6ff"},ticks:{color:"#58a6ff"},grid:{drawOnChartArea:false}}}' +
+      '}});})();</' + 'script>';
+  }
+
   /* ---------- artifact news layout ---------- */
   function fmtTs(ts) {
     if (!ts) return "";
@@ -933,6 +976,9 @@
               : '<span style="color:#f85149">below</span>')
             : "—";
           const chartId = "gex-chart-" + d.symbol.toLowerCase();
+          const strikeChartId = "gex-strike-" + d.symbol.toLowerCase();
+          // Indices use billions; gexStrikeChartHtml expects unit in data
+          const dWithUnit = Object.assign({}, d, {gex_unit: "B"});
           return '<div class="card" style="margin-bottom:12px;"><h3>' + esc(d.symbol) +
             ' <span style="font-size:12px;color:' + regimeColor + ';">' + regimeIcon + " " + regimeLabel + "</span></h3>" +
             '<div class="zoomable-chart" data-chart="gex-index" data-symbol="' + esc(d.symbol) + '" style="position:relative;height:200px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + chartId + '"></canvas>' +
@@ -949,6 +995,8 @@
             "</div>" +
             '<div style="font-size:12px;color:#e8ecf1;margin-top:8px;">Call GEX +' + d.call_gex.toFixed(2) + "B · Put GEX " + d.put_gex.toFixed(2) + "B · " +
             d.contracts_analyzed.toLocaleString() + " contracts</div>" +
+            '<div class="section-title" style="margin-top:12px;">GEX by Strike</div>' +
+            gexStrikeChartHtml(d.symbol, dWithUnit, strikeChartId) +
             '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div></div>";
         }).join("");
       if (!cards) return '<p style="color:var(--muted)">GEX data unavailable.</p>';
@@ -2153,7 +2201,9 @@
       h += '<div class="section"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
       h += gated("Gamma Exposure — Pro",
         "Live dealer gamma positioning for " + tk + " — see whether market makers will dampen or amplify the next move.",
-        tickerGexHtml(tk, tg));
+        tickerGexHtml(tk, tg) +
+        '<div class="section-title" style="margin-top:16px;">GEX by Strike</div>' +
+        gexStrikeChartHtml(tk, tg, "gex-strike-" + tk));
       h += "</div>";
     }
 
