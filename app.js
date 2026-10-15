@@ -1822,7 +1822,7 @@
     "</div>";
   }
 
-  // GEX (Gamma Exposure), Pro-gated, daily refresh at 7:09 AM PT
+  // GEX (Gamma Exposure), Pro-gated, daily refresh at 7:00 AM PT
   if (D.gex_data && D.gex_data.indices) {
    const gexHtml = gexTrackerHtml(D.gex_data);
    const gexExplainer =
@@ -1840,10 +1840,10 @@
     '<p><b>How we calculate it.</b> GEX per contract = option gamma × open interest × 100 × spot price. ' +
     'Calls add positive GEX, puts add negative GEX (dealers assumed short both). The zero gamma level is found by ' +
     're-simulating every option\u2019s gamma via Black-Scholes across hypothetical price levels and finding where total GEX crosses zero. ' +
-    'Data: CBOE delayed options chains, refreshed daily at 7:09 AM PT on trading days.</p>' +
+    'Data: CBOE delayed options chains, refreshed daily at 7:00 AM PT on trading days.</p>' +
     "</div>";
    h += '<div class="section" style="max-width:none;"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    '<div class="section-sub">Options dealer positioning, will market makers dampen or amplify the next move? Updates daily at 7:09 AM PT.</div>' +
+    '<div class="section-sub">Options dealer positioning, will market makers dampen or amplify the next move? Updates daily at 7:00 AM PT.</div>' +
     gated("Gamma Exposure (GEX)", "Live dealer gamma positioning for QQQ and SPY, spot the volatility regime before it shifts.", gexHtml + gexExplainer) +
     "</div>";
   }
