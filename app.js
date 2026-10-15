@@ -465,11 +465,138 @@
         } else if (p.chart) {
           chartHtml = '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy">';
         }
-        return '<div class="card"><h3>' + title + "</h3>" + chartHtml +
+        // Explainer: visual first, then plain-English explanation of what the user is seeing
+        const explainerHtml = trackerExplainer(p);
+        return '<div class="card"><h3>' + title + "</h3>" + chartHtml + explainerHtml +
         (p.about ? '<div class="panel-about">' + esc(p.about) + "</div>" : "") +
         '<div class="panel-summary">' + esc(p.summary || "") + "</div>" +
         '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>";
       }).join("") + "</div>");
+
+    /* ---------- tracker explainers (visual first, explanation after) ---------- */
+    function trackerExplainer(p) {
+      const wrap = (inner) => '<div class="panel-about" style="text-align:left;max-width:720px;margin:0 auto 12px;">' + inner + "</div>";
+      const name = (p.name || "").toLowerCase();
+
+      if (/volatility divergence/.test(name) && D.vol_div_history && (D.vol_div_history.history || []).length) {
+        const cur = D.vol_div_history.history[D.vol_div_history.history.length - 1];
+        const div = cur.divergence, mz = cur.move_z, vz = cur.vix_z;
+        const read = Math.abs(div) >= 2 ? "extreme" : Math.abs(div) >= 1 ? "elevated" : "normal";
+        return wrap(
+          "<p><b>What am I looking at?</b> This chart compares fear in two different markets: stocks (VIX) and bonds (MOVE). " +
+          "Both are converted to z-scores — how unusual today's reading is versus the last year — so they can be compared apples-to-apples. " +
+          "The red line is the gap between them: bond fear minus stock fear.</p>" +
+          "<p><b>How to read it.</b> When the red line is near zero, stocks and bonds agree about risk. " +
+          "When it spikes above <b>+2</b>, the bond market is much more scared than the stock market — bonds are pricing in danger that stocks are ignoring. " +
+          "When it drops below <b>−2</b>, stocks are more fearful than bonds.</p>" +
+          "<p><b>What does today\u2019s reading mean?</b> Divergence is <b>" + (div >= 0 ? "+" : "") + div.toFixed(2) + " (" + read + ")</b> — " +
+          "MOVE z-score " + (mz >= 0 ? "+" : "") + mz.toFixed(2) + ", VIX z-score " + (vz >= 0 ? "+" : "") + vz.toFixed(2) + ". " +
+          (Math.abs(div) >= 2
+            ? "Bond-market fear is running far ahead of stock-market fear. This kind of dislocation has historically resolved with either bonds calming down or stocks catching down to the fear — watch for which one moves first."
+            : Math.abs(div) >= 1
+            ? "A meaningful gap is opening between bond and stock fear. Not yet extreme, but worth watching — if it widens toward ±2, it becomes a real signal."
+            : "Stocks and bonds are broadly in agreement about risk. No dislocation to act on.") + "</p>"
+        );
+      }
+
+      if (/alligator/.test(name) && D.jaw_history && D.jaw_history.current) {
+        const cur = D.jaw_history.current;
+        const open = cur.jaw_open;
+        return wrap(
+          "<p><b>What am I looking at?</b> This chart plots two lines: the <b style='color:#ffd60a'>S&amp;P 500 price</b> (yellow, left axis) " +
+          "and <b style='color:#00e676'>forward 12-month earnings estimates</b> (green, right axis) — what analysts expect S&amp;P 500 companies to earn over the next year. " +
+          "In a healthy market, these two move together: prices rise because earnings are expected to rise.</p>" +
+          "<p><b>What is the \u2018jaw\u2019?</b> The jaw <b>opens</b> when prices keep climbing to new highs <i>while</i> earnings estimates are being cut. " +
+          "Picture an alligator opening its mouth: the top jaw (price) rises while the bottom jaw (earnings) drops. " +
+          "That divergence preceded the 2022 bear market — investors were paying more for shrinking earnings.</p>" +
+          "<p><b>What does today\u2019s reading mean?</b> The jaw is <b>" + (open ? "OPEN \uD83D\uDD34" : "CLOSED \uD83D\uDFE2") + "</b> — " +
+          "S&amp;P 500 at " + cur.price.toFixed(0) + " (" + (cur.pct_below_high * 100).toFixed(1) + "% below its 52-week high), " +
+          "forward EPS at $" + cur.forward_eps.toFixed(0) + " with a " + (cur.eps_chg4w >= 0 ? "+" : "") + (cur.eps_chg4w * 100).toFixed(1) + "% 4-week revision trend. " +
+          (open
+            ? "Prices are near highs while earnings momentum is negative — the classic warning setup. This does not mean sell everything, but it means the rally is running on multiple expansion rather than earnings growth, which is fragile."
+            : "Price and earnings are moving in the same direction. The market\u2019s advance is supported by earnings expectations, which is the healthy configuration.") + "</p>"
+        );
+      }
+
+      if (/credit spread/.test(name) && D.credit_vol_history && (D.credit_vol_history.history || []).length) {
+        const cur = D.credit_vol_history.history[D.credit_vol_history.history.length - 1];
+        const div = cur.diff;
+        return wrap(
+          "<p><b>What am I looking at?</b> This chart compares stress in corporate credit markets against stock-market fear. " +
+          "The spread proxy (SHY minus HYG — the gap between safe short-term Treasuries and risky high-yield bonds) is converted to a z-score, " +
+          "as is the VIX. The red line is the difference: credit stress minus equity fear.</p>" +
+          "<p><b>How to read it.</b> Credit markets are often called the \u2018smart money\u2019 — bond investors tend to sniff out trouble before stock investors. " +
+          "When the red line spikes above <b>+2</b>, credit is flashing warning signs that stocks haven\u2019t priced in yet. " +
+          "When it drops below <b>−2</b>, stocks are panicking about something credit markets don\u2019t see.</p>" +
+          "<p><b>What does today\u2019s reading mean?</b> Spread-minus-VIX is <b>" + (div >= 0 ? "+" : "") + div.toFixed(2) + "</b> " +
+          "(spread z " + (cur.spread_z >= 0 ? "+" : "") + cur.spread_z.toFixed(2) + ", VIX z " + (cur.vix_z >= 0 ? "+" : "") + cur.vix_z.toFixed(2) + "). " +
+          (Math.abs(div) >= 2
+            ? "Credit stress is diverging sharply from equity fear — one of these markets is wrong, and credit usually wins that argument. Treat equity exposure with extra caution until they reconverge."
+            : "Credit and equity fear are roughly aligned. No warning from the bond market right now.") + "</p>"
+        );
+      }
+
+      if (/market breadth/.test(name) && D.breadth_history && (D.breadth_history.history || []).length) {
+        const cur = D.breadth_history.history[D.breadth_history.history.length - 1];
+        return wrap(
+          "<p><b>What am I looking at?</b> This chart measures whether the <i>whole</i> market is participating in the rally, or just a handful of big stocks. " +
+          "The blue line is the <b>breadth spread</b>: how far the median S&amp;P 500 stock sits below its 52-week high, minus how far the index itself sits below its high. " +
+          "The green and amber lines show what percentage of stocks are above their 50-day and 200-day moving averages.</p>" +
+          "<p><b>How to read it.</b> In a healthy rally, most stocks rise together — the breadth spread stays near zero and the % above moving averages is high. " +
+          "When the spread drops below <b>−10 percentage points</b>, a few giants are holding the index up while the average stock lags badly. " +
+          "That\u2019s a narrow, fragile market — the kind that breaks hard when the leaders stumble.</p>" +
+          "<p><b>What does today\u2019s reading mean?</b> Breadth spread is <b>" + cur.breadth_spread.toFixed(1) + "pp</b>, " +
+          cur.pct_above_50d.toFixed(0) + "% of stocks above their 50-day MA and " + cur.pct_above_200d.toFixed(0) + "% above their 200-day MA. " +
+          (cur.breadth_spread <= -10
+            ? "Breadth is extremely narrow — the index is masking broad weakness underneath. Rallies built this narrow have a poor track record of lasting."
+            : cur.breadth_spread <= -5
+            ? "Breadth is thinning — the rally is increasingly carried by fewer names. Worth watching, but not yet at the danger zone."
+            : "Participation looks reasonably broad. The advance has support beyond just the mega-caps.") + "</p>"
+        );
+      }
+
+      if (/theme rotation/.test(name) && D.theme_rot_history && (D.theme_rot_history.history || []).length) {
+        const latest = D.theme_rot_history.history[D.theme_rot_history.history.length - 1];
+        const themes = latest.themes || {};
+        const byQ = {};
+        Object.entries(themes).forEach(([n, v]) => { (byQ[v.q] = byQ[v.q] || []).push(n); });
+        const fmtQ = (q) => (byQ[q] || []).join(", ") || "none";
+        return wrap(
+          "<p><b>What am I looking at?</b> Each dot is a market theme (AI &amp; semiconductors, energy, cybersecurity, etc.). " +
+          "The <b>horizontal axis</b> shows how the theme is doing versus the S&amp;P 500 over a longer window — right means outperforming. " +
+          "The <b>vertical axis</b> shows its recent momentum — up means accelerating.</p>" +
+          "<p><b>The four quadrants.</b> <b style='color:#3fb950'>LEADING</b> (top-right): beating the market and accelerating — the current winners. " +
+          "<b style='color:#58a6ff'>IMPROVING</b> (top-left): still behind but turning up — potential future leaders. " +
+          "<b style='color:#d29922'>WEAKENING</b> (bottom-right): ahead but fading — take profits here. " +
+          "<b style='color:#f85149'>LAGGING</b> (bottom-left): behind and getting worse — avoid.</p>" +
+          "<p><b>Where things stand today.</b> Leading: <b>" + esc(fmtQ("Leading")) + "</b>. " +
+          "Improving: <b>" + esc(fmtQ("Improving")) + "</b>. " +
+          "Weakening: <b>" + esc(fmtQ("Weakening")) + "</b>. " +
+          "Lagging: <b>" + esc(fmtQ("Lagging")) + "</b>.</p>"
+        );
+      }
+
+      if (/small.*mid|mid.*cap/.test(name) && D.smcap_history && (D.smcap_history.history || []).length) {
+        const cur = D.smcap_history.history[D.smcap_history.history.length - 1];
+        return wrap(
+          "<p><b>What am I looking at?</b> This chart tracks small-caps (Russell 2000) and mid-caps (S&amp;P 400) against their own 200-day moving averages — " +
+          "the classic long-term trend line. When an index is above its 200-day MA, the long-term trend is up; below it, the trend is down.</p>" +
+          "<p><b>Why does it matter?</b> Small and mid-caps are more sensitive to the domestic economy and credit conditions than mega-cap tech. " +
+          "When they break below their 200-day MAs while the S&amp;P 500 holds up, it often means the rally is running on a narrow set of large stocks " +
+          "and underlying economic breadth is deteriorating.</p>" +
+          "<p><b>What does today\u2019s reading mean?</b> Russell 2000 is <b>" + cur.rut_vs_200d.toFixed(1) + "%</b> vs its 200-day MA " +
+          "(" + cur.rut_dd_52w.toFixed(1) + "% below its 52-week high). S&amp;P 400 MidCap is <b>" + cur.mid_vs_200d.toFixed(1) + "%</b> vs its 200-day MA " +
+          "(" + cur.mid_dd_52w.toFixed(1) + "% below its high). " +
+          (cur.rut_vs_200d < 0 && cur.mid_vs_200d < 0
+            ? "Both are below their long-term trend lines — small and mid-caps are in technical downtrends even if the headline index looks fine."
+            : cur.rut_vs_200d < 0 || cur.mid_vs_200d < 0
+            ? "Mixed — one is above its trend line and the other below. The smaller-cap complex is not moving together."
+            : "Both hold above their 200-day MAs — the broad market\u2019s long-term uptrend is intact across capitalizations.") + "</p>"
+        );
+      }
+
+      return "";
+    }
 
     // RSI Cyclical vs Defensive — Pro-gated interactive tracker
     if (D.rsi_cd_history && (D.rsi_cd_history.history || []).length) {
