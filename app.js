@@ -2404,6 +2404,15 @@
  ];
 
  route("analysis", function () {
+  if (!isPro()) {
+   app.innerHTML = '<div class="crumb">MARKET ANALYSIS</div>' +
+    '<div class="hero"><div>' +
+    '<h1 class="hero-h">Morning Market Analysis.</h1>' +
+    "<p class='hero-sub'>Institutional-grade briefing synthesizing macro, internals, and derivatives positioning. Updated every trading morning.</p></div></div>" +
+    '<div class="section"><div class="section-title">Morning Market Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Morning Market Analysis, Pro", "Institutional-grade morning briefing: macro, internals, gamma positioning, and what to watch today.") + "</div>";
+   return;
+  }
   const r = D.market_analysis_report;
   let h = '<div class="crumb">MARKET ANALYSIS</div>';
   h += '<div class="hero"><div>' +
