@@ -21,6 +21,53 @@
  };
  const fmtPct = (n, d) => (n == null || isNaN(n)) ? " - " : (n >= 0 ? "+" : "") + Number(n).toFixed(d != null ? d : 1) + "%";
  const cls = (n) => (n == null || isNaN(n)) ? "" : (n >= 0 ? "pos" : "neg");
+ // Company logos (Clearbit) and industries for ticker headers
+ const TICKER_META = {
+  "ALAB": { domain: "asteralabs.com", industry: "Semiconductors" },
+  "AMKR": { domain: "amkor.com", industry: "Semiconductors" },
+  "AMPX": { domain: "amprius.com", industry: "Batteries" },
+  "AVAV": { domain: "avinc.com", industry: "Aerospace & Defense" },
+  "AVGO": { domain: "broadcom.com", industry: "Semiconductors" },
+  "AXON": { domain: "axon.com", industry: "Aerospace & Defense" },
+  "BSX": { domain: "bostonscientific.com", industry: "Medical Devices" },
+  "CDNL": { domain: "cardinalhealth.com", industry: "Healthcare" },
+  "CSX": { domain: "csx.com", industry: "Railroads" },
+  "IA": { domain: "i-a.com", industry: "Technology" },
+  "INTC": { domain: "intel.com", industry: "Semiconductors" },
+  "ISRG": { domain: "intuitive.com", industry: "Medical Devices" },
+  "LEU": { domain: "centrusenergy.com", industry: "Uranium" },
+  "MELI": { domain: "mercadolibre.com", industry: "E-commerce" },
+  "META": { domain: "meta.com", industry: "Social Media" },
+  "MITK": { domain: "miteksystems.com", industry: "Software" },
+  "MRNA": { domain: "moderna.com", industry: "Biotechnology" },
+  "MRVL": { domain: "marvell.com", industry: "Semiconductors" },
+  "MSI": { domain: "motorolasolutions.com", industry: "Telecom Equipment" },
+  "NSC": { domain: "nscorp.com", industry: "Railroads" },
+  "PLPC": { domain: "preformed.com", industry: "Industrials" },
+  "POWW": { domain: "ammunitionstore.com", industry: "Ammunition" },
+  "RBRK": { domain: "rubrik.com", industry: "Cybersecurity" },
+  "RNMBY": { domain: "rheinmetall.com", industry: "Aerospace & Defense" },
+  "ROAD": { domain: "construction.com", industry: "Construction" },
+  "SMTC": { domain: "semtech.com", industry: "Semiconductors" },
+  "SNPS": { domain: "synopsys.com", industry: "Semiconductors" },
+  "TSM": { domain: "tsmc.com", industry: "Semiconductors" },
+  "TTMI": { domain: "ttm.com", industry: "Electronics" },
+  "UNP": { domain: "up.com", industry: "Railroads" },
+  "VIAV": { domain: "viavisolutions.com", industry: "Telecom Equipment" },
+  "VLO": { domain: "valero.com", industry: "Refining" },
+  "VST": { domain: "vistracorp.com", industry: "Utilities" },
+ };
+ const tickerLogo = (tk) => {
+  const meta = TICKER_META[tk];
+  if (!meta || !meta.domain) return "";
+  return '<img src="https://logo.clearbit.com/' + meta.domain + '" alt="" ' +
+   'style="width:36px;height:36px;border-radius:8px;object-fit:contain;background:#fff;padding:2px;" ' +
+   'onerror="this.style.display=\'none\'" />';
+ };
+ const tickerIndustry = (tk) => {
+  const meta = TICKER_META[tk];
+  return meta && meta.industry ? meta.industry : "";
+ };
  // Daily % change from price history (last two closes), as of the daily refresh
  const dailyChg = (t) => {
   try {
@@ -3099,7 +3146,10 @@
 
   const score = cascadiaScore(t);
   let h = '<div class="tk-kicker">DCF COVERAGE · SINGLE-NAME RESEARCH</div>';
-  h += '<div class="ticker-head"><h1>' + esc(tk) + '</h1><span class="co-name">' + esc(t.name) + "</span>";
+  h += '<div class="ticker-head" style="display:flex;align-items:center;gap:12px;"><div>' + tickerLogo(tk) + '</div><div><h1 style="margin:0;">' + esc(tk) + '</h1><span class="co-name">' + esc(t.name) + "</span>";
+  const ind = tickerIndustry(tk);
+  if (ind) h += '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + esc(ind) + "</div>";
+  h += "</div>";
   if (score != null && isPro()) h += ' <span class="score-badge ' + scoreClass(score) + '" title="' + esc(scoreTooltip(t)) + '">' + score + "</span>";
   h += "</div>";
   h += '<div class="price-line"><span class="price-big">' + fmt$(t.price) + "</span>" +
