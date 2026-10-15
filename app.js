@@ -474,16 +474,43 @@
     // RSI Cyclical vs Defensive — Pro-gated interactive tracker
     if (D.rsi_cd_history && (D.rsi_cd_history.history || []).length) {
       const rsiCur = D.rsi_cd_history.current || {};
+      const rsiVal = rsiCur.rsi != null ? rsiCur.rsi.toFixed(1) : "—";
+      const rsiSignal = (rsiCur.signal || "neutral").toUpperCase();
+      const ratioVal = rsiCur.ratio != null ? rsiCur.ratio.toFixed(3) : "—";
+      const maVal = rsiCur.ratio_ma50 != null ? rsiCur.ratio_ma50.toFixed(3) : "—";
+      const vsMa = (rsiCur.ratio != null && rsiCur.ratio_ma50) ? ((rsiCur.ratio / rsiCur.ratio_ma50 - 1) * 100).toFixed(1) : "—";
+      const explainer =
+        '<div class="panel-about" style="text-align:left;max-width:720px;margin:0 auto 12px;">' +
+        '<p><b>What am I looking at?</b> This chart answers one question: <i>is money flowing toward risk or toward safety right now?</i> ' +
+        'It does that by comparing two baskets of stocks. <b>Cyclicals</b> (tracked by the ETF <b>XLY</b>) are companies that do well when the economy is growing — think retailers, restaurants, car makers, airlines. ' +
+        '<b>Defensives</b> (tracked by the ETF <b>XLP</b>) are companies people buy from no matter what — think toothpaste, cereal, soap, medicine.</p>' +
+        '<p><b>The ratio.</b> We divide the cyclical basket by the defensive basket (XLY ÷ XLP). When the line rises, cyclicals are beating defensives — investors feel confident and are buying risk. ' +
+        'When it falls, defensives are winning — investors are nervous and hiding in safety. Right now the ratio sits at <b>' + ratioVal + '</b>, which is <b>' + vsMa + '%</b> ' +
+        (parseFloat(vsMa) >= 0 ? 'above' : 'below') + ' its 50-day average of ' + maVal + ' — so the recent tilt has been ' +
+        (parseFloat(vsMa) >= 0 ? 'toward risk' : 'toward safety') + '.</p>' +
+        '<p><b>What is RSI?</b> RSI (Relative Strength Index) measures <i>how fast</i> the ratio is moving, on a 0–100 scale. Think of it as a speedometer for sector rotation. ' +
+        'A high RSI means cyclicals are outperforming defensives at an unusually fast clip. A low RSI means the rotation into safety is happening unusually fast.</p>' +
+        '<p><b>How to read the levels.</b></p>' +
+        '<ul style="margin:6px 0 6px 18px;">' +
+        '<li><b>Above 70 (overbought)</b> — Cyclicals have sprinted ahead of defensives. This often happens right before professional investors take profits on risky stocks and rotate into safer ones. It is a yellow flag, not a sell signal — strong trends can stay overbought for weeks.</li>' +
+        '<li><b>Below 30 (oversold)</b> — Fear has pushed too much money into safety too fast. Cyclicals are historically cheap relative to defensives here, and these moments have often marked good entry points for risk assets.</li>' +
+        '<li><b>Between 30 and 70 (neutral)</b> — Normal rotation. No extreme to act on.</li></ul>' +
+        '<p><b>What does today\u2019s reading mean?</b> The RSI is <b>' + rsiVal + ' (' + rsiSignal + ')</b>. ' +
+        (parseFloat(rsiVal) > 70 ? 'Cyclicals are running hot — the market is aggressively risk-on, and history says a cooling rotation toward defensives becomes more likely from here. Consider whether your portfolio has enough defensive ballast.'
+        : parseFloat(rsiVal) < 30 ? 'Fear is extreme — money has fled to safety at a pace that rarely lasts. Cyclicals are unusually cheap versus defensives, which has historically been a good time to add risk selectively.'
+        : 'No extreme in either direction. Sector rotation is proceeding at a normal pace, which means this indicator is not flashing a warning or an opportunity right now — it is simply confirming a balanced market.') + '</p>' +
+        '<p style="color:var(--muted);font-size:12px;"><b>One caveat:</b> defensive stocks (especially utilities and staples) are sensitive to interest rates — they behave a bit like bonds. A sudden spike in rates can crush defensives and make the ratio jump even when the economy is not actually accelerating. Always check this signal against the broader market internals above.</p>' +
+        '</div>';
       const rsiHtml = '<div class="zoomable-chart" data-chart="rsicd" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="rsicd-chart"></canvas>' +
         '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
-        '<div class="panel-summary">XLY ÷ XLP ratio with 14-period RSI. Current RSI ' + (rsiCur.rsi != null ? rsiCur.rsi.toFixed(1) : "—") +
-        ' (' + esc(rsiCur.signal || "neutral") + '). Ratio ' + (rsiCur.ratio != null ? rsiCur.ratio.toFixed(3) : "—") +
-        ' vs 50-day MA ' + (rsiCur.ratio_ma50 != null ? rsiCur.ratio_ma50.toFixed(3) : "—") + '.</div>' +
+        '<div class="panel-summary">XLY ÷ XLP ratio with 14-period RSI. Current RSI ' + rsiVal +
+        ' (' + rsiSignal + '). Ratio ' + ratioVal +
+        ' vs 50-day MA ' + maVal + '.</div>' +
         '<div class="panel-asof">As of ' + esc((D.rsi_cd_history.as_of || "").slice(0, 10)) + "</div>";
       h += '<div class="section"><div class="section-title">RSI: Cyclicals vs Defensives <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
         '<div class="section-sub">Risk-on / risk-off momentum — 14-period RSI on the XLY÷XLP ratio. Above 70 = cyclicals overbought, below 30 = oversold.</div>' +
         '<div class="grid-2"><div class="card"><h3>Cyclical / Defensive RSI</h3>' +
-        gated("RSI: Cyclicals vs Defensives", "14-period RSI on the XLY÷XLP ratio — spot sector rotation extremes before they reverse.", rsiHtml) +
+        gated("RSI: Cyclicals vs Defensives", "14-period RSI on the XLY÷XLP ratio — spot sector rotation extremes before they reverse.", explainer + rsiHtml) +
         "</div></div></div>";
     }
     // render interactive vol divergence chart after DOM insert
