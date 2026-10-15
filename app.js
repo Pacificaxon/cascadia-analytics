@@ -47,6 +47,8 @@
  const SUPABASE_URL = "https://tlrfqoqefltxodoynqmh.supabase.co";
  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRscmZxb3FlZmx0eG9kb3lucW1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5ODc5MjIsImV4cCI6MjEwNzU2MzkyMn0.XB9l2J69wGVxkUF7cGTjCzCb4QBwCdiuoRMycoy4tW8";
  // Cookie-based storage for iOS Safari ITP compatibility (localStorage gets capped)
+ // Remember-me controls cookie persistence: persistent (1yr) vs session-only
+ let rememberMe = true; // default to persistent, updated at login
  const cookieStorage = {
   getItem: (key) => {
    try {
@@ -56,7 +58,8 @@
   },
   setItem: (key, value) => {
    try {
-    document.cookie = key + '=' + encodeURIComponent(value) + '; path=/; max-age=31536000; SameSite=Lax; Secure';
+    const persist = rememberMe ? '; max-age=31536000' : ''; // session cookie if not remembered
+    document.cookie = key + '=' + encodeURIComponent(value) + '; path=/' + persist + '; SameSite=Lax; Secure';
    } catch (e) {}
   },
   removeItem: (key) => {
@@ -256,6 +259,8 @@
    (isLogin ? "Log in to access your Pro subscription." : "Create a free account. Upgrade to Pro anytime for $19/month.") + "</p>" +
    '<input id="auth-email" type="email" placeholder="Email" autocomplete="email" style="margin-bottom:8px;">' +
    '<input id="auth-pass" type="password" placeholder="Password" autocomplete="' + (isLogin ? "current-password" : "new-password") + '">' +
+   (isLogin ? '<label style="display:flex;align-items:center;gap:8px;margin:10px 0;font-size:13px;color:var(--muted);cursor:pointer;">' +
+    '<input type="checkbox" id="auth-remember" checked style="width:16px;height:16px;accent-color:var(--gold);"> Remember me</label>' : "") +
    '<div class="err" id="auth-err"></div>' +
    '<button class="btn" id="auth-go" style="width:100%">' + (isLogin ? "Log in" : "Sign up") + "</button>" +
    '<button class="btn secondary" id="auth-switch" style="width:100%;margin-top:8px;">' +
@@ -275,7 +280,12 @@
    document.getElementById("auth-go").disabled = true;
    try {
     let res;
-    if (isLogin) res = await supa.auth.signInWithPassword({ email, password: pass });
+    if (isLogin) {
+     // Capture remember-me preference before sign-in (controls cookie persistence)
+     const rememberEl = document.getElementById("auth-remember");
+     rememberMe = rememberEl ? rememberEl.checked : true;
+     res = await supa.auth.signInWithPassword({ email, password: pass });
+    }
     else res = await supa.auth.signUp({ email, password: pass });
     if (res.error) throw res.error;
     close();
