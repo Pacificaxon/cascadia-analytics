@@ -438,6 +438,10 @@
     if (D.aaii_sentiment && D.aaii_sentiment.bullish != null) {
       h += aaiiSentimentHtml(D.aaii_sentiment);
     }
+    // COT Positioning — FREE, at the top
+    if (D.cot_data && D.cot_data.markets) {
+      h += cotHtml(D.cot_data);
+    }
     h += gated("Market Internals — Pro",
       "Breadth monitor, Alligator Jaw, theme rotation, and credit-spread-vs-volatility trackers.",
       '<div class="grid-2">' + panels.map((p) => {
@@ -480,6 +484,79 @@
 
     /* ---------- tracker explainers (visual first, explanation after) ---------- */
     /* ---------- GEX tracker HTML (Pro-gated) ---------- */
+    /* ---------- COT Positioning HTML (FREE) ---------- */
+    function cotHtml(d) {
+      const markets = d.markets || {};
+      const order = ["SPX", "NDX"];
+      const cards = order
+        .map((k) => markets[k])
+        .filter((m) => m)
+        .map((m) => {
+          const fmt = (n) => (n >= 0 ? "+" : "") + n.toLocaleString();
+          const c = m.commercials, l = m.large_specs, s = m.small_specs;
+          // Net positioning bars (as % of OI)
+          const bar = (label, grp, color) => {
+            const pct = Math.abs(grp.net_pct_oi);
+            const w = Math.min(pct * 4, 100); // scale for visibility
+            const dir = grp.net >= 0 ? "long" : "short";
+            return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+              '<span style="font-size:11px;color:#787b86;width:110px;">' + label + '</span>' +
+              '<div style="flex:1;height:20px;background:#1a2030;border-radius:4px;position:relative;overflow:hidden;">' +
+              '<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#363c4e;"></div>' +
+              '<div style="position:absolute;top:0;bottom:0;' +
+              (grp.net >= 0 ? "left:50%;width:" + (w / 2) + "%;" : "right:50%;width:" + (w / 2) + "%;") +
+              'background:' + color + ';display:flex;align-items:center;' +
+              (grp.net >= 0 ? "justify-content:flex-start;padding-left:6px;" : "justify-content:flex-end;padding-right:6px;") +
+              'font-size:10px;font-weight:700;color:#fff;white-space:nowrap;">' + fmt(grp.net) + "</div></div>" +
+              '<span style="font-size:10px;color:#787b86;width:70px;text-align:right;">net ' + dir + "</span></div>";
+          };
+          // Extreme badges
+          const extBadge = (grp) => {
+            const e = grp.extreme || "";
+            if (e === "extreme_long") return ' <span style="font-size:10px;background:#f85149;color:#fff;padding:1px 6px;border-radius:3px;">EXTREME LONG</span>';
+            if (e === "extreme_short") return ' <span style="font-size:10px;background:#f85149;color:#fff;padding:1px 6px;border-radius:3px;">EXTREME SHORT</span>';
+            if (e === "elevated_long" || e === "elevated_short") return ' <span style="font-size:10px;background:#d29922;color:#000;padding:1px 6px;border-radius:3px;">ELEVATED</span>';
+            return "";
+          };
+          // Smart money read
+          let read;
+          if (l.net < 0 && c.net < 0 && s.net > 0) {
+            read = "Institutions net short, retail net long — classic contrarian setup. Smart money is hedged; dumb money is exposed.";
+          } else if (l.net > 0 && c.net > 0) {
+            read = "Both commercials and large specs net long — institutional conviction is bullish.";
+          } else if (l.extreme === "extreme_long" || l.extreme === "extreme_short") {
+            read = "<b style='color:#f85149'>Large specs at extreme positioning</b> — crowded trade, reversal risk elevated.";
+          } else {
+            read = "Positioning is mixed — no strong structural signal this week.";
+          }
+          return '<div class="card" style="margin-bottom:12px;"><h3>' + esc(m.name) + " Futures</h3>" +
+            '<div style="margin:12px 0;">' +
+            bar("Commercials 🏦", c, "#58a6ff") +
+            bar("Large Specs 📊", l, "#c678dd") +
+            bar("Small Specs 👥", s, "#d29922") +
+            "</div>" +
+            '<div style="font-size:12px;color:#c8d0dc;margin:8px 0;">' + read + "</div>" +
+            '<div style="font-size:11px;color:#787b86;">' +
+            "Commercials" + extBadge(c) + " · Large Specs" + extBadge(l) + " · Small Specs" + extBadge(s) + "</div>" +
+            '<div class="panel-asof">CFTC data as of ' + esc(d.report_date || "") + " (published Friday, 3-day lag)</div></div>";
+        }).join("");
+      return '<div class="card" style="margin-bottom:16px;"><h3>Commitments of Traders (COT) <span style="font-size:10px;background:#3fb950;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">FREE</span></h3>' +
+        '<div class="section-sub">Where is institutional capital positioned? Weekly CFTC futures data.</div>' +
+        '<div class="zoomable-chart" data-chart="cot" style="position:relative;height:240px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="cot-chart"></canvas>' +
+        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+        cards +
+        '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
+        "<p><b>What is this?</b> The CFTC's weekly Commitments of Traders report reveals how three groups are positioned in futures: " +
+        "<b style='color:#58a6ff'>Commercials</b> (hedgers, the \"smart money\" — contrarian), " +
+        "<b style='color:#c678dd'>Large Speculators</b> (hedge funds — trend followers), " +
+        "<b style='color:#d29922'>Small Speculators</b> (retail — often wrong at turning points).</p>" +
+        "<p><b>How swing traders use it.</b> When Large Specs hit multi-year extremes, the trend is crowded and ripe for reversal. " +
+        "When Commercials quietly build extreme positions against the trend, they're front-running the turn. " +
+        "Divergences (price makes new highs but specs reduce longs) signal a trap.</p>" +
+        "<p><b>The lag:</b> Data is as of Tuesday, published Friday — use as a structural backdrop, not for timing entries.</p>" +
+        "</div></div>";
+    }
+
     /* ---------- AAII Sentiment HTML (FREE) ---------- */
     function aaiiSentimentHtml(d) {
       const b = d.bullish, n = d.neutral, br = d.bearish;
@@ -1213,6 +1290,37 @@
           });
         } catch (e) { console.error("AAII chart error", e); }
       }
+      // COT chart (free): net positioning over time for SPX
+      const cotCv = document.getElementById("cot-chart");
+      const cotD = D.cot_data;
+      if (cotCv && cotD && (cotD.history || []).length) {
+        try {
+          const hist = cotD.history;
+          // Use SPX (or first available market)
+          const mkey = cotD.markets.SPX ? "SPX" : Object.keys(cotD.markets)[0];
+          new Chart(cotCv, {
+            type: "line",
+            data: { labels: hist.map((r) => r.report_date), datasets: [
+              { label: "Commercials net", data: hist.map((r) => (r.markets[mkey] || {}).commercials?.net), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+              { label: "Large Specs net", data: hist.map((r) => (r.markets[mkey] || {}).large_specs?.net), borderColor: "#c678dd", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+              { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+            ]},
+            options: { responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "index", intersect: false },
+              plugins: {
+                legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
+                tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+                  titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+                  callbacks: { label: (c) => "  " + c.dataset.label + ": " + (c.parsed.y >= 0 ? "+" : "") + Math.round(c.parsed.y).toLocaleString() + " contracts" } }
+              },
+              scales: {
+                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { ticks: { color: "#787b86", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "Net contracts", color: "#787b86", font: { size: 11 } } }
+              } }
+          });
+        } catch (e) { console.error("COT chart error", e); }
+      }
       // GEX index charts: price levels (spot vs zero gamma vs walls) as horizontal bar
       if (D.gex_data && D.gex_data.indices) {
         ["QQQ", "SPY", "SPX"].forEach((sym) => {
@@ -1273,7 +1381,8 @@
             "gex-ticker": "Gamma Exposure — " + (el.dataset.ticker || ""),
             "skew-ticker": "Volatility Skew — " + (el.dataset.ticker || ""),
             "gex-index": "Gamma Exposure — " + (el.dataset.symbol || ""),
-            aaii: "AAII Investor Sentiment"
+            aaii: "AAII Investor Sentiment",
+            cot: "Commitments of Traders"
           };
           // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
           if (kind === "gex-ticker") {
@@ -1536,6 +1645,26 @@
                     x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
                     y: { ticks: { color: "#787b86", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
                       title: { display: true, text: "Sentiment %", color: "#787b86" } } } }
+              });
+            } else if (kind === "cot") {
+              const hist = (D.cot_data.history || []);
+              const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
+              new Chart(zc, {
+                type: "line",
+                data: { labels: hist.map((r) => r.report_date), datasets: [
+                  { label: "Commercials net", data: hist.map((r) => (r.markets[mkey] || {}).commercials?.net), borderColor: "#58a6ff", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+                  { label: "Large Specs net", data: hist.map((r) => (r.markets[mkey] || {}).large_specs?.net), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+                  { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+                ]},
+                options: { responsive: true, maintainAspectRatio: false,
+                  interaction: { mode: "index", intersect: false },
+                  plugins: { legend: { labels: { color: "#c8d0dc" } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+                      callbacks: { label: (c) => "  " + c.dataset.label + ": " + (c.parsed.y >= 0 ? "+" : "") + Math.round(c.parsed.y).toLocaleString() } } },
+                  scales: {
+                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#787b86", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
+                      title: { display: true, text: "Net contracts", color: "#787b86" } } } }
               });
             }
           } catch (e) { console.error("Zoom chart error", e); }

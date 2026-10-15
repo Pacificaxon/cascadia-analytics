@@ -115,6 +115,10 @@ def main():
         aaii_sentiment = load(os.path.join(MR, "aaii_sentiment.json"))
     except FileNotFoundError:
         aaii_sentiment = {}
+    try:
+        cot_data = load(os.path.join(MR, "cot_history.json"))
+    except FileNotFoundError:
+        cot_data = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
@@ -267,6 +271,7 @@ def main():
         "skew_data": skew_data,
         "ticker_skew": ticker_skew,
         "aaii_sentiment": aaii_sentiment,
+        "cot_data": cot_data,
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
