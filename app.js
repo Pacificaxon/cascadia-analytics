@@ -1941,7 +1941,8 @@
       "gex-index": "Gamma Exposure, " + (el.dataset.symbol || ""),
       aaii: "AAII Investor Sentiment",
       cot: "Commitments of Traders",
-      macro: "Macroeconomic Analysis"
+      macro: "Macroeconomic Analysis",
+      leadership: "Market Leadership, MLS by Component"
      };
      // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
      if (kind === "gex-ticker") {
@@ -2265,6 +2266,31 @@
           y: { min: -50, max: 150, ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
            title: { display: true, text: "Normalized (0–100%)", color: "#e8ecf1" } } } }
        });
+      } else if (kind === "leadership") {
+       const leaders = (D.leadership.leaders || []);
+       const labels = leaders.map((l) => l.ticker);
+       new Chart(zc, {
+        type: "bar",
+        data: {
+         labels: labels,
+         datasets: [
+          { label: "Relative Strength (50%)", data: leaders.map((l) => +(l.rs_score * 0.50).toFixed(1)), backgroundColor: "#58a6ff", borderWidth: 0 },
+          { label: "Trend Efficiency (30%)", data: leaders.map((l) => +(l.trend_score * 0.30).toFixed(1)), backgroundColor: "#d29922", borderWidth: 0 },
+          { label: "Institutional Volume (20%)", data: leaders.map((l) => +(l.vol_score * 0.20).toFixed(1)), backgroundColor: "#3fb950", borderWidth: 0 },
+         ],
+        },
+        options: { indexAxis: "y", responsive: true, maintainAspectRatio: false,
+         interaction: { mode: "index", intersect: false },
+         plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
+          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12,
+           callbacks: { afterBody: (items) => {
+            const l = leaders[items[0].dataIndex];
+            return "MLS: " + l.mls.toFixed(1) + "  |  " + l.sector + "  |  $" + l.price.toFixed(2);
+           } } } },
+         scales: {
+          x: { stacked: true, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "MLS (0-100)", color: "#e8ecf1" } },
+          y: { stacked: true, ticks: { color: "#fff", font: { size: 14, weight: "bold" } }, grid: { display: false } } } }
+       });
       }
      } catch (e) { console.error("Zoom chart error", e); }
     });
@@ -2288,6 +2314,7 @@
   }
 
   app.innerHTML = h;
+  drawLeadershipChart();
  });
 
  /* ================= ALERTS ================= */
@@ -3694,6 +3721,7 @@
    '<li>✓ Interactive FCF simulation sandbox</li>' +
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ 31 client research notes (PDF, 5+ pages each)</li>' +
+   '<li>✓ All future DCF models and ticker coverage, the coverage universe is constantly expanding and Pro members get every new name automatically</li>' +
    '<li>✓ Market Leadership tracker, automated S&P 500 leader scoring with rotation signals</li>' +
    '<li>✓ Email alerts, all 12 market internals monitors</li>' +
    '<li>✓ Moving average cross alerts, stocks and indices</li>' +
