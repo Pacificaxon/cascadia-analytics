@@ -21,6 +21,13 @@
  };
  const fmtPct = (n, d) => (n == null || isNaN(n)) ? " - " : (n >= 0 ? "+" : "") + Number(n).toFixed(d != null ? d : 1) + "%";
  const cls = (n) => (n == null || isNaN(n)) ? "" : (n >= 0 ? "pos" : "neg");
+ // Upside color: red for downside, yellow for 0-10% (hold), green for >10%
+ const upsideCls = (n) => {
+  if (n == null || isNaN(n)) return "";
+  if (n < 0) return "neg";
+  if (n <= 10) return "hold";
+  return "pos";
+ };
  const timeAgo = (ts) => {
   if (!ts) return "";
   const t = new Date(ts).getTime(), now = Date.now(), m = Math.floor((now - t) / 60000);
@@ -866,7 +873,7 @@
    return '<tr data-tk="' + esc(tk) + '"><td><a href="#/ticker/' + esc(tk) + '" class="ticker-cell" style="text-decoration:none;">' + esc(tk) + "</a></td>" +
     "<td>" + fmt$(t.price) + "</td><td>" + fmt$(t.bear, 0) + "</td><td>" + fmt$(t.base, 0) +
     "</td><td>" + fmt$(t.bull, 0) + "</td><td>" + fmt$(t.blended, 0) + "</td>" +
-    '<td class="' + cls(t.upside_base) + '">' + fmtPct(t.upside_base) + "</td>" +
+    '<td class="' + upsideCls(t.upside_base) + '">' + fmtPct(t.upside_base) + "</td>" +
     '<td class="' + ratingCls(t.rating) + '">' + esc(t.rating || " - ") + "</td></tr>";
   }).join("");
   h += "</tbody></table></div></div>";
