@@ -467,7 +467,8 @@
         }
         // Explainer: visual first, then plain-English explanation of what the user is seeing
         const explainerHtml = trackerExplainer(p);
-        return '<div class="card"><h3>' + title + "</h3>" + chartHtml + explainerHtml +
+        const proBadge = ' <span style="font-size:10px;background:#7d4fc9;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">PRO</span>';
+        return '<div class="card"><h3>' + title + proBadge + "</h3>" + chartHtml + explainerHtml +
         (p.about ? '<div class="panel-about">' + esc(p.about) + "</div>" : "") +
         '<div class="panel-summary">' + esc(p.summary || "") + "</div>" +
         '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>";
@@ -628,8 +629,11 @@
               ? '<span style="color:#3fb950">above</span>'
               : '<span style="color:#f85149">below</span>')
             : "—";
+          const chartId = "gex-chart-" + d.symbol.toLowerCase();
           return '<div class="card" style="margin-bottom:12px;"><h3>' + esc(d.symbol) +
             ' <span style="font-size:12px;color:' + regimeColor + ';">' + regimeIcon + " " + regimeLabel + "</span></h3>" +
+            '<div class="zoomable-chart" data-chart="gex-index" data-symbol="' + esc(d.symbol) + '" style="position:relative;height:200px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + chartId + '"></canvas>' +
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
             '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
             '<div><div style="font-size:11px;color:#787b86;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
             '<div><div style="font-size:11px;color:#787b86;">TOTAL GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
@@ -645,7 +649,6 @@
             '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div></div>";
         }).join("");
       if (!cards) return '<p style="color:var(--muted)">GEX data unavailable.</p>';
-      // Regime gauge: visual bar showing positive vs negative
       return cards;
     }
 
@@ -1126,6 +1129,49 @@
           });
         } catch (e) { console.error("RSICD chart error", e); }
       }
+      // GEX index charts: price levels (spot vs zero gamma vs walls) as horizontal bar
+      if (D.gex_data && D.gex_data.indices) {
+        ["QQQ", "SPY", "SPX"].forEach((sym) => {
+          const d = D.gex_data.indices[sym];
+          const cv = document.getElementById("gex-chart-" + sym.toLowerCase());
+          if (!cv || !d || !d.available) return;
+          try {
+            // Price level chart: show put wall, spot, zero gamma, call wall
+            const levels = [];
+            if (d.put_wall != null) levels.push({ label: "Put Wall", value: d.put_wall, color: "#f85149" });
+            levels.push({ label: "Spot", value: d.spot, color: "#e8ecf1" });
+            if (d.zero_gamma != null) levels.push({ label: "Zero Gamma", value: d.zero_gamma, color: "#c678dd" });
+            if (d.call_wall != null) levels.push({ label: "Call Wall", value: d.call_wall, color: "#3fb950" });
+            // Sort by price for the bar chart
+            levels.sort((a, b) => a.value - b.value);
+            new Chart(cv, {
+              type: "bar",
+              data: {
+                labels: levels.map((l) => l.label),
+                datasets: [{
+                  data: levels.map((l) => l.value),
+                  backgroundColor: levels.map((l) => l.color),
+                  borderWidth: 0,
+                }],
+              },
+              options: {
+                indexAxis: "y",
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                  legend: { display: false },
+                  tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+                    titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+                    callbacks: { label: (c) => "  $" + c.parsed.x.toFixed(2) } },
+                },
+                scales: {
+                  x: { ticks: { color: "#787b86", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
+                  y: { ticks: { color: "#c8d0dc", font: { size: 11 } }, grid: { display: false } },
+                },
+              },
+            });
+          } catch (e) { console.error("GEX chart error for " + sym, e); }
+        });
+      }
       // Click/tap to zoom: open modal with larger chart
       document.querySelectorAll(".zoomable-chart").forEach((el) => {
         if (el.dataset.zoomBound) return;
@@ -1141,7 +1187,8 @@
             breadth: "Market Breadth",
             rsicd: "RSI: Cyclicals vs Defensives (XLY/XLP)",
             "gex-ticker": "Gamma Exposure — " + (el.dataset.ticker || ""),
-            "skew-ticker": "Volatility Skew — " + (el.dataset.ticker || "")
+            "skew-ticker": "Volatility Skew — " + (el.dataset.ticker || ""),
+            "gex-index": "Gamma Exposure — " + (el.dataset.symbol || "")
           };
           // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
           if (kind === "gex-ticker") {
@@ -1183,6 +1230,60 @@
             const close = () => modal.remove();
             modal.addEventListener("click", close);
             document.getElementById("zoom-close").addEventListener("click", close);
+            return;
+          }
+          // For GEX index (price levels chart): show enlarged chart
+          if (kind === "gex-index") {
+            const sym = el.dataset.symbol;
+            const d = (D.gex_data.indices || {})[sym];
+            if (!d || !d.available) return;
+            let modal = document.getElementById("chart-zoom-modal");
+            if (modal) modal.remove();
+            modal = document.createElement("div");
+            modal.id = "chart-zoom-modal";
+            modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
+            modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:20px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
+              '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+              '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Gamma Exposure — ' + esc(sym) + ' Price Levels</div>' +
+              '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+              '<div style="position:relative;flex:1;min-height:300px;"><canvas id="zoom-chart"></canvas></div></div>';
+            document.body.appendChild(modal);
+            const close = () => modal.remove();
+            modal.addEventListener("click", close);
+            document.getElementById("zoom-close").addEventListener("click", close);
+            const zc = document.getElementById("zoom-chart");
+            try {
+              const levels = [];
+              if (d.put_wall != null) levels.push({ label: "Put Wall (support)", value: d.put_wall, color: "#f85149" });
+              levels.push({ label: "Spot", value: d.spot, color: "#e8ecf1" });
+              if (d.zero_gamma != null) levels.push({ label: "Zero Gamma (flip)", value: d.zero_gamma, color: "#c678dd" });
+              if (d.call_wall != null) levels.push({ label: "Call Wall (resistance)", value: d.call_wall, color: "#3fb950" });
+              levels.sort((a, b) => a.value - b.value);
+              new Chart(zc, {
+                type: "bar",
+                data: {
+                  labels: levels.map((l) => l.label),
+                  datasets: [{
+                    data: levels.map((l) => l.value),
+                    backgroundColor: levels.map((l) => l.color),
+                    borderWidth: 0,
+                  }],
+                },
+                options: {
+                  indexAxis: "y",
+                  responsive: true, maintainAspectRatio: false,
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+                      callbacks: { label: (c) => "  $" + c.parsed.x.toFixed(2) } },
+                  },
+                  scales: {
+                    x: { ticks: { color: "#787b86", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#c8d0dc" }, grid: { display: false } },
+                  },
+                },
+              });
+            } catch (e) { console.error("GEX zoom chart error", e); }
             return;
           }
           // build modal
