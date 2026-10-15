@@ -939,10 +939,15 @@
         const closes = prices.map((p) => p.c);
         const labels = prices.map((p) => new Date(p.t).toLocaleDateString());
         const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b) => a + b, 0) / n);
-        const ds = (label, data, color, w) => ({ label, data, borderColor: color, borderWidth: w, pointRadius: 0, tension: 0.1, spanGaps: true });
+        const ds = (label, data, color, w) => ({ type: "line", label, data, borderColor: color, borderWidth: w, pointRadius: 0, tension: 0.1, spanGaps: true, order: 1 });
+        // green/red bars based on up/down vs prior close (TradingView style)
+        const barColors = closes.map((c, i) => i === 0 ? "#5a6a80" : c >= closes[i - 1] ? "#26a69a" : "#ef5350");
+        const barBorders = closes.map((c, i) => i === 0 ? "#5a6a80" : c >= closes[i - 1] ? "#1d7a72" : "#b71c1c");
+        try {
         new Chart(cv, {
+          type: "bar",
           data: { labels, datasets: [
-            { label: "Price", data: closes, type: "bar", backgroundColor: "#3a4556", borderColor: "#5a6a80", borderWidth: 1, order: 2 },
+            { label: "Price", data: closes, type: "bar", backgroundColor: barColors, borderColor: barBorders, borderWidth: 1, order: 2 },
             ds("10 MA", sma(10), "#f87171", 3),
             ds("20 MA", sma(20), "#fbbf24", 3),
             ds("50 MA", sma(50), "#60a5fa", 3.5),
@@ -966,6 +971,7 @@
               y: { ticks: { color: "#c8d0dc", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "#2a3448" } }
             } }
         });
+        } catch (e) { console.error("MA chart error for " + tk + " " + tf, e); }
       });
     }, 100);
     return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>';
