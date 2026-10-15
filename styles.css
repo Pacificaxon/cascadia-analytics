@@ -405,6 +405,12 @@ table.fin-table tr:last-child td { border-bottom: none; }
 .btn:hover { filter: brightness(1.08); }
 .btn.secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
 .btn.secondary:hover { color: var(--text); border-color: var(--faint); }
+/* Auth modal: larger, clearer primary button */
+#auth-go {
+  padding: 15px 22px !important; font-size: 17px !important; font-weight: 800 !important;
+  letter-spacing: 0.3px; margin-top: 6px;
+}
+#auth-go:disabled { opacity: 0.6; cursor: wait; }
 
 /* score badge */
 .score-badge {
