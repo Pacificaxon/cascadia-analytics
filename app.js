@@ -470,27 +470,29 @@
         } else if (/market breadth/i.test(p.name) && D.breadth_history && (D.breadth_history.history || []).length) {
           chartHtml = '<div class="zoomable-chart" data-chart="breadth" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="breadth-chart"></canvas>' +
             '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
-          // 52-week highs/lows stat bar (10-day cumulative, from breadth_history.json current)
+          // 52-week highs/lows: 10d, 21d (1mo), 63d (3mo) — trend view
           const bh = D.breadth_history;
           if (bh && bh.current && bh.current.new_highs_10d != null) {
-            const nh = bh.current.new_highs_10d, nl = bh.current.new_lows_10d;
-            const net = bh.current.hl_net_10d;
-            const netColor = net >= 0 ? "#3fb950" : "#f85149";
-            const total = nh + nl;
-            const nhPct = total > 0 ? (nh / total * 100).toFixed(0) : 50;
+            const cur = bh.current;
+            const row = (label, nh, nl, net) => {
+              const netColor = net >= 0 ? "#3fb950" : "#f85149";
+              const total = nh + nl;
+              const nhPct = total > 0 ? (nh / total * 100).toFixed(0) : 50;
+              return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">' +
+                '<span style="font-size:11px;color:#e8ecf1;width:70px;">' + label + "</span>" +
+                '<div style="flex:1;height:20px;border-radius:4px;overflow:hidden;display:flex;border:1px solid #2a3448;">' +
+                '<div style="width:' + nhPct + '%;background:#3fb950;"></div>' +
+                '<div style="flex:1;background:#f85149;"></div></div>' +
+                '<span style="font-size:12px;color:#3fb950;min-width:52px;text-align:right;">' + nh + "H</span>" +
+                '<span style="font-size:12px;color:#f85149;min-width:52px;text-align:right;">' + nl + "L</span>" +
+                '<span style="font-size:13px;font-weight:700;color:' + netColor + ';min-width:56px;text-align:right;">' + (net >= 0 ? "+" : "") + net + "</span></div>";
+            };
             chartHtml += '<div style="margin:8px 0;padding:10px;background:#1a2030;border-radius:8px;">' +
-              '<div style="font-size:11px;color:#e8ecf1;margin-bottom:8px;">52-WEEK HIGHS vs LOWS <span style="color:#e8ecf1;opacity:0.7;">(10-day cumulative)</span></div>' +
-              '<div style="display:flex;align-items:center;gap:12px;">' +
-              '<div style="text-align:center;"><div style="font-size:11px;color:#e8ecf1;">HIGHS</div>' +
-              '<div style="font-size:20px;font-weight:700;color:#3fb950;">' + nh + "</div></div>" +
-              '<div style="flex:1;height:24px;background:#1a2030;border-radius:4px;overflow:hidden;display:flex;border:1px solid #2a3448;">' +
-              '<div style="width:' + nhPct + '%;background:#3fb950;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0a0f0a;"></div>' +
-              '<div style="flex:1;background:#f85149;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;"></div></div>' +
-              '<div style="text-align:center;"><div style="font-size:11px;color:#e8ecf1;">LOWS</div>' +
-              '<div style="font-size:20px;font-weight:700;color:#f85149;">' + nl + "</div></div>" +
-              '<div style="text-align:center;min-width:60px;"><div style="font-size:11px;color:#e8ecf1;">NET</div>' +
-              '<div style="font-size:18px;font-weight:700;color:' + netColor + ';">' + (net >= 0 ? "+" : "") + net + "</div></div>" +
-              "</div></div>";
+              '<div style="font-size:11px;color:#e8ecf1;margin-bottom:8px;">52-WEEK HIGHS vs LOWS <span style="opacity:0.6;">— trend across timeframes</span></div>' +
+              row("10-day", cur.new_highs_10d, cur.new_lows_10d, cur.hl_net_10d) +
+              row("1-month", cur.new_highs_21d, cur.new_lows_21d, cur.hl_net_21d) +
+              row("3-month", cur.new_highs_63d, cur.new_lows_63d, cur.hl_net_63d) +
+              "</div>";
           }
         } else if (p.chart) {
           chartHtml = '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy">';
@@ -879,8 +881,12 @@
           "That\u2019s a narrow, fragile market — the kind that breaks hard when the leaders stumble.</p>" +
           "<p><b>What does today\u2019s reading mean?</b> Breadth spread is <b>" + cur.breadth_spread.toFixed(1) + "pp</b>, " +
           cur.pct_above_50d.toFixed(0) + "% of stocks above their 50-day MA and " + cur.pct_above_200d.toFixed(0) + "% above their 200-day MA. " +
-          (cur.new_highs_10d != null ? "Over the last 10 days, <b>" + cur.new_highs_10d + " stocks hit new 52-week highs</b> vs <b>" + cur.new_lows_10d + " hitting new lows</b> " +
-            "(net " + (cur.hl_net_10d >= 0 ? "+" : "") + cur.hl_net_10d + "). " : "") +
+          (cur.new_highs_10d != null ? "52-week highs vs lows — <b>10-day:</b> " + cur.new_highs_10d + "H/" + cur.new_lows_10d + "L " +
+            "(net " + (cur.hl_net_10d >= 0 ? "+" : "") + cur.hl_net_10d + "); " +
+            "<b>1-month:</b> " + cur.new_highs_21d + "H/" + cur.new_lows_21d + "L " +
+            "(net " + (cur.hl_net_21d >= 0 ? "+" : "") + cur.hl_net_21d + "); " +
+            "<b>3-month:</b> " + cur.new_highs_63d + "H/" + cur.new_lows_63d + "L " +
+            "(net " + (cur.hl_net_63d >= 0 ? "+" : "") + cur.hl_net_63d + "). " : "") +
           (cur.breadth_spread <= -10
             ? "Breadth is extremely narrow — the index is masking broad weakness underneath. Rallies built this narrow have a poor track record of lasting."
             : cur.breadth_spread <= -5
