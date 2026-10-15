@@ -4166,8 +4166,18 @@
      banner.style.cssText = "position:fixed;top:0;left:0;right:0;background:#000;color:#0f0;padding:10px;font-family:monospace;font-size:12px;z-index:99999;white-space:pre-wrap;max-height:50vh;overflow:auto;";
      document.body.appendChild(banner);
     }
-    banner.textContent = "DEBUG (tap to dismiss):\n" + info;
-    banner.onclick = () => banner.remove();
+    banner.innerHTML = "DEBUG (tap to dismiss):\n" + info.replace(/\n/g, "<br>") +
+     '<br><br><button id="debug-retry" style="background:#0f0;color:#000;padding:8px 16px;border:none;border-radius:4px;font-weight:bold;">Retry Pro Data</button>';
+    banner.onclick = (e) => {
+     if (e.target.id === "debug-retry") {
+      e.stopPropagation();
+      ensureProData().then(() => {
+       setTimeout(() => { render(); embedAnalysisVisuals(); }, 500);
+      });
+     } else {
+      banner.remove();
+     }
+    };
    };
    // Try multiple times to catch auth completion
    setTimeout(showDebug, 2000);
