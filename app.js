@@ -33,9 +33,13 @@
   } catch (e) { return null; }
  };
  // Timestamp of the daily refresh (from price_date, with time if available)
+ // Prefers the MA collector's collected_at (has hour:minute), falls back to price_date
  const refreshTs = (t) => {
-  const d = t.price_date || t.as_of || "";
-  return d;
+  try {
+   const ma = (D.ticker_ma || {})[t.ticker];
+   if (ma && ma.daily && ma.daily.collected_at) return ma.daily.collected_at;
+  } catch (e) {}
+  return t.price_date || t.as_of || "";
  };
  // Upside color: red for downside, yellow for 0-10% (hold), green for >10%
  const upsideCls = (n) => {
