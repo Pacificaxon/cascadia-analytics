@@ -946,22 +946,24 @@
           });
           bars = mo;
         }
+        // candlestick data: {x, o, h, l, c}
+        const candles = bars.map((b) => ({ x: b.t, o: b.o, h: b.h, l: b.l, c: b.c }));
         const closes = bars.map((b) => b.c);
         const vols = bars.map((b) => b.v);
         const labels = bars.map((b) => new Date(b.t).toLocaleDateString());
         const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b) => a + b, 0) / n);
-        const ds = (label, data, color, w) => ({ type: "line", label, data, borderColor: color, borderWidth: w, pointRadius: 0, tension: 0.1, spanGaps: true, order: 1, yAxisID: "y" });
-        // TradingView green/red: close >= open
+        const smaLabels = labels; // align MA lines with candle x positions
+        const ds = (label, data, color, w) => ({ type: "line", label, data: data.map((v, i) => v == null ? null : { x: bars[i].t, y: v }), borderColor: color, borderWidth: w, pointRadius: 0, tension: 0.1, spanGaps: true, order: 1, yAxisID: "y", parsing: false });
         const up = bars.map((b) => b.c >= b.o);
-        const priceColors = up.map((u) => u ? "#26a69a" : "#ef5350");
-        const priceBorders = up.map((u) => u ? "#1d7a72" : "#b71c1c");
         const volColors = up.map((u) => u ? "rgba(38,166,154,0.5)" : "rgba(239,83,80,0.5)");
         const fmtVol = (v) => v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : String(v);
         new Chart(cv, {
-          type: "bar",
-          data: { labels, datasets: [
-            { label: "Price", data: closes, type: "bar", backgroundColor: priceColors, borderColor: priceBorders, borderWidth: 1, order: 2, yAxisID: "y" },
-            { label: "Volume", data: vols, type: "bar", backgroundColor: volColors, borderWidth: 0, order: 3, yAxisID: "y1" },
+          data: { datasets: [
+            { label: "Price", data: candles, type: "candlestick",
+              color: { up: "#26a69a", down: "#ef5350", unchanged: "#5a6a80" },
+              borderColor: { up: "#1d7a72", down: "#b71c1c", unchanged: "#5a6a80" },
+              order: 2, yAxisID: "y", parsing: false },
+            { label: "Volume", data: vols.map((v, i) => ({ x: bars[i].t, y: v })), type: "bar", backgroundColor: volColors, borderWidth: 0, order: 3, yAxisID: "y1", parsing: false },
             ds("10 MA", sma(10), "#f87171", 3),
             ds("20 MA", sma(20), "#fbbf24", 3),
             ds("50 MA", sma(50), "#60a5fa", 3.5),
@@ -977,14 +979,20 @@
                 titleColor: "#e8ecf1", bodyColor: "#c8d0dc", padding: 12,
                 filter: (t) => t.dataset.label !== "Volume" || true,
                 callbacks: {
-                  label: (c) => c.dataset.label === "Volume"
-                    ? " Volume: " + fmtVol(c.parsed.y)
-                    : " " + c.dataset.label + ": $" + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "—")
+                  title: (items) => items.length ? new Date(items[0].parsed.x).toLocaleDateString() : "",
+                  label: (c) => {
+                    if (c.dataset.label === "Volume") return " Volume: " + fmtVol(c.parsed.y);
+                    if (c.dataset.type === "candlestick" && c.raw) {
+                      const r = c.raw;
+                      return " O: $" + r.o.toFixed(2) + " H: $" + r.h.toFixed(2) + " L: $" + r.l.toFixed(2) + " C: $" + r.c.toFixed(2);
+                    }
+                    return " " + c.dataset.label + ": $" + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "—");
+                  }
                 }
               }
             },
             scales: {
-              x: { ticks: { color: "#7a8494", maxTicksLimit: 8 }, grid: { color: "#2a3448" } },
+              x: { type: "time", time: { unit: tf === "monthly" ? "month" : tf === "weekly" ? "week" : "day" }, ticks: { color: "#7a8494", maxTicksLimit: 8 }, grid: { color: "#2a3448" } },
               y: { ticks: { color: "#c8d0dc", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "#2a3448" } },
               y1: { position: "right", display: false, max: Math.max(...vols, 1) * 4, grid: { display: false } }
             } }
