@@ -972,7 +972,7 @@
   let h = '<div class="card"><h3>Market Leadership <span class="pro-badge">PRO</span></h3>';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Top ' + d.leaders.length + ' leaders from ' + (d.universe_size || "S&P 500") + ' stocks · As of ' + esc((d.as_of || "").slice(0, 10)) + '</div>';
   h += '<div class="table-wrap"><table class="coverage"><thead><tr>' +
-   '<th>Ticker</th><th>Name</th><th>Sector</th><th>MLS</th><th>RS %</th><th>Trend</th><th>Price</th><th>vs 50-day</th>' +
+   '<th>Ticker</th><th>Name</th><th>Sector</th><th>MLS</th><th title="Relative Strength percentile vs S&P 500 (0-100)">RS Pctl</th><th>Trend</th><th>Price</th><th>vs 50-day</th>' +
    '</tr></thead><tbody>';
   d.leaders.forEach((l) => {
    const vsSma = l.sma50 ? ((l.price / l.sma50 - 1) * 100) : null;
