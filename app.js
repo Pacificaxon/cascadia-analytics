@@ -564,6 +564,12 @@
           tag: "Coincident", color: "#22c55e", raw: first.retail_mom },
         { key: "cpi_yoy", label: "CPI (Consumer Price)", value: first.cpi_yoy != null ? "+" + first.cpi_yoy.toFixed(1) + "%" : "—",
           tag: "Lagging", color: "#7dd3fc", raw: first.cpi_yoy },
+        { key: "wti_crude", label: "WTI Crude", value: first.wti_crude != null ? "$" + first.wti_crude.toFixed(0) : "—",
+          tag: "Energy", color: "#f5a623", raw: first.wti_crude },
+        { key: "gasoline_retail", label: "Gasoline (Retail)", value: first.gasoline_retail != null ? "$" + first.gasoline_retail.toFixed(2) : "—",
+          tag: "Energy", color: "#ff6b6b", raw: first.gasoline_retail },
+        { key: "diesel_retail", label: "Diesel (Retail)", value: first.diesel_retail != null ? "$" + first.diesel_retail.toFixed(2) : "—",
+          tag: "Energy", color: "#c44dff", raw: first.diesel_retail },
       ];
       const cardsHtml = metrics.map((m) =>
         '<div style="background:#161b26;border-radius:10px;padding:14px;flex:1;min-width:140px;">' +
@@ -1492,6 +1498,9 @@
             { key: "ppi_yoy", label: "PPI (Producer Price)", color: "#a5b4fc" },
             { key: "retail_mom", label: "Retail Sales", color: "#22c55e" },
             { key: "cpi_yoy", label: "CPI (Consumer Price)", color: "#7dd3fc" },
+            { key: "wti_crude", label: "WTI Crude ($)", color: "#f5a623" },
+            { key: "gasoline_retail", label: "Gasoline Retail ($/gal)", color: "#ff6b6b" },
+            { key: "diesel_retail", label: "Diesel Retail ($/gal)", color: "#c44dff" },
           ];
           // Normalize each series to 0-100% based on its min/max
           const normalize = (vals) => {
@@ -1964,6 +1973,9 @@
                 { key: "ppi_yoy", label: "PPI (Producer Price)", color: "#a5b4fc" },
                 { key: "retail_mom", label: "Retail Sales", color: "#22c55e" },
                 { key: "cpi_yoy", label: "CPI (Consumer Price)", color: "#7dd3fc" },
+                { key: "wti_crude", label: "WTI Crude ($)", color: "#f5a623" },
+                { key: "gasoline_retail", label: "Gasoline Retail ($/gal)", color: "#ff6b6b" },
+                { key: "diesel_retail", label: "Diesel Retail ($/gal)", color: "#c44dff" },
               ];
               const normalize = (vals) => {
                 const nums = vals.filter((v) => v != null);
