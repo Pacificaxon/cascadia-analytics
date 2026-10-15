@@ -510,7 +510,7 @@
       h += '<div class="section"><div class="section-title">RSI: Cyclicals vs Defensives <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
         '<div class="section-sub">Risk-on / risk-off momentum — 14-period RSI on the XLY÷XLP ratio. Above 70 = cyclicals overbought, below 30 = oversold.</div>' +
         '<div class="grid-2"><div class="card"><h3>Cyclical / Defensive RSI</h3>' +
-        gated("RSI: Cyclicals vs Defensives", "14-period RSI on the XLY÷XLP ratio — spot sector rotation extremes before they reverse.", explainer + rsiHtml) +
+        gated("RSI: Cyclicals vs Defensives", "14-period RSI on the XLY÷XLP ratio — spot sector rotation extremes before they reverse.", rsiHtml + explainer) +
         "</div></div></div>";
     }
     // render interactive vol divergence chart after DOM insert
