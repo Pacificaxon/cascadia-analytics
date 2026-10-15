@@ -2136,12 +2136,47 @@
     h += '<div class="section"><div class="section-title">Your Alert Subscriptions</div>' +
       '<div class="section-sub">We\'ll email you at ' + esc(authUser ? authUser.email : "") + ' when these update.</div>' +
       '<div id="alerts-list" style="display:flex;flex-direction:column;gap:12px;">' +
-      '<p style="color:#e8ecf1;">Loading your subscriptions...</p></div></div>';
+      '<p style="color:#e8ecf1;">Loading your subscriptions...</p></div></div>' +
+      '<div class="section"><div class="section-title">Moving Average Cross Alerts</div>' +
+      '<div class="section-sub">Get notified when a stock or index crosses its moving average. Works for all current and future coverage tickers.</div>' +
+      '<div style="background:#161b26;border-radius:10px;padding:16px;margin-bottom:12px;">' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">' +
+      '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">Symbol</label>' +
+      '<select id="ma-symbol" style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;"></select></div>' +
+      '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">MA Period</label>' +
+      '<select id="ma-period" style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;">' +
+      '<option value="10">10-day</option><option value="20">20-day</option>' +
+      '<option value="50" selected>50-day</option><option value="100">100-day</option>' +
+      '<option value="200">200-day</option></select></div>' +
+      '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">Direction</label>' +
+      '<select id="ma-direction" style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;">' +
+      '<option value="either" selected>Either direction</option>' +
+      '<option value="above">Cross above (bullish)</option>' +
+      '<option value="below">Cross below (bearish)</option></select></div></div>' +
+      '<button id="ma-add-btn" class="btn-gold" style="padding:8px 20px;">Add MA Alert</button></div>' +
+      '<div id="ma-alerts-list" style="display:flex;flex-direction:column;gap:8px;"><p style="color:#e8ecf1;">Loading...</p></div></div>' +
+      '<div class="section"><div class="section-title">Custom Price Alerts</div>' +
+      '<div class="section-sub">Get notified when a covered stock hits your target price.</div>' +
+      '<div style="background:#161b26;border-radius:10px;padding:16px;margin-bottom:12px;">' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">' +
+      '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">Ticker</label>' +
+      '<select id="price-ticker" style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;"></select></div>' +
+      '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">Target Price ($)</label>' +
+      '<input id="price-target" type="number" step="0.01" min="0" placeholder="e.g. 450.00" ' +
+      'style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;"></div>' +
+      '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">Trigger When</label>' +
+      '<select id="price-direction" style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;">' +
+      '<option value="above" selected>Price rises above target</option>' +
+      '<option value="below">Price falls below target</option></select></div></div>' +
+      '<button id="price-add-btn" class="btn-gold" style="padding:8px 20px;">Add Price Alert</button></div>' +
+      '<div id="price-alerts-list" style="display:flex;flex-direction:column;gap:8px;"><p style="color:#e8ecf1;">Loading...</p></div></div>';
 
     app.innerHTML = h;
 
     // Load current subscriptions and render toggles
     loadAlertSubscriptions();
+    loadMaAlerts();
+    loadPriceAlerts();
   });
 
   async function loadAlertSubscriptions() {
@@ -2224,6 +2259,135 @@
       }
     } catch (err) {
       console.error("Failed to save subscription:", err);
+    }
+  }
+
+  /* ---------- MA Cross Alerts ---------- */
+  function populateMaSymbols() {
+    const sel = document.getElementById("ma-symbol");
+    const priceSel = document.getElementById("price-ticker");
+    if (!sel) return;
+    // Indices first, then all coverage tickers (auto-includes future additions)
+    let opts = '<option value="QQQ">QQQ — Nasdaq 100</option><option value="SPY">SPY — S&P 500</option>';
+    opts += ORDER.map((tk) => '<option value="' + esc(tk) + '">' + esc(tk) + " — " + esc((TICKERS[tk] || {}).name || "") + "</option>").join("");
+    sel.innerHTML = opts;
+    if (priceSel) {
+      priceSel.innerHTML = ORDER.map((tk) => '<option value="' + esc(tk) + '">' + esc(tk) + " — " + esc((TICKERS[tk] || {}).name || "") + "</option>").join("");
+    }
+  }
+
+  async function loadMaAlerts() {
+    const listEl = document.getElementById("ma-alerts-list");
+    if (!listEl || !authUser) return;
+    populateMaSymbols();
+    try {
+      const { data, error } = await supa
+        .from("alert_subscriptions")
+        .select("id, ticker, ma_period, ma_direction, is_active")
+        .eq("user_id", authUser.id)
+        .eq("subscription_type", "ma_cross")
+        .eq("is_active", true)
+        .order("ticker");
+      if (error) throw error;
+      if (!data || !data.length) {
+        listEl.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">No MA cross alerts yet. Add one above.</p>';
+      } else {
+        listEl.innerHTML = data.map((s) => {
+          const dirLabel = s.ma_direction === "above" ? "cross above" : s.ma_direction === "below" ? "cross below" : "cross either way";
+          return '<div style="background:#161b26;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+            '<div style="flex:1;font-size:14px;color:#fff;"><b>' + esc(s.ticker) + "</b> " + dirLabel +
+            ' <b>' + s.ma_period + "-day MA</b></div>" +
+            '<button data-ma-del="' + s.id + '" style="background:#f85149;border:0;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Remove</button></div>';
+        }).join("");
+        listEl.querySelectorAll("[data-ma-del]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            await supa.from("alert_subscriptions").update({ is_active: false }).eq("id", btn.dataset.maDel);
+            loadMaAlerts();
+          });
+        });
+      }
+      // Wire add button
+      const addBtn = document.getElementById("ma-add-btn");
+      if (addBtn && !addBtn.dataset.wired) {
+        addBtn.dataset.wired = "1";
+        addBtn.addEventListener("click", async () => {
+          const ticker = document.getElementById("ma-symbol").value;
+          const period = parseInt(document.getElementById("ma-period").value, 10);
+          const direction = document.getElementById("ma-direction").value;
+          if (!ticker) return;
+          const { error } = await supa.from("alert_subscriptions").insert({
+            user_id: authUser.id,
+            subscription_type: "ma_cross",
+            ticker: ticker,
+            ma_period: period,
+            ma_direction: direction,
+            is_active: true,
+          });
+          if (error) { console.error("Failed to add MA alert:", error); return; }
+          loadMaAlerts();
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load MA alerts:", err);
+      listEl.innerHTML = '<p style="color:#f85149;">Failed to load MA alerts.</p>';
+    }
+  }
+
+  /* ---------- Price Alerts ---------- */
+  async function loadPriceAlerts() {
+    const listEl = document.getElementById("price-alerts-list");
+    if (!listEl || !authUser) return;
+    try {
+      const { data, error } = await supa
+        .from("alert_subscriptions")
+        .select("id, ticker, target_price, price_direction, is_active")
+        .eq("user_id", authUser.id)
+        .eq("subscription_type", "price_alert")
+        .eq("is_active", true)
+        .order("ticker");
+      if (error) throw error;
+      if (!data || !data.length) {
+        listEl.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">No price alerts yet. Add one above.</p>';
+      } else {
+        listEl.innerHTML = data.map((s) => {
+          const dirLabel = s.price_direction === "above" ? "rises above" : "falls below";
+          return '<div style="background:#161b26;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+            '<div style="flex:1;font-size:14px;color:#fff;"><b>' + esc(s.ticker) + "</b> " + dirLabel +
+            ' <b>$' + parseFloat(s.target_price).toFixed(2) + "</b></div>" +
+            '<button data-price-del="' + s.id + '" style="background:#f85149;border:0;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Remove</button></div>';
+        }).join("");
+        listEl.querySelectorAll("[data-price-del]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            await supa.from("alert_subscriptions").update({ is_active: false }).eq("id", btn.dataset.priceDel);
+            loadPriceAlerts();
+          });
+        });
+      }
+      // Wire add button
+      const addBtn = document.getElementById("price-add-btn");
+      if (addBtn && !addBtn.dataset.wired) {
+        addBtn.dataset.wired = "1";
+        addBtn.addEventListener("click", async () => {
+          const ticker = document.getElementById("price-ticker").value;
+          const target = parseFloat(document.getElementById("price-target").value);
+          const direction = document.getElementById("price-direction").value;
+          if (!ticker || !target || target <= 0) return;
+          const { error } = await supa.from("alert_subscriptions").insert({
+            user_id: authUser.id,
+            subscription_type: "price_alert",
+            ticker: ticker,
+            target_price: target,
+            price_direction: direction,
+            is_active: true,
+          });
+          if (error) { console.error("Failed to add price alert:", error); return; }
+          document.getElementById("price-target").value = "";
+          loadPriceAlerts();
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load price alerts:", err);
+      listEl.innerHTML = '<p style="color:#f85149;">Failed to load price alerts.</p>';
     }
   }
 
