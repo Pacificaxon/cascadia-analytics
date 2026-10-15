@@ -941,6 +941,7 @@
   h += '<div class="section"><div class="section-title">Market Internals Trackers</div>' +
    '<div class="section-sub">Breadth, positioning, volatility, and rotation signals. Free users see previews below.</div></div>';
   h += '<div style="display:flex;flex-direction:column;gap:16px;">' + panels.map((p) => {
+   try {
     let title = esc(p.name);
     if (/alligator/i.test(p.name)) {
      const isOpen = /jaw\s*open/i.test(p.summary || "");
@@ -1002,6 +1003,10 @@
     '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>";
     // Each tracker individually Pro-locked
     return gated(p.name, esc(p.summary || "Pro market internals tracker"), panelHtml);
+   } catch (panelErr) {
+    console.error("Panel render failed:", p.name, panelErr);
+    return '<div class="card"><p style="color:#f85149;">Failed to load ' + esc(p.name) + '</p></div>';
+   }
    }).join("") + "</div>";
 
   /* ---------- tracker explainers (visual first, explanation after) ---------- */
