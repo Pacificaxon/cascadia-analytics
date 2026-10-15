@@ -1123,12 +1123,12 @@
         const tv = (f0 * Math.pow(1 + g, n) * 1.03) / (wacc - 0.03) / Math.pow(1 + wacc, n);
         return (pv + tv) / shares;
       };
-      const cagrs = [0, 5, 10, 15, 20, 25, 30];
-      // find market-implied CAGR by interpolation
+      const cagrs = [0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 75, 100];
+      // find market-implied CAGR by interpolation (search 0–100%)
       let implG = null;
-      const p0 = implPrice(0), pMax = implPrice(0.5);
+      const p0 = implPrice(0), pMax = implPrice(1.0);
       if (t.price >= p0 && t.price <= pMax) {
-        let loG = 0, hiG = 0.5;
+        let loG = 0, hiG = 1.0;
         for (let i = 0; i < 40; i++) {
           const mid = (loG + hiG) / 2;
           if (implPrice(mid) < t.price) loG = mid; else hiG = mid;
@@ -1147,7 +1147,7 @@
       if (implG != null)
         h += '<div class="panel-asof" style="color:#a8b0bc;">Market-implied 5-yr revenue CAGR: ~' + (implG * 100).toFixed(1) + '%</div>';
       else
-        h += '<div class="panel-asof" style="color:#a8b0bc;">Current price falls outside the 0–50% CAGR range.</div>';
+        h += '<div class="panel-asof" style="color:#a8b0bc;">Current price falls outside the 0–100% CAGR range.</div>';
     }
     return h;
   }
