@@ -154,7 +154,9 @@
  // Ensure Pro data is loaded before rendering Pro-gated routes
  // Call this at the start of any route that needs PRO_DATA
  async function ensureProData() {
-  if (PRO_DATA || !isPro()) return;
+  if (PRO_DATA) return; // Already loaded
+  // Don't check isPro() here - auth may not have completed yet
+  // fetchProData() will return null if no valid session
   try {
    const data = await fetchProData();
    if (data) PRO_DATA = data;
