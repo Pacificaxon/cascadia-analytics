@@ -901,62 +901,136 @@
   function maHtml(tk) {
     const m = (D.ticker_ma || {})[tk];
     if (!m) return '<div class="card"><p style="color:var(--muted)">No moving-average data for this ticker.</p></div>';
+    const ohlcv = (D.ticker_ohlcv || {})[tk] || [];
     let h = "";
-    // TradingView widgets via JS API (supports pre-loaded MA studies)
-    const tvSym = tk === "RNMBY" ? "OTC:RNMBY" : "NASDAQ:" + tk;
-    const intervals = { daily: "D", weekly: "W", monthly: "M" };
-    const tvCharts = [];
+    const chartCfgs = [];
     ["daily", "weekly", "monthly"].forEach((tf) => {
       const d = m[tf];
       if (!d) return;
-      const cid = "tv-" + tk + "-" + tf;
-      tvCharts.push({ cid, tf });
+      const cid = "ma-cust-" + tk + "-" + tf;
+      chartCfgs.push({ cid, tf });
       h += '<div class="card"><h3 style="text-transform:capitalize">' + tf + ' <span class="verdict ' +
         (String(d.signal || "").toLowerCase().includes("buy") ? "bullish" : String(d.signal || "").toLowerCase().includes("sell") ? "bearish" : "neutral") +
         '">' + esc(d.signal || "") + "</span></h3>" +
-        '<div id="' + cid + '" style="height:420px;width:100%;margin-bottom:12px;"></div>' +
-        '<div style="font-size:12px;color:#a8b0bc;margin-bottom:10px;">Overlays: <b style="color:#c8d0dc;">SMA 10</b> · <b style="color:#c8d0dc;">SMA 20</b> · <b style="color:#c8d0dc;">SMA 50</b> · <b style="color:#c8d0dc;">SMA 200</b> (simple moving averages)</div>' +
+        '<div style="position:relative;height:420px;margin-bottom:8px;background:#131722;border-radius:8px;"><canvas id="' + cid + '"></canvas></div>' +
+        '<div style="font-size:12px;color:#a8b0bc;margin-bottom:10px;">Overlays: ' +
+        '<b style="color:#f23645;">SMA 10</b> · <b style="color:#ff9800;">SMA 20</b> · ' +
+        '<b style="color:#2962ff;">SMA 50</b> · <b style="color:#00bcd4;">SMA 200</b> (simple moving averages)</div>' +
         '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
         ["10", "20", "30", "50", "100", "200"].map((p) =>
           "<tr><td>" + p + "</td><td>" + fmt$((d.sma || {})[p]) + "</td><td>" + fmt$((d.ema || {})[p]) + "</td></tr>"
         ).join("") + "</tbody></table></div>" +
-        '<div class="panel-asof">Price ' + fmt$(d.price) + " · as of " + esc(d.as_of || "") + " · Chart by TradingView</div></div>";
+        '<div class="panel-asof">Price ' + fmt$(d.price) + " · as of " + esc(d.as_of || "") + "</div></div>";
     });
-    // init TradingView widgets after DOM insert
+    // render custom candlestick charts after DOM insert (TradingView-style dark theme)
     setTimeout(() => {
-      if (typeof TradingView === "undefined") {
-        const s = document.createElement("script");
-        s.src = "https://s3.tradingview.com/tv.js";
-        s.onload = initTV;
-        document.head.appendChild(s);
-      } else { initTV(); }
-      function initTV() {
-        tvCharts.forEach(({ cid, tf }) => {
-          const el = document.getElementById(cid);
-          if (!el || el.dataset.tvInit) return;
-          el.dataset.tvInit = "1";
-          try {
-            const widget = new TradingView.widget({
-              container_id: cid, symbol: tvSym, interval: intervals[tf],
-              theme: "dark", style: "1", locale: "en", toolbar_bg: "#1a2332",
-              hide_side_toolbar: false, allow_symbol_change: false,
-              autosize: true,
-              // add MA studies once chart is ready
-              onChartReady: function() {
-                try {
-                  const chart = widget.chart();
-                  [10, 20, 50, 200].forEach((len) => {
-                    chart.createStudy("Moving Average Simple", false, false, { length: len });
-                  });
-                } catch (e) { console.error("TV study error", e); }
-              }
+      chartCfgs.forEach(({ cid, tf }) => {
+        const cv = document.getElementById(cid);
+        if (!cv || !ohlcv.length) return;
+        try {
+          let bars = ohlcv.map((r) => ({ t: r[0], o: r[1], h: r[2], l: r[3], c: r[4], v: r[5] || 0 }));
+          if (tf === "weekly") {
+            const agg = [];
+            bars.forEach((b) => {
+              const w = Math.floor(b.t / (7 * 864e5));
+              const p = agg[agg.length - 1];
+              if (!p || p.w !== w) agg.push({ w, t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
+              else { p.h = Math.max(p.h, b.h); p.l = Math.min(p.l, b.l); p.c = b.c; p.v += b.v; }
             });
-          } catch (e) { console.error("TV widget error", e); }
-        });
-      }
-    }, 200);
+            bars = agg;
+          } else if (tf === "monthly") {
+            const agg = [];
+            bars.forEach((b) => {
+              const dt = new Date(b.t), k = dt.getFullYear() * 12 + dt.getMonth();
+              const p = agg[agg.length - 1];
+              if (!p || p.k !== k) agg.push({ k, t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
+              else { p.h = Math.max(p.h, b.h); p.l = Math.min(p.l, b.l); p.c = b.c; p.v += b.v; }
+            });
+            bars = agg;
+          }
+          // limit to last 120 bars for readability
+          if (bars.length > 120) bars = bars.slice(-120);
+          const up = bars.map((b) => b.c >= b.o);
+          const bodies = bars.map((b) => ({ x: b.t, y: [Math.min(b.o, b.c), Math.max(b.o, b.c)] }));
+          const closes = bars.map((b) => b.c);
+          const vols = bars.map((b) => b.v);
+          const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b2) => a + b2, 0) / n);
+          const smaDs = (label, data, color) => ({
+            type: "line", label, data: data.map((v, i) => v == null ? null : { x: bars[i].t, y: v }),
+            borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0, spanGaps: true,
+            order: 1, yAxisID: "y", parsing: false
+          });
+          const UP = "#26a69a", DN = "#ef5350";
+          const wickPlugin = {
+            id: "wicks-" + cid,
+            afterDatasetsDraw(chart) {
+              const ctx = chart.ctx, yS = chart.scales.y;
+              const meta = chart.getDatasetMeta(0);
+              bars.forEach((b, i) => {
+                const el = meta.data[i];
+                if (!el) return;
+                ctx.save();
+                ctx.strokeStyle = up[i] ? UP : DN;
+                ctx.lineWidth = Math.max(1, el.width * 0.12);
+                ctx.beginPath();
+                ctx.moveTo(el.x, yS.getPixelForValue(b.h));
+                ctx.lineTo(el.x, yS.getPixelForValue(b.l));
+                ctx.stroke();
+                ctx.restore();
+              });
+            }
+          };
+          const fmtVol = (v) => v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : String(Math.round(v));
+          new Chart(cv, {
+            type: "bar",
+            data: { datasets: [
+              { label: "Price", data: bodies, backgroundColor: up.map((u) => u ? UP : DN),
+                borderColor: up.map((u) => u ? UP : DN), borderWidth: 1,
+                order: 2, yAxisID: "y", parsing: false, barPercentage: 0.65, categoryPercentage: 0.9 },
+              { label: "Volume", data: vols.map((v, i) => ({ x: bars[i].t, y: v })), type: "bar",
+                backgroundColor: up.map((u) => u ? "rgba(38,166,154,0.45)" : "rgba(239,83,80,0.45)"),
+                borderWidth: 0, order: 3, yAxisID: "y1", parsing: false, barPercentage: 0.65, categoryPercentage: 0.9 },
+              smaDs("SMA 10", sma(10), "#f23645"),
+              smaDs("SMA 20", sma(20), "#ff9800"),
+              smaDs("SMA 50", sma(50), "#2962ff"),
+              ...(closes.length >= 100 ? [smaDs("SMA 200", sma(200), "#00bcd4")] : []),
+            ]},
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "index", intersect: false },
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+                  titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10, displayColors: false,
+                  callbacks: {
+                    title: (items) => items.length ? new Date(items[0].parsed.x).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "",
+                    label: (c) => {
+                      if (c.dataset.label === "Volume") return "  Volume: " + fmtVol(c.parsed.y);
+                      if (c.dataset.label === "Price") {
+                        const b = bars[c.dataIndex];
+                        if (b) return "  O " + b.o.toFixed(2) + "  H " + b.h.toFixed(2) + "  L " + b.l.toFixed(2) + "  C " + b.c.toFixed(2);
+                      }
+                      return "  " + c.dataset.label + ": " + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "-");
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: { type: "time", time: { unit: tf === "monthly" ? "month" : tf === "weekly" ? "week" : "month" },
+                  ticks: { color: "#787b86", maxTicksLimit: 8, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.5)" } },
+                y: { position: "right", ticks: { color: "#787b86", callback: (v) => v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.5)" } },
+                y1: { position: "right", display: false, max: Math.max(...vols, 1) * 5, grid: { display: false } }
+              }
+            },
+            plugins: [wickPlugin]
+          });
+        } catch (e) { console.error("Custom MA chart error", e); }
+      });
+    }, 150);
     return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>';
   }
+
 
   function seasonalityHtml(tk) {
     const t = TICKERS[tk];
@@ -1425,3 +1499,67 @@
     refreshAuth();  // server-verified Pro status, re-renders when resolved
   })();
 })();
+
+
+/* === TRADINGVIEW BACKUP (maHtml TradingView version, 2026-10-14) ===
+//   function maHtml(tk) {
+//     const m = (D.ticker_ma || {})[tk];
+//     if (!m) return '<div class="card"><p style="color:var(--muted)">No moving-average data for this ticker.</p></div>';
+//     let h = "";
+//     // TradingView widgets via JS API (supports pre-loaded MA studies)
+//     const tvSym = tk === "RNMBY" ? "OTC:RNMBY" : "NASDAQ:" + tk;
+//     const intervals = { daily: "D", weekly: "W", monthly: "M" };
+//     const tvCharts = [];
+//     ["daily", "weekly", "monthly"].forEach((tf) => {
+//       const d = m[tf];
+//       if (!d) return;
+//       const cid = "tv-" + tk + "-" + tf;
+//       tvCharts.push({ cid, tf });
+//       h += '<div class="card"><h3 style="text-transform:capitalize">' + tf + ' <span class="verdict ' +
+//         (String(d.signal || "").toLowerCase().includes("buy") ? "bullish" : String(d.signal || "").toLowerCase().includes("sell") ? "bearish" : "neutral") +
+//         '">' + esc(d.signal || "") + "</span></h3>" +
+//         '<div id="' + cid + '" style="height:420px;width:100%;margin-bottom:12px;"></div>' +
+//         '<div style="font-size:12px;color:#a8b0bc;margin-bottom:10px;">Overlays: <b style="color:#c8d0dc;">SMA 10</b> · <b style="color:#c8d0dc;">SMA 20</b> · <b style="color:#c8d0dc;">SMA 50</b> · <b style="color:#c8d0dc;">SMA 200</b> (simple moving averages)</div>' +
+//         '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
+//         ["10", "20", "30", "50", "100", "200"].map((p) =>
+//           "<tr><td>" + p + "</td><td>" + fmt$((d.sma || {})[p]) + "</td><td>" + fmt$((d.ema || {})[p]) + "</td></tr>"
+//         ).join("") + "</tbody></table></div>" +
+//         '<div class="panel-asof">Price ' + fmt$(d.price) + " · as of " + esc(d.as_of || "") + " · Chart by TradingView</div></div>";
+//     });
+//     // init TradingView widgets after DOM insert
+//     setTimeout(() => {
+//       if (typeof TradingView === "undefined") {
+//         const s = document.createElement("script");
+//         s.src = "https://s3.tradingview.com/tv.js";
+//         s.onload = initTV;
+//         document.head.appendChild(s);
+//       } else { initTV(); }
+//       function initTV() {
+//         tvCharts.forEach(({ cid, tf }) => {
+//           const el = document.getElementById(cid);
+//           if (!el || el.dataset.tvInit) return;
+//           el.dataset.tvInit = "1";
+//           try {
+//             const widget = new TradingView.widget({
+//               container_id: cid, symbol: tvSym, interval: intervals[tf],
+//               theme: "dark", style: "1", locale: "en", toolbar_bg: "#1a2332",
+//               hide_side_toolbar: false, allow_symbol_change: false,
+//               autosize: true,
+//               // add MA studies once chart is ready
+//               onChartReady: function() {
+//                 try {
+//                   const chart = widget.chart();
+//                   [10, 20, 50, 200].forEach((len) => {
+//                     chart.createStudy("Moving Average Simple", false, false, { length: len });
+//                   });
+//                 } catch (e) { console.error("TV study error", e); }
+//               }
+//             });
+//           } catch (e) { console.error("TV widget error", e); }
+//         });
+//       }
+//     }, 200);
+//     return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>';
+//   }
+// 
+=== END TRADINGVIEW BACKUP === */
