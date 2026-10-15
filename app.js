@@ -105,6 +105,12 @@
    return null;
   }
   try {
+   // Refresh session first to ensure token is valid (fixes 401s from stale tokens)
+   try {
+    await supa.auth.refreshSession();
+   } catch (refreshErr) {
+    console.warn("Session refresh failed:", refreshErr.message);
+   }
    const { data: { session } } = await supa.auth.getSession();
    if (!session) {
     console.warn("fetchProData: no session");
