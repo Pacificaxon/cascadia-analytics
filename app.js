@@ -701,7 +701,15 @@
     } else if (key === "skew" && D.skew_data && D.skew_data.indices) {
      el.innerHTML = skewTrackerHtml(D.skew_data);
     } else {
-     el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.</p>';
+     // Show specific reason in debug mode
+     let reason = "";
+     if (location.hash.includes("debug=1")) {
+      if (key === "fed-funds") reason = " (fed_funds.available=" + !!(D.fed_funds && D.fed_funds.available) + ")";
+      if (key === "macro") reason = " (macro_indicators=" + !!D.macro_indicators + ")";
+      if (key === "gex") reason = " (gex_data.indices=" + !!(D.gex_data && D.gex_data.indices) + ")";
+      if (key === "skew") reason = " (skew_data.indices=" + !!(D.skew_data && D.skew_data.indices) + ")";
+     }
+     el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.' + reason + '</p>';
     }
    } catch (e) {
     console.error("Failed to embed visual:", key, e);
