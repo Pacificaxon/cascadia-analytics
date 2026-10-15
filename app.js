@@ -140,7 +140,21 @@
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
    return flat;
-  } catch (e) { return null; }
+  } catch (e) {
+   console.warn("fetchProData failed:", e.message);
+   return null;
+  }
+ }
+ // Ensure Pro data is loaded before rendering Pro-gated routes
+ // Call this at the start of any route that needs PRO_DATA
+ async function ensureProData() {
+  if (PRO_DATA || !isPro()) return;
+  try {
+   const data = await fetchProData();
+   if (data) PRO_DATA = data;
+  } catch (e) {
+   console.error("ensureProData failed:", e);
+  }
  }
  // Proxy D to fall back to PRO_DATA for Pro sections
  const _D_raw = window.SITE_DATA || {};
@@ -2645,20 +2659,22 @@
   { key: "macro_analysis", name: "Macroeconomic Analysis", desc: "CPI, PPI, retail sales, PMI, energy, notified when new reports are released." },
  ];
 
- route("analysis", function () {
+ route("analysis", async function () {
+  // Ensure Pro data is loaded before rendering (fixes race condition)
+  await ensureProData();
   if (!isPro()) {
-   app.innerHTML = '<div class="crumb">MARKET ANALYSIS</div>' +
+   app.innerHTML = '<div class="crumb">MORNING BRIEFING</div>' +
     '<div class="hero"><div>' +
-    '<h1 class="hero-h">Morning Market Analysis.</h1>' +
+    '<h1 class="hero-h">Morning Briefing.</h1>' +
     "<p class='hero-sub'>Institutional-grade briefing synthesizing macro, internals, and derivatives positioning. Updated every trading morning.</p></div></div>" +
     '<div class="section"><div class="section-title">Morning Market Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("Morning Market Analysis, Pro", "Institutional-grade morning briefing: macro, internals, gamma positioning, and what to watch today.") + "</div>";
+    proTeaser("Morning Briefing, Pro", "Institutional-grade morning briefing: macro, internals, gamma positioning, and what to watch today.") + "</div>";
    return;
   }
   const r = D.market_analysis_report;
-  let h = '<div class="crumb">MARKET ANALYSIS</div>';
+  let h = '<div class="crumb">MORNING BRIEFING</div>';
   h += '<div class="hero"><div>' +
-   '<h1 class="hero-h">Morning Market Analysis.</h1>' +
+   '<h1 class="hero-h">Morning Briefing.</h1>' +
    "<p class='hero-sub'>Institutional-grade briefing synthesizing macro, internals, and derivatives positioning. Updated every trading morning.</p></div></div>";
   if (r && r.available) {
    h += '<div class="section" style="max-width:none;">' +
