@@ -341,7 +341,8 @@
     } catch (e) { return ""; }
   }
   function newsRow(o) {
-    return '<div class="news-row">' +
+    const clickable = o.badge ? ' data-news-tk="' + esc(o.badge) + '" style="cursor:pointer;"' : "";
+    return '<div class="news-row"' + clickable + '>' +
       '<div>' + (o.badge ? '<span class="tk-badge">' + esc(o.badge) + "</span>" : "") + "</div>" +
       '<div><div class="news-h">' + esc(o.headline) + "</div>" +
       (o.sub ? '<div class="news-sub">' + esc(o.sub) + "</div>" : "") + "</div>" +
@@ -458,6 +459,8 @@
     app.innerHTML = h;
     app.querySelectorAll("tr[data-tk]").forEach((tr) =>
       tr.addEventListener("click", () => nav("ticker/" + tr.dataset.tk)));
+    app.querySelectorAll(".news-row[data-news-tk]").forEach((row) =>
+      row.addEventListener("click", () => nav("ticker/" + row.dataset.newsTk)));
     const bb = document.getElementById("btn-browse");
     if (bb) bb.addEventListener("click", () => document.getElementById("coverage-sec").scrollIntoView({ behavior: "smooth" }));
     const bi = document.getElementById("btn-internals");
