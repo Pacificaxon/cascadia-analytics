@@ -752,7 +752,7 @@
    "</div></div>";
   h += '<div class="hero-btns">' +
    '<button class="btn-gold" id="btn-browse">Browse ticker coverage ↓</button>' +
-   '<button class="btn-dark" id="btn-internals">Open Market Internals ↓</button></div>';
+   '<a href="#/monitor" class="btn-gold" id="btn-internals" style="text-decoration:none;display:inline-block;">Open Market Internals ↓</a></div>';
 
   // company news, artifact layout
   h += newsSection("cn-sec", "SINGLE-COMPANY WIRE", "Company News", "Offerings · Regulation · Contracts",
@@ -797,8 +797,7 @@
   // No row-level handlers needed.
   const bb = document.getElementById("btn-browse");
   if (bb) bb.addEventListener("click", () => document.getElementById("coverage-sec").scrollIntoView({ behavior: "smooth" }));
-  const bi = document.getElementById("btn-internals");
-  if (bi) bi.addEventListener("click", () => nav("monitor"));
+  // btn-internals is now a direct <a href="#/monitor"> link, no JS handler needed
  });
 
  route("monitor", function () {
