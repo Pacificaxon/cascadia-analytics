@@ -2835,6 +2835,18 @@
    '<div id="short-interest-' + esc(tk) + '"></div>');
   h += "</div>";
 
+  // Company-specific significant news (free)
+  const cnews = (D.company_news || []).filter((n) => n.ticker === tk).slice(0, 5);
+  if (cnews.length) {
+   h += '<div class="section"><div class="section-title">Company News</div><div class="card">';
+   h += cnews.map((n) => '<div class="news-item"><div class="news-headline">' + esc(n.headline) + "</div>" +
+    '<div class="panel-summary">' + esc(n.summary || "") + "</div>" +
+    '<div class="news-meta"><span>' + esc(n.category || "").replace(/_/g, " ") + " · " + timeAgo(n.timestamp) + "</span>" +
+    (n.url ? ' <a href="' + esc(n.url) + '" target="_blank" rel="noopener" style="color:#58a6ff;">Source</a>' : "") +
+    "</div></div>").join("");
+   h += "</div></div>";
+  }
+
   // Macro takes (free)
   const takes = (D.ticker_macro || {})[tk] || [];
   if (takes.length) {
