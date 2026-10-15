@@ -209,6 +209,16 @@
    setTimeout(() => render(), 100);
    setTimeout(() => render(), 500);
   }
+  // Re-run visual embedding after auth completes (for analysis route)
+  // This ensures visuals load even if PRO_DATA wasn't ready on first render
+  setTimeout(() => {
+   try {
+    const route = location.hash.replace(/^#\/?/, "").split("?")[0].split("/")[0];
+    if (route === "analysis" && typeof embedAnalysisVisuals === "function") {
+     embedAnalysisVisuals();
+    }
+   } catch (e) {}
+  }, 600);
  }
 
  // Listen for auth changes (login/logout in another tab, token refresh)
