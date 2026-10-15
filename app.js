@@ -2104,6 +2104,129 @@
     app.innerHTML = h;
   });
 
+  /* ================= ALERTS ================= */
+  // Pro users can subscribe to email alerts for any market internals monitor
+  const ALERT_TRACKERS = [
+    { key: "aaii_sentiment", name: "AAII Investor Sentiment", desc: "Weekly sentiment survey — notified when new results publish (Thursdays)." },
+    { key: "cot_positioning", name: "COT Positioning", desc: "Weekly futures positioning — notified when new CFTC data publishes (Fridays)." },
+    { key: "volatility_divergence", name: "Volatility Divergence", desc: "VIX vs MOVE divergence — notified on significant regime shifts." },
+    { key: "alligator_jaw", name: "Alligator Jaw", desc: "S&P 500 vs forward EPS — notified when the jaw opens or closes." },
+    { key: "credit_spreads", name: "Credit Spreads vs VIX", desc: "Credit stress vs equity fear — notified on divergence extremes." },
+    { key: "market_breadth", name: "Market Breadth", desc: "Breadth monitor — notified on significant breadth deterioration/improvement." },
+    { key: "theme_rotation", name: "Theme Rotation", desc: "Sector rotation — notified when leadership rotates." },
+    { key: "small_midcap", name: "Small/Mid Cap Monitor", desc: "Small/mid-cap trend — notified on trend changes vs 200-day MA." },
+    { key: "rsi_cyclical_defensive", name: "RSI: Cyclicals vs Defensives", desc: "Risk-on/risk-off momentum — notified on overbought/oversold extremes." },
+    { key: "gex", name: "Gamma Exposure (GEX)", desc: "Dealer positioning — notified on volatility regime shifts." },
+    { key: "volatility_skew", name: "Volatility Skew", desc: "Put/call skew — notified on significant fear spikes." },
+    { key: "macro_analysis", name: "Macroeconomic Analysis", desc: "CPI, PPI, retail sales, PMI, energy — notified when new reports are released." },
+  ];
+
+  route("alerts", function () {
+    if (!isPro()) {
+      app.innerHTML = '<div class="section"><div class="section-title">Email Alerts</div>' +
+        '<div class="card"><h3>Pro Feature</h3><p>Email alerts for market internals monitors are available to Pro subscribers.</p>' +
+        '<button class="btn-gold" onclick="document.getElementById(\'pro-btn\').click()">Go Pro</button></div></div>';
+      return;
+    }
+
+    let h = '<div class="crumb">PRO · EMAIL ALERTS</div>';
+    h += '<div class="hero"><div>' +
+      '<h1 class="hero-h">Market Alerts.</h1>' +
+      "<p class='hero-sub'>Get notified when the monitors you care about update. Toggle any tracker below.</p></div></div>";
+    h += '<div class="section"><div class="section-title">Your Alert Subscriptions</div>' +
+      '<div class="section-sub">We\'ll email you at ' + esc(authUser ? authUser.email : "") + ' when these update.</div>' +
+      '<div id="alerts-list" style="display:flex;flex-direction:column;gap:12px;">' +
+      '<p style="color:#e8ecf1;">Loading your subscriptions...</p></div></div>';
+
+    app.innerHTML = h;
+
+    // Load current subscriptions and render toggles
+    loadAlertSubscriptions();
+  });
+
+  async function loadAlertSubscriptions() {
+    const listEl = document.getElementById("alerts-list");
+    if (!listEl || !authUser) return;
+
+    try {
+      const { data, error } = await supa
+        .from("alert_subscriptions")
+        .select("tracker_key, is_active")
+        .eq("user_id", authUser.id)
+        .eq("subscription_type", "tracker");
+
+      if (error) throw error;
+
+      const activeMap = {};
+      (data || []).forEach((s) => { activeMap[s.tracker_key] = s.is_active; });
+
+      listEl.innerHTML = ALERT_TRACKERS.map((t) => {
+        const isOn = activeMap[t.key] === true;
+        return '<div style="background:#161b26;border-radius:10px;padding:16px;display:flex;align-items:center;gap:16px;">' +
+          '<div style="flex:1;">' +
+          '<div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;">' + esc(t.name) + "</div>" +
+          '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;">' + esc(t.desc) + "</div></div>" +
+          '<label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer;flex-shrink:0;">' +
+          '<input type="checkbox" data-tracker="' + t.key + '" ' + (isOn ? "checked" : "") +
+          ' style="opacity:0;width:0;height:0;" class="alert-toggle">' +
+          '<span style="position:absolute;top:0;left:0;right:0;bottom:0;background:' + (isOn ? "#3fb950" : "#2a2f3a") +
+          ';border-radius:28px;transition:0.2s;"></span>' +
+          '<span style="position:absolute;top:3px;left:' + (isOn ? "27px" : "3px") + ';width:22px;height:22px;background:#fff;' +
+          'border-radius:50%;transition:0.2s;"></span>' +
+          "</label></div>";
+      }).join("");
+
+      // Attach toggle handlers
+      listEl.querySelectorAll(".alert-toggle").forEach((toggle) => {
+        toggle.addEventListener("change", async (e) => {
+          const trackerKey = e.target.dataset.tracker;
+          const isActive = e.target.checked;
+          await saveAlertSubscription(trackerKey, isActive);
+          // Update visual
+          const slider = e.target.nextElementSibling;
+          const knob = slider.nextElementSibling;
+          if (slider) slider.style.background = isActive ? "#3fb950" : "#2a2f3a";
+          if (knob) knob.style.left = isActive ? "27px" : "3px";
+        });
+      });
+    } catch (err) {
+      console.error("Failed to load subscriptions:", err);
+      listEl.innerHTML = '<p style="color:#f85149;">Failed to load subscriptions. Please try again.</p>';
+    }
+  }
+
+  async function saveAlertSubscription(trackerKey, isActive) {
+    if (!authUser) return;
+    try {
+      // Upsert: update if exists, insert if not
+      const { data: existing } = await supa
+        .from("alert_subscriptions")
+        .select("id")
+        .eq("user_id", authUser.id)
+        .eq("subscription_type", "tracker")
+        .eq("tracker_key", trackerKey)
+        .single();
+
+      if (existing) {
+        await supa
+          .from("alert_subscriptions")
+          .update({ is_active: isActive })
+          .eq("id", existing.id);
+      } else {
+        await supa
+          .from("alert_subscriptions")
+          .insert({
+            user_id: authUser.id,
+            subscription_type: "tracker",
+            tracker_key: trackerKey,
+            is_active: isActive,
+          });
+      }
+    } catch (err) {
+      console.error("Failed to save subscription:", err);
+    }
+  }
+
   /* ================= TICKER ================= */
   let fcfChart = null, priceChart = null, sandboxChart = null;
 
