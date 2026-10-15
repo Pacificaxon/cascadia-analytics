@@ -924,8 +924,10 @@
     });
     // render custom candlestick charts after DOM insert (TradingView-style dark theme)
     setTimeout(() => {
+      console.log("[MA] chartCfgs:", chartCfgs.length, "ohlcv len:", ohlcv.length);
       chartCfgs.forEach(({ cid, tf }) => {
         const cv = document.getElementById(cid);
+        console.log("[MA] rendering", cid, "canvas found:", !!cv);
         if (!cv || !ohlcv.length) return;
         try {
           let bars = ohlcv.map((r) => ({ t: r[0], o: r[1], h: r[2], l: r[3], c: r[4], v: r[5] || 0 }));
