@@ -277,7 +277,7 @@
       '<div class="modal-back" id="mb"><div class="modal">' +
       '<div class="modal-logo"><img src="logo-icon.png" alt="Cascadia Analytics"></div>' +
       "<h3>Cascadia Analytics Pro</h3>" +
-      "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, Cascadia Scores, screener, exports, earnings history, and client notes. $19/month.</p>" +
+      "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, seasonality, Cascadia Scores, screener, exports, earnings history, and client notes. $19/month.</p>" +
       statusLine +
       (isPro()
         ? '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-bottom:8px;text-decoration:none;">Manage subscription</a>' +
@@ -563,8 +563,10 @@
     h += gated("Moving Averages — Pro", "Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.", maHtml(tk));
     h += "</div>";
 
-    // Seasonality (free) - average monthly returns from price history
-    h += '<div class="section"><div class="section-title">Seasonality</div>' + seasonalityHtml(tk) + "</div>";
+    // Seasonality (Pro) - average monthly returns from price history
+    h += '<div class="section"><div class="section-title">Seasonality</div>';
+    h += gated("Seasonality — Pro", "Average monthly returns by calendar month, computed from price history.", seasonalityHtml(tk));
+    h += "</div>";
 
     // Options flow (Pro)
     h += '<div class="section"><div class="section-title">Unusual Options Flow</div>';
