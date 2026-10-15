@@ -21,6 +21,22 @@
  };
  const fmtPct = (n, d) => (n == null || isNaN(n)) ? " - " : (n >= 0 ? "+" : "") + Number(n).toFixed(d != null ? d : 1) + "%";
  const cls = (n) => (n == null || isNaN(n)) ? "" : (n >= 0 ? "pos" : "neg");
+ // Daily % change from price history (last two closes), as of the daily refresh
+ const dailyChg = (t) => {
+  try {
+   const h = t.history;
+   if (!h || h.length < 2) return null;
+   const last = h[h.length - 1][1];
+   const prev = h[h.length - 2][1];
+   if (!last || !prev) return null;
+   return ((last / prev) - 1) * 100;
+  } catch (e) { return null; }
+ };
+ // Timestamp of the daily refresh (from price_date, with time if available)
+ const refreshTs = (t) => {
+  const d = t.price_date || t.as_of || "";
+  return d;
+ };
  // Upside color: red for downside, yellow for 0-10% (hold), green for >10%
  const upsideCls = (n) => {
   if (n == null || isNaN(n)) return "";
@@ -1030,14 +1046,16 @@
 
   // coverage table
   h += '<div class="section" id="coverage-sec"><div class="section-title">Coverage</div>' +
-   '<div class="section-sub">' + ORDER.length + " names · click a row for full research</div>" +
+   '<div class="section-sub">' + ORDER.length + " names · click a row for full research · prices as of " + esc(refreshTs(TICKERS[ORDER[0]])) + "</div>" +
    '<div class="table-wrap"><table class="coverage"><thead><tr>' +
-   "<th>Ticker</th><th>Price</th><th>Bear</th><th>Base</th><th>Bull</th><th>Blended</th><th>Upside</th><th>Rating</th>" +
+   "<th>Ticker</th><th>Price</th><th>Day %</th><th>Bear</th><th>Base</th><th>Bull</th><th>Blended</th><th>Upside</th><th>Rating</th>" +
    "</tr></thead><tbody>";
   h += ORDER.map((tk) => {
    const t = TICKERS[tk];
+   const dc = dailyChg(t);
    return '<tr data-tk="' + esc(tk) + '"><td><a href="#/ticker/' + esc(tk) + '" class="ticker-cell" style="text-decoration:none;">' + esc(tk) + "</a></td>" +
-    "<td>" + fmt$(t.price) + "</td><td>" + fmt$(t.bear, 0) + "</td><td>" + fmt$(t.base, 0) +
+    "<td>" + fmt$(t.price) + "</td>" +
+    '<td class="' + cls(dc) + '">' + fmtPct(dc) + "</td><td>" + fmt$(t.bear, 0) + "</td><td>" + fmt$(t.base, 0) +
     "</td><td>" + fmt$(t.bull, 0) + "</td><td>" + fmt$(t.blended, 0) + "</td>" +
     '<td class="' + upsideCls(t.upside_base) + '">' + fmtPct(t.upside_base) + "</td>" +
     '<td class="' + ratingCls(t.rating) + '">' + esc(t.rating || " - ") + "</td></tr>";
@@ -3079,7 +3097,8 @@
   if (score != null && isPro()) h += ' <span class="score-badge ' + scoreClass(score) + '" title="' + esc(scoreTooltip(t)) + '">' + score + "</span>";
   h += "</div>";
   h += '<div class="price-line"><span class="price-big">' + fmt$(t.price) + "</span>" +
-   '<span class="price-date">AS OF ' + esc(t.price_date || "") + "</span>" +
+   '<span class="' + cls(dailyChg(t)) + '" style="font-size:15px;font-weight:600;">' + fmtPct(dailyChg(t)) + "</span>" +
+   '<span class="price-date">AS OF ' + esc(refreshTs(t)) + "</span>" +
    '<span class="' + ratingCls(t.rating) + '">' + esc(t.rating || "") + "</span></div>";
 
   // target cards
