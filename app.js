@@ -511,43 +511,55 @@
     /* ---------- Macroeconomic Analysis HTML (Pro-gated) ---------- */
     function macroAnalysisHtml(d) {
       const hist = d.history || [];
+      const first = hist[0] || {};
       const latest = hist[hist.length - 1] || {};
-      // Latest readings
-      const cpi = latest.cpi_yoy, ppi = latest.ppi_yoy,
-            retail = latest.retail_mom, pmi = latest.pmi;
-      const pmiColor = pmi >= 50 ? "#3fb950" : "#f85149";
-      const pmiLabel = pmi >= 50 ? "Expansion" : "Contraction";
-      // Trend: CPI direction over last 3 months
-      const cpiTrend = hist.length >= 3 ?
-        (hist[hist.length-1].cpi_yoy < hist[hist.length-3].cpi_yoy ? "cooling" : "heating") : "";
-      return '<div class="card" style="margin-bottom:12px;"><h3>Macro Dashboard</h3>' +
-        '<div class="zoomable-chart" data-chart="macro" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="macro-chart"></canvas>' +
+      // Metric cards (Jan print values from first data point)
+      const metrics = [
+        { key: "pmi", label: "Manufacturing PMI", value: first.pmi != null ? first.pmi.toFixed(1) : "—",
+          tag: "Leading", color: "#a3e635", raw: first.pmi },
+        { key: "ppi_yoy", label: "PPI (Producer Price)", value: first.ppi_yoy != null ? "+" + first.ppi_yoy.toFixed(1) + "%" : "—",
+          tag: "Leading", color: "#a5b4fc", raw: first.ppi_yoy },
+        { key: "retail_mom", label: "Retail Sales", value: first.retail_mom != null ? first.retail_mom.toFixed(1) + "%" : "—",
+          tag: "Coincident", color: "#22c55e", raw: first.retail_mom },
+        { key: "cpi_yoy", label: "CPI (Consumer Price)", value: first.cpi_yoy != null ? "+" + first.cpi_yoy.toFixed(1) + "%" : "—",
+          tag: "Lagging", color: "#7dd3fc", raw: first.cpi_yoy },
+      ];
+      const cardsHtml = metrics.map((m) =>
+        '<div style="background:#161b26;border-radius:10px;padding:14px;flex:1;min-width:140px;">' +
+        '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#e8ecf1;">' + esc(m.label) +
+        '<span style="width:8px;height:8px;border-radius:50%;background:' + m.color + ';display:inline-block;"></span></div>' +
+        '<div style="font-size:22px;font-weight:700;color:#fff;margin:4px 0;">' + m.value + "</div>" +
+        '<div style="font-size:11px;color:#e8ecf1;opacity:0.6;">Jan Print • ' + m.tag + "</div></div>"
+      ).join("");
+      // Toggle pills
+      const pillsHtml = metrics.map((m, i) =>
+        '<button data-macro-idx="' + i + '" style="display:inline-flex;align-items:center;gap:8px;background:#1e3a5f;border:1px solid #2a4a73;color:#e8ecf1;' +
+        'border-radius:20px;padding:8px 16px;margin:4px;font-size:13px;cursor:pointer;">' +
+        '<span style="width:22px;height:22px;border-radius:50%;background:' + m.color + ';display:inline-block;"></span>' +
+        esc(m.label) + "</button>"
+      ).join("");
+      return '<div style="margin-bottom:12px;">' +
+        '<h2 style="color:#fff;font-size:20px;margin:0 0 4px;">Economic Trends & Macro Indicators</h2>' +
+        '<p style="color:#e8ecf1;opacity:0.6;font-size:13px;margin:0 0 16px;">Compare trends across CPI, PPI, Retail Sales & PMI to detect leading vs. lagging signals.</p>' +
+        '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' + cardsHtml + "</div>" +
+        '<div style="background:#161b26;border-radius:12px;padding:20px;">' +
+        '<div style="font-size:13px;color:#e8ecf1;margin-bottom:8px;">Metrics</div>' +
+        '<div style="margin-bottom:16px;">' + pillsHtml + "</div>" +
+        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
+        '<span style="font-size:13px;color:#e8ecf1;">Scaling Mode</span>' +
+        '<div style="margin-left:auto;display:flex;background:#0f1420;border-radius:20px;padding:3px;">' +
+        '<button id="macro-norm-btn" style="background:#1e3a5f;color:#fff;border:0;border-radius:17px;padding:6px 16px;font-size:12px;cursor:pointer;">Normalized (0–100%)</button>' +
+        '<button id="macro-raw-btn" style="background:transparent;color:#e8ecf1;opacity:0.6;border:0;border-radius:17px;padding:6px 16px;font-size:12px;cursor:pointer;">Raw Prints</button>' +
+        "</div></div>" +
+        '<div class="zoomable-chart" data-chart="macro" style="position:relative;height:320px;cursor:zoom-in;" title="Click to zoom"><canvas id="macro-chart"></canvas>' +
         '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-        '<div><div style="font-size:11px;color:#e8ecf1;">CPI (YoY)</div>' +
-        '<div style="font-size:20px;font-weight:700;color:#f85149;">' + (cpi != null ? cpi.toFixed(1) + "%" : "—") + "</div>" +
-        '<div style="font-size:11px;color:#e8ecf1;opacity:0.7;">' + (cpiTrend ? "Trend: " + cpiTrend : "") + "</div></div>" +
-        '<div><div style="font-size:11px;color:#e8ecf1;">PPI (YoY)</div>' +
-        '<div style="font-size:20px;font-weight:700;color:#ff9800;">' + (ppi != null ? ppi.toFixed(1) + "%" : "—") + "</div></div>" +
-        '<div><div style="font-size:11px;color:#e8ecf1;">Retail Sales (MoM)</div>' +
-        '<div style="font-size:20px;font-weight:700;color:#3fb950;">' + (retail != null ? (retail >= 0 ? "+" : "") + retail.toFixed(1) + "%" : "—") + "</div></div>" +
-        '<div><div style="font-size:11px;color:#e8ecf1;">PMI</div>' +
-        '<div style="font-size:20px;font-weight:700;color:' + pmiColor + ';">' + (pmi != null ? pmi.toFixed(1) : "—") + "</div>" +
-        '<div style="font-size:11px;color:' + pmiColor + ';">' + pmiLabel + "</div></div>" +
+        '<div id="macro-legend" style="display:flex;justify-content:center;gap:20px;margin-top:12px;flex-wrap:wrap;"></div>' +
         "</div>" +
-        '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
-        "<p><b>What am I looking at?</b> Four key macro indicators: <b style='color:#f85149'>CPI</b> (consumer inflation), " +
-        "<b style='color:#ff9800'>PPI</b> (wholesale prices, leads CPI), " +
-        "<b style='color:#3fb950'>Retail Sales</b> (consumer spending), and " +
-        "<b style='color:#c678dd'>PMI</b> (manufacturing activity — above 50 is expansion).</p>" +
-        "<p><b>How to read it.</b> Falling CPI + rising PPI = margin squeeze ahead. Strong retail + weak PMI = two-speed economy " +
-        "(consumers spending, factories contracting). PMI below 50 for months = industrial recession risk.</p>" +
-        "<p><b>Fed implications.</b> " +
-        (cpi != null && cpi > 3 ? "CPI above 3% keeps the Fed cautious on cuts. " :
-         cpi != null && cpi < 2.5 ? "CPI cooling toward target gives the Fed room to ease. " : "") +
-        (pmi != null && pmi < 48 ? "Deep PMI contraction may force the Fed's hand even if inflation is sticky." : "") + "</p>" +
-        "</div>" +
-        '<div class="panel-asof">As of ' + esc(d.as_of || "") + " · Source: " + esc(d.source || "BLS/Census/ISM") + "</div></div>";
+        '<div style="background:#161b26;border-radius:8px;padding:14px;margin-top:12px;">' +
+        '<span style="font-size:13px;font-weight:700;color:#fff;">Leading Signal: </span>' +
+        '<span style="font-size:13px;color:#e8ecf1;opacity:0.8;">Producer Price Inflation (PPI) peaked in June (2.6%) prior to the decelerating ' +
+        'Consumer Price Inflation (CPI) downward trend, illustrating the classical pipeline transmission lag.</span>' +
+        "</div></div>";
     }
 
     /* ---------- COT Positioning HTML (FREE) ---------- */
@@ -1393,7 +1405,7 @@
           });
         } catch (e) { console.error("COT chart error", e); }
       }
-      // Macroeconomic chart (Pro): CPI, PPI, Retail Sales, PMI
+      // Macroeconomic chart (Pro): matches "Economic Trends & Macro Indicators" design
       const macroCv = document.getElementById("macro-chart");
       const macroD = D.macro_indicators;
       if (macroCv && macroD && (macroD.history || []).length) {
@@ -1403,31 +1415,103 @@
             const [y, m] = r.month.split("-");
             return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][parseInt(m)-1];
           });
-          new Chart(macroCv, {
+          // Series config matching screenshot colors
+          const series = [
+            { key: "pmi", label: "Manufacturing PMI", color: "#a3e635" },
+            { key: "ppi_yoy", label: "PPI (Producer Price)", color: "#a5b4fc" },
+            { key: "retail_mom", label: "Retail Sales", color: "#22c55e" },
+            { key: "cpi_yoy", label: "CPI (Consumer Price)", color: "#7dd3fc" },
+          ];
+          // Normalize each series to 0-100% based on its min/max
+          const normalize = (vals) => {
+            const nums = vals.filter((v) => v != null);
+            if (!nums.length) return vals;
+            const mn = Math.min(...nums), mx = Math.max(...nums);
+            const range = mx - mn || 1;
+            return vals.map((v) => v == null ? null : ((v - mn) / range) * 100);
+          };
+          let normalizedMode = true;
+          const buildDatasets = () => series.map((s) => {
+            const raw = hist.map((r) => r[s.key]);
+            return {
+              label: s.label,
+              data: normalizedMode ? normalize(raw) : raw,
+              borderColor: s.color,
+              backgroundColor: s.color,
+              borderWidth: 2, pointRadius: 3, pointBackgroundColor: s.color,
+              tension: 0.3,
+            };
+          });
+          const chart = new Chart(macroCv, {
             type: "line",
-            data: { labels: labels, datasets: [
-              { label: "CPI (YoY %)", data: hist.map((r) => r.cpi_yoy), borderColor: "#f85149", backgroundColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "y" },
-              { label: "PPI (YoY %)", data: hist.map((r) => r.ppi_yoy), borderColor: "#ff9800", backgroundColor: "#ff9800", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "y" },
-              { label: "Retail Sales (MoM %)", data: hist.map((r) => r.retail_mom), borderColor: "#3fb950", backgroundColor: "#3fb950", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "y" },
-              { label: "PMI (Index)", data: hist.map((r) => r.pmi), borderColor: "#c678dd", backgroundColor: "#c678dd", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "y1" },
-            ]},
+            data: { labels: labels, datasets: buildDatasets() },
             options: { responsive: true, maintainAspectRatio: false,
               interaction: { mode: "index", intersect: false },
               plugins: {
-                legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 }, usePointStyle: true, padding: 20 } },
+                legend: { display: false },
                 tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-                  titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 }
+                  titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+                  callbacks: {
+                    label: (c) => {
+                      if (normalizedMode) return "  " + c.dataset.label + ": " + c.parsed.y.toFixed(0) + "%";
+                      const s = series[c.datasetIndex];
+                      const raw = hist[c.dataIndex][s.key];
+                      return "  " + c.dataset.label + ": " + (raw != null ? raw.toFixed(1) : "—") +
+                        (s.key === "pmi" ? "" : "%");
+                    }
+                  } }
               },
               scales: {
                 x: { ticks: { color: "#e8ecf1", maxTicksLimit: 9, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                y: { type: "linear", display: true, position: "left",
-                  ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
-                  title: { display: true, text: "Percentage (%)", color: "#e8ecf1", font: { size: 11 } } },
-                y1: { type: "linear", display: true, position: "right",
-                  ticks: { color: "#e8ecf1" }, grid: { drawOnChartArea: false },
-                  title: { display: true, text: "PMI (< 50 contraction)", color: "#e8ecf1", font: { size: 11 } } }
+                y: normalizedMode
+                  ? { min: -50, max: 150, ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
+                  : { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" } },
               } }
           });
+          // Bottom legend
+          const legendEl = document.getElementById("macro-legend");
+          if (legendEl) {
+            legendEl.innerHTML = series.map((s) =>
+              '<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#e8ecf1;">' +
+              '<span style="width:14px;height:14px;border-radius:50%;background:' + s.color + ';display:inline-block;"></span>' +
+              esc(s.label) + "</span>"
+            ).join("");
+          }
+          // Scaling toggle
+          const normBtn = document.getElementById("macro-norm-btn");
+          const rawBtn = document.getElementById("macro-raw-btn");
+          const setMode = (norm) => {
+            normalizedMode = norm;
+            chart.data.datasets = buildDatasets();
+            chart.options.scales.y = norm
+              ? { min: -50, max: 150, ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
+              : { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" } };
+            chart.update();
+            if (normBtn && rawBtn) {
+              normBtn.style.background = norm ? "#1e3a5f" : "transparent";
+              normBtn.style.opacity = norm ? "1" : "0.6";
+              rawBtn.style.background = norm ? "transparent" : "#1e3a5f";
+              rawBtn.style.opacity = norm ? "0.6" : "1";
+            }
+          };
+          if (normBtn) normBtn.addEventListener("click", (e) => { e.stopPropagation(); setMode(true); });
+          if (rawBtn) rawBtn.addEventListener("click", (e) => { e.stopPropagation(); setMode(false); });
+          // Metric pills toggle datasets
+          document.querySelectorAll("[data-macro-idx]").forEach((pill) => {
+            pill.addEventListener("click", (e) => {
+              e.stopPropagation();
+              const idx = parseInt(pill.dataset.macroIdx);
+              const meta = chart.getDatasetMeta(idx);
+              meta.hidden = meta.hidden === null ? !chart.data.datasets[idx].hidden : !meta.hidden;
+              chart.update();
+              pill.style.opacity = meta.hidden ? "0.4" : "1";
+            });
+          });
+          // Store chart for zoom handler
+          macroCv._chart = chart;
+          macroCv._series = series;
+          macroCv._hist = hist;
+          macroCv._labels = labels;
         } catch (e) { console.error("Macro chart error", e); }
       }
       // GEX index charts: price levels (spot vs zero gamma vs walls) as horizontal bar
@@ -1782,24 +1866,36 @@
                 const [y, m] = r.month.split("-");
                 return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][parseInt(m)-1] + " " + y.slice(2);
               });
+              const series = [
+                { key: "pmi", label: "Manufacturing PMI", color: "#a3e635" },
+                { key: "ppi_yoy", label: "PPI (Producer Price)", color: "#a5b4fc" },
+                { key: "retail_mom", label: "Retail Sales", color: "#22c55e" },
+                { key: "cpi_yoy", label: "CPI (Consumer Price)", color: "#7dd3fc" },
+              ];
+              const normalize = (vals) => {
+                const nums = vals.filter((v) => v != null);
+                if (!nums.length) return vals;
+                const mn = Math.min(...nums), mx = Math.max(...nums);
+                const range = mx - mn || 1;
+                return vals.map((v) => v == null ? null : ((v - mn) / range) * 100);
+              };
               new Chart(zc, {
                 type: "line",
-                data: { labels: labels, datasets: [
-                  { label: "CPI (YoY %)", data: hist.map((r) => r.cpi_yoy), borderColor: "#f85149", borderWidth: 2.5, pointRadius: 0, tension: 0.3, yAxisID: "y" },
-                  { label: "PPI (YoY %)", data: hist.map((r) => r.ppi_yoy), borderColor: "#ff9800", borderWidth: 2.5, pointRadius: 0, tension: 0.3, yAxisID: "y" },
-                  { label: "Retail Sales (MoM %)", data: hist.map((r) => r.retail_mom), borderColor: "#3fb950", borderWidth: 2.5, pointRadius: 0, tension: 0.3, yAxisID: "y" },
-                  { label: "PMI (Index)", data: hist.map((r) => r.pmi), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.3, yAxisID: "y1" },
-                ]},
+                data: { labels: labels, datasets: series.map((s) => ({
+                  label: s.label,
+                  data: normalize(hist.map((r) => r[s.key])),
+                  borderColor: s.color, backgroundColor: s.color,
+                  borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: s.color, tension: 0.3,
+                }))},
                 options: { responsive: true, maintainAspectRatio: false,
                   interaction: { mode: "index", intersect: false },
-                  plugins: { legend: { labels: { color: "#c8d0dc", usePointStyle: true } },
-                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+                  plugins: { legend: { labels: { color: "#c8d0dc", usePointStyle: true, padding: 20 } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+                      callbacks: { label: (c) => "  " + c.dataset.label + ": " + c.parsed.y.toFixed(0) + "% (normalized)" } } },
                   scales: {
                     x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                    y: { ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
-                      title: { display: true, text: "Percentage (%)", color: "#e8ecf1" } },
-                    y1: { ticks: { color: "#e8ecf1" }, grid: { drawOnChartArea: false },
-                      title: { display: true, text: "PMI", color: "#e8ecf1" } } } }
+                    y: { min: -50, max: 150, ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+                      title: { display: true, text: "Normalized (0–100%)", color: "#e8ecf1" } } } }
               });
             }
           } catch (e) { console.error("Zoom chart error", e); }
