@@ -1003,6 +1003,27 @@
 
       if (/market breadth/.test(name) && D.breadth_history && (D.breadth_history.history || []).length) {
         const cur = D.breadth_history.history[D.breadth_history.history.length - 1];
+        // Small/mid-cap detail — the canary for breadth deterioration
+        let smcHtml = "";
+        const smc = D.small_midcap_history;
+        if (smc && (smc.history || []).length) {
+          const s = smc.history[smc.history.length - 1];
+          const rutBelow = s.rut_vs_200d < 0, midBelow = s.mid_vs_200d < 0;
+          const rutBear = s.rut_dd_52w <= -20, midBear = s.mid_dd_52w <= -20;
+          smcHtml = "<p><b>Small &amp; mid-caps: the breadth canary.</b> " +
+            "Russell 2000 sits <b>" + s.rut_vs_200d.toFixed(1) + "% " + (rutBelow ? "below" : "above") + "</b> its 200-day MA " +
+            "(" + s.rut_dd_52w.toFixed(1) + "% below its 52-week high)" +
+            (rutBear ? " — <b>in bear market territory</b>" : "") + ". " +
+            "S&amp;P 400 MidCap sits <b>" + s.mid_vs_200d.toFixed(1) + "% " + (midBelow ? "below" : "above") + "</b> its 200-day MA " +
+            "(" + s.mid_dd_52w.toFixed(1) + "% below its high)" +
+            (midBear ? " — <b>in bear market territory</b>" : "") + ". " +
+            (rutBelow && midBelow
+              ? "Both small and mid-caps have broken below their long-term trend lines — this is textbook breadth deterioration. When the broad market's foot soldiers are in technical downtrends while mega-caps hold the index up, the rally is running on fumes. "
+              : rutBelow || midBelow
+              ? "One of the two is below its 200-day — early warning that breadth is thinning beneath the surface. "
+              : "Both holding above their 200-day MAs — the broad market still has a healthy base. ") +
+            "Small-caps are the most rate-sensitive segment of the market (floating-rate debt, no pricing power). When CPI runs hot and Fed hike expectations surge, they break first — watch them as the leading indicator for whether breadth damage is spreading or healing.</p>";
+        }
         return wrap(
           "<p><b>What am I looking at?</b> This chart measures whether the <i>whole</i> market is participating in the rally, or just a handful of big stocks. " +
           "The blue line is the <b>breadth spread</b>: how far the median S&amp;P 500 stock sits below its 52-week high, minus how far the index itself sits below its high. " +
@@ -1022,7 +1043,8 @@
             ? "Breadth is extremely narrow — the index is masking broad weakness underneath. Rallies built this narrow have a poor track record of lasting."
             : cur.breadth_spread <= -5
             ? "Breadth is thinning — the rally is increasingly carried by fewer names. Worth watching, but not yet at the danger zone."
-            : "Participation looks reasonably broad. The advance has support beyond just the mega-caps.") + "</p>"
+            : "Participation looks reasonably broad. The advance has support beyond just the mega-caps.") + "</p>" +
+          smcHtml
         );
       }
 
