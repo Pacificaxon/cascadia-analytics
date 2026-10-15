@@ -285,7 +285,20 @@
    '<div class="pro-price">Cascadia Analytics Pro, $19/month. Cancel anytime.</div></div>';
  }
  function gated(title, desc, innerHtml) {
-  return isPro() ? innerHtml : proTeaser(title, desc);
+  if (!isPro()) return proTeaser(title, desc);
+  // If innerHtml generation threw, it would have been caught by caller;
+  // this handles the case where innerHtml is an error string
+  return innerHtml;
+ }
+ // Safe wrapper for Pro HTML that might throw during generation
+ function gatedSafe(title, desc, htmlFn) {
+  if (!isPro()) return proTeaser(title, desc);
+  try {
+   return htmlFn();
+  } catch (e) {
+   console.error("Pro section render failed:", title, e);
+   return '<div class="card"><p style="color:#f85149;">This section failed to load. Please refresh the page.</p></div>';
+  }
  }
 
  /* ---------- router ---------- */
@@ -2371,8 +2384,8 @@
   if (D.macro_indicators && (D.macro_indicators.history || []).length) {
    h += '<div class="section" id="macro-sec" style="max-width:none;"><div class="section-title">Macroeconomic Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     '<div class="section-sub">CPI, PPI, retail sales, and PMI, the macro backdrop driving Fed policy and market regimes. Updates as reports are released.</div>' +
-    gated("Macroeconomic Analysis", "CPI, PPI, retail sales, consumer health, and PMI, the macro forces moving markets.",
-     macroAnalysisHtml(D.macro_indicators)) +
+    gatedSafe("Macroeconomic Analysis", "CPI, PPI, retail sales, consumer health, and PMI, the macro forces moving markets.",
+     () => macroAnalysisHtml(D.macro_indicators)) +
     "</div>";
   }
 
