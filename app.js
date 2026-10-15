@@ -2828,6 +2828,13 @@
    h += "</div>";
   }
 
+  // Short Interest (Pro), FINRA biweekly data
+  h += '<div class="section"><div class="section-title">Short Interest <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("Short Interest, Pro",
+   "Biweekly short interest for " + tk + " from FINRA, red bars show shares short, white line shows days to cover.",
+   '<div id="short-interest-' + esc(tk) + '"></div>');
+  h += "</div>";
+
   // Macro takes (free)
   const takes = (D.ticker_macro || {})[tk] || [];
   if (takes.length) {
@@ -2878,6 +2885,13 @@
   if (isPro()) initSandbox(tk, t);
   wireEarningsTabs(tk);
   wireFinTabs(tk);
+  // Short interest chart (Pro), render after DOM insert
+  setTimeout(() => {
+   const siEl = document.getElementById("short-interest-" + tk);
+   if (siEl && typeof ShortInterestChart !== "undefined") {
+    ShortInterestChart.render(siEl, { ticker: tk, dataUrl: "ticker_short_interest.json" });
+   }
+  }, 100);
  });
 
  function reverseDcfHtml(t) {
