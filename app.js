@@ -465,6 +465,7 @@
   });
 
   route("monitor", function () {
+    const panels = D.panels || [];
     let h = '<div class="crumb">MARKET INTERNALS · VOLATILITY · MACRO</div>';
     h += '<div class="hero"><div>' +
       '<h1 class="hero-h">Market Internals.</h1>' +
