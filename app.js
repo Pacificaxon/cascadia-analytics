@@ -902,32 +902,22 @@
     const m = (D.ticker_ma || {})[tk];
     if (!m) return '<div class="card"><p style="color:var(--muted)">No moving-average data for this ticker.</p></div>';
     let h = "";
-    // TradingView symbol: handle special cases
-    const tvSym = tk === "RNMBY" ? "OTC:RNMBY" : tk === "RBRK" ? "NASDAQ:RBRK" : "NASDAQ:" + tk;
+    // TradingView iframe embeds (work with dynamic injection, unlike script embeds)
+    const tvSym = tk === "RNMBY" ? "OTC%3ARNMBY" : tk === "RBRK" ? "NASDAQ%3ARBRK" : "NASDAQ%3A" + tk;
     const intervals = { daily: "D", weekly: "W", monthly: "M" };
     ["daily", "weekly", "monthly"].forEach((tf) => {
       const d = m[tf];
       if (!d) return;
-      // TradingView embed with SMA overlays matching our SMA values (10, 20, 50, 200)
-      const widgetConfig = {
-        symbol: tvSym, interval: intervals[tf], theme: "dark", style: "1",
-        locale: "en", toolbar_bg: "#1a2332", enable_publishing: false,
-        hide_side_toolbar: false, allow_symbol_change: false,
-        studies: [
-          { id: "MA@tv-basicstudies", inputs: { length: 10 } },
-          { id: "MA@tv-basicstudies", inputs: { length: 20 } },
-          { id: "MA@tv-basicstudies", inputs: { length: 50 } },
-          { id: "MA@tv-basicstudies", inputs: { length: 200 } }
-        ],
-        container_id: "tv-" + tk + "-" + tf
-      };
+      // TV iframe with MA studies: symbol, interval, theme, studies
+      const tvUrl = "https://www.tradingview.com/widgetembed/?frameElementId=tradingview_" + tk + "_" + tf +
+        "&symbol=" + tvSym + "&interval=" + intervals[tf] + "&hidesidetoolbar=0&hidetoptoolbar=0" +
+        "&symboledit=0&saveimage=0&toolbarbg=1a2332&studies=%5B%7B%22id%22%3A%22MA%40tv-basicstudies%22%2C%22inputs%22%3A%7B%22length%22%3A10%7D%7D%2C%7B%22id%22%3A%22MA%40tv-basicstudies%22%2C%22inputs%22%3A%7B%22length%22%3A20%7D%7D%2C%7B%22id%22%3A%22MA%40tv-basicstudies%22%2C%22inputs%22%3A%7B%22length%22%3A50%7D%7D%2C%7B%22id%22%3A%22MA%40tv-basicstudies%22%2C%22inputs%22%3A%7B%22length%22%3A200%7D%7D%5D" +
+        "&theme=dark&style=1&timezone=America%2FLos_Angeles&withdateranges=0&showpopupbutton=0&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=en";
       h += '<div class="card"><h3 style="text-transform:capitalize">' + tf + ' <span class="verdict ' +
         (String(d.signal || "").toLowerCase().includes("buy") ? "bullish" : String(d.signal || "").toLowerCase().includes("sell") ? "bearish" : "neutral") +
         '">' + esc(d.signal || "") + "</span></h3>" +
-        '<div class="tradingview-widget-container" style="height:420px;width:100%;margin-bottom:12px;">' +
-        '<div id="tv-' + tk + '-' + tf + '" style="height:100%;width:100%;"></div>' +
-        '<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>' +
-        JSON.stringify(widgetConfig) + "</scr" + "ipt></div>" +
+        '<div style="height:420px;width:100%;margin-bottom:12px;">' +
+        '<iframe src="' + tvUrl + '" style="width:100%;height:100%;border:0;border-radius:8px;" allowtransparency="true" scrolling="no" allowfullscreen></iframe></div>' +
         '<div style="font-size:12px;color:#a8b0bc;margin-bottom:10px;">Overlays: <b style="color:#c8d0dc;">SMA 10</b> · <b style="color:#c8d0dc;">SMA 20</b> · <b style="color:#c8d0dc;">SMA 50</b> · <b style="color:#c8d0dc;">SMA 200</b> (simple moving averages)</div>' +
         '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
         ["10", "20", "30", "50", "100", "200"].map((p) =>
