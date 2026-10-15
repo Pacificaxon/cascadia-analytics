@@ -565,9 +565,9 @@
           new Chart(jc, {
             type: "line",
             data: { labels, datasets: [
-              { label: "S&P 500", data: prices, borderColor: "#58a6ff", borderWidth: 2,
+              { label: "S&P 500", data: prices, borderColor: "#ffd60a", borderWidth: 2,
                 pointRadius: 0, tension: 0.1, yAxisID: "y", order: 1 },
-              { label: "Forward 12m EPS", data: eps, borderColor: "#3fb950", borderWidth: 2,
+              { label: "Forward 12m EPS", data: eps, borderColor: "#00e676", borderWidth: 2,
                 pointRadius: 0, tension: 0.1, yAxisID: "y1", order: 1 },
             ]},
             options: { responsive: true, maintainAspectRatio: false,
@@ -588,10 +588,10 @@
               },
               scales: {
                 x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                y: { type: "linear", position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" },
-                  title: { display: true, text: "S&P 500", color: "#58a6ff", font: { size: 11 } } },
-                y1: { type: "linear", position: "right", ticks: { color: "#3fb950" }, grid: { display: false },
-                  title: { display: true, text: "Fwd EPS ($)", color: "#3fb950", font: { size: 11 } } }
+                y: { type: "linear", position: "left", ticks: { color: "#ffd60a" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "S&P 500", color: "#ffd60a", font: { size: 11 } } },
+                y1: { type: "linear", position: "right", ticks: { color: "#00e676" }, grid: { display: false },
+                  title: { display: true, text: "Fwd EPS ($)", color: "#00e676", font: { size: 11 } } }
               } }
           });
         } catch (e) { console.error("Jaw chart error", e); }
@@ -812,8 +812,8 @@
               new Chart(zc, {
                 type: "line",
                 data: { labels: hist.map((r) => r.date), datasets: [
-                  { label: "S&P 500", data: hist.map((r) => r.price), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
-                  { label: "Forward 12m EPS", data: hist.map((r) => r.forward_eps), borderColor: "#3fb950", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
+                  { label: "S&P 500", data: hist.map((r) => r.price), borderColor: "#ffd60a", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
+                  { label: "Forward 12m EPS", data: hist.map((r) => r.forward_eps), borderColor: "#00e676", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
                 ]},
                 options: { responsive: true, maintainAspectRatio: false,
                   interaction: { mode: "index", intersect: false },
@@ -821,8 +821,8 @@
                     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
                   scales: {
                     x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-                    y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "S&P 500", color: "#58a6ff" } },
-                    y1: { position: "right", ticks: { color: "#3fb950" }, grid: { display: false }, title: { display: true, text: "Fwd EPS ($)", color: "#3fb950" } } } }
+                    y: { position: "left", ticks: { color: "#ffd60a" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "S&P 500", color: "#ffd60a" } },
+                    y1: { position: "right", ticks: { color: "#00e676" }, grid: { display: false }, title: { display: true, text: "Fwd EPS ($)", color: "#00e676" } } } }
               });
             } else if (kind === "voldiv") {
               const hist = D.vol_div_history.history;
