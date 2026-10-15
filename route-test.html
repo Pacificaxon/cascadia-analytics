@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head><title>Route Test</title></head>
+<body>
+<div id="app"></div>
+<script>
+const routes = {};
+function route(path, fn) { routes[path] = fn; console.log("Registered:", path); }
+function currentRoute() {
+  const h = location.hash.replace(/^#\/?/, "");
+  const parts = h.split("/");
+  return { name: parts[0] || "home", param: decodeURIComponent(parts[1] || "") };
+}
+function render() {
+  const r = currentRoute();
+  console.log("Rendering:", r.name, r.param);
+  document.getElementById("app").innerHTML = "<h1>Route: " + r.name + "</h1><p>Param: " + r.param + "</p>";
+  if (r.name === "ticker" && routes.ticker) {
+    console.log("Calling ticker route");
+    routes.ticker(r.param);
+  } else if (routes[r.name]) {
+    routes[r.name]();
+  } else {
+    console.log("Fallback to home, routes.ticker exists:", !!routes.ticker);
+    routes.home();
+  }
+}
+
+route("home", () => { document.getElementById("app").innerHTML = "<h1>HOME</h1>"; });
+route("ticker", (tk) => { document.getElementById("app").innerHTML = "<h1>TICKER: " + tk + "</h1>"; });
+
+window.addEventListener("hashchange", render);
+render();
+
+// Test
+console.log("Routes registered:", Object.keys(routes));
+</script>
+</body>
+</html>
