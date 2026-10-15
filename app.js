@@ -1496,7 +1496,7 @@
   setTimeout(() => {
    const cv = document.getElementById("voldiv-chart");
    const vd = D.vol_div_history;
-   if (!cv || !vd || !(vd.history || []).length) return;
+   if (cv && vd && (vd.history || []).length) {
    try {
     const hist = vd.history;
     const labels = hist.map((r) => r.date);
@@ -1530,6 +1530,7 @@
       } }
     });
    } catch (e) { console.error("VolDiv chart error", e); }
+   } // end voldiv guard
    // Alligator Jaw interactive chart: price vs forward EPS (dual axis)
    const jc = document.getElementById("jaw-chart");
    const jh = D.jaw_history;
