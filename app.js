@@ -375,7 +375,7 @@
  function route(path, fn) { routes[path] = fn; }
  function nav(path) { location.hash = "#/" + path; }
  function currentRoute() {
-  const h = location.hash.replace(/^#\/?/, "");
+  const h = location.hash.replace(/^#\/?/, "").split("?")[0]; // Strip query params
   const parts = h.split("/");
   return { name: parts[0] || "home", param: decodeURIComponent(parts[1] || "") };
  }
