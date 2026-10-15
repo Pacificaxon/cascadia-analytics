@@ -434,6 +434,10 @@
     // market internals (Pro)
     h += '<div class="section" id="internals-sec"><div class="section-title">Market Internals</div>' +
       '<div class="section-sub">Breadth, valuation-vs-earnings, rotation, and credit signals.</div>';
+    // AAII Investor Sentiment — FREE, at the top
+    if (D.aaii_sentiment && D.aaii_sentiment.bullish != null) {
+      h += aaiiSentimentHtml(D.aaii_sentiment);
+    }
     h += gated("Market Internals — Pro",
       "Breadth monitor, Alligator Jaw, theme rotation, and credit-spread-vs-volatility trackers.",
       '<div class="grid-2">' + panels.map((p) => {
@@ -476,6 +480,57 @@
 
     /* ---------- tracker explainers (visual first, explanation after) ---------- */
     /* ---------- GEX tracker HTML (Pro-gated) ---------- */
+    /* ---------- AAII Sentiment HTML (FREE) ---------- */
+    function aaiiSentimentHtml(d) {
+      const b = d.bullish, n = d.neutral, br = d.bearish;
+      const spread = d.bull_bear_spread;
+      const spreadColor = spread >= 0 ? "#3fb950" : "#f85149";
+      const avg = d.historical_avg || {};
+      // Contrarian read
+      let contrarian;
+      if (br >= 45) {
+        contrarian = "<b style='color:#3fb950'>Contrarian bullish:</b> extreme fear often marks bottoms — the crowd is already positioned for a drop.";
+      } else if (b >= 50) {
+        contrarian = "<b style='color:#f85149'>Contrarian bearish:</b> extreme greed often marks tops — the crowd is all-in.";
+      } else if (Math.abs(spread) < 5) {
+        contrarian = "Bulls and bears are evenly split — no strong contrarian signal.";
+      } else if (spread > 0) {
+        contrarian = "Bulls outnumber bears — mild contrarian caution.";
+      } else {
+        contrarian = "Bears outnumber bulls — mild contrarian optimism.";
+      }
+      const chg = (v) => v != null ? ' <span style="font-size:11px;color:' + (v >= 0 ? "#3fb950" : "#f85149") + ';">(' + (v >= 0 ? "+" : "") + v.toFixed(1) + "pt)</span>" : "";
+      return '<div class="card" style="margin-bottom:16px;"><h3>AAII Investor Sentiment <span style="font-size:10px;background:#3fb950;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">FREE</span></h3>' +
+        '<div class="section-sub">Weekly survey of individual investors — are they bullish or bearish on stocks over the next 6 months?</div>' +
+        '<div class="zoomable-chart" data-chart="aaii" style="position:relative;height:220px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="aaii-chart"></canvas>' +
+        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;text-align:center;">' +
+        '<div><div style="font-size:11px;color:#787b86;">🐂 BULLISH</div>' +
+        '<div style="font-size:22px;font-weight:700;color:#3fb950;">' + b.toFixed(1) + "%" + "</div>" +
+        '<div style="font-size:11px;color:#787b86;">avg ' + (avg.bullish != null ? avg.bullish.toFixed(1) : "—") + "%" + chg(d.bullish_change) + "</div></div>" +
+        '<div><div style="font-size:11px;color:#787b86;">➖ NEUTRAL</div>' +
+        '<div style="font-size:22px;font-weight:700;color:#c8d0dc;">' + n.toFixed(1) + "%" + "</div>" +
+        '<div style="font-size:11px;color:#787b86;">avg ' + (avg.neutral != null ? avg.neutral.toFixed(1) : "—") + "%</div></div>" +
+        '<div><div style="font-size:11px;color:#787b86;">🐻 BEARISH</div>' +
+        '<div style="font-size:22px;font-weight:700;color:#f85149;">' + br.toFixed(1) + "%" + "</div>" +
+        '<div style="font-size:11px;color:#787b86;">avg ' + (avg.bearish != null ? avg.bearish.toFixed(1) : "—") + "%" + chg(d.bearish_change) + "</div></div>" +
+        "</div>" +
+        '<div style="text-align:center;margin:8px 0;">' +
+        '<span style="font-size:13px;color:#787b86;">Bull-Bear Spread: </span>' +
+        '<span style="font-size:16px;font-weight:700;color:' + spreadColor + ';">' + (spread >= 0 ? "+" : "") + spread.toFixed(1) + "%</span></div>" +
+        '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
+        "<p><b>What is this?</b> Every week, the American Association of Individual Investors asks its members: " +
+        "will stocks be higher, lower, or about the same in 6 months? It's a direct read on retail investor psychology.</p>" +
+        "<p><b>How to use it (contrarian).</b> " + contrarian + "</p>" +
+        "<p><b>Current read:</b> " + b.toFixed(1) + "% bullish vs " + br.toFixed(1) + "% bearish " +
+        "(historical avg: " + (avg.bullish || 37.5).toFixed(1) + "% / " + (avg.bearish || 31.5).toFixed(1) + "%). " +
+        (br > (avg.bearish || 31.5) ? "Bearish sentiment is running above average — the crowd is nervous." :
+         b > (avg.bullish || 37.5) ? "Bullish sentiment is running above average — the crowd is optimistic." :
+         "Sentiment is near historical norms.") + "</p>" +
+        "</div>" +
+        '<div class="panel-asof">Week ending ' + esc(d.week_ending || "") + " · Source: AAII Sentiment Survey</div></div>";
+    }
+
     /* ---------- Volatility Skew HTML (Pro-gated) ---------- */
     function skewTrackerHtml(skewData) {
       const indices = skewData.indices || {};
@@ -1129,6 +1184,35 @@
           });
         } catch (e) { console.error("RSICD chart error", e); }
       }
+      // AAII Sentiment chart (free): bullish/neutral/bearish over time
+      const aaiiCv = document.getElementById("aaii-chart");
+      const aaiiD = D.aaii_sentiment;
+      if (aaiiCv && aaiiD && (aaiiD.history || []).length) {
+        try {
+          const hist = aaiiD.history;
+          new Chart(aaiiCv, {
+            type: "line",
+            data: { labels: hist.map((r) => r.week_ending), datasets: [
+              { label: "Bullish %", data: hist.map((r) => r.bullish), borderColor: "#3fb950", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+              { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#c8d0dc", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+              { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+            ]},
+            options: { responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "index", intersect: false },
+              plugins: {
+                legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
+                tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+                  titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+                  callbacks: { label: (c) => "  " + c.dataset.label + ": " + c.parsed.y.toFixed(1) + "%" } }
+              },
+              scales: {
+                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { ticks: { color: "#787b86", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "Sentiment %", color: "#787b86", font: { size: 11 } } }
+              } }
+          });
+        } catch (e) { console.error("AAII chart error", e); }
+      }
       // GEX index charts: price levels (spot vs zero gamma vs walls) as horizontal bar
       if (D.gex_data && D.gex_data.indices) {
         ["QQQ", "SPY", "SPX"].forEach((sym) => {
@@ -1188,7 +1272,8 @@
             rsicd: "RSI: Cyclicals vs Defensives (XLY/XLP)",
             "gex-ticker": "Gamma Exposure — " + (el.dataset.ticker || ""),
             "skew-ticker": "Volatility Skew — " + (el.dataset.ticker || ""),
-            "gex-index": "Gamma Exposure — " + (el.dataset.symbol || "")
+            "gex-index": "Gamma Exposure — " + (el.dataset.symbol || ""),
+            aaii: "AAII Investor Sentiment"
           };
           // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
           if (kind === "gex-ticker") {
@@ -1432,6 +1517,25 @@
                     x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
                     y: { min: 0, max: 100, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
                       title: { display: true, text: "RSI", color: "#787b86" } } } }
+              });
+            } else if (kind === "aaii") {
+              const hist = (D.aaii_sentiment.history || []);
+              new Chart(zc, {
+                type: "line",
+                data: { labels: hist.map((r) => r.week_ending), datasets: [
+                  { label: "Bullish %", data: hist.map((r) => r.bullish), borderColor: "#3fb950", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+                  { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#c8d0dc", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+                  { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f85149", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+                ]},
+                options: { responsive: true, maintainAspectRatio: false,
+                  interaction: { mode: "index", intersect: false },
+                  plugins: { legend: { labels: { color: "#c8d0dc" } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+                      callbacks: { label: (c) => "  " + c.dataset.label + ": " + c.parsed.y.toFixed(1) + "%" } } },
+                  scales: {
+                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#787b86", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+                      title: { display: true, text: "Sentiment %", color: "#787b86" } } } }
               });
             }
           } catch (e) { console.error("Zoom chart error", e); }
