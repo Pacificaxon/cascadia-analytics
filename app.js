@@ -930,18 +930,40 @@
 
   function seasonalityHtml(tk) {
     const t = TICKERS[tk];
+    // prefer daily OHLCV for seasonality; fall back to monthly history
+    const ohlcv = (D.ticker_ohlcv || {})[tk] || [];
     const hist = (t && t.history) || [];
-    if (hist.length < 24) return '<div class="card"><p style="color:var(--muted)">Not enough price history for seasonality.</p></div>';
-    // history is monthly closes; compute MoM return for each point, group by calendar month
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     const rets = months.map(() => []);
-    const sorted = [...hist].sort((a, b) => a[0] - b[0]);
-    for (let i = 1; i < sorted.length; i++) {
-      const prev = sorted[i - 1][1], cur = sorted[i][1];
-      if (!prev || !cur) continue;
-      const r = (cur / prev - 1) * 100;
-      if (!isFinite(r) || Math.abs(r) > 50) continue;
-      rets[new Date(sorted[i][0]).getMonth()].push(r);
+    if (ohlcv.length >= 60) {
+      // daily data: compute full-month returns (first trading day -> last trading day of each month)
+      const byMonth = {};
+      ohlcv.forEach((r) => {
+        const d = new Date(r[0]), k = d.getFullYear() * 12 + d.getMonth();
+        if (!byMonth[k]) byMonth[k] = [];
+        byMonth[k].push(r);
+      });
+      Object.keys(byMonth).sort().forEach((k) => {
+        const days = byMonth[k];
+        if (days.length < 2) return;
+        const first = days[0][1], last = days[days.length - 1][4]; // open of first, close of last
+        if (!first || !last) return;
+        const r = (last / first - 1) * 100;
+        if (!isFinite(r) || Math.abs(r) > 60) return;
+        rets[new Date(days[0][0]).getMonth()].push(r);
+      });
+    } else if (hist.length >= 24) {
+      // fallback: monthly closes, MoM return per point
+      const sorted = [...hist].sort((a, b) => a[0] - b[0]);
+      for (let i = 1; i < sorted.length; i++) {
+        const prev = sorted[i - 1][1], cur = sorted[i][1];
+        if (!prev || !cur) continue;
+        const r = (cur / prev - 1) * 100;
+        if (!isFinite(r) || Math.abs(r) > 50) continue;
+        rets[new Date(sorted[i][0]).getMonth()].push(r);
+      }
+    } else {
+      return '<div class="card"><p style="color:var(--muted)">Not enough price history for seasonality.</p></div>';
     }
     const avg = (a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
     const avgs = rets.map(avg);
