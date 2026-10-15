@@ -2482,12 +2482,12 @@
      document.querySelector(".card").innerHTML = prev.html +
       '<div style="margin-top:20px;"><a href="javascript:void(0)" id="back-current" style="color:#58a6ff;">← Back to current report</a></div>';
      document.getElementById("back-current").addEventListener("click", () => render());
-     embedAnalysisVisuals();
+     setTimeout(embedAnalysisVisuals, 100);
     }
    });
   });
-  // Embed any visuals referenced in the report
-  embedAnalysisVisuals();
+  // Embed any visuals referenced in the report (deferred to ensure DOM is ready)
+  setTimeout(embedAnalysisVisuals, 100);
  });
 
  route("alerts", function () {
