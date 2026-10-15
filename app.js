@@ -560,7 +560,7 @@
 
     // Moving averages (Pro)
     h += '<div class="section"><div class="section-title">Moving Averages</div>';
-    h += gated("Moving Averages — Pro", "Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.", maHtml(tk));
+    h += '<div class="section-head"><h2>Moving Averages</h2><p>Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.</p></div>' + maHtml(tk);
     h += "</div>";
 
     // Seasonality (Pro) - average monthly returns from price history
