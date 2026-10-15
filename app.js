@@ -725,7 +725,9 @@
  function embedAnalysisVisuals() {
   // Use requestAnimationFrame to ensure DOM reflow completes on iOS WebKit
   // before querying for placeholders
-  requestAnimationFrame(() => {
+  requestAnimationFrame(async () => {
+   // Ensure Pro data is loaded before attempting to embed visuals
+   await ensureProData();
    let placeholders;
    try {
     // Query within the app container to avoid detached nodes from previous renders
