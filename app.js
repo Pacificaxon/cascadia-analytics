@@ -3760,11 +3760,17 @@
    const sentiment = String(p.sentiment || "").toLowerCase();
    const bull = sentiment === "bullish";
    const label = sentiment ? (bull ? "Bullish" : "Bearish") : " - ";
-   // Premium is in dollars; convert to millions for fmtM
-   const premM = p.premium != null ? p.premium / 1e6 : null;
+   // Premium is in dollars; format as $K/$M
+   const prem = p.premium;
+   let premTxt = " - ";
+   if (prem != null && !isNaN(prem)) {
+    if (prem >= 1e6) premTxt = "$" + (prem / 1e6).toFixed(1) + "M";
+    else if (prem >= 1e3) premTxt = "$" + Math.round(prem / 1e3) + "K";
+    else premTxt = "$" + Math.round(prem);
+   }
    return "<tr><td>" + esc(p.date || "") + "</td><td>" + esc(p.type || p.kind || "") + "</td><td>" +
     esc(p.strike || "") + "</td><td>" + esc(p.expiry || p.exp || "") + "</td><td>" +
-    fmtM(premM) + '</td><td class="' + (bull ? "pos" : "neg") + '">' + label + "</td></tr>";
+    premTxt + '</td><td class="' + (bull ? "pos" : "neg") + '">' + label + "</td></tr>";
   }).join("");
   return h + "</tbody></table></div></div>";
  }
