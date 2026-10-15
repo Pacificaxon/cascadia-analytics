@@ -450,6 +450,18 @@
         } else if (/alligator/i.test(p.name) && D.jaw_history && (D.jaw_history.history || []).length) {
           chartHtml = '<div class="zoomable-chart" data-chart="jaw" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="jaw-chart"></canvas>' +
             '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+        } else if (/theme rotation/i.test(p.name) && D.theme_rot_history && (D.theme_rot_history.history || []).length) {
+          chartHtml = '<div class="zoomable-chart" data-chart="themerot" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="themerot-chart"></canvas>' +
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+        } else if (/small.*mid|mid.*cap/i.test(p.name) && D.smcap_history && (D.smcap_history.history || []).length) {
+          chartHtml = '<div class="zoomable-chart" data-chart="smcap" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="smcap-chart"></canvas>' +
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+        } else if (/credit spread/i.test(p.name) && D.credit_vol_history && (D.credit_vol_history.history || []).length) {
+          chartHtml = '<div class="zoomable-chart" data-chart="creditvol" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="creditvol-chart"></canvas>' +
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+        } else if (/market breadth/i.test(p.name) && D.breadth_history && (D.breadth_history.history || []).length) {
+          chartHtml = '<div class="zoomable-chart" data-chart="breadth" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="breadth-chart"></canvas>' +
+            '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
         } else if (p.chart) {
           chartHtml = '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy">';
         }
@@ -541,12 +553,128 @@
           });
         } catch (e) { console.error("Jaw chart error", e); }
       }
+      // Theme Rotation interactive chart: scatter of themes (x = vs 70d avg, y = 20d momentum)
+      const trc = document.getElementById("themerot-chart");
+      const trh = D.theme_rot_history;
+      if (trc && trh && (trh.history || []).length) {
+        try {
+          const latest = trh.history[trh.history.length - 1];
+          const themes = latest.themes || {};
+          const qColors = { leading: "#3fb950", improving: "#58a6ff", weakening: "#d29922", lagging: "#f85149" };
+          const datasets = Object.entries(themes).map(([name, vals]) => ({
+            label: name,
+            data: [{ x: vals.x, y: vals.y }],
+            backgroundColor: qColors[vals.q] || "#787b86",
+            pointRadius: 7, pointHoverRadius: 10,
+          }));
+          new Chart(trc, {
+            type: "scatter",
+            data: { datasets },
+            options: { responsive: true, maintainAspectRatio: false,
+              plugins: {
+                legend: { labels: { color: "#c8d0dc", boxWidth: 12, font: { size: 10 } } },
+                tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+                  titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+                  callbacks: {
+                    label: (c) => "  " + c.dataset.label + ": (" + c.parsed.x.toFixed(1) + "%, " + c.parsed.y.toFixed(1) + "%)"
+                  } }
+              },
+              scales: {
+                x: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "vs 70d avg (%))", color: "#787b86", font: { size: 11 } } },
+                y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "20d momentum (%)", color: "#787b86", font: { size: 11 } } }
+              } }
+          });
+        } catch (e) { console.error("ThemeRot chart error", e); }
+      }
+      // Small/Mid Cap interactive chart: vs 200d MA over time
+      const smc = document.getElementById("smcap-chart");
+      const smh = D.smcap_history;
+      if (smc && smh && (smh.history || []).length) {
+        try {
+          const hist = smh.history;
+          new Chart(smc, {
+            type: "line",
+            data: { labels: hist.map((r) => r.date), datasets: [
+              { label: "RUT vs 200d (%)", data: hist.map((r) => r.rut_vs_200d), borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+              { label: "MID vs 200d (%)", data: hist.map((r) => r.mid_vs_200d), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+            ]},
+            options: { responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "index", intersect: false },
+              plugins: {
+                legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
+                tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+                  titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 }
+              },
+              scales: {
+                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { ticks: { color: "#787b86", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
+              } }
+          });
+        } catch (e) { console.error("SmCap chart error", e); }
+      }
+      // Credit Spreads vs VIX interactive chart
+      const cvc = document.getElementById("creditvol-chart");
+      const cvh = D.credit_vol_history;
+      if (cvc && cvh && (cvh.history || []).length) {
+        try {
+          const hist = cvh.history;
+          new Chart(cvc, {
+            type: "line",
+            data: { labels: hist.map((r) => r.date), datasets: [
+              { label: "Spread − VIX z-diff", data: hist.map((r) => r.diff), borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
+              { label: "Spread z", data: hist.map((r) => r.spread_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+              { label: "VIX z", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+            ]},
+            options: { responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "index", intersect: false },
+              plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
+                tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 } },
+              scales: {
+                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#787b86", font: { size: 11 } } } } }
+          });
+        } catch (e) { console.error("CreditVol chart error", e); }
+      }
+      // Market Breadth interactive chart
+      const brc = document.getElementById("breadth-chart");
+      const brh = D.breadth_history;
+      if (brc && brh && (brh.history || []).length) {
+        try {
+          const hist = brh.history;
+          new Chart(brc, {
+            type: "line",
+            data: { labels: hist.map((r) => r.date), datasets: [
+              { label: "Breadth spread (pp)", data: hist.map((r) => r.breadth_spread), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
+              { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#3fb950", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+              { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+            ]},
+            options: { responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "index", intersect: false },
+              plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
+                tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 } },
+              scales: {
+                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y1: { position: "right", ticks: { color: "#787b86", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
+          });
+        } catch (e) { console.error("Breadth chart error", e); }
+      }
       // Click/tap to zoom: open modal with larger chart
       document.querySelectorAll(".zoomable-chart").forEach((el) => {
         if (el.dataset.zoomBound) return;
         el.dataset.zoomBound = "1";
         el.addEventListener("click", () => {
           const kind = el.dataset.chart;
+          const titles = {
+            jaw: "Alligator Jaw — S&P 500 vs Forward EPS",
+            voldiv: "Volatility Divergence — VIX vs MOVE",
+            themerot: "Theme Rotation — RS Quadrant",
+            smcap: "Small/Mid Cap — vs 200-Day MA",
+            creditvol: "Credit Spreads vs VIX",
+            breadth: "Market Breadth"
+          };
           // build modal
           let modal = document.getElementById("chart-zoom-modal");
           if (modal) modal.remove();
@@ -555,7 +683,7 @@
           modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
           modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:20px;width:100%;max-width:1000px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
             '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-            '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (kind === "jaw" ? "Alligator Jaw — S&P 500 vs Forward EPS" : "Volatility Divergence — VIX vs MOVE") + '</div>' +
+            '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (titles[kind] || "Chart") + '</div>' +
             '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
             '<div style="position:relative;flex:1;min-height:400px;"><canvas id="zoom-chart"></canvas></div></div>';
           document.body.appendChild(modal);
@@ -582,7 +710,7 @@
                     y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "S&P 500", color: "#58a6ff" } },
                     y1: { position: "right", ticks: { color: "#3fb950" }, grid: { display: false }, title: { display: true, text: "Fwd EPS ($)", color: "#3fb950" } } } }
               });
-            } else {
+            } else if (kind === "voldiv") {
               const hist = D.vol_div_history.history;
               new Chart(zc, {
                 type: "line",
@@ -598,6 +726,75 @@
                   scales: {
                     x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
                     y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#787b86" } } } }
+              });
+            } else if (kind === "themerot") {
+              const trh = D.theme_rot_history;
+              const latest = trh.history[trh.history.length - 1];
+              const themes = latest.themes || {};
+              const qColors = { leading: "#3fb950", improving: "#58a6ff", weakening: "#d29922", lagging: "#f85149" };
+              new Chart(zc, {
+                type: "scatter",
+                data: { datasets: Object.entries(themes).map(([name, vals]) => ({
+                  label: name, data: [{ x: vals.x, y: vals.y }],
+                  backgroundColor: qColors[vals.q] || "#787b86", pointRadius: 9, pointHoverRadius: 12,
+                }))},
+                options: { responsive: true, maintainAspectRatio: false,
+                  plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+                  scales: {
+                    x: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "vs 70d avg (%)", color: "#787b86" } },
+                    y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "20d momentum (%)", color: "#787b86" } } } }
+              });
+            } else if (kind === "smcap") {
+              const hist = D.smcap_history.history;
+              new Chart(zc, {
+                type: "line",
+                data: { labels: hist.map((r) => r.date), datasets: [
+                  { label: "RUT vs 200d (%)", data: hist.map((r) => r.rut_vs_200d), borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+                  { label: "MID vs 200d (%)", data: hist.map((r) => r.mid_vs_200d), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+                ]},
+                options: { responsive: true, maintainAspectRatio: false,
+                  interaction: { mode: "index", intersect: false },
+                  plugins: { legend: { labels: { color: "#c8d0dc" } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+                  scales: {
+                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#787b86", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
+              });
+            } else if (kind === "creditvol") {
+              const hist = D.credit_vol_history.history;
+              new Chart(zc, {
+                type: "line",
+                data: { labels: hist.map((r) => r.date), datasets: [
+                  { label: "Spread − VIX z-diff", data: hist.map((r) => r.diff), borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
+                  { label: "Spread z", data: hist.map((r) => r.spread_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+                  { label: "VIX z", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+                ]},
+                options: { responsive: true, maintainAspectRatio: false,
+                  interaction: { mode: "index", intersect: false },
+                  plugins: { legend: { labels: { color: "#c8d0dc" } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+                  scales: {
+                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#787b86" } } } }
+              });
+            } else if (kind === "breadth") {
+              const hist = D.breadth_history.history;
+              new Chart(zc, {
+                type: "line",
+                data: { labels: hist.map((r) => r.date), datasets: [
+                  { label: "Breadth spread (pp)", data: hist.map((r) => r.breadth_spread), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
+                  { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#3fb950", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+                  { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+                ]},
+                options: { responsive: true, maintainAspectRatio: false,
+                  interaction: { mode: "index", intersect: false },
+                  plugins: { legend: { labels: { color: "#c8d0dc" } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+                  scales: {
+                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y1: { position: "right", ticks: { color: "#787b86", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
               });
             }
           } catch (e) { console.error("Zoom chart error", e); }

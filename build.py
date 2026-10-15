@@ -75,6 +75,22 @@ def main():
         jaw_history = load(os.path.join(MR, "alligator_jaw_history.json"))
     except FileNotFoundError:
         jaw_history = {}
+    try:
+        theme_rot_history = load(os.path.join(MR, "theme_rotation_history.json"))
+    except FileNotFoundError:
+        theme_rot_history = {}
+    try:
+        smcap_history = load(os.path.join(MR, "small_midcap_history.json"))
+    except FileNotFoundError:
+        smcap_history = {}
+    try:
+        credit_vol_history = load(os.path.join(MR, "credit_vol_history.json"))
+    except FileNotFoundError:
+        credit_vol_history = {}
+    try:
+        breadth_history = load(os.path.join(MR, "breadth_history.json"))
+    except FileNotFoundError:
+        breadth_history = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
@@ -217,6 +233,10 @@ def main():
         "ticker_ohlcv": ticker_ohlcv,
         "vol_div_history": vol_div_history,
         "jaw_history": jaw_history,
+        "theme_rot_history": theme_rot_history,
+        "smcap_history": smcap_history,
+        "credit_vol_history": credit_vol_history,
+        "breadth_history": breadth_history,
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
