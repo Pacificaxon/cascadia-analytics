@@ -47,16 +47,34 @@
     var url;
     if (dataUrl) {
       url = dataUrl.replace("{ticker}", encodeURIComponent(ticker));
-    } else {
+    } else if (apiKey) {
+      // FMP v4 endpoint
       url = "https://financialmodelingprep.com/api/v4/short-interest?symbol=" +
         encodeURIComponent(ticker) + "&apikey=" + encodeURIComponent(apiKey);
+    } else {
+      // FINRA consolidated short interest via local JSON (no key needed)
+      // Expects /data/ticker_short_interest.json with {tickers: {TICKER: [{date, shortInterest, ...}]}}
+      url = "data/ticker_short_interest.json";
     }
     return fetch(url).then(function (res) {
       if (!res.ok) throw new Error("API returned " + res.status);
       return res.json();
     }).then(function (json) {
+      // FINRA local file format
+      if (json.tickers && json.tickers[ticker]) {
+        return json.tickers[ticker].map(function (r) {
+          return {
+            date: r.date,
+            shortInterest: r.shortInterest,
+            // FINRA doesn't provide short float %; use days-to-cover as the line
+            shortFloat: r.daysToCover != null ? r.daysToCover / 100 : null,
+            daysToCover: r.daysToCover,
+            _isDaysToCover: true
+          };
+        });
+      }
+      // FMP / generic array format
       var rows = Array.isArray(json) ? json : (json.data || json.results || []);
-      // Normalize: FMP uses {date, shortInterest, shortFloat}; accept alternates
       return rows.map(function (r) {
         return {
           date: r.date || r.settlementDate || r.reportDate,
@@ -182,10 +200,14 @@
       '<span><span style="display:inline-block;width:24px;height:4px;background:' + CHART_RED + ';border-radius:2px;vertical-align:middle;margin-right:8px;"></span>Short interest</span>' +
       '<span><span style="display:inline-block;width:24px;height:4px;background:' + CHART_WHITE + ';border-radius:2px;vertical-align:middle;margin-right:8px;"></span>Short float</span>' +
       "</div>" +
-      '<div id="' + id + '-body" style="position:relative;height:300px;"></div>' +
+      '<div id="' + id + '-body" class="zoomable-chart" data-chart="short-interest" data-ticker="' + escapeHtml(ticker) + '" style="position:relative;height:300px;cursor:zoom-in;" title="Click to zoom">' +
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">&#x26F6; click to zoom</div>' +
+      "</div>" +
       "</div>";
 
     var body = document.getElementById(id + "-body");
+    // Store chart data for zoom modal
+    var chartData = null;
     showLoading(body);
 
     var chartRef = { instance: null, destroy: function () {
@@ -195,10 +217,8 @@
     var promise;
     if (opts.data && Array.isArray(opts.data)) {
       promise = Promise.resolve(opts.data);
-    } else if (!opts.apiKey && !opts.dataUrl) {
-      showError(body, "No API key configured. Pass apiKey or dataUrl, or provide static data via opts.data.");
-      return chartRef;
     } else {
+      // FINRA local file needs no key; FMP needs apiKey; custom URL needs dataUrl
       promise = fetchShortInterest(ticker, opts.apiKey, opts.dataUrl);
     }
 
@@ -207,14 +227,43 @@
         showError(body, "No short interest data available for " + ticker + ".");
         return;
       }
-      body.innerHTML = '<canvas id="' + id + '-canvas"></canvas>';
+      chartData = rows;
+      body.innerHTML = '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">&#x26F6; click to zoom</div>' +
+        '<canvas id="' + id + '-canvas"></canvas>';
       var canvas = document.getElementById(id + "-canvas");
       chartRef.instance = buildChart(canvas, rows, ticker);
+      // Bind zoom click
+      if (!body.dataset.zoomBound) {
+        body.dataset.zoomBound = "1";
+        body.addEventListener("click", function (e) {
+          if (e.target.closest("canvas")) showZoomModal(ticker, chartData);
+        });
+      }
     }).catch(function (err) {
       showError(body, "Failed to load short interest for " + ticker + ": " + err.message);
     });
 
     return chartRef;
+  }
+
+  function showZoomModal(ticker, rows) {
+    // Remove existing modal
+    var old = document.getElementById("sic-zoom-modal");
+    if (old) old.remove();
+    var modal = document.createElement("div");
+    modal.id = "sic-zoom-modal";
+    modal.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
+    modal.innerHTML = '<div style="background:#000;border-radius:12px;padding:24px;width:100%;max-width:900px;max-height:90vh;overflow:auto;" onclick="event.stopPropagation();">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
+      '<div style="font-size:20px;font-weight:600;color:#fff;">Short interest <span style="font-size:13px;color:' + TEXT_COLOR + ';font-weight:400;">' + escapeHtml(ticker) + "</span></div>" +
+      '<button onclick="document.getElementById(\'sic-zoom-modal\').remove()" style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;">Close</button>' +
+      "</div>" +
+      '<div style="position:relative;height:60vh;min-height:400px;"><canvas id="sic-zoom-canvas"></canvas></div>' +
+      "</div>";
+    modal.addEventListener("click", function () { modal.remove(); });
+    document.body.appendChild(modal);
+    var canvas = document.getElementById("sic-zoom-canvas");
+    buildChart(canvas, rows, ticker);
   }
 
   global.ShortInterestChart = { render: render, version: "1.0.0" };
