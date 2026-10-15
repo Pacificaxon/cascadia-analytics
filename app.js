@@ -951,7 +951,17 @@
             ...(closes.length >= 200 ? [ds("200 MA", sma(200), "#34d399", 4)] : []),
           ]},
           options: { responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 20 } } },
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+              legend: { labels: { color: "#c8d0dc", boxWidth: 20 } },
+              tooltip: {
+                backgroundColor: "#1a2332", borderColor: "#3a4556", borderWidth: 1,
+                titleColor: "#e8ecf1", bodyColor: "#c8d0dc", padding: 12,
+                callbacks: {
+                  label: (c) => " " + c.dataset.label + ": $" + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "—")
+                }
+              }
+            },
             scales: {
               x: { ticks: { color: "#7a8494", maxTicksLimit: 8 }, grid: { color: "#2a3448" } },
               y: { ticks: { color: "#c8d0dc", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "#2a3448" } }
