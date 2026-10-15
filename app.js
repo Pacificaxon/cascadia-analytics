@@ -470,6 +470,22 @@
         '<div class="panel-summary">' + esc(p.summary || "") + "</div>" +
         '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>";
       }).join("") + "</div>");
+
+    // RSI Cyclical vs Defensive — Pro-gated interactive tracker
+    if (D.rsi_cd_history && (D.rsi_cd_history.history || []).length) {
+      const rsiCur = D.rsi_cd_history.current || {};
+      const rsiHtml = '<div class="zoomable-chart" data-chart="rsicd" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="rsicd-chart"></canvas>' +
+        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#787b86;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+        '<div class="panel-summary">XLY ÷ XLP ratio with 14-period RSI. Current RSI ' + (rsiCur.rsi != null ? rsiCur.rsi.toFixed(1) : "—") +
+        ' (' + esc(rsiCur.signal || "neutral") + '). Ratio ' + (rsiCur.ratio != null ? rsiCur.ratio.toFixed(3) : "—") +
+        ' vs 50-day MA ' + (rsiCur.ratio_ma50 != null ? rsiCur.ratio_ma50.toFixed(3) : "—") + '.</div>' +
+        '<div class="panel-asof">As of ' + esc((D.rsi_cd_history.as_of || "").slice(0, 10)) + "</div>";
+      h += '<div class="section"><div class="section-title">RSI: Cyclicals vs Defensives <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+        '<div class="section-sub">Risk-on / risk-off momentum — 14-period RSI on the XLY÷XLP ratio. Above 70 = cyclicals overbought, below 30 = oversold.</div>' +
+        '<div class="grid-2"><div class="card"><h3>Cyclical / Defensive RSI</h3>' +
+        gated("RSI: Cyclicals vs Defensives", "14-period RSI on the XLY÷XLP ratio — spot sector rotation extremes before they reverse.", rsiHtml) +
+        "</div></div></div>";
+    }
     // render interactive vol divergence chart after DOM insert
     setTimeout(() => {
       const cv = document.getElementById("voldiv-chart");
@@ -661,6 +677,44 @@
           });
         } catch (e) { console.error("Breadth chart error", e); }
       }
+      // RSI Cyclical vs Defensive interactive chart (dual panel: ratio + RSI)
+      const rc = document.getElementById("rsicd-chart");
+      const rh = D.rsi_cd_history;
+      if (rc && rh && (rh.history || []).length) {
+        try {
+          const hist = rh.history;
+          // Build overbought/oversold bands as background
+          new Chart(rc, {
+            type: "line",
+            data: { labels: hist.map((r) => r.date), datasets: [
+              { label: "RSI (14)", data: hist.map((r) => r.rsi), borderColor: "#c678dd", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
+              { label: "Overbought (70)", data: hist.map(() => 70), borderColor: "#f85149", borderWidth: 1, pointRadius: 0, borderDash: [5, 3], yAxisID: "y" },
+              { label: "Oversold (30)", data: hist.map(() => 30), borderColor: "#3fb950", borderWidth: 1, pointRadius: 0, borderDash: [5, 3], yAxisID: "y" },
+            ]},
+            options: { responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "index", intersect: false },
+              plugins: {
+                legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
+                tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+                  titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+                  callbacks: {
+                    label: (c) => {
+                      if (c.dataset.label === "RSI (14)") {
+                        const r = hist[c.dataIndex];
+                        return "  RSI: " + c.parsed.y.toFixed(1) + " (" + r.signal + ") · Ratio " + r.ratio.toFixed(3);
+                      }
+                      return "  " + c.dataset.label + ": " + c.parsed.y;
+                    }
+                  } }
+              },
+              scales: {
+                x: { ticks: { color: "#787b86", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { min: 0, max: 100, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "RSI", color: "#787b86", font: { size: 11 } } }
+              } }
+          });
+        } catch (e) { console.error("RSICD chart error", e); }
+      }
       // Click/tap to zoom: open modal with larger chart
       document.querySelectorAll(".zoomable-chart").forEach((el) => {
         if (el.dataset.zoomBound) return;
@@ -673,7 +727,8 @@
             themerot: "Theme Rotation — RS Quadrant",
             smcap: "Small/Mid Cap — vs 200-Day MA",
             creditvol: "Credit Spreads vs VIX",
-            breadth: "Market Breadth"
+            breadth: "Market Breadth",
+            rsicd: "RSI: Cyclicals vs Defensives (XLY/XLP)"
           };
           // build modal
           let modal = document.getElementById("chart-zoom-modal");
@@ -795,6 +850,24 @@
                     x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
                     y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" } },
                     y1: { position: "right", ticks: { color: "#787b86", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
+              });
+            } else if (kind === "rsicd") {
+              const hist = D.rsi_cd_history.history;
+              new Chart(zc, {
+                type: "line",
+                data: { labels: hist.map((r) => r.date), datasets: [
+                  { label: "RSI (14)", data: hist.map((r) => r.rsi), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+                  { label: "Overbought (70)", data: hist.map(() => 70), borderColor: "#f85149", borderWidth: 1, pointRadius: 0, borderDash: [5, 3] },
+                  { label: "Oversold (30)", data: hist.map(() => 30), borderColor: "#3fb950", borderWidth: 1, pointRadius: 0, borderDash: [5, 3] },
+                ]},
+                options: { responsive: true, maintainAspectRatio: false,
+                  interaction: { mode: "index", intersect: false },
+                  plugins: { legend: { labels: { color: "#c8d0dc" } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+                  scales: {
+                    x: { ticks: { color: "#787b86", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { min: 0, max: 100, ticks: { color: "#787b86" }, grid: { color: "rgba(42,46,57,0.4)" },
+                      title: { display: true, text: "RSI", color: "#787b86" } } } }
               });
             }
           } catch (e) { console.error("Zoom chart error", e); }
