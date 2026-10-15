@@ -508,6 +508,48 @@
 
     /* ---------- tracker explainers (visual first, explanation after) ---------- */
     /* ---------- GEX tracker HTML (Pro-gated) ---------- */
+    /* ---------- Macroeconomic Analysis HTML (Pro-gated) ---------- */
+    function macroAnalysisHtml(d) {
+      const hist = d.history || [];
+      const latest = hist[hist.length - 1] || {};
+      // Latest readings
+      const cpi = latest.cpi_yoy, ppi = latest.ppi_yoy,
+            retail = latest.retail_mom, pmi = latest.pmi;
+      const pmiColor = pmi >= 50 ? "#3fb950" : "#f85149";
+      const pmiLabel = pmi >= 50 ? "Expansion" : "Contraction";
+      // Trend: CPI direction over last 3 months
+      const cpiTrend = hist.length >= 3 ?
+        (hist[hist.length-1].cpi_yoy < hist[hist.length-3].cpi_yoy ? "cooling" : "heating") : "";
+      return '<div class="card" style="margin-bottom:12px;"><h3>Macro Dashboard</h3>' +
+        '<div class="zoomable-chart" data-chart="macro" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="macro-chart"></canvas>' +
+        '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
+        '<div><div style="font-size:11px;color:#e8ecf1;">CPI (YoY)</div>' +
+        '<div style="font-size:20px;font-weight:700;color:#f85149;">' + (cpi != null ? cpi.toFixed(1) + "%" : "—") + "</div>" +
+        '<div style="font-size:11px;color:#e8ecf1;opacity:0.7;">' + (cpiTrend ? "Trend: " + cpiTrend : "") + "</div></div>" +
+        '<div><div style="font-size:11px;color:#e8ecf1;">PPI (YoY)</div>' +
+        '<div style="font-size:20px;font-weight:700;color:#ff9800;">' + (ppi != null ? ppi.toFixed(1) + "%" : "—") + "</div></div>" +
+        '<div><div style="font-size:11px;color:#e8ecf1;">Retail Sales (MoM)</div>' +
+        '<div style="font-size:20px;font-weight:700;color:#3fb950;">' + (retail != null ? (retail >= 0 ? "+" : "") + retail.toFixed(1) + "%" : "—") + "</div></div>" +
+        '<div><div style="font-size:11px;color:#e8ecf1;">PMI</div>' +
+        '<div style="font-size:20px;font-weight:700;color:' + pmiColor + ';">' + (pmi != null ? pmi.toFixed(1) : "—") + "</div>" +
+        '<div style="font-size:11px;color:' + pmiColor + ';">' + pmiLabel + "</div></div>" +
+        "</div>" +
+        '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
+        "<p><b>What am I looking at?</b> Four key macro indicators: <b style='color:#f85149'>CPI</b> (consumer inflation), " +
+        "<b style='color:#ff9800'>PPI</b> (wholesale prices, leads CPI), " +
+        "<b style='color:#3fb950'>Retail Sales</b> (consumer spending), and " +
+        "<b style='color:#c678dd'>PMI</b> (manufacturing activity — above 50 is expansion).</p>" +
+        "<p><b>How to read it.</b> Falling CPI + rising PPI = margin squeeze ahead. Strong retail + weak PMI = two-speed economy " +
+        "(consumers spending, factories contracting). PMI below 50 for months = industrial recession risk.</p>" +
+        "<p><b>Fed implications.</b> " +
+        (cpi != null && cpi > 3 ? "CPI above 3% keeps the Fed cautious on cuts. " :
+         cpi != null && cpi < 2.5 ? "CPI cooling toward target gives the Fed room to ease. " : "") +
+        (pmi != null && pmi < 48 ? "Deep PMI contraction may force the Fed's hand even if inflation is sticky." : "") + "</p>" +
+        "</div>" +
+        '<div class="panel-asof">As of ' + esc(d.as_of || "") + " · Source: " + esc(d.source || "BLS/Census/ISM") + "</div></div>";
+    }
+
     /* ---------- COT Positioning HTML (FREE) ---------- */
     function cotHtml(d) {
       const markets = d.markets || {};
@@ -1351,6 +1393,43 @@
           });
         } catch (e) { console.error("COT chart error", e); }
       }
+      // Macroeconomic chart (Pro): CPI, PPI, Retail Sales, PMI
+      const macroCv = document.getElementById("macro-chart");
+      const macroD = D.macro_indicators;
+      if (macroCv && macroD && (macroD.history || []).length) {
+        try {
+          const hist = macroD.history;
+          const labels = hist.map((r) => {
+            const [y, m] = r.month.split("-");
+            return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][parseInt(m)-1];
+          });
+          new Chart(macroCv, {
+            type: "line",
+            data: { labels: labels, datasets: [
+              { label: "CPI (YoY %)", data: hist.map((r) => r.cpi_yoy), borderColor: "#f85149", backgroundColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "y" },
+              { label: "PPI (YoY %)", data: hist.map((r) => r.ppi_yoy), borderColor: "#ff9800", backgroundColor: "#ff9800", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "y" },
+              { label: "Retail Sales (MoM %)", data: hist.map((r) => r.retail_mom), borderColor: "#3fb950", backgroundColor: "#3fb950", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "y" },
+              { label: "PMI (Index)", data: hist.map((r) => r.pmi), borderColor: "#c678dd", backgroundColor: "#c678dd", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "y1" },
+            ]},
+            options: { responsive: true, maintainAspectRatio: false,
+              interaction: { mode: "index", intersect: false },
+              plugins: {
+                legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 }, usePointStyle: true, padding: 20 } },
+                tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+                  titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 }
+              },
+              scales: {
+                x: { ticks: { color: "#e8ecf1", maxTicksLimit: 9, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                y: { type: "linear", display: true, position: "left",
+                  ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+                  title: { display: true, text: "Percentage (%)", color: "#e8ecf1", font: { size: 11 } } },
+                y1: { type: "linear", display: true, position: "right",
+                  ticks: { color: "#e8ecf1" }, grid: { drawOnChartArea: false },
+                  title: { display: true, text: "PMI (< 50 contraction)", color: "#e8ecf1", font: { size: 11 } } }
+              } }
+          });
+        } catch (e) { console.error("Macro chart error", e); }
+      }
       // GEX index charts: price levels (spot vs zero gamma vs walls) as horizontal bar
       if (D.gex_data && D.gex_data.indices) {
         ["QQQ", "SPY", "SPX"].forEach((sym) => {
@@ -1412,7 +1491,8 @@
             "skew-ticker": "Volatility Skew — " + (el.dataset.ticker || ""),
             "gex-index": "Gamma Exposure — " + (el.dataset.symbol || ""),
             aaii: "AAII Investor Sentiment",
-            cot: "Commitments of Traders"
+            cot: "Commitments of Traders",
+            macro: "Macroeconomic Analysis"
           };
           // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
           if (kind === "gex-ticker") {
@@ -1696,12 +1776,47 @@
                     y: { ticks: { color: "#e8ecf1", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
                       title: { display: true, text: "Net contracts", color: "#e8ecf1" } } } }
               });
+            } else if (kind === "macro") {
+              const hist = (D.macro_indicators.history || []);
+              const labels = hist.map((r) => {
+                const [y, m] = r.month.split("-");
+                return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][parseInt(m)-1] + " " + y.slice(2);
+              });
+              new Chart(zc, {
+                type: "line",
+                data: { labels: labels, datasets: [
+                  { label: "CPI (YoY %)", data: hist.map((r) => r.cpi_yoy), borderColor: "#f85149", borderWidth: 2.5, pointRadius: 0, tension: 0.3, yAxisID: "y" },
+                  { label: "PPI (YoY %)", data: hist.map((r) => r.ppi_yoy), borderColor: "#ff9800", borderWidth: 2.5, pointRadius: 0, tension: 0.3, yAxisID: "y" },
+                  { label: "Retail Sales (MoM %)", data: hist.map((r) => r.retail_mom), borderColor: "#3fb950", borderWidth: 2.5, pointRadius: 0, tension: 0.3, yAxisID: "y" },
+                  { label: "PMI (Index)", data: hist.map((r) => r.pmi), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.3, yAxisID: "y1" },
+                ]},
+                options: { responsive: true, maintainAspectRatio: false,
+                  interaction: { mode: "index", intersect: false },
+                  plugins: { legend: { labels: { color: "#c8d0dc", usePointStyle: true } },
+                    tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+                  scales: {
+                    x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+                    y: { ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+                      title: { display: true, text: "Percentage (%)", color: "#e8ecf1" } },
+                    y1: { ticks: { color: "#e8ecf1" }, grid: { drawOnChartArea: false },
+                      title: { display: true, text: "PMI", color: "#e8ecf1" } } } }
+              });
             }
           } catch (e) { console.error("Zoom chart error", e); }
         });
       });
     }, 200);
     h += "</div>";
+
+    // Macroeconomic Analysis — Pro-gated
+    if (D.macro_indicators && (D.macro_indicators.history || []).length) {
+      h += '<div class="section" id="macro-sec"><div class="section-title">Macroeconomic Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+        '<div class="section-sub">CPI, PPI, retail sales, and PMI — the macro backdrop driving Fed policy and market regimes. Updates as reports are released.</div>' +
+        '<div class="grid-2">' +
+        gated("Macroeconomic Analysis", "CPI, PPI, retail sales, consumer health, and PMI — the macro forces moving markets.",
+          macroAnalysisHtml(D.macro_indicators)) +
+        "</div></div>";
+    }
 
     // upcoming earnings
     h += '<div class="section" id="earnings-cal-sec"><div class="section-title">Upcoming Earnings</div>' +
