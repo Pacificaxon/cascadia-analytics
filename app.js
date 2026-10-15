@@ -100,14 +100,26 @@
  let PRO_DATA = null; // Pro-only data fetched from /api/pro-data (never in public bundle)
 
  async function fetchProData() {
-  if (!supa) return null;
+  if (!supa) {
+   console.warn("fetchProData: no supa client");
+   return null;
+  }
   try {
    const { data: { session } } = await supa.auth.getSession();
-   if (!session) return null;
+   if (!session) {
+    console.warn("fetchProData: no session");
+    return null;
+   }
    const res = await fetch("/api/pro-data", {
     headers: { "Authorization": "Bearer " + session.access_token }
    });
-   if (!res.ok) return null;
+   if (!res.ok) {
+    console.warn("fetchProData: API returned", res.status);
+    // Store the error status for debug display
+    window._proDataError = "HTTP " + res.status;
+    return null;
+   }
+   window._proDataError = null;
    const json = await res.json();
    const sections = json.sections || {};
    // Flatten to match SITE_DATA shape
@@ -4119,6 +4131,7 @@
      "isAdmin: " + isAdmin,
      "authUser: " + (authUser ? authUser.email : "null"),
      "PRO_DATA: " + (PRO_DATA ? "loaded" : "null"),
+     "ProDataError: " + (window._proDataError || "none"),
      "Route: " + (location.hash || "#/")
     ].join("\n");
     // Show as a fixed banner instead of alert (more reliable on iOS)
