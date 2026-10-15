@@ -2281,6 +2281,12 @@
     "</div>";
   }
 
+  // Market Leadership, Pro-gated
+  if (D.leadership && D.leadership.available && (D.leadership.leaders || []).length) {
+    h += gated("Market Leadership", "Automated S&P 500 leader tracking with composite scoring and rotation signals.",
+      leadershipHtml(D.leadership));
+  }
+
   app.innerHTML = h;
  });
 
