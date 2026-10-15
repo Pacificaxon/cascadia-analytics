@@ -277,7 +277,7 @@
       '<div class="modal-back" id="mb"><div class="modal">' +
       '<div class="modal-logo"><img src="logo-icon.png" alt="Cascadia Analytics"></div>' +
       "<h3>Cascadia Analytics Pro</h3>" +
-      "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, seasonality, Cascadia Scores, screener, exports, earnings history, and client notes. $19/month.</p>" +
+      "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, Cascadia Scores, screener, exports, earnings history, and client notes. $19/month.</p>" +
       statusLine +
       (isPro()
         ? '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-bottom:8px;text-decoration:none;">Manage subscription</a>' +
@@ -562,6 +562,9 @@
     h += '<div class="section"><div class="section-title">Moving Averages</div>';
     h += gated("Moving Averages — Pro", "Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.", maHtml(tk));
     h += "</div>";
+
+    // Seasonality (free) - average monthly returns from price history
+    h += '<div class="section"><div class="section-title">Seasonality</div>' + seasonalityHtml(tk) + "</div>";
 
     // Options flow (Pro)
     h += '<div class="section"><div class="section-title">Unusual Options Flow</div>';
@@ -952,6 +955,52 @@
       });
     }, 100);
     return h || '<div class="card"><p style="color:var(--muted)">No data.</p></div>';
+  }
+
+  function seasonalityHtml(tk) {
+    const t = TICKERS[tk];
+    const hist = (t && t.history) || [];
+    if (hist.length < 60) return '<div class="card"><p style="color:var(--muted)">Not enough price history for seasonality.</p></div>';
+    // group by calendar month, compute monthly returns
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const rets = months.map(() => []);
+    // build month-start prices
+    let prevMonth = -1, monthStart = null;
+    const sorted = [...hist].sort((a, b) => a[0] - b[0]);
+    for (let i = 0; i < sorted.length; i++) {
+      const d = new Date(sorted[i][0]), m = d.getMonth();
+      if (m !== prevMonth) {
+        if (monthStart !== null && prevMonth >= 0) {
+          const r = (sorted[i - 1][1] / monthStart - 1) * 100;
+          if (isFinite(r) && Math.abs(r) < 50) rets[prevMonth].push(r);
+        }
+        monthStart = sorted[i][1]; prevMonth = m;
+      }
+    }
+    const avg = (a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+    const avgs = rets.map(avg);
+    const maxA = Math.max(...avgs.filter((v) => v != null).map(Math.abs), 1);
+    let h = '<div class="card"><div style="font-size:13px;color:#c8d0dc;margin-bottom:12px;">Average monthly return by calendar month (from available price history).</div>';
+    h += '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;">';
+    months.forEach((name, i) => {
+      const v = avgs[i], n = rets[i].length;
+      const barW = v == null ? 0 : Math.abs(v) / maxA * 100;
+      const col = v == null ? "#555" : v >= 0 ? "#6a9a6a" : "#f87171";
+      h += '<div style="background:#1a2332;border-radius:6px;padding:10px 8px;text-align:center;">' +
+        '<div style="font-size:12px;color:#a8b0bc;margin-bottom:4px;">' + name + '</div>' +
+        '<div style="font-size:16px;font-weight:700;color:' + col + ';">' + (v == null ? "—" : (v >= 0 ? "+" : "") + v.toFixed(1) + "%") + "</div>" +
+        '<div style="height:4px;background:#2a3448;border-radius:2px;margin-top:6px;overflow:hidden;">' +
+        '<div style="height:100%;width:' + barW.toFixed(0) + '%;background:' + col + ';border-radius:2px;"></div></div>' +
+        '<div style="font-size:10px;color:#7a8494;margin-top:4px;">' + n + ' yrs</div></div>';
+    });
+    h += "</div>";
+    // best/worst months
+    const ranked = avgs.map((v, i) => ({ v, i })).filter((x) => x.v != null).sort((a, b) => b.v - a.v);
+    if (ranked.length) {
+      h += '<div class="panel-summary" style="margin-top:10px;color:#c8d0dc;">Strongest: <b style="color:#6a9a6a;">' + months[ranked[0].i] + " (" + (ranked[0].v >= 0 ? "+" : "") + ranked[0].v.toFixed(1) + "%)</b>" +
+        ' · Weakest: <b style="color:#f87171;">' + months[ranked[ranked.length - 1].i] + " (" + ranked[ranked.length - 1].v.toFixed(1) + "%)</b></div>";
+    }
+    return h + "</div>";
   }
 
   function optionsHtml(tk) {
