@@ -700,7 +700,7 @@
         '<div class="zoomable-chart" data-chart="cot" style="position:relative;height:240px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="cot-chart"></canvas>' +
         '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
         cards +
-        '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
+        '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
         "<p><b>What is this?</b> The CFTC's weekly Commitments of Traders report reveals how three groups are positioned in futures: " +
         "<b style='color:#58a6ff'>Commercials</b> (hedgers, the \"smart money\" — contrarian), " +
         "<b style='color:#c678dd'>Large Speculators</b> (hedge funds — trend followers), " +
@@ -750,7 +750,7 @@
         '<div style="text-align:center;margin:8px 0;">' +
         '<span style="font-size:13px;color:#e8ecf1;">Bull-Bear Spread: </span>' +
         '<span style="font-size:16px;font-weight:700;color:' + spreadColor + ';">' + (spread >= 0 ? "+" : "") + spread.toFixed(1) + "%</span></div>" +
-        '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
+        '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
         "<p><b>What is this?</b> Every week, the American Association of Individual Investors asks its members: " +
         "will stocks be higher, lower, or about the same in 6 months? It's a direct read on retail investor psychology.</p>" +
         "<p><b>How to use it (contrarian).</b> " + contrarian + "</p>" +
@@ -841,7 +841,7 @@
         ' <span style="color:#e8ecf1;">/</span> ' +
         '<span style="color:#f85149;" title="Put wall (support)">P $' + (d.put_wall != null ? d.put_wall.toFixed(0) : "—") + "</span></div></div>" +
         "</div>" +
-        '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
+        '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
         "<p><b>What is this?</b> Gamma exposure measures how options dealers will hedge as " + esc(tk) + " moves. " +
         "Dealers who sold options must buy/sell shares to stay neutral — their hedging pushes the stock.</p>" +
         (isPos
@@ -886,7 +886,7 @@
         '<div style="font-size:14px;font-weight:600;color:#e8ecf1;">' + trendIcon + " " + trendText + "</div>" +
         (d.skew_change != null ? '<div style="font-size:11px;color:#e8ecf1;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs prior</div>" : "") + "</div>" +
         "</div>" +
-        '<div class="panel-about" style="text-align:left;max-width:720px;margin:12px auto;">' +
+        '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
         "<p><b>What is this?</b> Volatility skew compares what investors pay for downside puts versus upside calls on " + esc(tk) + ". " +
         "A high skew means puts are expensive — institutions are aggressively hedging.</p>" +
         (d.regime === "extreme_fear" || d.regime === "elevated_fear"
@@ -940,7 +940,7 @@
     }
 
     function trackerExplainer(p) {
-      const wrap = (inner) => '<div class="panel-about" style="text-align:left;max-width:720px;margin:0 auto 12px;">' + inner + "</div>";
+      const wrap = (inner) => '<div class="panel-about" style="text-align:left;max-width:none;margin:0 0 12px;">' + inner + "</div>";
       const name = (p.name || "").toLowerCase();
 
       if (/volatility divergence/.test(name) && D.vol_div_history && (D.vol_div_history.history || []).length) {
@@ -1078,7 +1078,7 @@
       const maVal = rsiCur.ratio_ma50 != null ? rsiCur.ratio_ma50.toFixed(3) : "—";
       const vsMa = (rsiCur.ratio != null && rsiCur.ratio_ma50) ? ((rsiCur.ratio / rsiCur.ratio_ma50 - 1) * 100).toFixed(1) : "—";
       const explainer =
-        '<div class="panel-about" style="text-align:left;max-width:720px;margin:0 auto 12px;">' +
+        '<div class="panel-about" style="text-align:left;max-width:none;margin:0 0 12px;">' +
         '<p><b>What am I looking at?</b> This chart answers one question: <i>is money flowing toward risk or toward safety right now?</i> ' +
         'It does that by comparing two baskets of stocks. <b>Cyclicals</b> (tracked by the ETF <b>XLY</b>) are companies that do well when the economy is growing — think retailers, restaurants, car makers, airlines. ' +
         '<b>Defensives</b> (tracked by the ETF <b>XLP</b>) are companies people buy from no matter what — think toothpaste, cereal, soap, medicine.</p>' +
@@ -1115,7 +1115,7 @@
     if (D.gex_data && D.gex_data.indices) {
       const gexHtml = gexTrackerHtml(D.gex_data);
       const gexExplainer =
-        '<div class="panel-about" style="text-align:left;max-width:720px;margin:0 auto 12px;">' +
+        '<div class="panel-about" style="text-align:left;max-width:none;margin:0 0 12px;">' +
         '<p><b>What am I looking at?</b> Gamma exposure (GEX) estimates how much market makers will be forced to buy or sell ' +
         'as prices move. Market makers take the opposite side of options trades and must hedge to stay delta-neutral. ' +
         'GEX tells you which direction their hedging will push the market.</p>' +
@@ -1141,7 +1141,7 @@
     if (D.skew_data && D.skew_data.indices) {
       const skewHtml = skewTrackerHtml(D.skew_data);
       const skewExplainer =
-        '<div class="panel-about" style="text-align:left;max-width:720px;margin:0 auto 12px;">' +
+        '<div class="panel-about" style="text-align:left;max-width:none;margin:0 0 12px;">' +
         '<p><b>What am I looking at?</b> Volatility skew measures how much more investors pay for downside protection ' +
         '(OTM puts) versus upside speculation (OTM calls). We compare the implied volatility of ~7% OTM puts and calls, ' +
         '~30 days to expiration. A positive number means puts are pricier — the market is paying up for crash insurance.</p>' +
