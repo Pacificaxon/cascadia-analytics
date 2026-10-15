@@ -946,23 +946,42 @@
           });
           bars = mo;
         }
-        // candlestick data: {x, o, h, l, c}
-        const candles = bars.map((b) => ({ x: b.t, o: b.o, h: b.h, l: b.l, c: b.c }));
+        // Manual candlesticks: floating bars for bodies + custom plugin for wicks
+        const up = bars.map((b) => b.c >= b.o);
+        const bodies = bars.map((b) => ({ x: b.t, y: [Math.min(b.o, b.c), Math.max(b.o, b.c)] }));
+        const bodyColors = up.map((u) => u ? "#26a69a" : "#ef5350");
+        const bodyBorders = up.map((u) => u ? "#1d7a72" : "#b71c1c");
         const closes = bars.map((b) => b.c);
         const vols = bars.map((b) => b.v);
-        const labels = bars.map((b) => new Date(b.t).toLocaleDateString());
         const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b) => a + b, 0) / n);
-        const smaLabels = labels; // align MA lines with candle x positions
         const ds = (label, data, color, w) => ({ type: "line", label, data: data.map((v, i) => v == null ? null : { x: bars[i].t, y: v }), borderColor: color, borderWidth: w, pointRadius: 0, tension: 0.1, spanGaps: true, order: 1, yAxisID: "y", parsing: false });
-        const up = bars.map((b) => b.c >= b.o);
         const volColors = up.map((u) => u ? "rgba(38,166,154,0.5)" : "rgba(239,83,80,0.5)");
         const fmtVol = (v) => v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : String(v);
+        // wick plugin: draws high-low line through each candle
+        const wickPlugin = {
+          id: "wicks",
+          afterDatasetsDraw(chart) {
+            const ctx = chart.ctx, yS = chart.scales.y, xS = chart.scales.x;
+            const meta = chart.getDatasetMeta(0);
+            bars.forEach((b, i) => {
+              const el = meta.data[i];
+              if (!el) return;
+              const x = el.x, w = el.width;
+              ctx.save();
+              ctx.strokeStyle = bodyBorders[i]; ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.moveTo(x, yS.getPixelForValue(b.h));
+              ctx.lineTo(x, yS.getPixelForValue(b.l));
+              ctx.stroke(); ctx.restore();
+            });
+          }
+        };
         new Chart(cv, {
+          type: "bar",
           data: { datasets: [
-            { label: "Price", data: candles, type: "candlestick",
-              color: { up: "#26a69a", down: "#ef5350", unchanged: "#5a6a80" },
-              borderColor: { up: "#1d7a72", down: "#b71c1c", unchanged: "#5a6a80" },
-              order: 2, yAxisID: "y", parsing: false },
+            { label: "Price", data: bodies, type: "bar", backgroundColor: bodyColors, borderColor: bodyBorders, borderWidth: 1,
+              order: 2, yAxisID: "y", parsing: false, barPercentage: 0.7, categoryPercentage: 0.8,
+              _bars: bars },
             { label: "Volume", data: vols.map((v, i) => ({ x: bars[i].t, y: v })), type: "bar", backgroundColor: volColors, borderWidth: 0, order: 3, yAxisID: "y1", parsing: false },
             ds("10 MA", sma(10), "#f87171", 3),
             ds("20 MA", sma(20), "#fbbf24", 3),
@@ -977,14 +996,13 @@
               tooltip: {
                 backgroundColor: "#1a2332", borderColor: "#3a4556", borderWidth: 1,
                 titleColor: "#e8ecf1", bodyColor: "#c8d0dc", padding: 12,
-                filter: (t) => t.dataset.label !== "Volume" || true,
                 callbacks: {
                   title: (items) => items.length ? new Date(items[0].parsed.x).toLocaleDateString() : "",
                   label: (c) => {
                     if (c.dataset.label === "Volume") return " Volume: " + fmtVol(c.parsed.y);
-                    if (c.dataset.type === "candlestick" && c.raw) {
-                      const r = c.raw;
-                      return " O: $" + r.o.toFixed(2) + " H: $" + r.h.toFixed(2) + " L: $" + r.l.toFixed(2) + " C: $" + r.c.toFixed(2);
+                    if (c.dataset.label === "Price") {
+                      const b = bars[c.dataIndex];
+                      if (b) return " O: $" + b.o.toFixed(2) + " H: $" + b.h.toFixed(2) + " L: $" + b.l.toFixed(2) + " C: $" + b.c.toFixed(2);
                     }
                     return " " + c.dataset.label + ": $" + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "—");
                   }
@@ -995,7 +1013,8 @@
               x: { type: "time", time: { unit: tf === "monthly" ? "month" : tf === "weekly" ? "week" : "day" }, ticks: { color: "#7a8494", maxTicksLimit: 8 }, grid: { color: "#2a3448" } },
               y: { ticks: { color: "#c8d0dc", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "#2a3448" } },
               y1: { position: "right", display: false, max: Math.max(...vols, 1) * 4, grid: { display: false } }
-            } }
+            } },
+          plugins: [wickPlugin]
         });
         } catch (e) { console.error("MA chart error for " + tk + " " + tf, e); }
       });
