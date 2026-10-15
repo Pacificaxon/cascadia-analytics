@@ -66,9 +66,31 @@
   }
  };
  // Use cookie storage if available, fallback to default (localStorage)
+ // PKCE flow for better iOS compatibility
  const supa = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { storage: cookieStorage }
+  auth: {
+   storage: cookieStorage,
+   flowType: 'pkce',
+   persistSession: true,
+   detectSessionInUrl: true,
+   autoRefreshToken: true
+  }
  }) : null;
+ // Re-validate session when tab becomes visible (iOS background tab handling)
+ if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", async () => {
+   if (document.visibilityState === "visible" && supa) {
+    try {
+     const { data: { session }, error } = await supa.auth.getSession();
+     if (error || !session) {
+      await supa.auth.refreshSession();
+     }
+     // Re-check Pro status after tab wake
+     refreshAuth();
+    } catch (e) {}
+   }
+  });
+ }
  let authUser = null;
  let proVerified = null; // null = not yet checked this load; true/false after server verification
  let isAdmin = false;
@@ -615,17 +637,20 @@
    The report HTML contains <div data-embed-visual="key"></div> placeholders.
    Supported keys: fed-funds, macro, gex, skew */
  function embedAnalysisVisuals() {
-  let placeholders;
-  try {
-   // Query within the app container to avoid detached nodes from previous renders
-   const container = document.getElementById("app") || document;
-   placeholders = container.querySelectorAll("[data-embed-visual]");
-  } catch (e) {
-   console.error("Visual placeholder query failed:", e);
-   return;
-  }
-  if (!placeholders.length) return;
-  placeholders.forEach((el) => {
+  // Use requestAnimationFrame to ensure DOM reflow completes on iOS WebKit
+  // before querying for placeholders
+  requestAnimationFrame(() => {
+   let placeholders;
+   try {
+    // Query within the app container to avoid detached nodes from previous renders
+    const container = document.getElementById("app") || document;
+    placeholders = container.querySelectorAll("[data-embed-visual]");
+   } catch (e) {
+    console.error("Visual placeholder query failed:", e);
+    return;
+   }
+   if (!placeholders.length) return;
+   placeholders.forEach((el) => {
    let key = null;
    try {
     key = el.getAttribute("data-embed-visual");
@@ -654,6 +679,7 @@
     console.error("Failed to embed visual:", key, e);
     el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.</p>';
    }
+   });
   });
  }
 
