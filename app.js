@@ -4378,7 +4378,14 @@
 
  function revisionsHtml(tk) {
   const r = (D.earnings_revisions || {})[tk];
-  if (!r) return '<div class="card"><p style="color:var(--muted)">No revision data available.</p></div>';
+  const est = (D.earnings_estimates || {})[tk];
+  if (!r && !est) return '<div class="card"><p style="color:var(--muted)">No revision data available.</p></div>';
+  const fmtRev = (v) => {
+   if (v == null) return "N/A";
+   if (Math.abs(v) >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
+   if (Math.abs(v) >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
+   return "$" + v.toFixed(0);
+  };
   const row = (label, p) => {
    if (!p || p.consensus == null) return "<tr><td>" + esc(label) + '</td><td colspan="5" style="color:var(--muted)">No estimates</td></tr>';
    const up7 = p.up_7d || 0, dn7 = p.down_7d || 0;
@@ -4387,17 +4394,26 @@
    const driftCls = drift == null ? "" : drift > 0.5 ? "bullish" : drift < -0.5 ? "bearish" : "neutral";
    const driftTxt = drift == null ? " - " : (drift >= 0 ? "+" : "") + drift.toFixed(1) + "%";
    const rev = (u, d) => '<span style="color:#6a9a6a;">▲' + u + '</span> <span style="color:#f87171;">▼' + d + '</span>';
+   // Revenue consensus from earnings_estimates (matched by period label)
+   let revCell = '<span style="color:var(--muted)">N/A</span>';
+   if (est) {
+    const eq = label === "Upcoming quarter" ? est.quarter : est.annual;
+    if (eq && eq.rev_consensus != null) {
+     revCell = fmtRev(eq.rev_consensus) + '<div style="font-size:11px;color:var(--muted);">' + (eq.rev_analysts || 0) + ' analysts</div>';
+    }
+   }
    return "<tr><td><b>" + esc(p.label || label) + "</b><div style='font-size:11px;color:var(--muted);'>" + (p.analysts || 0) + " analysts</div></td>" +
-    "<td>$" + p.consensus.toFixed(2) + "</td>" +
+    "<td>$" + p.consensus.toFixed(2) + "</td><td>" + revCell + "</td>" +
     "<td>" + rev(up7, dn7) + '</td><td>' + rev(up30, dn30) + "</td>" +
     '<td class="' + driftCls + '">' + driftTxt + "</td></tr>";
   };
-  return '<div class="card"><div style="font-size:13px;color:#c8d0dc;margin-bottom:10px;">Analyst EPS estimate revisions, up/down counts and 90-day consensus drift.</div>' +
+  const asOf = (r && r.as_of) || (est && est.as_of) || "";
+  return '<div class="card"><div style="font-size:13px;color:#c8d0dc;margin-bottom:10px;">Analyst EPS and revenue estimates, up/down counts and 90-day consensus drift.</div>' +
    '<div class="table-wrap"><table class="coverage ma-table" style="color:#e8ecf1;"><thead><tr>' +
-   '<th style="color:#a8b0bc;">Period</th><th style="color:#a8b0bc;">Consensus EPS</th><th style="color:#a8b0bc;">7-day</th><th style="color:#a8b0bc;">30-day</th><th style="color:#a8b0bc;">90-day drift</th>' +
+   '<th style="color:#a8b0bc;">Period</th><th style="color:#a8b0bc;">Consensus EPS</th><th style="color:#a8b0bc;">Revenue Est.</th><th style="color:#a8b0bc;">7-day</th><th style="color:#a8b0bc;">30-day</th><th style="color:#a8b0bc;">90-day drift</th>' +
    "</tr></thead><tbody>" +
    row("Upcoming quarter", r.quarter) + row("Full year", r.annual) +
-   '</tbody></table></div><div class="panel-asof" style="color:#a8b0bc;">As of ' + esc(r.as_of || "") + " · Source: Yahoo Finance</div></div>";
+   '</tbody></table></div><div class="panel-asof" style="color:#a8b0bc;">As of ' + esc(asOf) + " · Source: Yahoo Finance</div></div>";
  }
 
  function earningsHtml(tk) {
