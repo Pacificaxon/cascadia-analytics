@@ -76,7 +76,10 @@
    const last = h[h.length - 1][1];
    const prev = h[h.length - 2][1];
    if (!last || !prev) return null;
-   return ((last / prev) - 1) * 100;
+   const chg = ((last / prev) - 1) * 100;
+   // If change is exactly zero, data is likely stale (duplicate entries)
+   if (Math.abs(chg) < 0.0001) return null;
+   return chg;
   } catch (e) { return null; }
  };
  // Timestamp of the daily refresh (from price_date, with time if available)
@@ -3320,12 +3323,20 @@
   wireEarningsTabs(tk);
   wireFinTabs(tk);
   // Short interest chart (Pro), render after DOM insert
-  setTimeout(() => {
+  // Retry up to 5 times waiting for ShortInterestChart to load
+  let siAttempts = 0;
+  const tryRenderSI = () => {
    const siEl = document.getElementById("short-interest-" + tk);
    if (siEl && typeof ShortInterestChart !== "undefined") {
     ShortInterestChart.render(siEl, { ticker: tk, dataUrl: "ticker_short_interest.json" });
+   } else if (siEl && siAttempts < 5) {
+    siAttempts++;
+    setTimeout(tryRenderSI, 500);
+   } else if (siEl) {
+    siEl.innerHTML = '<div class="card"><p style="color:var(--muted)">Short interest data unavailable.</p></div>';
    }
-  }, 100);
+  };
+  setTimeout(tryRenderSI, 100);
  });
 
  function reverseDcfHtml(t) {
