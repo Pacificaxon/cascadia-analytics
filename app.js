@@ -1120,8 +1120,8 @@
 
  /* ================= HOME ================= */
  route("home", function () {
-  const macro = (D.macro_feed || []).slice(0, 14);
-  const news = (D.company_news || []).slice(0, 12);
+  const macro = (D.macro_feed || []).filter((m) => m.url).slice(0, 14);
+  const news = (D.company_news || []).filter((n) => n.url).slice(0, 12);
   const panels = D.panels || [];
 
   let h = '<div class="crumb">MACRO INTELLIGENCE · DCF COVERAGE</div>';
