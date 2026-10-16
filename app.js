@@ -729,12 +729,12 @@
   const total = Math.abs(d.call_gex) + Math.abs(d.put_gex);
   const callPct = total > 0 ? (Math.abs(d.call_gex) / total * 100).toFixed(1) : 50;
   const putPct = total > 0 ? (Math.abs(d.put_gex) / total * 100).toFixed(1) : 50;
-  return '<div class="zoomable-chart" data-chart="gex-ticker" data-ticker="' + esc(tk) + '" style="position:relative;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom">' +
+  return '<div style="position:relative;margin-bottom:8px;">' +
    '<div style="display:flex;height:28px;border-radius:6px;overflow:hidden;margin:12px 0;" title="Call GEX vs Put GEX">' +
    '<div style="width:' + callPct + '%;background:#3fb950;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0a0f0a;" title="Call GEX: +' + d.call_gex.toFixed(2) + unit + '">+' + d.call_gex.toFixed(1) + unit + '</div>' +
    '<div style="width:' + putPct + '%;background:#f85149;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;" title="Put GEX: ' + d.put_gex.toFixed(2) + unit + '">' + d.put_gex.toFixed(1) + unit + '</div>' +
    "</div>" +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+   "</div>" +
    '<div style="text-align:center;margin-bottom:12px;"><span style="font-size:13px;color:' + regimeColor + ';font-weight:700;">' + regimeIcon + " " + regimeLabel + "</span></div>" +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
    '<div><div style="font-size:11px;color:#e8ecf1;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
@@ -773,7 +773,7 @@
   const maxIV = Math.max(d.put_iv, d.call_iv, 1);
   const putPct = (d.put_iv / maxIV * 100).toFixed(1);
   const callPct = (d.call_iv / maxIV * 100).toFixed(1);
-  return '<div class="zoomable-chart" data-chart="skew-ticker" data-ticker="' + esc(tk) + '" style="position:relative;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom">' +
+  return '<div style="position:relative;margin-bottom:8px;">' +
    '<div style="margin:12px 0;">' +
    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
    '<span style="font-size:11px;color:#e8ecf1;width:70px;">Put IV</span>' +
@@ -784,7 +784,7 @@
    '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
    '<div style="width:' + callPct + '%;height:100%;background:#3fb950;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#0a0f0a;">' + d.call_iv.toFixed(1) + "%</div></div></div>" +
    "</div>" +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+   "</div>" +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
    '<div><div style="font-size:11px;color:#e8ecf1;">SKEW</div>' +
    '<div style="font-size:20px;font-weight:700;color:' + rc + ';">+' + d.skew.toFixed(1) + " vp</div>" +
