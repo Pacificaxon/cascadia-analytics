@@ -4904,23 +4904,22 @@ function bindZoomHandlers() {
     '<button data-vyear="' + i + '" style="padding:6px 18px;font-size:13px;font-weight:700;border:0;border-radius:999px;cursor:pointer;' +
     (i === dIdx ? "background:#c7af7f;color:#0d0f12;" : "background:#1c2028;color:#9ba3af;") + '">' +
     esc(y.label) + "</button>").join("") + "</div>";
-  // Multiple cards grid
-  h += '<div id="' + uid + '-cards"></div>';
+  // Multiple cards grid (data embedded as JSON in data attribute)
+  h += '<div id="' + uid + '-cards" data-years=\'' + JSON.stringify(v.years).replace(/'/g, "&#39;") + "'></div>";
   h += '<div style="font-size:11px;color:#8b93a7;margin-top:10px;">' +
    "TTM figures from reported financials. Forward estimates from analyst consensus (Yahoo Finance). " +
    "EV/GP, EV/EBITDA, EV/EBIT and EV/FCF for estimate years hold TTM margins flat." +
    (v.collected_at ? " Updated " + esc(v.collected_at) + "." : "") + "</div>";
-  // Store data for the renderer
-  h += "<script>window.__val_" + t.ticker + " = " + JSON.stringify(v.years) + ";</script>";
   return h;
  }
 
  function renderValuation(tk, yearIdx) {
-  const years = window["__val_" + tk];
-  if (!years || !years[yearIdx]) return;
-  const y = years[yearIdx];
   const el = document.getElementById("val-" + tk + "-cards");
   if (!el) return;
+  let years;
+  try { years = JSON.parse(el.dataset.years); } catch (e) { return; }
+  if (!years || !years[yearIdx]) return;
+  const y = years[yearIdx];
   const fmtX = (n, dec) => n == null ? "N/A" : n.toFixed(dec == null ? 1 : dec) + "x";
   const cards = [
    ["EV / Revenue", fmtX(y.ev_revenue, 2)],

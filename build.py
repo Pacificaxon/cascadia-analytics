@@ -396,7 +396,15 @@ def main():
     dcf_targets = {}
     fcf_projections = {}
     for tk, t in site.get("tickers", {}).items():
-        dcf_targets[tk] = {k: t.pop(k, None) for k in ["bear", "base", "bull", "blended", "rating", "wacc", "upside_base", "shares_m"]}
+        # DCF targets: bear/base/bull/upside stay in FREE data.js for the free
+        # Reverse DCF section; full detail also goes to Pro for gated features.
+        # Use copy (not pop) for the free-visible fields.
+        dcf_targets[tk] = {}
+        for k in ["bear", "base", "bull", "blended", "rating", "wacc", "upside_base", "shares_m"]:
+            dcf_targets[tk][k] = t.get(k)
+        # Only pop the Pro-only fields from free data
+        for k in ["blended", "rating", "wacc", "shares_m"]:
+            t.pop(k, None)
         if "fcf" in t:
             fcf_projections[tk] = t.pop("fcf")
     pro_sections["dcf_targets"] = dcf_targets
