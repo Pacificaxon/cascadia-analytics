@@ -61,6 +61,10 @@ def main():
     macro_feed = load(os.path.join(MR, "macro_feed.json"))
     company_news = load(os.path.join(MR, "company_news.json"))
     ticker_macro = load(os.path.join(MR, "ticker_macro.json"))
+    try:
+        ticker_indicator_takes = load(os.path.join(MR, "ticker_indicator_takes.json"))
+    except FileNotFoundError:
+        ticker_indicator_takes = {}
     internals = load(os.path.join(MR, "market_internals.json"))
     ticker_ma = load(os.path.join(MR, "ticker_ma.json"))
     try:
@@ -276,6 +280,7 @@ def main():
         "macro_feed": macro_items,
         "company_news": news_items,
         "ticker_macro": {k: v[:8] for k, v in ticker_macro.items()},
+        "ticker_indicator_takes": ticker_indicator_takes,
         "panels": panels,
         "ticker_ma": ticker_ma,
         "ticker_ohlcv": ticker_ohlcv,

@@ -3330,13 +3330,26 @@
 
   // Macro takes (free)
   const takes = (D.ticker_macro || {})[tk] || [];
-  if (takes.length) {
+  const indTakes = (D.ticker_indicator_takes || {})[tk] || [];
+  if (takes.length || indTakes.length) {
    h += '<div class="section"><div class="section-title">Macro Takes</div><div class="card">';
-   h += takes.map((m) => '<div class="news-item">' +
-    (m.url ? '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" class="news-h" style="text-decoration:none;color:inherit;"><div class="news-headline">' + esc(m.headline) + "</div></a>"
-     : '<div class="news-headline">' + esc(m.headline) + "</div>") +
-    '<div class="panel-summary">' + esc(m.take || "") + "</div>" +
-    '<div class="news-meta"><span>' + timeAgo(m.timestamp) + (m.source ? " · " + esc(m.source) : "") + "</span></div></div>").join("");
+   // 9-month indicator trends first (structural macro context)
+   if (indTakes.length) {
+    h += '<div style="font-size:12px;font-weight:700;color:#c9a961;margin-bottom:8px;">9-MONTH INDICATOR TRENDS</div>';
+    h += indTakes.map((m) => '<div class="news-item">' +
+     '<div class="news-headline">' + esc(m.headline) + "</div>" +
+     '<div class="panel-summary">' + esc(m.take || "") + "</div>" +
+     '<div class="news-meta"><span>' + esc(m.period || "") + "</span></div></div>").join("");
+   }
+   // Recent news takes
+   if (takes.length) {
+    h += '<div style="font-size:12px;font-weight:700;color:#c9a961;margin:12px 0 8px;">RECENT MACRO NEWS</div>';
+    h += takes.map((m) => '<div class="news-item">' +
+     (m.url ? '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" class="news-h" style="text-decoration:none;color:inherit;"><div class="news-headline">' + esc(m.headline) + "</div></a>"
+      : '<div class="news-headline">' + esc(m.headline) + "</div>") +
+     '<div class="panel-summary">' + esc(m.take || "") + "</div>" +
+     '<div class="news-meta"><span>' + timeAgo(m.timestamp) + (m.source ? " · " + esc(m.source) : "") + "</span></div></div>").join("");
+   }
    h += "</div></div>";
   }
 
