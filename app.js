@@ -206,6 +206,7 @@
    if (sections.ticker_macro_takes) flat.ticker_macro_takes = sections.ticker_macro_takes;
    if (sections.premarket_report) flat.premarket_report = sections.premarket_report;
    if (sections.fear_index) flat.fear_index = sections.fear_index;
+   if (sections.rotation_analysis) flat.rotation_analysis = sections.rotation_analysis;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -3124,6 +3125,96 @@
   return h;
  }
 
+ function rotationHtml() {
+  const ro = D.rotation_analysis;
+  if (!ro || !ro.pairs_trading_book) {
+   return '<div class="section"><div class="section-title">Rotation & Pairs Matrix</div>' +
+    '<div class="card"><p style="color:var(--muted)">Rotation analysis has not been computed yet. Check back after the morning refresh.</p></div></div>';
+  }
+  const intel = ro.desk_intel || {};
+  const fmtPct = (v) => {
+   const col = v > 0 ? "#3fb950" : (v < 0 ? "#f85149" : "#8b8fa3");
+   return '<span style="color:' + col + ';font-weight:700;">' + (v > 0 ? "+" : "") + v.toFixed(2) + "%</span>";
+  };
+  let h = '<div class="section" style="max-width:none;"><div class="section-title">Rotation & Pairs Matrix</div>';
+  h += '<div class="section-sub">Cross-asset rotation, factor regimes, and systematic long/short pairs with 20-day rolling Z-scores. As of ' + esc(ro.timestamp || "") + '.</div>';
+
+  // Regime cards
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:12px;">';
+  h += '<div class="card" style="padding:16px;"><div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">MACRO REGIME</div>' +
+   '<div style="font-size:18px;font-weight:800;color:#e8ecf1;">' + esc(intel.regime || "N/A") + '</div></div>';
+  h += '<div class="card" style="padding:16px;"><div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">CYCLICALS VS DEFENSIVES (1D)</div>' +
+   '<div style="font-size:18px;">' + fmtPct(intel.cyc_def_spread_1d || 0) + '</div></div>';
+  h += '<div class="card" style="padding:16px;"><div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">HIGH BETA VS LOW VOL (1D)</div>' +
+   '<div style="font-size:18px;">' + fmtPct(intel.beta_vol_spread_1d || 0) + '</div></div>';
+  h += '</div>';
+
+  // Desk notes
+  if (intel.commentary && intel.commentary.length) {
+   h += '<div class="card" style="padding:16px 20px;margin-bottom:16px;border-left:3px solid #2979FF;">' +
+    '<div style="font-size:11px;font-weight:700;color:#2979FF;letter-spacing:1px;margin-bottom:8px;">DESK NOTES</div>';
+   intel.commentary.forEach((n) => {
+    h += '<div style="display:flex;gap:10px;margin-bottom:8px;font-size:13px;line-height:1.6;color:#e8ecf1;">' +
+     '<span style="color:#2979FF;flex-shrink:0;">›</span><span>' + esc(n) + '</span></div>';
+   });
+   h += '</div>';
+  }
+
+  // Pairs book
+  h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:0 0 8px;letter-spacing:0.5px;">SYSTEMATIC LONG/SHORT PAIRS BOOK</div>';
+  h += '<div style="overflow-x:auto;margin-bottom:16px;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
+  h += '<thead><tr style="border-bottom:1px solid #2a3242;color:var(--muted);font-size:10px;letter-spacing:0.5px;">' +
+   '<th style="text-align:left;padding:8px;">PAIR</th><th style="text-align:left;padding:8px;">THESIS</th>' +
+   '<th style="text-align:right;padding:8px;">1D SPREAD</th><th style="text-align:right;padding:8px;">5D SPREAD</th>' +
+   '<th style="text-align:center;padding:8px;">20D Z</th><th style="text-align:right;padding:8px;">SIGNAL</th></tr></thead><tbody>';
+  (ro.pairs_trading_book || []).forEach((p) => {
+   const z = p.z_score || 0;
+   const zc = z >= 2 ? "#f85149" : (z <= -2 ? "#3fb950" : "#8b8fa3");
+   const bc = p.bias === "short" ? "#f85149" : (p.bias === "long" ? "#3fb950" : (p.bias.indexOf("momentum") === 0 ? "#2979FF" : "#8b8fa3"));
+   h += '<tr style="border-bottom:1px solid #1c2330;">' +
+    '<td style="padding:10px 8px;"><span style="color:#3fb950;font-weight:700;">' + esc(p.long_leg) + '</span>' +
+    '<span style="color:var(--muted);"> / </span><span style="color:#f85149;font-weight:700;">' + esc(p.short_leg) + '</span>' +
+    '<div style="font-size:10px;color:var(--muted);margin-top:2px;">' + esc(p.name) + '</div></td>' +
+    '<td style="padding:10px 8px;font-size:11px;color:var(--muted);max-width:220px;">' + esc(p.thesis) + '</td>' +
+    '<td style="padding:10px 8px;text-align:right;">' + fmtPct(p.spread_1d || 0) + '</td>' +
+    '<td style="padding:10px 8px;text-align:right;">' + fmtPct(p.spread_5d || 0) + '</td>' +
+    '<td style="padding:10px 8px;text-align:center;font-weight:700;color:' + zc + ';">' + z.toFixed(2) + 'σ</td>' +
+    '<td style="padding:10px 8px;text-align:right;"><span style="font-size:10px;font-weight:700;color:' + bc + ';border:1px solid ' + bc + ';border-radius:4px;padding:3px 8px;white-space:nowrap;">' + esc(p.signal) + '</span></td></tr>';
+  });
+  h += '</tbody></table></div>';
+
+  // Sectors + globals
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;">';
+  h += '<div><div style="font-size:12px;font-weight:700;color:#e8ecf1;margin-bottom:8px;letter-spacing:0.5px;">SECTORS & SUB-INDUSTRIES</div>';
+  h += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
+  h += '<thead><tr style="border-bottom:1px solid #2a3242;color:var(--muted);font-size:10px;">' +
+   '<th style="text-align:left;padding:6px;">SECTOR</th><th style="text-align:left;padding:6px;">GROUP</th>' +
+   '<th style="text-align:right;padding:6px;">1D</th><th style="text-align:right;padding:6px;">5D</th><th style="text-align:right;padding:6px;">20D</th></tr></thead><tbody>';
+  (ro.sectors || []).forEach((s) => {
+   h += '<tr style="border-bottom:1px solid #1c2330;"><td style="padding:6px;"><b style="color:#e8ecf1;">' + esc(s.symbol) + '</b> <span style="font-size:10px;color:var(--muted);">' + esc(s.name) + '</span></td>' +
+    '<td style="padding:6px;font-size:10px;color:var(--muted);">' + esc(s.group) + '</td>' +
+    '<td style="padding:6px;text-align:right;">' + fmtPct(s.chg_1d || 0) + '</td>' +
+    '<td style="padding:6px;text-align:right;">' + fmtPct(s.chg_5d || 0) + '</td>' +
+    '<td style="padding:6px;text-align:right;">' + fmtPct(s.chg_20d || 0) + '</td></tr>';
+  });
+  h += '</tbody></table></div></div>';
+  h += '<div><div style="font-size:12px;font-weight:700;color:#e8ecf1;margin-bottom:8px;letter-spacing:0.5px;">GLOBAL INDICES</div>';
+  h += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
+  h += '<thead><tr style="border-bottom:1px solid #2a3242;color:var(--muted);font-size:10px;">' +
+   '<th style="text-align:left;padding:6px;">INDEX</th><th style="text-align:right;padding:6px;">PRICE</th>' +
+   '<th style="text-align:right;padding:6px;">1D</th><th style="text-align:right;padding:6px;">5D</th><th style="text-align:right;padding:6px;">20D</th></tr></thead><tbody>';
+  (ro.global_indices || []).forEach((g) => {
+   h += '<tr style="border-bottom:1px solid #1c2330;"><td style="padding:6px;"><b style="color:#e8ecf1;">' + esc(g.symbol) + '</b> <span style="font-size:10px;color:var(--muted);">' + esc(g.name) + '</span></td>' +
+    '<td style="padding:6px;text-align:right;color:#e8ecf1;">' + g.price.toFixed(2) + '</td>' +
+    '<td style="padding:6px;text-align:right;">' + fmtPct(g.chg_1d || 0) + '</td>' +
+    '<td style="padding:6px;text-align:right;">' + fmtPct(g.chg_5d || 0) + '</td>' +
+    '<td style="padding:6px;text-align:right;">' + fmtPct(g.chg_20d || 0) + '</td></tr>';
+  });
+  h += '</tbody></table></div></div>';
+  h += '</div></div>';
+  return h;
+ }
+
  function fearIndexHtml() {
   const fi = D.fear_index;
   if (!fi || fi.fear_index === undefined) {
@@ -3209,6 +3300,8 @@
   h += premarketHtml();
   // Quantitative Fear Index (Pro)
   h += fearIndexHtml();
+  // Rotation & Pairs Engine (Pro), before the morning briefing
+  h += rotationHtml();
   if (r && r.available) {
    h += '<div class="section" style="max-width:none;">' +
     '<div class="section-sub">Published ' + esc((r.as_of || "").slice(0, 16).replace("T", " ")) + " ET</div>" +
