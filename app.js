@@ -3146,7 +3146,7 @@ function bindZoomHandlers() {
  function rotationHtml() {
   const ro = D.rotation_analysis;
   if (!ro || !ro.pairs_trading_book) {
-   return '<div class="section"><div class="section-title">Rotation & Pairs Matrix</div>' +
+   return '<div class="section"><div class="section-title">Rotation & Pairs Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     '<div class="card"><p style="color:var(--muted)">Rotation analysis has not been computed yet. Check back after the morning refresh.</p></div></div>';
   }
   const intel = ro.desk_intel || {};
@@ -3154,7 +3154,7 @@ function bindZoomHandlers() {
    const col = v > 0 ? "#3fb950" : (v < 0 ? "#f85149" : "#8b8fa3");
    return '<span style="color:' + col + ';font-weight:700;">' + (v > 0 ? "+" : "") + v.toFixed(2) + "%</span>";
   };
-  let h = '<div class="section" style="max-width:none;"><div class="section-title">Rotation & Pairs Matrix</div>';
+  let h = '<div class="section" style="max-width:none;"><div class="section-title">Rotation & Pairs Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
   h += '<div class="section-sub">Cross-asset rotation, factor regimes, and systematic long/short pairs with 20-day rolling Z-scores. As of ' + esc(ro.timestamp || "") + '.</div>';
 
   // Regime cards
@@ -3179,7 +3179,7 @@ function bindZoomHandlers() {
   }
 
   // Pairs book
-  h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:0 0 8px;letter-spacing:0.5px;">SYSTEMATIC LONG/SHORT PAIRS BOOK</div>';
+  h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:0 0 8px;letter-spacing:0.5px;">SYSTEMATIC LONG/SHORT PAIRS BOOK <span style="font-size:10px;background:#7d4fc9;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
   h += '<div style="overflow-x:auto;margin-bottom:16px;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
   h += '<thead><tr style="border-bottom:1px solid #2a3242;color:var(--muted);font-size:10px;letter-spacing:0.5px;">' +
    '<th style="text-align:left;padding:8px;">PAIR</th><th style="text-align:left;padding:8px;">THESIS</th>' +
@@ -3236,14 +3236,14 @@ function bindZoomHandlers() {
  function fearIndexHtml() {
   const fi = D.fear_index;
   if (!fi || fi.fear_index === undefined) {
-   return '<div class="section"><div class="section-title">Quantitative Fear Index</div>' +
+   return '<div class="section"><div class="section-title">Quantitative Fear Index <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     '<div class="card"><p style="color:var(--muted)">The Fear Index has not been computed yet. Check back after the morning refresh.</p></div></div>';
   }
   const score = fi.fear_index;
   const label = fi.sentiment || "";
   const color = score >= 75 ? "#f85149" : (score >= 55 ? "#ff7b1c" : (score >= 45 ? "#d4a017" : "#3fb950"));
   const canvasId = "fear-hist-" + Math.random().toString(36).slice(2, 8);
-  let h = '<div class="section" style="max-width:none;"><div class="section-title">Quantitative Fear Index</div>';
+  let h = '<div class="section" style="max-width:none;"><div class="section-title">Quantitative Fear Index <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
   h += '<div class="section-sub">A quantitative Fear Index combines fixed-strike downside option skew, volatility term structure backwardation, credit spread stress, safe-haven capital rotation, and market momentum into a single daily 0-100 gauge (0 = Extreme Complacency, 100 = Extreme Panic). Computed every trading morning. As of ' + esc(fi.timestamp || "") + '.</div>';
   // Gauge card
   h += '<div class="card" style="padding:24px;text-align:center;">';
