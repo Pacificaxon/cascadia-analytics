@@ -1097,7 +1097,7 @@
   h += ORDER.map((tk) => {
    const t = TICKERS[tk];
    return '<tr data-tk="' + esc(tk) + '"><td><a href="#/ticker/' + esc(tk) + '" class="ticker-cell" style="text-decoration:none;">' + esc(tk) + "</a></td>" +
-    "<td>" + fmt$(t.price) + "</td>" +
+    '<td>' + fmt$(t.price) + '<div style="font-size:10px;color:var(--muted);">' + esc(refreshTs(t)) + "</div></td>" +
     "<td>" + fmt$(t.bear, 0) + "</td><td>" + fmt$(t.base, 0) +
     "</td><td>" + fmt$(t.bull, 0) + "</td><td>" + fmt$(t.blended, 0) + "</td>" +
     '<td class="' + upsideCls(t.upside_base) + '">' + fmtPct(t.upside_base) + "</td>" +
