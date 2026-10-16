@@ -207,6 +207,7 @@
    if (sections.premarket_report) flat.premarket_report = sections.premarket_report;
    if (sections.fear_index) flat.fear_index = sections.fear_index;
    if (sections.rotation_analysis) flat.rotation_analysis = sections.rotation_analysis;
+   if (sections.screener_data) flat.screener_data = sections.screener_data;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -4701,6 +4702,155 @@
  }
 
  /* ================= SCREENER (Pro) ================= */
+ /* Quantitative factor screener (Pro): institutional alpha factors on a liquid universe */
+ function quantScreenerHtml() {
+  const sd = D.screener_data;
+  const meta = (sd && sd.metadata) || {};
+  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener</div>';
+  h += '<div class="section-sub">Institutional alpha factors across a liquid large-cap universe. Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning.</div>';
+  h += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;">';
+  h += '<div style="flex:1;min-width:220px;"><label style="font-size:11px;color:var(--muted);letter-spacing:1px;">SEARCH</label><br>' +
+   '<input id="q-search" type="text" placeholder="Ticker or company" style="width:100%;background:#0d1117;border:1px solid #2a3242;border-radius:6px;color:#e8ecf1;padding:8px 10px;margin-top:4px;"></div>';
+  const slider = (id, label, min, max, step, val, unit) =>
+   '<div style="flex:1;min-width:160px;"><label style="font-size:11px;color:var(--muted);letter-spacing:1px;">' + label + ': <b id="' + id + '-v" style="color:#e8ecf1;">' + val + unit + '</b></label><br>' +
+   '<input id="' + id + '" type="range" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '" style="width:100%;margin-top:8px;accent-color:#38bdf8;"></div>';
+  h += slider("q-roic", "MIN ROIC", -10, 80, 1, 15, "%");
+  h += slider("q-peg", "MAX PEG", 0.5, 5, 0.1, 2, "x");
+  h += slider("q-fcf", "MIN FCF YIELD", -5, 15, 0.5, 0, "%");
+  h += slider("q-evebitda", "MAX EV/EBITDA", 5, 80, 1, 35, "x");
+  h += slider("q-fscore", "MIN PIOTROSKI", 1, 9, 1, 7, "/9");
+  h += slider("q-surp", "MIN EARNINGS SURPRISE", -10, 30, 1, 0, "%");
+  h += '</div>';
+  h += '<div class="card" style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;">';
+  const tog = (id, label) =>
+   '<label style="font-size:12px;color:#e8ecf1;cursor:pointer;display:flex;align-items:center;gap:8px;">' +
+   '<input id="' + id + '" type="checkbox" style="accent-color:#38bdf8;width:16px;height:16px;">' + label + '</label>';
+  h += tog("q-oplev", "Revenue growth > COGS growth");
+  h += tog("q-margexp", "YoY margin expansion");
+  h += tog("q-golden", "Golden trend (price > 50 > 200 SMA)");
+  h += '<button class="btn secondary" id="q-reset" style="margin-left:auto;">Reset</button>';
+  h += '<button class="btn secondary" id="q-export">Export CSV</button>';
+  h += '</div>';
+  h += '<div class="card"><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">MATCHING: <b id="q-count" style="color:#38bdf8;"></b></div>';
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr>' +
+   '<th data-qsort="ticker" style="cursor:pointer;">Ticker</th>' +
+   '<th data-qsort="price" style="cursor:pointer;text-align:right;">Price</th>' +
+   '<th data-qsort="roic" style="cursor:pointer;text-align:right;">ROIC</th>' +
+   '<th data-qsort="pegRatio" style="cursor:pointer;text-align:right;">PEG</th>' +
+   '<th data-qsort="fcfYield" style="cursor:pointer;text-align:right;">FCF Yld</th>' +
+   '<th data-qsort="evToEbitda" style="cursor:pointer;text-align:right;">EV/EBITDA</th>' +
+   '<th style="text-align:center;">Op Lev</th>' +
+   '<th data-qsort="piotroskiFScore" style="cursor:pointer;text-align:center;">F-Score</th>' +
+   '<th data-qsort="earningsSurprisePct" style="cursor:pointer;text-align:right;">Surprise</th>' +
+   '<th style="text-align:center;">Trend</th>' +
+   '</tr></thead><tbody id="q-body"></tbody></table></div>';
+  h += '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;font-size:12px;">' +
+   '<button class="btn secondary" id="q-prev">Prev</button><span id="q-page" style="color:var(--muted);align-self:center;"></span>' +
+   '<button class="btn secondary" id="q-next">Next</button></div></div></div>';
+  return h;
+ }
+
+ function initQuantScreener() {
+  const sd = D.screener_data;
+  const stocks = (sd && sd.data) || [];
+  const body = document.getElementById("q-body");
+  if (!body) return;
+  let sortCol = "roic", sortDir = "desc", page = 1;
+  const perPage = 20;
+  const val = (id) => +document.getElementById(id).value;
+  const chk = (id) => document.getElementById(id).checked;
+
+  function filtered() {
+   const term = document.getElementById("q-search").value.toLowerCase();
+   const r = stocks.filter((s) => {
+    if (term && !(s.ticker.toLowerCase().includes(term) || (s.companyName || "").toLowerCase().includes(term))) return false;
+    if (s.roic < val("q-roic")) return false;
+    if (s.pegRatio > 0 && s.pegRatio > val("q-peg")) return false;
+    if (s.fcfYield < val("q-fcf")) return false;
+    if (s.evToEbitda > 0 && s.evToEbitda > val("q-evebitda")) return false;
+    if ((s.piotroskiFScore || 0) < val("q-fscore")) return false;
+    if (s.earningsSurprisePct < val("q-surp")) return false;
+    if (chk("q-oplev") && !s.operatingLeverage) return false;
+    if (chk("q-margexp") && !(s.grossMarginExpanding && s.operatingMarginExpanding)) return false;
+    if (chk("q-golden") && !s.goldenTrend) return false;
+    return true;
+   });
+   r.sort((a, b) => {
+    const av = a[sortCol], bv = b[sortCol];
+    if (typeof av === "string") return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+    return sortDir === "asc" ? (av - bv) : (bv - av);
+   });
+   return r;
+  }
+
+  function draw() {
+   const rows = filtered();
+   const pages = Math.max(1, Math.ceil(rows.length / perPage));
+   if (page > pages) page = pages;
+   const slice = rows.slice((page - 1) * perPage, page * perPage);
+   document.getElementById("q-count").textContent = rows.length + " / " + stocks.length;
+   document.getElementById("q-page").textContent = "Page " + page + " of " + pages;
+   body.innerHTML = slice.map((s) => {
+    const bull = s.goldenTrend ? '<span style="color:#3fb950;font-weight:700;">▲ BULL</span>' : '<span style="color:#8b8fa3;">▼ WEAK</span>';
+    const oplev = s.operatingLeverage ? '<span style="color:#3fb950;font-weight:700;">YES</span>' : '<span style="color:#8b8fa3;">-</span>';
+    const fs = s.piotroskiFScore;
+    const fsc = fs == null ? "#8b8fa3" : (fs >= 8 ? "#38bdf8" : (fs >= 6 ? "#e8ecf1" : "#f85149"));
+    return '<tr><td><b style="color:#e8ecf1;">' + esc(s.ticker) + '</b> <span style="font-size:10px;color:var(--muted);">' + esc(s.companyName || "") + '</span></td>' +
+     '<td style="text-align:right;">' + fmt$(s.price) + '</td>' +
+     '<td style="text-align:right;color:' + (s.roic >= 20 ? "#3fb950" : "#e8ecf1") + ';">' + s.roic.toFixed(1) + '%</td>' +
+     '<td style="text-align:right;">' + (s.pegRatio > 0 ? s.pegRatio.toFixed(2) : "N/A") + '</td>' +
+     '<td style="text-align:right;">' + s.fcfYield.toFixed(1) + '%</td>' +
+     '<td style="text-align:right;">' + (s.evToEbitda > 0 ? s.evToEbitda.toFixed(1) + "x" : "N/A") + '</td>' +
+     '<td style="text-align:center;">' + oplev + '</td>' +
+     '<td style="text-align:center;font-weight:700;color:' + fsc + ';">' + (fs == null ? "N/A" : fs + "/9") + '</td>' +
+     '<td style="text-align:right;color:' + (s.earningsSurprisePct > 0 ? "#3fb950" : (s.earningsSurprisePct < 0 ? "#f85149" : "#8b8fa3")) + ';">' +
+     (s.earningsSurprisePct > 0 ? "+" : "") + s.earningsSurprisePct.toFixed(1) + '%</td>' +
+     '<td style="text-align:center;">' + bull + '</td></tr>';
+   }).join("") || '<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px;">No securities match the selected criteria.</td></tr>';
+  }
+
+  ["q-search", "q-roic", "q-peg", "q-fcf", "q-evebitda", "q-fscore", "q-surp", "q-oplev", "q-margexp", "q-golden"].forEach((id) => {
+   const el = document.getElementById(id);
+   el.addEventListener(el.type === "checkbox" || el.type === "text" ? "input" : "input", () => {
+    const lbl = document.getElementById(id + "-v");
+    if (lbl) {
+     const unit = id === "q-peg" || id === "q-evebitda" ? "x" : (id === "q-fscore" ? "/9" : "%");
+     lbl.textContent = el.value + unit;
+    }
+    page = 1;
+    draw();
+   });
+  });
+  document.querySelectorAll("[data-qsort]").forEach((th) => th.addEventListener("click", () => {
+   const c = th.dataset.qsort;
+   if (sortCol === c) sortDir = sortDir === "asc" ? "desc" : "asc";
+   else { sortCol = c; sortDir = "desc"; }
+   draw();
+  }));
+  document.getElementById("q-prev").addEventListener("click", () => { if (page > 1) { page--; draw(); } });
+  document.getElementById("q-next").addEventListener("click", () => { page++; draw(); });
+  document.getElementById("q-reset").addEventListener("click", () => {
+   document.getElementById("q-search").value = "";
+   const d = { "q-roic": 15, "q-peg": 2, "q-fcf": 0, "q-evebitda": 35, "q-fscore": 7, "q-surp": 0 };
+   Object.keys(d).forEach((id) => {
+    document.getElementById(id).value = d[id];
+    const lbl = document.getElementById(id + "-v");
+    if (lbl) lbl.textContent = d[id] + (id === "q-peg" || id === "q-evebitda" ? "x" : (id === "q-fscore" ? "/9" : "%"));
+   });
+   ["q-oplev", "q-margexp", "q-golden"].forEach((id) => document.getElementById(id).checked = false);
+   page = 1; draw();
+  });
+  document.getElementById("q-export").addEventListener("click", () => {
+   const rows = filtered();
+   const csv = "ticker,company,sector,price,roic,peg,fcf_yield,ev_ebitda,op_leverage,piotroski,surprise_pct,golden_trend\n" +
+    rows.map((s) => [s.ticker, '"' + (s.companyName || "").replace(/"/g, "") + '"', '"' + (s.sector || "").replace(/"/g, "") + '"',
+     s.price, s.roic, s.pegRatio, s.fcfYield, s.evToEbitda, s.operatingLeverage ? "YES" : "NO",
+     s.piotroskiFScore == null ? "" : s.piotroskiFScore, s.earningsSurprisePct, s.goldenTrend ? "BULL" : "WEAK"].join(",")).join("\n");
+   dl("quant_screener.csv", csv, "text/csv");
+  });
+  draw();
+ }
+
  route("screener", function () {
   if (!isPro()) {
    app.innerHTML = '<div class="section"><div class="section-title">Premium Screener</div>' +
@@ -4745,6 +4895,11 @@
    dl("cascadia_screener.csv", csv, "text/csv");
   });
   draw();
+  // Quantitative factor screener (Pro), appended under the coverage screener
+  const quantDiv = document.createElement("div");
+  quantDiv.innerHTML = quantScreenerHtml();
+  app.appendChild(quantDiv);
+  initQuantScreener();
  });
 
  /* ================= PRICING ================= */
