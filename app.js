@@ -1131,7 +1131,7 @@
   if (!d || !d.available || !(d.leaders || []).length) {
    return '<div class="card"><p style="color:var(--muted)">No leadership data available.</p></div>';
   }
-  let h = '<div class="card"><h3>Market Leadership <span class="pro-badge">PRO</span></h3>';
+  let h = '<div class="card"><h3>Market Leadership <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></h3>';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Top ' + d.leaders.length + ' leaders from ' + (d.universe_size || "S&P 500") + ' stocks · As of ' + esc((d.as_of || "").slice(0, 10)) + '</div>';
   h += '<div class="table-wrap"><table class="coverage"><thead><tr>' +
    '<th>Ticker</th><th>Name</th><th>Sector</th><th>MLS</th><th title="Relative Strength percentile vs S&P 500 (0-100)">RS Pctl</th><th>Trend</th><th>Price</th><th>vs 50-day</th>' +
@@ -1271,29 +1271,30 @@
    const hist = d.history || [];
    const first = hist[0] || {};
    const latest = hist[hist.length - 1] || {};
-   // Metric cards (Jan print values from first data point)
+   // Metric cards (latest print values)
+   const latestLabel = latest.month ? latest.month.slice(5) + " Print" : "Latest";
    const metrics = [
-    { key: "pmi", label: "Manufacturing PMI", value: first.pmi != null ? first.pmi.toFixed(1) : " - ",
-     tag: "Leading", color: "#a3e635", raw: first.pmi },
-    { key: "ppi_yoy", label: "PPI (Producer Price)", value: first.ppi_yoy != null ? "+" + first.ppi_yoy.toFixed(1) + "%" : " - ",
-     tag: "Leading", color: "#a5b4fc", raw: first.ppi_yoy },
-    { key: "retail_mom", label: "Retail Sales", value: first.retail_mom != null ? first.retail_mom.toFixed(1) + "%" : " - ",
-     tag: "Coincident", color: "#22c55e", raw: first.retail_mom },
-    { key: "cpi_yoy", label: "CPI (Consumer Price)", value: first.cpi_yoy != null ? "+" + first.cpi_yoy.toFixed(1) + "%" : " - ",
-     tag: "Lagging", color: "#7dd3fc", raw: first.cpi_yoy },
-    { key: "wti_crude", label: "WTI Crude", value: first.wti_crude != null ? "$" + first.wti_crude.toFixed(0) : " - ",
-     tag: "Energy", color: "#f5a623", raw: first.wti_crude },
-    { key: "gasoline_retail", label: "Gasoline (Retail)", value: first.gasoline_retail != null ? "$" + first.gasoline_retail.toFixed(2) : " - ",
-     tag: "Energy", color: "#ff6b6b", raw: first.gasoline_retail },
-    { key: "diesel_retail", label: "Diesel (Retail)", value: first.diesel_retail != null ? "$" + first.diesel_retail.toFixed(2) : " - ",
-     tag: "Energy", color: "#c44dff", raw: first.diesel_retail },
+    { key: "pmi", label: "Manufacturing PMI", value: latest.pmi != null ? latest.pmi.toFixed(1) : " - ",
+     tag: "Leading", color: "#a3e635", raw: latest.pmi },
+    { key: "ppi_yoy", label: "PPI (Producer Price)", value: latest.ppi_yoy != null ? "+" + latest.ppi_yoy.toFixed(1) + "%" : " - ",
+     tag: "Leading", color: "#a5b4fc", raw: latest.ppi_yoy },
+    { key: "retail_mom", label: "Retail Sales", value: latest.retail_mom != null ? (latest.retail_mom >= 0 ? "+" : "") + latest.retail_mom.toFixed(1) + "%" : " - ",
+     tag: "Coincident", color: "#22c55e", raw: latest.retail_mom },
+    { key: "cpi_yoy", label: "CPI (Consumer Price)", value: latest.cpi_yoy != null ? "+" + latest.cpi_yoy.toFixed(1) + "%" : " - ",
+     tag: "Lagging", color: "#7dd3fc", raw: latest.cpi_yoy },
+    { key: "wti_crude", label: "WTI Crude", value: latest.wti_crude != null ? "$" + latest.wti_crude.toFixed(0) : " - ",
+     tag: "Energy", color: "#f5a623", raw: latest.wti_crude },
+    { key: "gasoline_retail", label: "Gasoline (Retail)", value: latest.gasoline_retail != null ? "$" + latest.gasoline_retail.toFixed(2) : " - ",
+     tag: "Energy", color: "#ff6b6b", raw: latest.gasoline_retail },
+    { key: "diesel_retail", label: "Diesel (Retail)", value: latest.diesel_retail != null ? "$" + latest.diesel_retail.toFixed(2) : " - ",
+     tag: "Energy", color: "#c44dff", raw: latest.diesel_retail },
    ];
    const cardsHtml = metrics.map((m) =>
     '<div style="background:#161b26;border-radius:10px;padding:14px;flex:1;min-width:140px;">' +
     '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#e8ecf1;">' + esc(m.label) +
     '<span style="width:8px;height:8px;border-radius:50%;background:' + m.color + ';display:inline-block;"></span></div>' +
     '<div style="font-size:22px;font-weight:700;color:#fff;margin:4px 0;">' + m.value + "</div>" +
-    '<div style="font-size:11px;color:#e8ecf1;opacity:0.6;">Jan Print • ' + m.tag + "</div></div>"
+    '<div style="font-size:11px;color:#e8ecf1;opacity:0.6;">' + latestLabel + ' • ' + m.tag + "</div></div>"
    ).join("");
    // Toggle pills
    const pillsHtml = metrics.map((m, i) =>
