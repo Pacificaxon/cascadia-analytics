@@ -3094,13 +3094,14 @@
    const chg = d.change_pct || 0;
    const col = chg > 0 ? "#3fb950" : (chg < 0 ? "#f85149" : "#8b8fa3");
    const arrow = chg > 0 ? "▲" : (chg < 0 ? "▼" : "–");
+   const qt = d.quote_time ? '<div style="font-size:10px;color:var(--muted);margin-top:3px;">' + esc(d.quote_time) + '</div>' : '';
    return '<div style="background:#161b26;border-radius:8px;padding:10px 12px;">' +
     '<div style="font-size:10px;color:var(--muted);margin-bottom:2px;">' + esc(d.name || ticker) + '</div>' +
     '<div style="font-size:15px;font-weight:700;color:#e8ecf1;">' + fmtPrice(d.price) + '</div>' +
-    '<div style="font-size:12px;font-weight:700;color:' + col + ';">' + arrow + " " + (chg > 0 ? "+" : "") + chg.toFixed(2) + "%</div></div>";
+    '<div style="font-size:12px;font-weight:700;color:' + col + ';">' + arrow + " " + (chg > 0 ? "+" : "") + chg.toFixed(2) + "%</div>" + qt + "</div>";
   };
   let h = '<div class="section" style="max-width:none;"><div class="section-title">Pre-Market Snapshot</div>';
-  h += '<div class="section-sub">Cross-asset prices vs prior close as of ' + esc(pm.timestamp || "") + ". Updates every trading morning before the open.</div>";
+  h += '<div class="section-sub">Cross-asset prices vs prior close, collected ' + esc(pm.timestamp || "") + ". Each card shows when its quote last printed. Updates every trading morning before the open.</div>";
   Object.keys(pm.data).forEach((cat) => {
    const tickers = pm.data[cat];
    const keys = Object.keys(tickers);
