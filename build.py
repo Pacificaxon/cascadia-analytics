@@ -291,7 +291,6 @@ def main():
         "ticker_skew": ticker_skew,
         "aaii_sentiment": aaii_sentiment,
         "cot_data": cot_data,
-        "macro_indicators": macro_indicators,
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
@@ -311,6 +310,7 @@ def main():
         "rsi_cyclical_defensive": site.pop("rsi_cd_history", {}),
         "ticker_ma": site.pop("ticker_ma", {}),
         "ticker_ohlcv": site.pop("ticker_ohlcv", {}),
+        "macro_indicators": macro_indicators,
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}

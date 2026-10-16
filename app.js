@@ -211,6 +211,7 @@
    if (sections.rsi_cyclical_defensive) flat.rsi_cd_history = sections.rsi_cyclical_defensive;
    if (sections.ticker_ma) flat.ticker_ma = sections.ticker_ma;
    if (sections.ticker_ohlcv) flat.ticker_ohlcv = sections.ticker_ohlcv;
+   if (sections.macro_indicators) flat.macro_indicators = sections.macro_indicators;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -2673,7 +2674,7 @@
            title: { display: true, text: "Net contracts", color: "#e8ecf1" } } } }
        });
       } else if (kind === "macro") {
-       const hist = (D.macro_indicators.history || []);
+       const hist = ((D.macro_indicators || {}).history || []);
        const labels = hist.map((r) => {
         const [y, m] = r.month.split("-");
         return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][parseInt(m)-1] + " " + y.slice(2);
