@@ -3332,9 +3332,11 @@
   const takes = (D.ticker_macro || {})[tk] || [];
   if (takes.length) {
    h += '<div class="section"><div class="section-title">Macro Takes</div><div class="card">';
-   h += takes.map((m) => '<div class="news-item"><div class="news-headline">' + esc(m.headline) + "</div>" +
+   h += takes.map((m) => '<div class="news-item">' +
+    (m.url ? '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" class="news-h" style="text-decoration:none;color:inherit;"><div class="news-headline">' + esc(m.headline) + "</div></a>"
+     : '<div class="news-headline">' + esc(m.headline) + "</div>") +
     '<div class="panel-summary">' + esc(m.take || "") + "</div>" +
-    '<div class="news-meta"><span>' + timeAgo(m.timestamp) + "</span></div></div>").join("");
+    '<div class="news-meta"><span>' + timeAgo(m.timestamp) + (m.source ? " · " + esc(m.source) : "") + "</span></div></div>").join("");
    h += "</div></div>";
   }
 
