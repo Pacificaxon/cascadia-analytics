@@ -1742,9 +1742,9 @@ function bindZoomHandlers() {
  }
  function ratingCls(r) {
   r = String(r || "").toLowerCase();
-  if (r === "strong buy") return "rating-strong-buy";
-  if (r === "buy") return "rating-buy";
-  if (r === "sell") return "rating-sell";
+  if (r.startsWith("strong buy")) return "rating-strong-buy";
+  if (r.startsWith("buy")) return "rating-buy";
+  if (r.startsWith("sell")) return "rating-sell";
   return "rating-hold";
  }
 
@@ -3849,6 +3849,9 @@ function bindZoomHandlers() {
   }
 
   // Earnings history (Pro)
+  // Earnings date & whisper (free) - confirmed date, consensus vs whisper
+  h += '<div class="section"><div class="section-title">Earnings Date & Whisper</div>' + earningsDateHtml(tk) + "</div>";
+
   // Earnings revisions (free) - Zacks-style 90-day revision trends
   h += '<div class="section"><div class="section-title">Earnings Revisions</div>' + revisionsHtml(tk) + "</div>";
 
@@ -4390,6 +4393,116 @@ function bindZoomHandlers() {
     premTxt + '</td><td class="' + (bull ? "pos" : "neg") + '">' + label + "</td></tr>";
   }).join("");
   return h + "</tbody></table></div></div>";
+ }
+
+ function earningsDateHtml(tk) {
+  const est = (D.earnings_estimates || {})[tk];
+  if (!est) return '<div class="card"><p style="color:var(--muted)">No earnings data available.</p></div>';
+  const fmtDate = (d) => {
+   if (!d) return "TBD";
+   const dt = new Date(d + "T12:00:00");
+   return dt.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+  };
+  const q = est.quarter || {};
+  const consensusEps = q.eps_consensus != null ? "$" + q.eps_consensus.toFixed(2) : "N/A";
+  const revEst = q.rev_consensus != null ?
+   (q.rev_consensus >= 1e9 ? "$" + (q.rev_consensus/1e9).toFixed(1) + "B" :
+    q.rev_consensus >= 1e6 ? "$" + (q.rev_consensus/1e6).toFixed(1) + "M" : "$" + q.rev_consensus.toFixed(0)) : "N/A";
+  const whisper = est.whisper != null ? "$" + est.whisper.toFixed(2) : "—";
+  const confirmed = est.earnings_date_confirmed ?
+   '<span style="display:inline-flex;align-items:center;gap:4px;color:#10b981;font-size:12px;"><span style="width:16px;height:16px;border-radius:50%;background:#122b1e;border:1px solid #1b5e3b;display:inline-flex;align-items:center;justify-content:center;font-size:10px;">✓</span>Confirmed</span>' : "";
+  let h = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">';
+  // Earnings Date card
+  h += '<div class="card" style="background:#14161d;border:1px solid #232733;border-radius:16px;padding:24px;">' +
+   '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+   '<span style="color:#c99a6b;font-weight:600;font-size:13px;">Earnings Date</span>' + confirmed + "</div>" +
+   '<div style="color:#9ba1b0;font-size:13px;margin-bottom:12px;">' + esc(est.fiscal_period || "") + "</div>" +
+   '<div style="color:#fff;font-size:32px;font-weight:800;margin-bottom:4px;">' + fmtDate(est.earnings_date) + "</div>" +
+   '<div style="color:#9ba1b0;font-size:13px;">' + (est.as_of ? "Updated " + esc(est.as_of) : "") + "</div></div>";
+  // Whisper card
+  h += '<div class="card" style="background:#14161d;border:1px solid #232733;border-radius:16px;padding:24px;">' +
+   '<div style="color:#c99a6b;font-weight:600;font-size:13px;margin-bottom:6px;">Earnings Whisper</div>' +
+   '<div style="color:#fff;font-size:32px;font-weight:800;min-height:38px;display:flex;align-items:center;">' + whisper + "</div>" +
+   '<div style="color:#9ba1b0;font-size:13px;margin-top:8px;">vs ' + consensusEps + "</div>" +
+   '<div style="color:#9ba1b0;font-size:13px;">Rev est ' + revEst + "</div></div>";
+  h += "</div>";
+  // EPS bar chart (logo colors: gold for estimated, forest green for actual)
+  const epsHist = est.eps_history || [];
+  if (epsHist.length > 0) {
+   const chartId = "eps-chart-" + tk.replace(/[^A-Z0-9]/gi, "");
+   h += '<div class="card" style="background:#14161d;border:1px solid #232733;border-radius:16px;padding:24px;margin-bottom:16px;">' +
+    '<div style="color:#fff;font-size:20px;font-weight:700;margin-bottom:12px;">Earnings</div>' +
+    '<div style="display:flex;gap:24px;margin-bottom:16px;font-size:13px;color:#9ba1b0;">' +
+    '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#c9a86a;margin-right:6px;"></span>Estimated EPS</span>' +
+    '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5a7d5a;margin-right:6px;"></span>Actual EPS</span></div>' +
+    '<div style="position:relative;height:280px;"><canvas id="' + chartId + '"></canvas></div>';
+   if (est.earnings_date) {
+    h += '<div style="margin-top:16px;padding:12px 16px;border:1px solid #2a2f3d;border-radius:12px;color:#c8d0dc;font-size:14px;">' +
+     '<b style="color:#fff;">Next earnings:</b> Expected on ' + fmtDate(est.earnings_date) + "</div>";
+   }
+   h += "</div>";
+   // Store data for chart rendering
+   if (!window._epsChartData) window._epsChartData = {};
+   window._epsChartData[chartId] = epsHist;
+   setTimeout(() => drawEpsChart(chartId), 100);
+  }
+  if (est.whisper == null) {
+   h += '<p style="font-size:11px;color:var(--muted);margin-top:8px;">Whisper numbers require a paid Earnings Whisper subscription and are not available from free data sources.</p>';
+  }
+  return h;
+ }
+
+ function drawEpsChart(chartId) {
+  const data = (window._epsChartData || {})[chartId];
+  if (!data || typeof Chart === "undefined") return;
+  const cv = document.getElementById(chartId);
+  if (!cv) return;
+  // Reverse to chronological order
+  const hist = [...data].reverse();
+  const labels = hist.map((e) => {
+   const d = new Date(e.date + "T12:00:00");
+   const q = Math.floor(d.getMonth() / 3) + 1;
+   return "Q" + q + " FY" + String(d.getFullYear()).slice(2);
+  });
+  new Chart(cv, {
+   type: "bar",
+   data: {
+    labels: labels,
+    datasets: [
+     {
+      label: "Estimated EPS",
+      data: hist.map((e) => e.estimated_eps),
+      backgroundColor: "#c9a86a",
+      borderRadius: 4,
+     },
+     {
+      label: "Actual EPS",
+      data: hist.map((e) => e.reported_eps),
+      backgroundColor: "#5a7d5a",
+      borderRadius: 4,
+     },
+    ],
+   },
+   options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+     legend: { display: false },
+     tooltip: {
+      callbacks: {
+       label: (ctx) => ctx.dataset.label + ": $" + (ctx.raw != null ? ctx.raw.toFixed(2) : "N/A"),
+      },
+     },
+    },
+    scales: {
+     x: { ticks: { color: "#9ba1b0" }, grid: { display: false } },
+     y: {
+      ticks: { color: "#9ba1b0", callback: (v) => "$" + v.toFixed(2) },
+      grid: { color: "rgba(42,46,57,0.4)" },
+     },
+    },
+   },
+  });
  }
 
  function revisionsHtml(tk) {
