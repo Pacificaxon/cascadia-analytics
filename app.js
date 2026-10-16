@@ -5187,6 +5187,90 @@ function bindZoomHandlers() {
   }
  });
 
+ /* ================= EARNINGS DASHBOARD (Pro) ================= */
+ route("earnings", async function () {
+  await ensureProData();
+  if (!isPro()) {
+   app.innerHTML = '<div class="crumb">EARNINGS DASHBOARD</div>' +
+    '<div class="hero"><div><h1 class="hero-h">Earnings Dashboard.</h1>' +
+    "<p class='hero-sub'>8 quarters of earnings surprises and price reactions for every covered ticker.</p></div></div>" +
+    '<div class="section"><div class="section-title">Earnings Dashboard <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Earnings Dashboard, Pro", "Track earnings beats/misses and 1-day price reactions across 8 quarters for all covered tickers.") + "</div>";
+   return;
+  }
+  const dash = (D.earnings_dashboard || {});
+  const tickers = Object.keys(dash).sort();
+  if (!tickers.length) {
+   app.innerHTML = '<div class="section"><div class="section-title">Earnings Dashboard <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div><div class="card"><p style="color:var(--muted)">No earnings dashboard data yet. Check back after the morning refresh.</p></div></div>';
+   return;
+  }
+  const fmt$ = (v, isB) => {
+   if (v == null || isNaN(v)) return "N/A";
+   if (isB) return "$" + (v / 1e9).toFixed(2) + "B";
+   return "$" + v.toFixed(2);
+  };
+  const fmtPct = (v) => {
+   if (v == null || isNaN(v)) return "N/A";
+   const s = (Math.abs(v * 100)).toFixed(1) + "%";
+   return v > 0 ? "+" + s : v < 0 ? "-" + s : s;
+  };
+  const fmtD = (d) => {
+   if (!d) return "N/A";
+   return new Date(d + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  };
+  let sel = tickers[0];
+  const renderDash = (tk) => {
+   const d = dash[tk];
+   if (!d) return "";
+   let h = '<div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">';
+   // Ticker card
+   h += '<div class="card" style="padding:24px;"><h1 style="font-size:28px;margin:0 0 8px;">' + esc(tk) + ' <span style="font-weight:400;font-size:18px;color:var(--muted)">- ' + esc(d.name || tk) + '</span></h1>';
+   if (d.upcoming) {
+    h += '<p style="color:var(--muted);margin:0;">Next earnings: <b style="color:#fff;">' + fmtD(d.upcoming.date) + '</b>';
+    if (d.upcoming.eps_est != null) h += ' &nbsp; Est. EPS ' + fmt$(d.upcoming.eps_est);
+    if (d.upcoming.rev_est != null) h += ' &nbsp; Est. Rev ' + fmt$(d.upcoming.rev_est, true);
+    h += '</p>';
+   } else {
+    h += '<p style="color:var(--muted);margin:0;">Next earnings: TBD</p>';
+   }
+   h += '<p style="font-size:11px;color:var(--muted);margin:8px 0 0;">Updated ' + esc(d.as_of || "") + '</p></div>';
+   // Upcoming estimates card
+   h += '<div class="card" style="padding:24px;text-align:center;"><div style="font-size:11px;color:#c9a86a;font-weight:700;letter-spacing:1px;margin-bottom:12px;">UPCOMING ESTIMATES</div>';
+   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
+   h += '<div><div style="font-size:11px;color:var(--muted);">Est. Revenue</div><div style="font-size:20px;font-weight:700;color:#c9a86a;">' + (d.upcoming ? fmt$(d.upcoming.rev_est, true) : "N/A") + '</div></div>';
+   h += '<div><div style="font-size:11px;color:var(--muted);">Est. EPS</div><div style="font-size:20px;font-weight:700;color:#c9a86a;">' + (d.upcoming ? fmt$(d.upcoming.eps_est) : "N/A") + '</div></div>';
+   h += '</div></div></div>';
+   // History table
+   h += '<div class="card" style="padding:0;overflow:hidden;"><div style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><b>Past 8 Quarters: Earnings & Price Reactions</b><span style="font-size:10px;background:#1a3a2a;border:1px solid #2a5a3a;padding:2px 8px;border-radius:4px;color:#7ecfa0;">LIVE DATA</span></div>';
+   h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Report Date</th><th>Revenue vs Est.</th><th>EPS vs Est.</th><th>1-Day Reaction</th></tr></thead><tbody>';
+   (d.history || []).forEach((q) => {
+    const revCls = q.rev_surprise_pct == null ? "" : (q.rev_surprise_pct >= 0 ? "pos" : "neg");
+    const epsCls = q.eps_surprise_pct == null ? "" : (q.eps_surprise_pct >= 0 ? "pos" : "neg");
+    const reactCls = q.price_reaction == null ? "" : (q.price_reaction >= 0 ? "pos" : "neg");
+    const reactTxt = q.price_reaction == null ? "N/A" : (q.price_reaction >= 0 ? "Up " : "Down ") + fmtPct(Math.abs(q.price_reaction));
+    h += "<tr><td>" + fmtD(q.date) + "</td>" +
+     '<td><span class="' + revCls + '">' + fmt$(q.rev_act, true) + ' vs ' + fmt$(q.rev_est, true) + ' (' + fmtPct(q.rev_surprise_pct) + ')</span></td>' +
+     '<td><span class="' + epsCls + '">' + fmt$(q.eps_act) + ' vs ' + fmt$(q.eps_est) + ' (' + fmtPct(q.eps_surprise_pct) + ')</span></td>' +
+     '<td class="' + reactCls + '"><b>' + reactTxt + '</b></td></tr>';
+   });
+   h += "</tbody></table></div></div>";
+   return h;
+  };
+  let h = '<div class="crumb">PRO · EARNINGS DASHBOARD</div>' +
+   '<div class="hero"><div><h1 class="hero-h">Earnings Dashboard.</h1>' +
+   "<p class='hero-sub'>8 quarters of earnings surprises and 1-day price reactions for every covered ticker. Refreshed every trading morning.</p></div></div>";
+  h += '<div class="section"><div class="section-title">Earnings Dashboard <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += '<div class="card" style="margin-bottom:16px;"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;"><span style="font-size:12px;color:var(--muted);">Ticker:</span>';
+  h += '<select id="ed-ticker" style="padding:8px 12px;border-radius:6px;background:var(--bg);border:1px solid var(--border);color:#fff;font-size:14px;">' +
+   tickers.map((t) => '<option value="' + esc(t) + '"' + (t === sel ? " selected" : "") + '>' + esc(t) + '</option>').join("") + '</select>';
+  h += '<span style="font-size:11px;color:var(--muted);margin-left:auto;">Auto-sync: 12:00 UTC weekdays</span></div></div>';
+  h += '<div id="ed-body">' + renderDash(sel) + '</div></div>';
+  app.innerHTML = h;
+  document.getElementById("ed-ticker").addEventListener("change", (e) => {
+   document.getElementById("ed-body").innerHTML = renderDash(e.target.value);
+  });
+ });
+
  /* ================= PRICING ================= */
  function showPricingModal() {
   const proActive = isPro();

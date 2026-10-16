@@ -370,6 +370,7 @@ def main():
         "rotation_analysis": rotation_analysis,
         "screener_data": screener_data,
         "minervini_data": minervini_data,
+        "earnings_dashboard": load(os.path.join(MR, "earnings_dashboard.json")) if os.path.exists(os.path.join(MR, "earnings_dashboard.json")) else {},
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}
