@@ -61,10 +61,7 @@ def main():
     macro_feed = load(os.path.join(MR, "macro_feed.json"))
     company_news = load(os.path.join(MR, "company_news.json"))
     ticker_macro = load(os.path.join(MR, "ticker_macro.json"))
-    try:
-        ticker_indicator_takes = load(os.path.join(MR, "ticker_indicator_takes.json"))
-    except FileNotFoundError:
-        ticker_indicator_takes = {}
+    ticker_indicator_takes = load(os.path.join(MR, "ticker_indicator_takes.json"))
     internals = load(os.path.join(MR, "market_internals.json"))
     ticker_ma = load(os.path.join(MR, "ticker_ma.json"))
     try:
@@ -321,6 +318,7 @@ def main():
         "ticker_ohlcv": site.pop("ticker_ohlcv", {}),
         "macro_indicators": macro_indicators,
         "technical_analysis": technical_analysis,
+        "ticker_indicator_takes": site.pop("ticker_indicator_takes", {}),
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}

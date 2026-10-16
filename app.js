@@ -203,6 +203,7 @@
    if (sections.ticker_ohlcv) flat.ticker_ohlcv = sections.ticker_ohlcv;
    if (sections.macro_indicators) flat.macro_indicators = sections.macro_indicators;
    if (sections.technical_analysis) flat.technical_analysis = sections.technical_analysis;
+   if (sections.ticker_indicator_takes) flat.ticker_indicator_takes = sections.ticker_indicator_takes;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -3328,29 +3329,43 @@
    h += "</div></div>";
   }
 
-  // Macro takes (free)
+  // Macro takes: headlines + links free, analysis + indicator data Pro
   const takes = (D.ticker_macro || {})[tk] || [];
   const indTakes = (D.ticker_indicator_takes || {})[tk] || [];
   if (takes.length || indTakes.length) {
    h += '<div class="section"><div class="section-title">Macro Takes</div><div class="card">';
-   // 9-month indicator trends first (structural macro context)
-   if (indTakes.length) {
-    h += '<div style="font-size:12px;font-weight:700;color:#c9a961;margin-bottom:8px;">9-MONTH INDICATOR TRENDS</div>';
-    h += indTakes.map((m) => '<div class="news-item">' +
-     '<div class="news-headline">' + esc(m.headline) + "</div>" +
-     '<div class="panel-summary">' + esc(m.take || "") + "</div>" +
-     '<div class="news-meta"><span>' + esc(m.period || "") + "</span></div></div>").join("");
-   }
-   // Recent news takes
+   // Recent macro news headlines (free) - headlines and links only
    if (takes.length) {
-    h += '<div style="font-size:12px;font-weight:700;color:#c9a961;margin:12px 0 8px;">RECENT MACRO NEWS</div>';
+    h += '<div style="font-size:12px;font-weight:700;color:#c9a961;margin-bottom:8px;">RECENT MACRO NEWS</div>';
     h += takes.map((m) => '<div class="news-item">' +
      (m.url ? '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" class="news-h" style="text-decoration:none;color:inherit;"><div class="news-headline">' + esc(m.headline) + "</div></a>"
       : '<div class="news-headline">' + esc(m.headline) + "</div>") +
-     '<div class="panel-summary">' + esc(m.take || "") + "</div>" +
+     // Take analysis is Pro-gated
+     (isPro() ? '<div class="panel-summary">' + esc(m.take || "") + "</div>" : "") +
      '<div class="news-meta"><span>' + timeAgo(m.timestamp) + (m.source ? " · " + esc(m.source) : "") + "</span></div></div>").join("");
+    if (!isPro() && takes.length) {
+     h += '<div style="margin-top:8px;font-size:12px;color:var(--muted);">Pro members see our analysis of what each story means for ' + esc(tk) + '. <a href="#/pricing" style="color:#c9a961;">See Pro plans</a></div>';
+    }
    }
    h += "</div></div>";
+  }
+
+  // 12-month indicator trends (Pro)
+  if (indTakes.length) {
+   h += '<div class="section"><div class="section-title">Macro Indicator Trends <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+   h += gatedSafe("Macro Indicator Trends, Pro",
+    "12-month trends for CPI, PPI, PMI, retail sales and other macro indicators relevant to " + tk + ".",
+    () => {
+     let ih = '<div class="card">';
+     ih += '<div style="font-size:12px;color:#a0a8b8;margin-bottom:12px;">12-month rolling trends for macro indicators that affect ' + esc(tk) + '\'s earnings and revenue potential.</div>';
+     ih += indTakes.map((m) => '<div class="news-item">' +
+      '<div class="news-headline">' + esc(m.headline) + "</div>" +
+      '<div class="panel-summary">' + esc(m.take || "") + "</div>" +
+      '<div class="news-meta"><span>' + esc(m.period || "") + "</span></div></div>").join("");
+     ih += "</div>";
+     return ih;
+    });
+   h += "</div>";
   }
 
   // Bellwether readthroughs (free)
