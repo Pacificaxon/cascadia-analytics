@@ -3123,6 +3123,18 @@
   return h;
  }
 
+ function fearComponentNote(key) {
+  const notes = {
+   fixed_strike_skew: "High readings mean institutions are paying up heavily for crash protection, a classic sign of hedging demand ahead of stress.",
+   vol_term_structure: "Backwardation (VIX above 3-month VIX) means traders expect more volatility now than later, the signature of an active scare.",
+   vix_spot: "The market's baseline fear gauge. Low teens is calm, 20s is nervous, 30+ is a genuine risk-off regime.",
+   credit_risk: "When junk bonds lag investment grade, credit desks are pricing default risk. This often leads equity weakness by days to weeks.",
+   safe_haven: "Gold beating stocks over two weeks means real money is rotating into hard hedges rather than chasing equity beta.",
+   momentum: "A market far below its 50-day average is washed out. Capitulation bottoms often print here, but so do the early legs of real drawdowns."
+  };
+  return notes[key] || "Component of the composite fear gauge.";
+ }
+
  function fearIndexHtml() {
   const fi = D.fear_index;
   if (!fi || fi.fear_index === undefined) {
@@ -3163,32 +3175,79 @@
   h += '<div style="display:flex;justify-content:space-between;max-width:520px;margin:0 auto;font-size:10px;color:var(--muted);">' +
    '<span>COMPLACENCY</span><span>NEUTRAL</span><span>EXTREME FEAR</span></div>';
   h += '</div>';
-  // Component cards
+  // Component cards (click to expand contribution math)
   if (keys.length) {
-   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">MODEL COMPONENTS</div>';
+   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">MODEL COMPONENTS <span style="font-weight:400;color:var(--muted);letter-spacing:0;">(click a card for details)</span></div>';
    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;">';
-   keys.forEach((k) => {
+   keys.forEach((k, i) => {
     const c = inds[k];
     const cs = c.score || 0;
+    const w = parseFloat(String(c.weight).replace("%", "")) / 100 || 0;
+    const contrib = (cs * w).toFixed(1);
     const cc = cs > 60 ? "#ff7b1c" : (cs < 40 ? "#3fb950" : "#e8ecf1");
-    h += '<div style="background:#161b26;border-radius:8px;padding:12px;">' +
+    const cardId = "fear-card-" + i + "-" + canvasId;
+    const detailId = "fear-detail-" + i + "-" + canvasId;
+    h += '<div id="' + cardId + '" style="background:#161b26;border-radius:8px;padding:12px;cursor:pointer;" data-fear-toggle="' + detailId + '">' +
      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
      '<span style="font-size:11px;color:var(--muted);">' + esc(c.name) + '</span>' +
      '<span style="font-size:10px;background:#0f1420;color:#8b8fa3;padding:2px 6px;border-radius:4px;">' + esc(c.weight) + '</span></div>' +
      '<div style="font-size:20px;font-weight:700;color:' + cc + ';">' + cs + '</div>' +
-     '<div style="font-size:11px;color:var(--muted);margin-top:2px;">' + esc(c.details) + '</div></div>';
+     '<div style="font-size:11px;color:var(--muted);margin-top:2px;">' + esc(c.details) + '</div>' +
+     '<div id="' + detailId + '" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid #2a3242;">' +
+     '<div style="font-size:12px;color:#e8ecf1;line-height:1.7;">Contributes <strong style="color:' + cc + ';">' + contrib + ' points</strong> to the composite (' + cs + ' x ' + esc(c.weight) + ').</div>' +
+     '<div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.6;">' + esc(fearComponentNote(k)) + '</div></div></div>';
    });
    h += '</div>';
+   h += '<script>document.querySelectorAll("[data-fear-toggle]").forEach(function(el){el.addEventListener("click",function(){var d=document.getElementById(el.getAttribute("data-fear-toggle"));if(d)d.style.display=d.style.display==="none"?"block":"none";});});</script>';
+  }
+  // Weight simulator
+  if (keys.length) {
+   const simId = "fear-sim-" + canvasId;
+   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">WEIGHT SIMULATOR <span style="font-weight:400;color:var(--muted);letter-spacing:0;">(drag to recalibrate)</span></div>';
+   h += '<div class="card" style="padding:16px 20px;">';
+   h += '<div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap;">' +
+    '<div style="font-size:13px;color:var(--muted);">Simulated index:</div>' +
+    '<div id="' + simId + '-score" style="font-size:32px;font-weight:800;color:' + color + ';">' + score + '</div>' +
+    '<div id="' + simId + '-label" style="font-size:12px;font-weight:700;color:' + color + ';letter-spacing:1px;">' + esc(label).toUpperCase() + '</div>' +
+    '<button id="' + simId + '-reset" style="margin-left:auto;background:#0f1420;color:#8b8fa3;border:1px solid #2a3242;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;">Reset weights</button></div>';
+   h += '<div id="' + simId + '-sliders"></div>';
+   h += '<div style="font-size:11px;color:var(--muted);margin-top:10px;">Weights are normalized to 100%. Scores are today\'s actual component readings.</div>';
+   h += '</div>';
+   const compJson = JSON.stringify(keys.map((k) => ({ name: inds[k].name, score: inds[k].score || 0, weight: parseFloat(String(inds[k].weight).replace("%", "")) || 0 })));
+   h += '<script>(function(){var comps=' + compJson + ';var wrap=document.getElementById("' + simId + '-sliders");if(!wrap)return;' +
+    'var orig=comps.map(function(c){return c.weight;});' +
+    'function fearColor(s){return s>=75?"#f85149":(s>=55?"#ff7b1c":(s>=45?"#d4a017":"#3fb950"));} ' +
+    'function fearLabel(s){return s>=75?"EXTREME FEAR":(s>=55?"ELEVATED FEAR":(s>=45?"NEUTRAL":(s>=25?"COMPLACENCY":"EXTREME COMPLACENCY")));} ' +
+    'function render(){wrap.innerHTML="";var total=comps.reduce(function(a,c){return a+c.w;},0)||1;' +
+    'comps.forEach(function(c,i){var row=document.createElement("div");row.style.cssText="display:flex;align-items:center;gap:10px;margin-bottom:8px;";' +
+    'row.innerHTML="<span style=\'font-size:12px;color:#e8ecf1;width:180px;flex-shrink:0;\'>"+c.name+"</span>"+' +
+    '"<input type=\'range\' min=\'0\' max=\'50\' step=\'1\' value=\'"+c.w+"\' data-i=\'"+i+"\' style=\'flex:1;accent-color:#2979FF;\'>"+' +
+    '"<span style=\'font-size:12px;color:#8b8fa3;width:44px;text-align:right;\'>"+c.w+"%</span>";wrap.appendChild(row);});' +
+    'wrap.querySelectorAll("input").forEach(function(inp){inp.addEventListener("input",function(){comps[+inp.dataset.i].w=+inp.value;update();});});}' +
+    'function update(){var total=comps.reduce(function(a,c){return a+c.w;},0);if(total<=0)return;' +
+    'var s=comps.reduce(function(a,c){return a+c.score*(c.w/total);},0);s=Math.round(s*10)/10;' +
+    'var sc=document.getElementById("' + simId + '-score"),lb=document.getElementById("' + simId + '-label");' +
+    'if(sc){sc.textContent=s;sc.style.color=fearColor(s);}if(lb){lb.textContent=fearLabel(s);lb.style.color=fearColor(s);}' +
+    'wrap.querySelectorAll("span:last-child").forEach(function(sp,i){if(comps[i])sp.textContent=comps[i].w+"%";});}' +
+    'comps=comps.map(function(c){c.w=c.weight;return c;});render();' +
+    'document.getElementById("' + simId + '-reset").addEventListener("click",function(){comps.forEach(function(c,i){c.w=orig[i];});render();update();});' +
+    '})();</script>';
   }
   // 30-day history chart
   if (fi.history && fi.history.length > 1) {
    h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">30-DAY HISTORY</div>';
    h += '<div class="card" style="padding:16px;"><div style="height:180px;"><canvas id="' + canvasId + '"></canvas></div></div>';
    const histData = fi.history.map((p) => ({ x: p.date, y: p.score }));
+   const histLabel = JSON.stringify(histData.map((p) => {
+    const s = p.y;
+    const lab = s >= 75 ? "Extreme Fear" : (s >= 55 ? "Elevated Fear" : (s >= 45 ? "Neutral" : (s >= 25 ? "Complacency" : "Extreme Complacency")));
+    return p.x.slice(5) + " | " + s + " (" + lab + ")";
+   }));
    h += '<script>if(window.Chart){new Chart(document.getElementById("' + canvasId + '"),{type:"line",data:{labels:' +
     JSON.stringify(histData.map((p) => p.x.slice(5))) + ',datasets:[{data:' + JSON.stringify(histData.map((p) => p.y)) +
-    ',borderColor:"#2979FF",borderWidth:2,tension:0.3,fill:false,pointRadius:0}]},' +
-    'options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},' +
+    ',borderColor:"#2979FF",borderWidth:2,tension:0.3,fill:false,pointRadius:3,pointHoverRadius:5}]},' +
+    'options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},' +
+    'plugins:{legend:{display:false},tooltip:{callbacks:{title:function(items){return ' + histLabel + '[items[0].dataIndex];}}},' +
     'zoom:{zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:"x"},pan:{enabled:true,mode:"x"}}},' +
     'scales:{x:{grid:{display:false},ticks:{color:"#525252",font:{size:9}}},' +
     'y:{min:0,max:100,grid:{color:"#1a1a1a"},ticks:{color:"#525252",font:{size:9},stepSize:25}}}}});}</script>';
