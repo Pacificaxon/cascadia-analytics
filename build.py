@@ -168,6 +168,10 @@ def main():
         screener_data = load(os.path.join(MR, "screener_data.json"))
     except FileNotFoundError:
         screener_data = {}
+    try:
+        minervini_data = load(os.path.join(MR, "minervini_data.json"))
+    except FileNotFoundError:
+        minervini_data = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
@@ -354,6 +358,7 @@ def main():
         "fear_index": fear_index,
         "rotation_analysis": rotation_analysis,
         "screener_data": screener_data,
+        "minervini_data": minervini_data,
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}

@@ -208,6 +208,7 @@
    if (sections.fear_index) flat.fear_index = sections.fear_index;
    if (sections.rotation_analysis) flat.rotation_analysis = sections.rotation_analysis;
    if (sections.screener_data) flat.screener_data = sections.screener_data;
+   if (sections.minervini_data) flat.minervini_data = sections.minervini_data;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -4851,12 +4852,134 @@
   draw();
  }
 
- route("screener", function () {
-  if (!isPro()) {
-   app.innerHTML = '<div class="section"><div class="section-title">Premium Screener</div>' +
-    proTeaser("Screener, Pro", "Filter all covered names by Cascadia Score, DCF upside, rating, and price range. Export results to CSV.") + "</div>";
-   return;
+ /* Technical factor screener: Minervini Trend Template (Pro) */
+ function minerviniHtml() {
+  const md = D.minervini_data;
+  const meta = (md && md.metadata) || {};
+  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener</div>';
+  h += '<div class="section-sub">Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across 50 growth names. ' +
+   (meta.fullStage2Count != null ? '<b style="color:#3fb950;">' + meta.fullStage2Count + ' names pass all 8</b>. ' : '') +
+   'Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning. Click a row to inspect its criteria card.</div>';
+  h += '<div style="display:grid;grid-template-columns:1fr;gap:16px;" id="min-wrap">';
+  h += '<div class="card"><div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">' +
+   '<input id="m-search" type="text" placeholder="Filter ticker" style="background:#0d1117;border:1px solid #2a3242;border-radius:6px;color:#e8ecf1;padding:8px 10px;">' +
+   '<button class="btn secondary m-filter" data-f="all">All</button>' +
+   '<button class="btn secondary m-filter" data-f="8">8/8 pass</button>' +
+   '<button class="btn secondary m-filter" data-f="7">7+ pass</button>' +
+   '<button class="btn secondary" id="m-export" style="margin-left:auto;">Export CSV</button></div>';
+  h += '<div style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px;" class="min-grid">';
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr>' +
+   '<th data-msort="ticker" style="cursor:pointer;">Ticker</th>' +
+   '<th data-msort="price" style="cursor:pointer;text-align:right;">Price</th>' +
+   '<th data-msort="sma50" style="cursor:pointer;text-align:right;">SMA 50</th>' +
+   '<th data-msort="sma200" style="cursor:pointer;text-align:right;">SMA 200</th>' +
+   '<th data-msort="rsRating" style="cursor:pointer;text-align:right;">RS</th>' +
+   '<th data-msort="totalPassed" style="cursor:pointer;text-align:center;">Score</th>' +
+   '</tr></thead><tbody id="m-body"></tbody></table></div>';
+  h += '<div id="m-card"></div>';
+  h += '</div></div></div>';
+  return h;
+ }
+
+ function initMinervini() {
+  const md = D.minervini_data;
+  const stocks = (md && md.data) || [];
+  const body = document.getElementById("m-body");
+  if (!body) return;
+  let filter = "all", sortCol = "totalPassed", sortDir = "desc", selected = stocks.length ? stocks[0].ticker : null;
+
+  function filtered() {
+   const term = document.getElementById("m-search").value.toLowerCase();
+   const r = stocks.filter((s) => {
+    if (term && !s.ticker.toLowerCase().includes(term)) return false;
+    if (filter === "8" && s.totalPassed !== 8) return false;
+    if (filter === "7" && s.totalPassed < 7) return false;
+    return true;
+   });
+   r.sort((a, b) => {
+    const av = a[sortCol], bv = b[sortCol];
+    if (typeof av === "string") return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+    return sortDir === "asc" ? (av - bv) : (bv - av);
+   });
+   return r;
   }
+
+  function cardHtml(s) {
+   if (!s) return '<div class="card"><p style="color:var(--muted);text-align:center;padding:24px;">Select a ticker to inspect its 8-point criteria.</p></div>';
+   const badge = s.meetsAll
+    ? '<span style="font-size:10px;font-weight:700;color:#3fb950;border:1px solid #3fb950;border-radius:4px;padding:3px 8px;">STAGE 2 CONFIRMED</span>'
+    : '<span style="font-size:10px;font-weight:700;color:#f85149;border:1px solid #f85149;border-radius:4px;padding:3px 8px;">NON-QUALIFIED</span>';
+   let h = '<div class="card" style="padding:0;overflow:hidden;"><div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #2a3242;">' +
+    '<div><div style="font-size:10px;color:var(--muted);letter-spacing:1px;">INSPECTING</div>' +
+    '<div style="font-size:18px;font-weight:800;color:#e8ecf1;">' + esc(s.ticker) + ' <span style="font-size:13px;font-weight:400;color:var(--muted);">' + fmt$(s.price) + '</span></div></div>' + badge + '</div>';
+   h += '<table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr style="background:#14b8a6;">' +
+    '<th colspan="2" style="padding:8px;color:#0a0d14;font-size:11px;letter-spacing:1px;">CRITERIA</th></tr></thead><tbody>';
+   s.criteria.forEach((c) => {
+    const bg = c.passed ? "background:rgba(63,185,80,0.08);" : "background:rgba(248,81,73,0.08);";
+    const col = c.passed ? "#3fb950" : "#f85149";
+    h += '<tr style="border-bottom:1px solid #1c2330;' + bg + '">' +
+     '<td style="padding:8px 10px;color:#e8ecf1;">' + esc(c.label) + '<div style="font-size:10px;color:var(--muted);margin-top:2px;">' + esc(c.value) + '</div></td>' +
+     '<td style="padding:8px 10px;text-align:center;font-weight:800;color:' + col + ';min-width:64px;">' + (c.passed ? "yes" : "no") + '</td></tr>';
+   });
+   h += '<tr style="background:#161b26;font-weight:700;"><td style="padding:10px;color:#e8ecf1;">Meet minervini criteria</td>' +
+    '<td style="padding:10px;text-align:center;color:#e8ecf1;">(' + s.totalPassed + ' of 8)</td></tr>';
+   h += '</tbody></table>';
+   h += '<div style="padding:12px 16px;font-size:11px;color:var(--muted);line-height:1.8;">' +
+    '<div><b style="color:#e8ecf1;">52W Low:</b> ' + fmt$(s.low52w) + ' (+' + s.pctAboveLow.toFixed(1) + '%)</div>' +
+    '<div><b style="color:#e8ecf1;">52W High:</b> ' + fmt$(s.high52w) + ' (-' + s.pctFromHigh.toFixed(1) + '%)</div>' +
+    '<div><b style="color:#e8ecf1;">RS Percentile:</b> ' + s.rsRating + ' / 99</div></div></div>';
+   return h;
+  }
+
+  function draw() {
+   const rows = filtered();
+   body.innerHTML = rows.map((s) => {
+    const sel = s.ticker === selected ? ' style="background:#1a2233;"' : "";
+    const rsc = s.rsRating >= 70 ? "#3fb950" : "#f85149";
+    const sc = s.totalPassed === 8 ? "#3fb950" : (s.totalPassed >= 6 ? "#f0b429" : "#f85149");
+    return '<tr data-tk="' + esc(s.ticker) + '"' + sel + ' style="cursor:pointer;">' +
+     '<td><b style="color:#e8ecf1;">' + esc(s.ticker) + '</b></td>' +
+     '<td style="text-align:right;">' + fmt$(s.price) + '</td>' +
+     '<td style="text-align:right;color:var(--muted);">' + fmt$(s.sma50) + '</td>' +
+     '<td style="text-align:right;color:var(--muted);">' + fmt$(s.sma200) + '</td>' +
+     '<td style="text-align:right;font-weight:700;color:' + rsc + ';">' + s.rsRating.toFixed(1) + '</td>' +
+     '<td style="text-align:center;font-weight:700;color:' + sc + ';">' + s.totalPassed + ' / 8</td></tr>';
+   }).join("") || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">No matches.</td></tr>';
+   body.querySelectorAll("tr[data-tk]").forEach((tr) => tr.addEventListener("click", () => {
+    selected = tr.dataset.tk;
+    draw();
+   }));
+   const sel = stocks.find((x) => x.ticker === selected);
+   document.getElementById("m-card").innerHTML = cardHtml(sel);
+  }
+
+  document.getElementById("m-search").addEventListener("input", draw);
+  document.querySelectorAll(".m-filter").forEach((b) => b.addEventListener("click", () => {
+   filter = b.dataset.f;
+   document.querySelectorAll(".m-filter").forEach((x) => x.classList.remove("active"));
+   b.classList.add("active");
+   draw();
+  }));
+  document.querySelectorAll("[data-msort]").forEach((th) => th.addEventListener("click", () => {
+   const c = th.dataset.msort;
+   if (sortCol === c) sortDir = sortDir === "asc" ? "desc" : "asc";
+   else { sortCol = c; sortDir = "desc"; }
+   draw();
+  }));
+  document.getElementById("m-export").addEventListener("click", () => {
+   const rows = filtered();
+   const csv = "ticker,price,sma50,sma150,sma200,rs_rating,total_passed,meets_all\n" +
+    rows.map((s) => [s.ticker, s.price, s.sma50, s.sma150, s.sma200, s.rsRating, s.totalPassed, s.meetsAll ? "YES" : "NO"].join(",")).join("\n");
+   dl("minervini_screener.csv", csv, "text/csv");
+  });
+  const firstFilter = document.querySelector('.m-filter[data-f="all"]');
+  if (firstFilter) firstFilter.classList.add("active");
+  draw();
+ }
+
+ route("screener", function () {
+  const pro = isPro();
+  // Coverage screener is FREE; factor screeners below are Pro
   let h = '<div class="section"><div class="section-title">Premium Screener</div>' +
    '<div class="section-sub">Filter the coverage universe. Methodology: Cascadia Score = weighted multi-factor: valuation (base-case upside, 40%), price momentum (MA signals, 30%), earnings momentum (latest verdict, 20%), options flow sentiment (10%). Scored 1–100.</div>';
   h += '<div class="card"><div class="filter-bar">' +
@@ -4895,11 +5018,27 @@
    dl("cascadia_screener.csv", csv, "text/csv");
   });
   draw();
-  // Quantitative factor screener (Pro), appended under the coverage screener
-  const quantDiv = document.createElement("div");
-  quantDiv.innerHTML = quantScreenerHtml();
-  app.appendChild(quantDiv);
-  initQuantScreener();
+  if (pro) {
+   // Quantitative factor screener (Pro), under the coverage screener
+   const quantDiv = document.createElement("div");
+   quantDiv.innerHTML = quantScreenerHtml();
+   app.appendChild(quantDiv);
+   initQuantScreener();
+   // Technical factor screener: Minervini Trend Template (Pro), below quantitative
+   const minDiv = document.createElement("div");
+   minDiv.innerHTML = minerviniHtml();
+   app.appendChild(minDiv);
+   initMinervini();
+  } else {
+   const t1 = document.createElement("div");
+   t1.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener</div>' +
+    proTeaser("Quantitative Factor Screener, Pro", "Screen 36 liquid names on institutional alpha factors: ROIC, PEG, FCF yield, EV/EBITDA, Piotroski F-Score, operating leverage, golden trend. Sliders, sortable columns, CSV export.") + "</div>";
+   app.appendChild(t1);
+   const t2 = document.createElement("div");
+   t2.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener</div>' +
+    proTeaser("Technical Factor Screener, Pro", "Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across 50 growth names. Click any ticker to inspect its full criteria card.") + "</div>";
+   app.appendChild(t2);
+  }
  });
 
  /* ================= PRICING ================= */
