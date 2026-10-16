@@ -318,7 +318,6 @@ def main():
         "ticker_ohlcv": site.pop("ticker_ohlcv", {}),
         "macro_indicators": macro_indicators,
         "technical_analysis": technical_analysis,
-        "ticker_indicator_takes": site.pop("ticker_indicator_takes", {}),
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}
