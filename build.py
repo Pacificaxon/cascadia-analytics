@@ -152,6 +152,10 @@ def main():
         technical_analysis = load(os.path.join(MR, "technical_analysis.json"))
     except FileNotFoundError:
         technical_analysis = {}
+    try:
+        premarket_report = load(os.path.join(MR, "premarket_report.json"))
+    except FileNotFoundError:
+        premarket_report = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
@@ -334,6 +338,7 @@ def main():
         "macro_indicators": macro_indicators,
         "technical_analysis": technical_analysis,
         "ticker_macro_takes": {k: v[:8] for k, v in ticker_macro.items()},
+        "premarket_report": premarket_report,
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}

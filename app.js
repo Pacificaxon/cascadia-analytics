@@ -204,6 +204,7 @@
    if (sections.macro_indicators) flat.macro_indicators = sections.macro_indicators;
    if (sections.technical_analysis) flat.technical_analysis = sections.technical_analysis;
    if (sections.ticker_macro_takes) flat.ticker_macro_takes = sections.ticker_macro_takes;
+   if (sections.premarket_report) flat.premarket_report = sections.premarket_report;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -3080,6 +3081,46 @@
   { key: "macro_analysis", name: "Macroeconomic Analysis", desc: "CPI, PPI, retail sales, PMI, energy, notified when new reports are released." },
  ];
 
+ function premarketHtml() {
+  const pm = D.premarket_report;
+  if (!pm || !pm.data) {
+   return '<div class="section"><div class="section-title">Pre-Market Snapshot</div>' +
+    '<div class="card"><p style="color:var(--muted)">Pre-market data has not been collected yet. Check back after the morning refresh.</p></div></div>';
+  }
+  const fmtPrice = (p) => p >= 100 ? p.toFixed(2) : p.toFixed(2);
+  const cell = (ticker, d) => {
+   const chg = d.change_pct || 0;
+   const col = chg > 0 ? "#3fb950" : (chg < 0 ? "#f85149" : "#8b8fa3");
+   const arrow = chg > 0 ? "▲" : (chg < 0 ? "▼" : "–");
+   return '<div style="background:#161b26;border-radius:8px;padding:10px 12px;">' +
+    '<div style="font-size:10px;color:var(--muted);margin-bottom:2px;">' + esc(d.name || ticker) + '</div>' +
+    '<div style="font-size:15px;font-weight:700;color:#e8ecf1;">' + fmtPrice(d.price) + '</div>' +
+    '<div style="font-size:12px;font-weight:700;color:' + col + ';">' + arrow + " " + (chg > 0 ? "+" : "") + chg.toFixed(2) + "%</div></div>";
+  };
+  let h = '<div class="section" style="max-width:none;"><div class="section-title">Pre-Market Snapshot</div>';
+  h += '<div class="section-sub">Cross-asset prices vs prior close as of ' + esc(pm.timestamp || "") + ". Updates every trading morning before the open.</div>";
+  Object.keys(pm.data).forEach((cat) => {
+   const tickers = pm.data[cat];
+   const keys = Object.keys(tickers);
+   if (!keys.length) return;
+   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:14px 0 8px;letter-spacing:0.5px;">' + esc(cat.toUpperCase()) + '</div>';
+   h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;">';
+   keys.forEach((tk) => { h += cell(tk, tickers[tk]); });
+   h += '</div>';
+  });
+  if (pm.insights && pm.insights.length) {
+   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">WHAT IT MEANS</div>';
+   h += '<div class="card" style="padding:16px 20px;">';
+   pm.insights.forEach((ins) => {
+    h += '<div style="display:flex;gap:10px;margin-bottom:10px;font-size:13px;line-height:1.6;color:#e8ecf1;">' +
+     '<span style="color:#d4a017;flex-shrink:0;">▸</span><span>' + esc(ins) + '</span></div>';
+   });
+   h += '</div>';
+  }
+  h += "</div>";
+  return h;
+ }
+
  route("analysis", async function () {
   // Ensure Pro data is loaded before rendering (fixes race condition)
   await ensureProData();
@@ -3097,6 +3138,8 @@
   h += '<div class="hero"><div>' +
    '<h1 class="hero-h">Morning Briefing.</h1>' +
    "<p class='hero-sub'>Institutional-grade briefing synthesizing macro, internals, and derivatives positioning. Updated every trading morning.</p></div></div>";
+  // Pre-market cross-asset snapshot (Pro)
+  h += premarketHtml();
   if (r && r.available) {
    h += '<div class="section" style="max-width:none;">' +
     '<div class="section-sub">Published ' + esc((r.as_of || "").slice(0, 16).replace("T", " ")) + " ET</div>" +
