@@ -777,7 +777,7 @@
   h += '<span><span style="display:inline-block;width:12px;height:4px;background:#FF5000;border-radius:2px;vertical-align:middle;"></span> Sell</span>';
   h += '<span><span style="display:inline-block;width:12px;height:4px;background:#2979FF;border-radius:2px;vertical-align:middle;"></span> Price</span>';
   h += '</div>';
-  h += '<div class="zoomable-chart" style="position:relative;cursor:zoom-in;" title="Click to zoom"><canvas id="' + chartId + '" style="max-height:300px;"></canvas>';
+  h += '<div class="zoomable-chart" data-chart="trends" data-ticker="' + esc(tk) + '" style="position:relative;cursor:zoom-in;" title="Click to zoom"><canvas id="' + chartId + '" style="max-height:300px;"></canvas>';
   h += '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div id="' + chartId + '-table" style="margin-top:16px;"></div>';
   // Defer chart draw until DOM is ready
@@ -2657,6 +2657,7 @@
       "gex-ticker": "Gamma Exposure, " + (el.dataset.ticker || ""),
       "skew-ticker": "Volatility Skew, " + (el.dataset.ticker || ""),
       "gex-index": "Gamma Exposure, " + (el.dataset.symbol || ""),
+      trends: "Trading Trends, " + (el.dataset.ticker || ""),
       aaii: "AAII Investor Sentiment",
       cot: "Commitments of Traders",
       macro: "Macroeconomic Analysis",
@@ -3009,6 +3010,31 @@
           x: { stacked: true, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "MLS (0-100)", color: "#e8ecf1" } },
           y: { stacked: true, ticks: { color: "#fff", font: { size: 14, weight: "bold" } }, grid: { display: false } } } }
        });
+      } else if (kind === "trends") {
+       const tk2 = el.dataset.ticker;
+       const t = (D.ticker_trends || {})[tk2];
+       if (t && t.quarters) {
+        new Chart(zc, {
+         data: {
+          labels: t.quarters,
+          datasets: [
+           { type: "bar", label: "HF Buys", data: t.hedge_funds.buys, backgroundColor: "#00C805", borderRadius: 3, yAxisID: "yVol" },
+           { type: "bar", label: "HF Sells", data: t.hedge_funds.sells, backgroundColor: "#FF5000", borderRadius: 3, yAxisID: "yVol" },
+           { type: "bar", label: "Insider Buys", data: t.insiders.buys, backgroundColor: "#00C805", borderRadius: 3, hidden: true, yAxisID: "yVol" },
+           { type: "bar", label: "Insider Sells", data: t.insiders.sells, backgroundColor: "#FF5000", borderRadius: 3, hidden: true, yAxisID: "yVol" },
+           { type: "line", label: "Price", data: t.prices, borderColor: "#2979FF", borderWidth: 2.5, pointRadius: 3, tension: 0.3, yAxisID: "yPrice", spanGaps: true },
+          ],
+         },
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12 } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 8 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           yVol: { position: "left", ticks: { color: "#e8ecf1", callback: (v) => v === 0 ? "0" : (Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Shares", color: "#e8ecf1" } },
+           yPrice: { position: "right", ticks: { color: "#2979FF", callback: (v) => "$" + v }, grid: { display: false }, title: { display: true, text: "Price", color: "#2979FF" } } } }
+        });
+       }
       }
      } catch (e) { console.error("Zoom chart error", e); }
     });
