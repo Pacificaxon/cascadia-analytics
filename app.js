@@ -758,6 +758,137 @@
  }
 
 
+ function tickerTrendsHtml(tk) {
+  const t = (D.ticker_trends || {})[tk];
+  const hf = (D.ticker_13f || {})[tk];
+  if (!t || !t.quarters) {
+   return '<p style="color:var(--muted)">Trading trends data unavailable.</p>';
+  }
+  const chartId = "trends-chart-" + tk.replace(/[^A-Z0-9]/gi, "");
+  // Store for tab switching
+  trendsData[chartId] = { tk: tk, tab: "hedge_funds" };
+  let h = '<div style="display:flex;gap:8px;margin-bottom:12px;">';
+  h += '<button data-trends-tab="hedge_funds" data-trends-chart="' + chartId + '" style="flex:1;padding:8px;border:0;border-radius:8px;background:#2c2c2e;color:#fff;font-weight:700;font-size:12px;cursor:pointer;">Hedge funds</button>';
+  h += '<button data-trends-tab="insiders" data-trends-chart="' + chartId + '" style="flex:1;padding:8px;border:0;border-radius:8px;background:transparent;color:#8b8fa3;font-weight:700;font-size:12px;cursor:pointer;">Insiders</button>';
+  h += '</div>';
+  // Legend
+  h += '<div style="display:flex;gap:16px;font-size:11px;color:#8b8fa3;margin-bottom:8px;">';
+  h += '<span><span style="display:inline-block;width:12px;height:4px;background:#00C805;border-radius:2px;vertical-align:middle;"></span> Buy</span>';
+  h += '<span><span style="display:inline-block;width:12px;height:4px;background:#FF5000;border-radius:2px;vertical-align:middle;"></span> Sell</span>';
+  h += '<span><span style="display:inline-block;width:12px;height:4px;background:#2979FF;border-radius:2px;vertical-align:middle;"></span> Price</span>';
+  h += '</div>';
+  h += '<div class="zoomable-chart" style="position:relative;cursor:zoom-in;" title="Click to zoom"><canvas id="' + chartId + '" style="max-height:300px;"></canvas>';
+  h += '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '<div id="' + chartId + '-table" style="margin-top:16px;"></div>';
+  // Defer chart draw until DOM is ready
+  setTimeout(() => drawTrendsChart(chartId), 50);
+  return h;
+ }
+
+ function drawTrendsChart(chartId) {
+  const meta = trendsData[chartId];
+  if (!meta || typeof Chart === "undefined") return;
+  const t = (D.ticker_trends || {})[meta.tk];
+  if (!t) return;
+  const cv = document.getElementById(chartId);
+  if (!cv) return;
+  try { const ex = Chart.getChart(cv); if (ex) ex.destroy(); } catch (e) {}
+  const isHF = meta.tab === "hedge_funds";
+  const vol = isHF ? t.hedge_funds : t.insiders;
+  const labels = t.quarters.map((q) => q.replace(" ", "\n"));
+  // For hedge funds, only show bars where we have real snapshot data
+  const buys = vol.buys.map((v, i) => (isHF && !vol.has_data[i] ? null : v));
+  const sells = vol.sells.map((v, i) => (isHF && !vol.has_data[i] ? null : v));
+  new Chart(cv, {
+   data: {
+    labels: labels,
+    datasets: [
+     { type: "bar", label: "Buy", data: buys, backgroundColor: "#00C805", borderRadius: 3, barPercentage: 0.6, categoryPercentage: 0.6, yAxisID: "yVol" },
+     { type: "bar", label: "Sell", data: sells, backgroundColor: "#FF5000", borderRadius: 3, barPercentage: 0.6, categoryPercentage: 0.6, yAxisID: "yVol" },
+     { type: "line", label: "Price", data: t.prices, borderColor: "#2979FF", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "yPrice", spanGaps: true },
+    ],
+   },
+   options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+     x: { grid: { display: false }, ticks: { color: "#8b8fa3", font: { size: 10 } } },
+     yVol: { position: "left", grid: { color: "#1a2030" },
+      ticks: { color: "#8b8fa3", font: { size: 10 },
+       callback: (v) => v === 0 ? "0" : (Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") } },
+     yPrice: { position: "right", grid: { display: false },
+      ticks: { color: "#2979FF", font: { size: 10 }, callback: (v) => "$" + v } },
+    },
+   },
+  });
+  // Render the table for the active tab
+  drawTrendsTable(chartId);
+ }
+
+ function drawTrendsTable(chartId) {
+  const meta = trendsData[chartId];
+  if (!meta) return;
+  const el = document.getElementById(chartId + "-table");
+  if (!el) return;
+  const isHF = meta.tab === "hedge_funds";
+  let h = "";
+  if (isHF) {
+   const d = (D.ticker_13f || {})[meta.tk];
+   const holders = (d && d.holders || []).slice(0, 10);
+   if (!holders.length) {
+    h = '<p style="color:var(--muted);font-size:12px;">No institutional holder data.</p>';
+   } else {
+    h = '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid #1a2030;"><div>Hedge fund</div><div>Activity</div><div style="text-align:right;">Shares</div></div>';
+    holders.forEach((x) => {
+     const isBuy = x.activity === "buy";
+     const col = isBuy ? "#00C805" : (x.activity === "sell" ? "#FF5000" : "#8b8fa3");
+     const act = x.activity === "hold" ? "Hold" : (isBuy ? "Buy" : "Sell");
+     h += '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:12px;padding:8px 0;border-bottom:1px solid #141a28;align-items:center;">' +
+      '<div><div style="font-weight:700;color:#e8ecf1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">' + esc(x.name) + '</div>' +
+      '<div style="font-size:10px;color:var(--muted);">' + esc(x.change_pct || "") + '</div></div>' +
+      '<div style="color:' + col + ';font-weight:700;">' + act + '</div>' +
+      '<div style="text-align:right;font-weight:700;color:#e8ecf1;">' + Math.abs(x.shares_change || 0).toLocaleString() + '</div></div>';
+    });
+    if (d && d.data_as_of) h += '<p style="font-size:10px;color:var(--muted);margin-top:6px;">13F data as of ' + esc(d.data_as_of) + '. Quarterly bars build from real snapshots going forward.</p>';
+   }
+  } else {
+   const d = (D.ticker_insider || {})[meta.tk];
+   const txns = (d && d.transactions || []).filter((x) => x.category === "open_market").slice(0, 10);
+   if (!txns.length) {
+    h = '<p style="color:var(--muted);font-size:12px;">No open-market insider transactions.</p>';
+   } else {
+    h = '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid #1a2030;"><div>Insider</div><div>Activity</div><div style="text-align:right;">Shares</div></div>';
+    txns.forEach((x) => {
+     const isBuy = x.type === "buy";
+     const col = isBuy ? "#00C805" : "#FF5000";
+     h += '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:12px;padding:8px 0;border-bottom:1px solid #141a28;align-items:center;">' +
+      '<div><div style="font-weight:700;color:#e8ecf1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">' + esc(x.insider || "") + '</div>' +
+      '<div style="font-size:10px;color:var(--muted);">' + esc(x.title || "") + " · " + esc(x.date || "") + '</div></div>' +
+      '<div style="color:' + col + ';font-weight:700;">' + (isBuy ? "Buy" : "Sell") + '</div>' +
+      '<div style="text-align:right;font-weight:700;color:#e8ecf1;">' + (x.shares || 0).toLocaleString() + '</div></div>';
+    });
+   }
+  }
+  el.innerHTML = h;
+ }
+
+ // Tab switching for Trading Trends (delegated)
+ document.addEventListener("click", (e) => {
+  const btn = e.target && e.target.closest ? e.target.closest("[data-trends-tab]") : null;
+  if (!btn) return;
+  const chartId = btn.getAttribute("data-trends-chart");
+  const tab = btn.getAttribute("data-trends-tab");
+  if (trendsData[chartId]) trendsData[chartId].tab = tab;
+  // Update button styles
+  document.querySelectorAll('[data-trends-chart="' + chartId + '"]').forEach((b) => {
+   const active = b.getAttribute("data-trends-tab") === tab;
+   b.style.background = active ? "#2c2c2e" : "transparent";
+   b.style.color = active ? "#fff" : "#8b8fa3";
+  });
+  drawTrendsChart(chartId);
+ });
+
+
  function tickerGexHtml(tk, d) {
   const isPos = d.regime === "positive";
   const regimeColor = isPos ? "#3fb950" : "#f85149";
@@ -903,6 +1034,7 @@
  let gexStrikeChart = null;
  // Registry for GEX strike chart data (drawn after HTML insertion)
  const gexStrikeChartData = {};
+ const trendsData = {};
  function gexStrikeChartHtml(tk, d, chartId) {
   if (!d.strikes || !d.strikes.length) return '<p style="color:#e8ecf1">Strike-level data unavailable.</p>';
   const unit = d.gex_unit || "M";
@@ -3392,6 +3524,13 @@
   h += gated("Short Interest, Pro",
    "Biweekly short interest for " + tk + " from FINRA, red bars show shares short, white line shows days to cover.",
    '<div id="short-interest-' + esc(tk) + '"></div>');
+  h += "</div>";
+
+  // Trading Trends (Pro), quarterly hedge fund + insider flows with price
+  h += '<div class="section"><div class="section-title">Trading Trends <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("Trading Trends, Pro",
+   "Quarterly institutional and insider buy/sell flows for " + tk + " with the price trend. Hedge fund data from 13F filings, insider data from SEC Form 4.",
+   tickerTrendsHtml(tk));
   h += "</div>";
 
   // Insider Transactions (Pro), SEC Form 4
