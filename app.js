@@ -209,6 +209,7 @@
    if (sections.rotation_analysis) flat.rotation_analysis = sections.rotation_analysis;
    if (sections.screener_data) flat.screener_data = sections.screener_data;
    if (sections.minervini_data) flat.minervini_data = sections.minervini_data;
+   if (sections.earnings_dashboard) flat.earnings_dashboard = sections.earnings_dashboard;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
