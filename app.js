@@ -353,6 +353,23 @@
   render();
  }
 
+ function openPdfModal(pdfUrl, title) {
+  const root = document.getElementById("modal-root");
+  root.innerHTML =
+   '<div class="modal-back" id="pdf-mb" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;flex-direction:column;">' +
+   '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#161b26;">' +
+   '<div style="font-size:14px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(title || "Research Note") + "</div>" +
+   '<button id="pdf-close" style="background:#7d4fc9;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;min-width:80px;">Close</button>' +
+   "</div>" +
+   '<iframe src="' + esc(pdfUrl) + '" style="flex:1;border:none;background:#fff;" title="PDF Viewer"></iframe>' +
+   "</div>";
+  document.getElementById("pdf-close").addEventListener("click", () => { root.innerHTML = ""; });
+  document.getElementById("pdf-mb").addEventListener("click", (e) => {
+   if (e.target.id === "pdf-mb") root.innerHTML = "";
+  });
+ }
+ window.openPdfModal = openPdfModal;
+
  function showAuthModal(mode) {
   const root = document.getElementById("modal-root");
   const isLogin = mode === "login";
@@ -3345,7 +3362,7 @@
    t.note && t.note.pdf_exists
     ? '<div class="card"><h3>' + esc(t.name) + ", Research Note</h3>" +
      '<div class="panel-summary">Published ' + esc(t.note.published_date || "") + "</div>" +
-     '<div style="margin-top:12px;"><a class="btn" href="' + esc(t.note.pdf) + '" target="_blank" rel="noopener">Open PDF</a></div></div>'
+     '<div style="margin-top:12px;"><button class="btn" onclick="openPdfModal(\'' + esc(t.note.pdf).replace(/'/g, "\\'") + '\', \'' + esc(t.name + ", Research Note").replace(/'/g, "\\'") + '\')">Open PDF</button></div></div>'
     : '<div class="card"><p style="color:var(--muted)">No client note published for this ticker yet.</p></div>');
   h += "</div>";
 
