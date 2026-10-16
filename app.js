@@ -2745,14 +2745,12 @@
   }, 200);
   h += "</div>";
 
-  // Macroeconomic Analysis, Pro-gated
-  if (D.macro_indicators && (D.macro_indicators.history || []).length) {
-   h += '<div class="section" id="macro-sec" style="max-width:none;"><div class="section-title">Macroeconomic Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    '<div class="section-sub">CPI, PPI, retail sales, and PMI, the macro backdrop driving Fed policy and market regimes. Updates as reports are released.</div>' +
-    gatedSafe("Macroeconomic Analysis", "CPI, PPI, retail sales, consumer health, and PMI, the macro forces moving markets.",
-     () => macroAnalysisHtml(D.macro_indicators)) +
-    "</div>";
-  }
+  // Macroeconomic Analysis, Pro-gated (always show section; gatedSafe shows teaser for free users)
+  h += '<div class="section" id="macro-sec" style="max-width:none;"><div class="section-title">Macroeconomic Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section-sub">CPI, PPI, retail sales, and PMI, the macro backdrop driving Fed policy and market regimes. Updates as reports are released.</div>' +
+   gatedSafe("Macroeconomic Analysis", "CPI, PPI, retail sales, consumer health, and PMI, the macro forces moving markets.",
+    () => macroAnalysisHtml(D.macro_indicators || { history: [] })) +
+   "</div>";
 
   // Market Leadership, Pro-gated
   if (D.leadership && D.leadership.available && (D.leadership.leaders || []).length) {
