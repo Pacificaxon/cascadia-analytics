@@ -5242,7 +5242,7 @@ function bindZoomHandlers() {
    h += '<div><div style="font-size:11px;color:var(--muted);">Est. EPS</div><div style="font-size:20px;font-weight:700;color:#c9a86a;">' + (d.upcoming ? fmt$(d.upcoming.eps_est) : "N/A") + '</div></div>';
    h += '</div></div></div>';
    // History table
-   h += '<div class="card" style="padding:0;overflow:hidden;"><div style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><b>Past 8 Quarters: Earnings & Price Reactions</b><span style="font-size:10px;background:#1a3a2a;border:1px solid #2a5a3a;padding:2px 8px;border-radius:4px;color:#7ecfa0;">LIVE DATA</span></div>';
+   h += '<div class="card" style="padding:0;overflow:hidden;"><div style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><b>Past 8 Quarters: Earnings & Price Reactions</b><span style="font-size:11px;color:var(--muted);">Updated ' + esc(d.collected_at || d.as_of || "") + '</span></div>';
    h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Report Date</th><th>Revenue vs Est.</th><th>EPS vs Est.</th><th>1-Day Reaction</th></tr></thead><tbody>';
    (d.history || []).forEach((q) => {
     const revCls = q.rev_surprise_pct == null ? "" : (q.rev_surprise_pct >= 0 ? "pos" : "neg");
