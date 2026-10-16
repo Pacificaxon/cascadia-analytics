@@ -559,6 +559,8 @@ function bindZoomHandlers() {
        macro: "Macroeconomic Analysis",
        leadership: "Market Leadership, MLS by Component",
        income: "Income Statement, " + (el.dataset.ticker || ""),
+       balance: "Balance Sheet, " + (el.dataset.ticker || ""),
+       cashflow: "Cash Flow, " + (el.dataset.ticker || ""),
       };
       // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
       if (kind === "gex-ticker") {
@@ -970,6 +972,66 @@ function bindZoomHandlers() {
            x: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" } },
            yMargin: { position: "left", ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Net margin %", color: "#f97316" } },
            yAmount: { position: "right", ticks: { color: "#e8ecf1", callback: fmtM }, grid: { display: false }, title: { display: true, text: "Revenue / Net income", color: "#e8ecf1" } } } }
+        });
+       } else if (kind === "balance" || kind === "cashflow") {
+        const tk2 = el.dataset.ticker;
+        const t2 = (D.tickers || {})[tk2];
+        const ic = t2 && t2.income_chart;
+        const isBal = kind === "balance";
+        const mode = el.dataset.mode || (isBal ? "balance_quarterly" : "cashflow_quarterly");
+        const records = (ic && ic[mode]) || [];
+        const fmtM = (v) => {
+         if (v == null) return "N/A";
+         const a = Math.abs(v), s = v < 0 ? "-" : "";
+         if (a >= 1e9) return s + "$" + (a / 1e9).toFixed(2) + "B";
+         if (a >= 1e6) return s + "$" + (a / 1e6).toFixed(1) + "M";
+         return s + "$" + Math.round(a).toLocaleString();
+        };
+        const ds = isBal ? [
+         { type: "line", label: "Current ratio", data: records.map((r) => r.current_ratio),
+           borderColor: "#f97316", borderWidth: 2.5, pointRadius: 4,
+           pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+           yAxisID: "yRatio", order: 1, tension: 0.15, spanGaps: true },
+         { type: "bar", label: "Cash & equivalents", data: records.map((r) => r.cash),
+           backgroundColor: "#3fb950", borderRadius: 3, yAxisID: "yAmount", order: 2 },
+         { type: "bar", label: "Total debt", data: records.map((r) => r.total_debt),
+           backgroundColor: "#f85149", borderRadius: 3, yAxisID: "yAmount", order: 3 },
+        ] : [
+         { type: "line", label: "FCF margin %", data: records.map((r) => r.fcf_margin_pct),
+           borderColor: "#f97316", borderWidth: 2.5, pointRadius: 4,
+           pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+           yAxisID: "yRatio", order: 1, tension: 0.15, spanGaps: true },
+         { type: "bar", label: "Operating cash flow", data: records.map((r) => r.operating_cash_flow),
+           backgroundColor: "#3b82f6", borderRadius: 3, yAxisID: "yAmount", order: 2 },
+         { type: "bar", label: "CapEx", data: records.map((r) => r.capex),
+           backgroundColor: "#f85149", borderRadius: 3, yAxisID: "yAmount", order: 3 },
+         { type: "bar", label: "Free cash flow", data: records.map((r) => r.free_cash_flow),
+           backgroundColor: "#22d3ee", borderRadius: 3, yAxisID: "yAmount", order: 4 },
+        ];
+        new Chart(zc, {
+         data: { labels: records.map((r) => r.period), datasets: ds },
+         options: { responsive: true, maintainAspectRatio: false, animation: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12,
+            callbacks: { label: (c) => {
+             if (c.dataset.yAxisID === "yRatio") {
+              const unit = isBal ? "x" : "%";
+              return " " + c.dataset.label + ": " + (c.parsed.y == null ? "N/A" : c.parsed.y.toFixed(isBal ? 2 : 1) + unit);
+             }
+             let extra = "";
+             if (isBal && c.dataset.label === "Total debt") {
+              const de = records[c.dataIndex] && records[c.dataIndex].debt_to_equity;
+              if (de != null) extra = " (D/E " + de.toFixed(2) + "x)";
+             }
+             return " " + c.dataset.label + ": " + fmtM(c.parsed.y) + extra;
+            } } } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" } },
+           yRatio: { position: "left", ticks: { color: "#e8ecf1", callback: (v) => v + (isBal ? "x" : "%") }, grid: { color: "rgba(42,46,57,0.4)" },
+            title: { display: true, text: isBal ? "Current ratio" : "FCF margin %", color: "#f97316" } },
+           yAmount: { position: "right", ticks: { color: "#e8ecf1", callback: fmtM }, grid: { display: false },
+            title: { display: true, text: isBal ? "Cash / Debt" : "Cash flow", color: "#e8ecf1" } } } }
         });
        }
       } catch (e) { console.error("Zoom chart error", e); }
@@ -3923,6 +3985,8 @@ function bindZoomHandlers() {
   wireEarningsTabs(tk);
   wireFinTabs(tk);
   wireIncomeChart(tk);
+  wireBalanceChart(tk);
+  wireCashflowChart(tk);
   // Short interest chart (Pro), render after DOM insert
   // Retry up to 5 times waiting for ShortInterestChart to load
   let siAttempts = 0;
@@ -4112,8 +4176,8 @@ function bindZoomHandlers() {
    '<button class="fin-tab" data-fin="cashflow">Cash Flow</button>' +
    "</div>" +
    '<div class="fin-panel" id="' + uid + '-income">' + incomeChartHtml(t) + stmtTable(f.income, INC_ROWS) + "</div>" +
-   '<div class="fin-panel" id="' + uid + '-balance" style="display:none">' + stmtTable(f.balance, BAL_ROWS) + "</div>" +
-   '<div class="fin-panel" id="' + uid + '-cashflow" style="display:none">' + stmtTable(f.cashflow, CF_ROWS) + "</div>" +
+   '<div class="fin-panel" id="' + uid + '-balance" style="display:none">' + balanceChartHtml(t) + stmtTable(f.balance, BAL_ROWS) + "</div>" +
+   '<div class="fin-panel" id="' + uid + '-cashflow" style="display:none">' + cashflowChartHtml(t) + stmtTable(f.cashflow, CF_ROWS) + "</div>" +
    '<div class="panel-asof">Source: company filings via Yahoo Finance</div></div>';
   return h;
  }
@@ -4144,6 +4208,7 @@ function bindZoomHandlers() {
  }
 
  // Render (or re-render) the income chart for a ticker + mode
+ // Guard against rapid re-renders (prevents flashing on load)
  function renderIncomeChart(tk, mode) {
   const t = (D.tickers || {})[tk];
   const ic = t && t.income_chart;
@@ -4151,6 +4216,9 @@ function bindZoomHandlers() {
   const uid = "inc-" + tk;
   const canvas = document.getElementById(uid + "-canvas");
   if (!canvas) return;
+  const now = Date.now();
+  if (canvas._lastRender && now - canvas._lastRender < 300) return;
+  canvas._lastRender = now;
   const records = ic[mode] || [];
   const fmtMoney = (v) => {
    if (v == null) return "N/A";
@@ -4190,6 +4258,7 @@ function bindZoomHandlers() {
    },
    options: {
     responsive: true, maintainAspectRatio: false,
+    animation: false,
     interaction: { mode: "index", intersect: false },
     plugins: {
      legend: { display: false },
@@ -4768,10 +4837,28 @@ function bindZoomHandlers() {
     const p = document.getElementById(uid + "-" + k);
     if (p) p.style.display = k === b.dataset.fin ? "" : "none";
    });
-   // Re-render income chart when its tab becomes visible (canvas sizing)
+   // Re-render charts when their tab becomes visible (canvas sizing)
+   // Balance/cashflow charts render lazily on first tab open to avoid
+   // flashing and sizing issues from rendering in hidden tabs
    if (b.dataset.fin === "income") {
     const wrap = document.getElementById("inc-" + tk + "-wrap");
     renderIncomeChart(tk, wrap ? wrap.dataset.mode || "quarterly" : "quarterly");
+   } else if (b.dataset.fin === "balance") {
+    const wrap = document.getElementById("bal-" + tk + "-wrap");
+    if (wrap && !wrap.dataset.rendered) {
+     wrap.dataset.rendered = "1";
+     renderBalanceChart(tk, "balance_quarterly");
+    } else {
+     renderBalanceChart(tk, wrap ? wrap.dataset.mode || "balance_quarterly" : "balance_quarterly");
+    }
+   } else if (b.dataset.fin === "cashflow") {
+    const wrap = document.getElementById("cf-" + tk + "-wrap");
+    if (wrap && !wrap.dataset.rendered) {
+     wrap.dataset.rendered = "1";
+     renderCashflowChart(tk, "cashflow_quarterly");
+    } else {
+     renderCashflowChart(tk, wrap ? wrap.dataset.mode || "cashflow_quarterly" : "cashflow_quarterly");
+    }
    }
   }));
  }
@@ -4786,6 +4873,207 @@ function bindZoomHandlers() {
    renderIncomeChart(tk, b.dataset.mode);
   }));
   renderIncomeChart(tk, "quarterly");
+ }
+
+ // Balance Sheet chart HTML: Cash vs Total Debt bars + Current Ratio line
+ // (balance sheet health & liquidity view)
+ function balanceChartHtml(t) {
+  const ic = t.income_chart;
+  if (!ic || (!ic.balance_annual.length && !ic.balance_quarterly.length)) return "";
+  const uid = "bal-" + t.ticker;
+  return '<div style="margin-bottom:20px;">' +
+   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">' +
+   '<div style="font-size:14px;font-weight:700;color:#e8ecf1;">Balance Sheet Health & Liquidity</div>' +
+   '<div class="inc-toggle" id="' + uid + '-toggle" style="display:inline-flex;padding:3px;background:#0f1420;border-radius:8px;">' +
+   '<button data-mode="balance_annual" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:transparent;color:#8b93a7;">Annual</button>' +
+   '<button data-mode="balance_quarterly" class="active" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:#2a4a73;color:#fff;">Quarterly</button>' +
+   "</div></div>" +
+   '<div class="zoomable-chart" data-chart="balance" data-ticker="' + esc(t.ticker) + '" data-mode="balance_quarterly" id="' + uid + '-wrap" style="position:relative;height:300px;cursor:zoom-in;" title="Click to zoom">' +
+   '<canvas id="' + uid + '-canvas"></canvas></div>' +
+   '<div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:10px;font-size:12px;color:#c8d0dc;flex-wrap:wrap;">' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#3fb950;display:inline-block;"></span>Cash & equivalents</span>' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#f85149;display:inline-block;"></span>Total debt</span>' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;border:2px solid #f97316;display:inline-block;"></span>Current ratio</span>' +
+   "</div>" +
+   (ic.collected_at ? '<div style="font-size:11px;color:#8b93a7;margin-top:6px;text-align:right;">Updated ' + esc(ic.collected_at) + "</div>" : "") +
+   "</div>";
+ }
+
+ function renderBalanceChart(tk, mode) {
+  const t = (D.tickers || {})[tk];
+  const ic = t && t.income_chart;
+  if (!ic) return;
+  const uid = "bal-" + tk;
+  const canvas = document.getElementById(uid + "-canvas");
+  if (!canvas) return;
+  const now = Date.now();
+  if (canvas._lastRender && now - canvas._lastRender < 300) return;
+  canvas._lastRender = now;
+  const records = ic[mode] || [];
+  const fmtMoney = (v) => {
+   if (v == null) return "N/A";
+   const a = Math.abs(v), s = v < 0 ? "-" : "";
+   if (a >= 1e9) return s + "$" + (a / 1e9).toFixed(2) + "B";
+   if (a >= 1e6) return s + "$" + (a / 1e6).toFixed(1) + "M";
+   return s + "$" + Math.round(a).toLocaleString();
+  };
+  if (canvas._chart) canvas._chart.destroy();
+  canvas._chart = new Chart(canvas, {
+   data: {
+    labels: records.map((r) => r.period),
+    datasets: [
+     { type: "line", label: "Current ratio", data: records.map((r) => r.current_ratio),
+       borderColor: "#f97316", borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+       pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+       yAxisID: "yRatio", order: 1, tension: 0.15, spanGaps: true },
+     { type: "bar", label: "Cash & equivalents", data: records.map((r) => r.cash),
+       backgroundColor: "#3fb950", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 2 },
+     { type: "bar", label: "Total debt", data: records.map((r) => r.total_debt),
+       backgroundColor: "#f85149", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 3 },
+    ],
+   },
+   options: {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { display: false },
+     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+      titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+      callbacks: { label: (c) => {
+       if (c.dataset.yAxisID === "yRatio")
+        return " Current ratio: " + (c.parsed.y == null ? "N/A" : c.parsed.y.toFixed(2) + "x");
+       let extra = "";
+       if (c.dataset.label === "Total debt") {
+        const de = records[c.dataIndex] && records[c.dataIndex].debt_to_equity;
+        if (de != null) extra = " (D/E " + de.toFixed(2) + "x)";
+       }
+       return " " + c.dataset.label + ": " + fmtMoney(c.parsed.y) + extra;
+      } } } },
+    scales: {
+     x: { ticks: { color: "#e8ecf1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
+     yRatio: { type: "linear", position: "left",
+      ticks: { color: "#a1a1aa", callback: (v) => v + "x", font: { size: 11 } },
+      grid: { color: (c) => c.tick.value === 0 ? "#52525b" : "rgba(42,46,57,0.35)" } },
+     yAmount: { type: "linear", position: "right",
+      ticks: { color: "#a1a1aa", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
+    },
+   },
+  });
+  const wrap = document.getElementById(uid + "-wrap");
+  if (wrap) wrap.dataset.mode = mode;
+  const tog = document.getElementById(uid + "-toggle");
+  if (tog) tog.querySelectorAll("button").forEach((b) => {
+   const active = b.dataset.mode === mode;
+   b.style.background = active ? "#2a4a73" : "transparent";
+   b.style.color = active ? "#fff" : "#8b93a7";
+  });
+ }
+
+ // Cash Flow chart HTML: OCF/Capex/FCF bars + FCF Margin line
+ function cashflowChartHtml(t) {
+  const ic = t.income_chart;
+  if (!ic || (!ic.cashflow_annual.length && !ic.cashflow_quarterly.length)) return "";
+  const uid = "cf-" + t.ticker;
+  return '<div style="margin-bottom:20px;">' +
+   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">' +
+   '<div style="font-size:14px;font-weight:700;color:#e8ecf1;">Cash Flow & FCF Margin</div>' +
+   '<div class="inc-toggle" id="' + uid + '-toggle" style="display:inline-flex;padding:3px;background:#0f1420;border-radius:8px;">' +
+   '<button data-mode="cashflow_annual" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:transparent;color:#8b93a7;">Annual</button>' +
+   '<button data-mode="cashflow_quarterly" class="active" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:#2a4a73;color:#fff;">Quarterly</button>' +
+   "</div></div>" +
+   '<div class="zoomable-chart" data-chart="cashflow" data-ticker="' + esc(t.ticker) + '" data-mode="cashflow_quarterly" id="' + uid + '-wrap" style="position:relative;height:300px;cursor:zoom-in;" title="Click to zoom">' +
+   '<canvas id="' + uid + '-canvas"></canvas></div>' +
+   '<div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:10px;font-size:12px;color:#c8d0dc;flex-wrap:wrap;">' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#3b82f6;display:inline-block;"></span>Operating cash flow</span>' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#f85149;display:inline-block;"></span>CapEx</span>' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#22d3ee;display:inline-block;"></span>Free cash flow</span>' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;border:2px solid #f97316;display:inline-block;"></span>FCF margin %</span>' +
+   "</div>" +
+   (ic.collected_at ? '<div style="font-size:11px;color:#8b93a7;margin-top:6px;text-align:right;">Updated ' + esc(ic.collected_at) + "</div>" : "") +
+   "</div>";
+ }
+
+ function renderCashflowChart(tk, mode) {
+  const t = (D.tickers || {})[tk];
+  const ic = t && t.income_chart;
+  if (!ic) return;
+  const uid = "cf-" + tk;
+  const canvas = document.getElementById(uid + "-canvas");
+  if (!canvas) return;
+  const now = Date.now();
+  if (canvas._lastRender && now - canvas._lastRender < 300) return;
+  canvas._lastRender = now;
+  const records = ic[mode] || [];
+  const fmtMoney = (v) => {
+   if (v == null) return "N/A";
+   const a = Math.abs(v), s = v < 0 ? "-" : "";
+   if (a >= 1e9) return s + "$" + (a / 1e9).toFixed(2) + "B";
+   if (a >= 1e6) return s + "$" + (a / 1e6).toFixed(1) + "M";
+   return s + "$" + Math.round(a).toLocaleString();
+  };
+  if (canvas._chart) canvas._chart.destroy();
+  canvas._chart = new Chart(canvas, {
+   data: {
+    labels: records.map((r) => r.period),
+    datasets: [
+     { type: "line", label: "FCF margin %", data: records.map((r) => r.fcf_margin_pct),
+       borderColor: "#f97316", borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+       pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+       yAxisID: "yMargin", order: 1, tension: 0.15, spanGaps: true },
+     { type: "bar", label: "Operating cash flow", data: records.map((r) => r.operating_cash_flow),
+       backgroundColor: "#3b82f6", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 2 },
+     { type: "bar", label: "CapEx", data: records.map((r) => r.capex),
+       backgroundColor: "#f85149", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 3 },
+     { type: "bar", label: "Free cash flow", data: records.map((r) => r.free_cash_flow),
+       backgroundColor: "#22d3ee", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 4 },
+    ],
+   },
+   options: {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { display: false },
+     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+      titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+      callbacks: { label: (c) => c.dataset.yAxisID === "yMargin"
+       ? " FCF margin: " + (c.parsed.y == null ? "N/A" : c.parsed.y.toFixed(1) + "%")
+       : " " + c.dataset.label + ": " + fmtMoney(c.parsed.y) } } },
+    scales: {
+     x: { ticks: { color: "#e8ecf1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
+     yMargin: { type: "linear", position: "left",
+      ticks: { color: "#a1a1aa", callback: (v) => v + "%", font: { size: 11 } },
+      grid: { color: (c) => c.tick.value === 0 ? "#52525b" : "rgba(42,46,57,0.35)" } },
+     yAmount: { type: "linear", position: "right",
+      ticks: { color: "#a1a1aa", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
+    },
+   },
+  });
+  const wrap = document.getElementById(uid + "-wrap");
+  if (wrap) wrap.dataset.mode = mode;
+  const tog = document.getElementById(uid + "-toggle");
+  if (tog) tog.querySelectorAll("button").forEach((b) => {
+   const active = b.dataset.mode === mode;
+   b.style.background = active ? "#2a4a73" : "transparent";
+   b.style.color = active ? "#fff" : "#8b93a7";
+  });
+ }
+
+ function wireBalanceChart(tk) {
+  const t = (D.tickers || {})[tk];
+  if (!t || !t.income_chart) return;
+  const tog = document.getElementById("bal-" + tk + "-toggle");
+  if (tog) tog.querySelectorAll("button").forEach((b) => b.addEventListener("click", (e) => {
+   e.stopPropagation();
+   renderBalanceChart(tk, b.dataset.mode);
+  }));
+ }
+
+ function wireCashflowChart(tk) {
+  const t = (D.tickers || {})[tk];
+  if (!t || !t.income_chart) return;
+  const tog = document.getElementById("cf-" + tk + "-toggle");
+  if (tog) tog.querySelectorAll("button").forEach((b) => b.addEventListener("click", (e) => {
+   e.stopPropagation();
+   renderCashflowChart(tk, b.dataset.mode);
+  }));
  }
 
  /* ---------- charts ---------- */
