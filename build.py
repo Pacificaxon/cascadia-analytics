@@ -185,7 +185,8 @@ def main():
     try:
         earnings_estimates = load(os.path.join(MR, "earnings_estimates.json"))
     except FileNotFoundError:
-        earnings_estimates = {}    try:
+        earnings_estimates = {}
+    try:
         fcf_backfill = load(os.path.join(HERE, "fcf_backfill.json"))
     except FileNotFoundError:
         fcf_backfill = {}
