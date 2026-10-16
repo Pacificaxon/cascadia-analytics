@@ -344,7 +344,7 @@
    b.textContent = shortEmail(authUser.email);
    b.classList.add("logged-in");
    b.title = authUser.email + (isAdmin ? " (Admin)" : proVerified ? " (Pro)" : "") + ", click to log out";
-   b.onclick = () => { if (confirm("Log out of " + authUser.email + "?")) doLogout(); };
+   b.onclick = () => doLogout();
   } else {
    b.textContent = "Log in";
    b.classList.remove("logged-in");
@@ -355,6 +355,15 @@
 
  async function doLogout() {
   try { if (supa) await supa.auth.signOut(); } catch (e) {}
+  // Backup: clear Supabase session from storage directly in case signOut didn't fully propagate
+  try {
+   Object.keys(localStorage).forEach((k) => {
+    if (k.startsWith("sb-") && k.includes("auth-token")) localStorage.removeItem(k);
+   });
+   Object.keys(sessionStorage).forEach((k) => {
+    if (k.startsWith("sb-") && k.includes("auth-token")) sessionStorage.removeItem(k);
+   });
+  } catch (e) {}
   authUser = null; proVerified = false; isAdmin = false;
   PRO_DATA = null; // Clear Pro data on explicit logout
   setPro(false);
@@ -525,6 +534,408 @@
   const parts = h.split("/");
   return { name: parts[0] || "home", param: decodeURIComponent(parts[1] || "") };
  }
+function bindZoomHandlers() {
+    // Click/tap to zoom: open modal with larger chart
+    document.querySelectorAll(".zoomable-chart").forEach((el) => {
+     if (el.dataset.zoomBound) return;
+     el.dataset.zoomBound = "1";
+     el.addEventListener("click", () => {
+      const kind = el.dataset.chart;
+      const titles = {
+       jaw: "Alligator Jaw, S&P 500 vs Forward EPS",
+       voldiv: "Volatility Divergence, VIX vs MOVE",
+       themerot: "Theme Rotation, RS Quadrant",
+       smcap: "Small/Mid Cap, vs 200-Day MA",
+       creditvol: "Credit Spreads vs VIX",
+       breadth: "Market Breadth",
+       rsicd: "RSI: Cyclicals vs Defensives (XLY/XLP)",
+       "gex-ticker": "Gamma Exposure, " + (el.dataset.ticker || ""),
+       "skew-ticker": "Volatility Skew, " + (el.dataset.ticker || ""),
+       "gex-index": "Gamma Exposure, " + (el.dataset.symbol || ""),
+       trends: "Trading Trends, " + (el.dataset.ticker || ""),
+       aaii: "AAII Investor Sentiment",
+       cot: "Commitments of Traders",
+       macro: "Macroeconomic Analysis",
+       leadership: "Market Leadership, MLS by Component"
+      };
+      // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
+      if (kind === "gex-ticker") {
+       const tk = el.dataset.ticker;
+       const tg = (D.ticker_gex || {})[tk];
+       if (!tg || !tg.available) return;
+       let modal = document.getElementById("chart-zoom-modal");
+       if (modal) modal.remove();
+       modal = document.createElement("div");
+       modal.id = "chart-zoom-modal";
+       modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;overflow-y:auto;";
+       modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+        '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Gamma Exposure, ' + esc(tk) + '</div>' +
+        '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+        tickerGexHtml(tk, tg) + "</div>";
+       document.body.appendChild(modal);
+       const close = () => modal.remove();
+       modal.addEventListener("click", close);
+       document.getElementById("zoom-close").addEventListener("click", close);
+       return;
+      }
+      // For skew ticker (HTML, not a Chart.js chart): show enlarged HTML
+      if (kind === "skew-ticker") {
+       const tk = el.dataset.ticker;
+       const ts = (D.ticker_skew || {})[tk];
+       if (!ts || !ts.available) return;
+       let modal = document.getElementById("chart-zoom-modal");
+       if (modal) modal.remove();
+       modal = document.createElement("div");
+       modal.id = "chart-zoom-modal";
+       modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;overflow-y:auto;";
+       modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+        '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Volatility Skew, ' + esc(tk) + '</div>' +
+        '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+        tickerSkewHtml(tk, ts) + "</div>";
+       document.body.appendChild(modal);
+       const close = () => modal.remove();
+       modal.addEventListener("click", close);
+       document.getElementById("zoom-close").addEventListener("click", close);
+       return;
+      }
+      // For GEX index (price levels chart): show enlarged chart
+      if (kind === "gex-index") {
+       const sym = el.dataset.symbol;
+       const d = (D.gex_data.indices || {})[sym];
+       if (!d || !d.available) return;
+       let modal = document.getElementById("chart-zoom-modal");
+       if (modal) modal.remove();
+       modal = document.createElement("div");
+       modal.id = "chart-zoom-modal";
+       modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
+       modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:20px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+        '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Gamma Exposure, ' + esc(sym) + ' Price Levels</div>' +
+        '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+        '<div style="position:relative;flex:1;min-height:300px;"><canvas id="zoom-chart"></canvas></div></div>';
+       document.body.appendChild(modal);
+       const close = () => modal.remove();
+       modal.addEventListener("click", close);
+       document.getElementById("zoom-close").addEventListener("click", close);
+       const zc = document.getElementById("zoom-chart");
+       try {
+        const levels = [];
+        if (d.put_wall != null) levels.push({ label: "Put Wall (support)", value: d.put_wall, color: "#f85149" });
+        levels.push({ label: "Spot", value: d.spot, color: "#e8ecf1" });
+        if (d.zero_gamma != null) levels.push({ label: "Zero Gamma (flip)", value: d.zero_gamma, color: "#c678dd" });
+        if (d.call_wall != null) levels.push({ label: "Call Wall (resistance)", value: d.call_wall, color: "#3fb950" });
+        levels.sort((a, b) => a.value - b.value);
+        new Chart(zc, {
+         type: "bar",
+         data: {
+          labels: levels.map((l) => l.label),
+          datasets: [{
+           data: levels.map((l) => l.value),
+           backgroundColor: levels.map((l) => l.color),
+           borderWidth: 0,
+          }],
+         },
+         options: {
+          indexAxis: "y",
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+           legend: { display: false },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+            callbacks: { label: (c) => " $" + c.parsed.x.toFixed(2) } },
+          },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#c8d0dc" }, grid: { display: false } },
+          },
+         },
+        });
+       } catch (e) { console.error("GEX zoom chart error", e); }
+       return;
+      }
+      // build modal
+      let modal = document.getElementById("chart-zoom-modal");
+      if (modal) modal.remove();
+      modal = document.createElement("div");
+      modal.id = "chart-zoom-modal";
+      modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
+      modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:20px;width:100%;max-width:1000px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
+       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+       '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (titles[kind] || "Chart") + '</div>' +
+       '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+       '<div style="position:relative;flex:1;min-height:400px;"><canvas id="zoom-chart"></canvas></div></div>';
+      document.body.appendChild(modal);
+      const close = () => modal.remove();
+      modal.addEventListener("click", close);
+      document.getElementById("zoom-close").addEventListener("click", close);
+      // render enlarged chart
+      const zc = document.getElementById("zoom-chart");
+      try {
+       if (kind === "jaw") {
+        const hist = D.jaw_history.history;
+        new Chart(zc, {
+         type: "line",
+         data: { labels: hist.map((r) => r.date), datasets: [
+          { label: "S&P 500", data: hist.map((r) => r.price), borderColor: "#ffd60a", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
+          { label: "Forward 12m EPS", data: hist.map((r) => r.forward_eps), borderColor: "#00e676", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
+         ]},
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc" } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { position: "left", ticks: { color: "#ffd60a" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "S&P 500", color: "#ffd60a" } },
+           y1: { position: "right", ticks: { color: "#00e676" }, grid: { display: false }, title: { display: true, text: "Fwd EPS ($)", color: "#00e676" } } } }
+        });
+       } else if (kind === "voldiv") {
+        const hist = D.vol_div_history.history;
+        new Chart(zc, {
+         type: "line",
+         data: { labels: hist.map((r) => r.date), datasets: [
+          { label: "Divergence (MOVE z − VIX z)", data: hist.map((r) => r.divergence), borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
+          { label: "MOVE z-score", data: hist.map((r) => r.move_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+          { label: "VIX z-score", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+         ]},
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc" } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#e8ecf1" } } } }
+        });
+       } else if (kind === "themerot") {
+        const trh = D.theme_rot_history;
+        const latest = trh.history[trh.history.length - 1];
+        const themes = latest.themes || {};
+        const qColors = { Leading: "#3fb950", Improving: "#c678dd", Weakening: "#d29922", Lagging: "#f85149" };
+        const xs = Object.values(themes).map((v) => v.x), ys = Object.values(themes).map((v) => v.y);
+        const maxAbs = Math.max(Math.abs(Math.min(...xs)), Math.abs(Math.max(...xs)), Math.abs(Math.min(...ys)), Math.abs(Math.max(...ys)), 5);
+        const pad = Math.ceil(maxAbs * 1.15);
+        new Chart(zc, {
+         type: "scatter",
+         data: { datasets: Object.entries(themes).map(([name, vals]) => ({
+          label: name, data: [{ x: vals.x, y: vals.y }],
+          backgroundColor: qColors[vals.q] || "#e8ecf1", pointRadius: 9, pointHoverRadius: 12,
+         }))},
+         options: { responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+            callbacks: {
+             title: (items) => items[0].dataset.label + " (" + (themes[items[0].dataset.label] || {}).q + ")",
+             label: (c) => " RS vs 70d avg: " + c.parsed.x.toFixed(1) + "%, 20d momentum: " + c.parsed.y.toFixed(1) + "%"
+            } } },
+          scales: {
+           x: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#e8ecf1" } },
+           y: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "20d momentum (%) →", color: "#e8ecf1" } } } },
+         plugins: [quadBg]
+        });
+       } else if (kind === "smcap") {
+        const hist = D.smcap_history.history;
+        new Chart(zc, {
+         type: "line",
+         data: { labels: hist.map((r) => r.date), datasets: [
+          { label: "RUT vs 200d (%)", data: hist.map((r) => r.rut_vs_200d), borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+          { label: "MID vs 200d (%)", data: hist.map((r) => r.mid_vs_200d), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+         ]},
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc" } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
+        });
+       } else if (kind === "creditvol") {
+        const hist = D.credit_vol_history.history;
+        new Chart(zc, {
+         type: "line",
+         data: { labels: hist.map((r) => r.date), datasets: [
+          { label: "Spread − VIX z-diff", data: hist.map((r) => r.diff), borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
+          { label: "Spread z", data: hist.map((r) => r.spread_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+          { label: "VIX z", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+         ]},
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc" } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#e8ecf1" } } } }
+        });
+       } else if (kind === "breadth") {
+        const hist = D.breadth_history.history;
+        new Chart(zc, {
+         type: "line",
+         data: { labels: hist.map((r) => r.date), datasets: [
+          { label: "Breadth spread (pp)", data: hist.map((r) => r.breadth_spread), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
+          { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+          { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+         ]},
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc" } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y1: { position: "right", ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
+        });
+       } else if (kind === "rsicd") {
+        const hist = D.rsi_cd_history.history;
+        new Chart(zc, {
+         type: "line",
+         data: { labels: hist.map((r) => r.date), datasets: [
+          { label: "RSI (14)", data: hist.map((r) => r.rsi), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+          { label: "Overbought (70)", data: hist.map(() => 70), borderColor: "#f85149", borderWidth: 1, pointRadius: 0, borderDash: [5, 3] },
+          { label: "Oversold (30)", data: hist.map(() => 30), borderColor: "#3fb950", borderWidth: 1, pointRadius: 0, borderDash: [5, 3] },
+         ]},
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc" } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { min: 0, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
+            title: { display: true, text: "RSI", color: "#e8ecf1" } } } }
+        });
+       } else if (kind === "aaii") {
+        const hist = (D.aaii_sentiment.history || []);
+        new Chart(zc, {
+         type: "line",
+         data: { labels: hist.map((r) => r.week_ending), datasets: [
+          { label: "Bullish %", data: hist.map((r) => r.bullish), borderColor: "#3fb950", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+          { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#c8d0dc", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+          { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f85149", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+         ]},
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc" } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+            callbacks: { label: (c) => " " + c.dataset.label + ": " + c.parsed.y.toFixed(1) + "%" } } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+            title: { display: true, text: "Sentiment %", color: "#e8ecf1" } } } }
+        });
+       } else if (kind === "cot") {
+        const hist = (D.cot_data.history || []);
+        const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
+        new Chart(zc, {
+         type: "line",
+         data: { labels: hist.map((r) => r.report_date), datasets: [
+          { label: "Commercials net", data: hist.map((r) => (r.markets[mkey] || {}).commercials?.net), borderColor: "#58a6ff", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+          { label: "Large Specs net", data: hist.map((r) => (r.markets[mkey] || {}).large_specs?.net), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+          { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+         ]},
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc" } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+            callbacks: { label: (c) => " " + c.dataset.label + ": " + (c.parsed.y >= 0 ? "+" : "") + Math.round(c.parsed.y).toLocaleString() } } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#e8ecf1", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
+            title: { display: true, text: "Net contracts", color: "#e8ecf1" } } } }
+        });
+       } else if (kind === "macro") {
+        const hist = ((D.macro_indicators || {}).history || []);
+        const labels = hist.map((r) => {
+         const [y, m] = r.month.split("-");
+         return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][parseInt(m)-1] + " " + y.slice(2);
+        });
+        const series = [
+         { key: "pmi", label: "Manufacturing PMI", color: "#a3e635" },
+         { key: "ppi_yoy", label: "PPI (Producer Price)", color: "#a5b4fc" },
+         { key: "retail_mom", label: "Retail Sales", color: "#22c55e" },
+         { key: "cpi_yoy", label: "CPI (Consumer Price)", color: "#7dd3fc" },
+         { key: "wti_crude", label: "WTI Crude ($)", color: "#f5a623" },
+         { key: "gasoline_retail", label: "Gasoline Retail ($/gal)", color: "#ff6b6b" },
+         { key: "diesel_retail", label: "Diesel Retail ($/gal)", color: "#c44dff" },
+        ];
+        const normalize = (vals) => {
+         const nums = vals.filter((v) => v != null);
+         if (!nums.length) return vals;
+         const mn = Math.min(...nums), mx = Math.max(...nums);
+         const range = mx - mn || 1;
+         return vals.map((v) => v == null ? null : ((v - mn) / range) * 100);
+        };
+        new Chart(zc, {
+         type: "line",
+         data: { labels: labels, datasets: series.map((s) => ({
+          label: s.label,
+          data: normalize(hist.map((r) => r[s.key])),
+          borderColor: s.color, backgroundColor: s.color,
+          borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: s.color, tension: 0.3,
+         }))},
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc", usePointStyle: true, padding: 20 } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+            callbacks: { label: (c) => " " + c.dataset.label + ": " + c.parsed.y.toFixed(0) + "% (normalized)" } } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { min: -50, max: 150, ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+            title: { display: true, text: "Normalized (0–100%)", color: "#e8ecf1" } } } }
+        });
+       } else if (kind === "leadership") {
+        const leaders = (D.leadership.leaders || []);
+        const labels = leaders.map((l) => l.ticker);
+        new Chart(zc, {
+         type: "bar",
+         data: {
+          labels: labels,
+          datasets: [
+           { label: "Relative Strength (50%)", data: leaders.map((l) => +(l.rs_score * 0.50).toFixed(1)), backgroundColor: "#58a6ff", borderWidth: 0 },
+           { label: "Trend Efficiency (30%)", data: leaders.map((l) => +(l.trend_score * 0.30).toFixed(1)), backgroundColor: "#d29922", borderWidth: 0 },
+           { label: "Institutional Volume (20%)", data: leaders.map((l) => +(l.vol_score * 0.20).toFixed(1)), backgroundColor: "#3fb950", borderWidth: 0 },
+          ],
+         },
+         options: { indexAxis: "y", responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12,
+            callbacks: { afterBody: (items) => {
+             const l = leaders[items[0].dataIndex];
+             return "MLS: " + l.mls.toFixed(1) + "  |  " + l.sector + "  |  $" + l.price.toFixed(2);
+            } } } },
+          scales: {
+           x: { stacked: true, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "MLS (0-100)", color: "#e8ecf1" } },
+           y: { stacked: true, ticks: { color: "#fff", font: { size: 14, weight: "bold" } }, grid: { display: false } } } }
+        });
+       } else if (kind === "trends") {
+        const tk2 = el.dataset.ticker;
+        const t = (D.ticker_trends || {})[tk2];
+        if (t && t.quarters) {
+         new Chart(zc, {
+          data: {
+           labels: t.quarters,
+           datasets: [
+            { type: "bar", label: "HF Buys", data: t.hedge_funds.buys, backgroundColor: "#00C805", borderRadius: 3, yAxisID: "yVol" },
+            { type: "bar", label: "HF Sells", data: t.hedge_funds.sells, backgroundColor: "#FF5000", borderRadius: 3, yAxisID: "yVol" },
+            { type: "bar", label: "Insider Buys", data: t.insiders.buys, backgroundColor: "#00C805", borderRadius: 3, hidden: true, yAxisID: "yVol" },
+            { type: "bar", label: "Insider Sells", data: t.insiders.sells, backgroundColor: "#FF5000", borderRadius: 3, hidden: true, yAxisID: "yVol" },
+            { type: "line", label: "Price", data: t.prices, borderColor: "#2979FF", borderWidth: 2.5, pointRadius: 3, tension: 0.3, yAxisID: "yPrice", spanGaps: true },
+           ],
+          },
+          options: { responsive: true, maintainAspectRatio: false,
+           interaction: { mode: "index", intersect: false },
+           plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
+            tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12 } },
+           scales: {
+            x: { ticks: { color: "#e8ecf1", maxTicksLimit: 8 }, grid: { color: "rgba(42,46,57,0.4)" } },
+            yVol: { position: "left", ticks: { color: "#e8ecf1", callback: (v) => v === 0 ? "0" : (Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Shares", color: "#e8ecf1" } },
+            yPrice: { position: "right", ticks: { color: "#2979FF", callback: (v) => "$" + v }, grid: { display: false }, title: { display: true, text: "Price", color: "#2979FF" } } } }
+         });
+        }
+       }
+      } catch (e) { console.error("Zoom chart error", e); }
+     });
+    });
+}
+
  function render() {
   const r = currentRoute();
   // Destroy existing Chart.js instances before re-rendering (prevents "canvas already in use")
@@ -573,6 +984,8 @@
     }
    }
   } catch (e) {}
+  // Bind click-to-zoom handlers for any zoomable charts on this page
+  bindZoomHandlers();
  }
  function updateProBtn() {
   const b = document.getElementById("pro-btn");
@@ -2645,405 +3058,8 @@
      } catch (e) { console.error("GEX chart error for " + sym, e); }
     });
    }
-   // Click/tap to zoom: open modal with larger chart
-   document.querySelectorAll(".zoomable-chart").forEach((el) => {
-    if (el.dataset.zoomBound) return;
-    el.dataset.zoomBound = "1";
-    el.addEventListener("click", () => {
-     const kind = el.dataset.chart;
-     const titles = {
-      jaw: "Alligator Jaw, S&P 500 vs Forward EPS",
-      voldiv: "Volatility Divergence, VIX vs MOVE",
-      themerot: "Theme Rotation, RS Quadrant",
-      smcap: "Small/Mid Cap, vs 200-Day MA",
-      creditvol: "Credit Spreads vs VIX",
-      breadth: "Market Breadth",
-      rsicd: "RSI: Cyclicals vs Defensives (XLY/XLP)",
-      "gex-ticker": "Gamma Exposure, " + (el.dataset.ticker || ""),
-      "skew-ticker": "Volatility Skew, " + (el.dataset.ticker || ""),
-      "gex-index": "Gamma Exposure, " + (el.dataset.symbol || ""),
-      trends: "Trading Trends, " + (el.dataset.ticker || ""),
-      aaii: "AAII Investor Sentiment",
-      cot: "Commitments of Traders",
-      macro: "Macroeconomic Analysis",
-      leadership: "Market Leadership, MLS by Component"
-     };
-     // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
-     if (kind === "gex-ticker") {
-      const tk = el.dataset.ticker;
-      const tg = (D.ticker_gex || {})[tk];
-      if (!tg || !tg.available) return;
-      let modal = document.getElementById("chart-zoom-modal");
-      if (modal) modal.remove();
-      modal = document.createElement("div");
-      modal.id = "chart-zoom-modal";
-      modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;overflow-y:auto;";
-      modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
-       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-       '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Gamma Exposure, ' + esc(tk) + '</div>' +
-       '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
-       tickerGexHtml(tk, tg) + "</div>";
-      document.body.appendChild(modal);
-      const close = () => modal.remove();
-      modal.addEventListener("click", close);
-      document.getElementById("zoom-close").addEventListener("click", close);
-      return;
-     }
-     // For skew ticker (HTML, not a Chart.js chart): show enlarged HTML
-     if (kind === "skew-ticker") {
-      const tk = el.dataset.ticker;
-      const ts = (D.ticker_skew || {})[tk];
-      if (!ts || !ts.available) return;
-      let modal = document.getElementById("chart-zoom-modal");
-      if (modal) modal.remove();
-      modal = document.createElement("div");
-      modal.id = "chart-zoom-modal";
-      modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;overflow-y:auto;";
-      modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
-       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-       '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Volatility Skew, ' + esc(tk) + '</div>' +
-       '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
-       tickerSkewHtml(tk, ts) + "</div>";
-      document.body.appendChild(modal);
-      const close = () => modal.remove();
-      modal.addEventListener("click", close);
-      document.getElementById("zoom-close").addEventListener("click", close);
-      return;
-     }
-     // For GEX index (price levels chart): show enlarged chart
-     if (kind === "gex-index") {
-      const sym = el.dataset.symbol;
-      const d = (D.gex_data.indices || {})[sym];
-      if (!d || !d.available) return;
-      let modal = document.getElementById("chart-zoom-modal");
-      if (modal) modal.remove();
-      modal = document.createElement("div");
-      modal.id = "chart-zoom-modal";
-      modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
-      modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:20px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
-       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-       '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Gamma Exposure, ' + esc(sym) + ' Price Levels</div>' +
-       '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
-       '<div style="position:relative;flex:1;min-height:300px;"><canvas id="zoom-chart"></canvas></div></div>';
-      document.body.appendChild(modal);
-      const close = () => modal.remove();
-      modal.addEventListener("click", close);
-      document.getElementById("zoom-close").addEventListener("click", close);
-      const zc = document.getElementById("zoom-chart");
-      try {
-       const levels = [];
-       if (d.put_wall != null) levels.push({ label: "Put Wall (support)", value: d.put_wall, color: "#f85149" });
-       levels.push({ label: "Spot", value: d.spot, color: "#e8ecf1" });
-       if (d.zero_gamma != null) levels.push({ label: "Zero Gamma (flip)", value: d.zero_gamma, color: "#c678dd" });
-       if (d.call_wall != null) levels.push({ label: "Call Wall (resistance)", value: d.call_wall, color: "#3fb950" });
-       levels.sort((a, b) => a.value - b.value);
-       new Chart(zc, {
-        type: "bar",
-        data: {
-         labels: levels.map((l) => l.label),
-         datasets: [{
-          data: levels.map((l) => l.value),
-          backgroundColor: levels.map((l) => l.color),
-          borderWidth: 0,
-         }],
-        },
-        options: {
-         indexAxis: "y",
-         responsive: true, maintainAspectRatio: false,
-         plugins: {
-          legend: { display: false },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
-           callbacks: { label: (c) => " $" + c.parsed.x.toFixed(2) } },
-         },
-         scales: {
-          x: { ticks: { color: "#e8ecf1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y: { ticks: { color: "#c8d0dc" }, grid: { display: false } },
-         },
-        },
-       });
-      } catch (e) { console.error("GEX zoom chart error", e); }
-      return;
-     }
-     // build modal
-     let modal = document.getElementById("chart-zoom-modal");
-     if (modal) modal.remove();
-     modal = document.createElement("div");
-     modal.id = "chart-zoom-modal";
-     modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
-     modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:20px;width:100%;max-width:1000px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-      '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (titles[kind] || "Chart") + '</div>' +
-      '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
-      '<div style="position:relative;flex:1;min-height:400px;"><canvas id="zoom-chart"></canvas></div></div>';
-     document.body.appendChild(modal);
-     const close = () => modal.remove();
-     modal.addEventListener("click", close);
-     document.getElementById("zoom-close").addEventListener("click", close);
-     // render enlarged chart
-     const zc = document.getElementById("zoom-chart");
-     try {
-      if (kind === "jaw") {
-       const hist = D.jaw_history.history;
-       new Chart(zc, {
-        type: "line",
-        data: { labels: hist.map((r) => r.date), datasets: [
-         { label: "S&P 500", data: hist.map((r) => r.price), borderColor: "#ffd60a", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
-         { label: "Forward 12m EPS", data: hist.map((r) => r.forward_eps), borderColor: "#00e676", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
-        ]},
-        options: { responsive: true, maintainAspectRatio: false,
-         interaction: { mode: "index", intersect: false },
-         plugins: { legend: { labels: { color: "#c8d0dc" } },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
-         scales: {
-          x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y: { position: "left", ticks: { color: "#ffd60a" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "S&P 500", color: "#ffd60a" } },
-          y1: { position: "right", ticks: { color: "#00e676" }, grid: { display: false }, title: { display: true, text: "Fwd EPS ($)", color: "#00e676" } } } }
-       });
-      } else if (kind === "voldiv") {
-       const hist = D.vol_div_history.history;
-       new Chart(zc, {
-        type: "line",
-        data: { labels: hist.map((r) => r.date), datasets: [
-         { label: "Divergence (MOVE z − VIX z)", data: hist.map((r) => r.divergence), borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
-         { label: "MOVE z-score", data: hist.map((r) => r.move_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-         { label: "VIX z-score", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-        ]},
-        options: { responsive: true, maintainAspectRatio: false,
-         interaction: { mode: "index", intersect: false },
-         plugins: { legend: { labels: { color: "#c8d0dc" } },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
-         scales: {
-          x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#e8ecf1" } } } }
-       });
-      } else if (kind === "themerot") {
-       const trh = D.theme_rot_history;
-       const latest = trh.history[trh.history.length - 1];
-       const themes = latest.themes || {};
-       const qColors = { Leading: "#3fb950", Improving: "#c678dd", Weakening: "#d29922", Lagging: "#f85149" };
-       const xs = Object.values(themes).map((v) => v.x), ys = Object.values(themes).map((v) => v.y);
-       const maxAbs = Math.max(Math.abs(Math.min(...xs)), Math.abs(Math.max(...xs)), Math.abs(Math.min(...ys)), Math.abs(Math.max(...ys)), 5);
-       const pad = Math.ceil(maxAbs * 1.15);
-       new Chart(zc, {
-        type: "scatter",
-        data: { datasets: Object.entries(themes).map(([name, vals]) => ({
-         label: name, data: [{ x: vals.x, y: vals.y }],
-         backgroundColor: qColors[vals.q] || "#e8ecf1", pointRadius: 9, pointHoverRadius: 12,
-        }))},
-        options: { responsive: true, maintainAspectRatio: false,
-         plugins: { legend: { display: false },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
-           callbacks: {
-            title: (items) => items[0].dataset.label + " (" + (themes[items[0].dataset.label] || {}).q + ")",
-            label: (c) => " RS vs 70d avg: " + c.parsed.x.toFixed(1) + "%, 20d momentum: " + c.parsed.y.toFixed(1) + "%"
-           } } },
-         scales: {
-          x: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#e8ecf1" } },
-          y: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "20d momentum (%) →", color: "#e8ecf1" } } } },
-        plugins: [quadBg]
-       });
-      } else if (kind === "smcap") {
-       const hist = D.smcap_history.history;
-       new Chart(zc, {
-        type: "line",
-        data: { labels: hist.map((r) => r.date), datasets: [
-         { label: "RUT vs 200d (%)", data: hist.map((r) => r.rut_vs_200d), borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.1 },
-         { label: "MID vs 200d (%)", data: hist.map((r) => r.mid_vs_200d), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1 },
-        ]},
-        options: { responsive: true, maintainAspectRatio: false,
-         interaction: { mode: "index", intersect: false },
-         plugins: { legend: { labels: { color: "#c8d0dc" } },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
-         scales: {
-          x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y: { ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
-       });
-      } else if (kind === "creditvol") {
-       const hist = D.credit_vol_history.history;
-       new Chart(zc, {
-        type: "line",
-        data: { labels: hist.map((r) => r.date), datasets: [
-         { label: "Spread − VIX z-diff", data: hist.map((r) => r.diff), borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
-         { label: "Spread z", data: hist.map((r) => r.spread_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-         { label: "VIX z", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-        ]},
-        options: { responsive: true, maintainAspectRatio: false,
-         interaction: { mode: "index", intersect: false },
-         plugins: { legend: { labels: { color: "#c8d0dc" } },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
-         scales: {
-          x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#e8ecf1" } } } }
-       });
-      } else if (kind === "breadth") {
-       const hist = D.breadth_history.history;
-       new Chart(zc, {
-        type: "line",
-        data: { labels: hist.map((r) => r.date), datasets: [
-         { label: "Breadth spread (pp)", data: hist.map((r) => r.breadth_spread), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
-         { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
-         { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
-        ]},
-        options: { responsive: true, maintainAspectRatio: false,
-         interaction: { mode: "index", intersect: false },
-         plugins: { legend: { labels: { color: "#c8d0dc" } },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
-         scales: {
-          x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y1: { position: "right", ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
-       });
-      } else if (kind === "rsicd") {
-       const hist = D.rsi_cd_history.history;
-       new Chart(zc, {
-        type: "line",
-        data: { labels: hist.map((r) => r.date), datasets: [
-         { label: "RSI (14)", data: hist.map((r) => r.rsi), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
-         { label: "Overbought (70)", data: hist.map(() => 70), borderColor: "#f85149", borderWidth: 1, pointRadius: 0, borderDash: [5, 3] },
-         { label: "Oversold (30)", data: hist.map(() => 30), borderColor: "#3fb950", borderWidth: 1, pointRadius: 0, borderDash: [5, 3] },
-        ]},
-        options: { responsive: true, maintainAspectRatio: false,
-         interaction: { mode: "index", intersect: false },
-         plugins: { legend: { labels: { color: "#c8d0dc" } },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
-         scales: {
-          x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y: { min: 0, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
-           title: { display: true, text: "RSI", color: "#e8ecf1" } } } }
-       });
-      } else if (kind === "aaii") {
-       const hist = (D.aaii_sentiment.history || []);
-       new Chart(zc, {
-        type: "line",
-        data: { labels: hist.map((r) => r.week_ending), datasets: [
-         { label: "Bullish %", data: hist.map((r) => r.bullish), borderColor: "#3fb950", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
-         { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#c8d0dc", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-         { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f85149", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
-        ]},
-        options: { responsive: true, maintainAspectRatio: false,
-         interaction: { mode: "index", intersect: false },
-         plugins: { legend: { labels: { color: "#c8d0dc" } },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
-           callbacks: { label: (c) => " " + c.dataset.label + ": " + c.parsed.y.toFixed(1) + "%" } } },
-         scales: {
-          x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y: { ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
-           title: { display: true, text: "Sentiment %", color: "#e8ecf1" } } } }
-       });
-      } else if (kind === "cot") {
-       const hist = (D.cot_data.history || []);
-       const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
-       new Chart(zc, {
-        type: "line",
-        data: { labels: hist.map((r) => r.report_date), datasets: [
-         { label: "Commercials net", data: hist.map((r) => (r.markets[mkey] || {}).commercials?.net), borderColor: "#58a6ff", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
-         { label: "Large Specs net", data: hist.map((r) => (r.markets[mkey] || {}).large_specs?.net), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
-         { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-        ]},
-        options: { responsive: true, maintainAspectRatio: false,
-         interaction: { mode: "index", intersect: false },
-         plugins: { legend: { labels: { color: "#c8d0dc" } },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
-           callbacks: { label: (c) => " " + c.dataset.label + ": " + (c.parsed.y >= 0 ? "+" : "") + Math.round(c.parsed.y).toLocaleString() } } },
-         scales: {
-          x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y: { ticks: { color: "#e8ecf1", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
-           title: { display: true, text: "Net contracts", color: "#e8ecf1" } } } }
-       });
-      } else if (kind === "macro") {
-       const hist = ((D.macro_indicators || {}).history || []);
-       const labels = hist.map((r) => {
-        const [y, m] = r.month.split("-");
-        return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][parseInt(m)-1] + " " + y.slice(2);
-       });
-       const series = [
-        { key: "pmi", label: "Manufacturing PMI", color: "#a3e635" },
-        { key: "ppi_yoy", label: "PPI (Producer Price)", color: "#a5b4fc" },
-        { key: "retail_mom", label: "Retail Sales", color: "#22c55e" },
-        { key: "cpi_yoy", label: "CPI (Consumer Price)", color: "#7dd3fc" },
-        { key: "wti_crude", label: "WTI Crude ($)", color: "#f5a623" },
-        { key: "gasoline_retail", label: "Gasoline Retail ($/gal)", color: "#ff6b6b" },
-        { key: "diesel_retail", label: "Diesel Retail ($/gal)", color: "#c44dff" },
-       ];
-       const normalize = (vals) => {
-        const nums = vals.filter((v) => v != null);
-        if (!nums.length) return vals;
-        const mn = Math.min(...nums), mx = Math.max(...nums);
-        const range = mx - mn || 1;
-        return vals.map((v) => v == null ? null : ((v - mn) / range) * 100);
-       };
-       new Chart(zc, {
-        type: "line",
-        data: { labels: labels, datasets: series.map((s) => ({
-         label: s.label,
-         data: normalize(hist.map((r) => r[s.key])),
-         borderColor: s.color, backgroundColor: s.color,
-         borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: s.color, tension: 0.3,
-        }))},
-        options: { responsive: true, maintainAspectRatio: false,
-         interaction: { mode: "index", intersect: false },
-         plugins: { legend: { labels: { color: "#c8d0dc", usePointStyle: true, padding: 20 } },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
-           callbacks: { label: (c) => " " + c.dataset.label + ": " + c.parsed.y.toFixed(0) + "% (normalized)" } } },
-         scales: {
-          x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-          y: { min: -50, max: 150, ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
-           title: { display: true, text: "Normalized (0–100%)", color: "#e8ecf1" } } } }
-       });
-      } else if (kind === "leadership") {
-       const leaders = (D.leadership.leaders || []);
-       const labels = leaders.map((l) => l.ticker);
-       new Chart(zc, {
-        type: "bar",
-        data: {
-         labels: labels,
-         datasets: [
-          { label: "Relative Strength (50%)", data: leaders.map((l) => +(l.rs_score * 0.50).toFixed(1)), backgroundColor: "#58a6ff", borderWidth: 0 },
-          { label: "Trend Efficiency (30%)", data: leaders.map((l) => +(l.trend_score * 0.30).toFixed(1)), backgroundColor: "#d29922", borderWidth: 0 },
-          { label: "Institutional Volume (20%)", data: leaders.map((l) => +(l.vol_score * 0.20).toFixed(1)), backgroundColor: "#3fb950", borderWidth: 0 },
-         ],
-        },
-        options: { indexAxis: "y", responsive: true, maintainAspectRatio: false,
-         interaction: { mode: "index", intersect: false },
-         plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
-          tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12,
-           callbacks: { afterBody: (items) => {
-            const l = leaders[items[0].dataIndex];
-            return "MLS: " + l.mls.toFixed(1) + "  |  " + l.sector + "  |  $" + l.price.toFixed(2);
-           } } } },
-         scales: {
-          x: { stacked: true, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "MLS (0-100)", color: "#e8ecf1" } },
-          y: { stacked: true, ticks: { color: "#fff", font: { size: 14, weight: "bold" } }, grid: { display: false } } } }
-       });
-      } else if (kind === "trends") {
-       const tk2 = el.dataset.ticker;
-       const t = (D.ticker_trends || {})[tk2];
-       if (t && t.quarters) {
-        new Chart(zc, {
-         data: {
-          labels: t.quarters,
-          datasets: [
-           { type: "bar", label: "HF Buys", data: t.hedge_funds.buys, backgroundColor: "#00C805", borderRadius: 3, yAxisID: "yVol" },
-           { type: "bar", label: "HF Sells", data: t.hedge_funds.sells, backgroundColor: "#FF5000", borderRadius: 3, yAxisID: "yVol" },
-           { type: "bar", label: "Insider Buys", data: t.insiders.buys, backgroundColor: "#00C805", borderRadius: 3, hidden: true, yAxisID: "yVol" },
-           { type: "bar", label: "Insider Sells", data: t.insiders.sells, backgroundColor: "#FF5000", borderRadius: 3, hidden: true, yAxisID: "yVol" },
-           { type: "line", label: "Price", data: t.prices, borderColor: "#2979FF", borderWidth: 2.5, pointRadius: 3, tension: 0.3, yAxisID: "yPrice", spanGaps: true },
-          ],
-         },
-         options: { responsive: true, maintainAspectRatio: false,
-          interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12 } },
-          scales: {
-           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 8 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           yVol: { position: "left", ticks: { color: "#e8ecf1", callback: (v) => v === 0 ? "0" : (Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Shares", color: "#e8ecf1" } },
-           yPrice: { position: "right", ticks: { color: "#2979FF", callback: (v) => "$" + v }, grid: { display: false }, title: { display: true, text: "Price", color: "#2979FF" } } } }
-        });
-       }
-      }
-     } catch (e) { console.error("Zoom chart error", e); }
-    });
-   });
+   // Click/tap to zoom: bind handlers for all zoomable charts
+   bindZoomHandlers();
   }, 200);
   h += "</div>";
 
@@ -5160,8 +5176,9 @@
    // Returning from Stripe, clear the param and verify subscription status
    history.replaceState(null, "", location.pathname + location.hash);
   }
-  render();    // fast first paint from localStorage cache
-  refreshAuth(); // server-verified Pro status, re-renders when resolved
+  // Don't render until auth resolves - prevents logged-out flicker for Pro users
+  // refreshAuth() renders when complete
+  refreshAuth();
   // Debug mode: add ?debug=1 to URL to see auth status (for iOS troubleshooting)
   if (location.search.includes("debug=1") || location.hash.includes("debug=1")) {
    const showDebug = () => {
