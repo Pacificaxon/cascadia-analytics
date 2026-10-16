@@ -3723,16 +3723,6 @@
   h += '<div class="section-head"><h2>Moving Averages</h2><p>Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.</p></div>' + maHtml(tk);
   h += "</div>";
 
-  // Seasonality (Pro) - average monthly returns from price history
-  h += '<div class="section"><div class="section-title">Seasonality</div>';
-  h += gated("Seasonality, Pro", "Average monthly returns by calendar month, computed from price history.", seasonalityHtml(tk));
-  h += "</div>";
-
-  // Options flow (Pro)
-  h += '<div class="section"><div class="section-title">Unusual Options Flow</div>';
-  h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
-  h += "</div>";
-
   // Trading Trends (FREE), quarterly hedge fund + insider flows with price
   h += '<div class="section"><div class="section-title">Trading Trends</div>';
   h += '<div class="section-sub">Quarterly institutional and insider buy/sell flows with the price trend. Hedge fund data from 13F filings, insider data from SEC Form 4.</div>';
@@ -3743,6 +3733,16 @@
   h += '<div class="section"><div class="section-title">Insider Transactions</div>';
   h += '<div class="section-sub">Recent insider buys and sells from SEC Form 4 filings. Open-market transactions signal conviction and are highlighted.</div>';
   h += tickerInsiderHtml(tk);
+  h += "</div>";
+
+  // Seasonality (Pro) - average monthly returns from price history
+  h += '<div class="section"><div class="section-title">Seasonality</div>';
+  h += gated("Seasonality, Pro", "Average monthly returns by calendar month, computed from price history.", seasonalityHtml(tk));
+  h += "</div>";
+
+  // Options flow (Pro)
+  h += '<div class="section"><div class="section-title">Unusual Options Flow</div>';
+  h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
   h += "</div>";
 
   // Gamma Exposure (Pro), per-ticker dealer positioning
@@ -4883,6 +4883,7 @@
    '<button class="btn secondary m-filter" data-f="8">8/8 pass</button>' +
    '<button class="btn secondary m-filter" data-f="7">7+ pass</button>' +
    '<button class="btn secondary" id="m-export" style="margin-left:auto;">Export CSV</button></div>';
+  h += '<style>@media (max-width:640px){.min-grid{grid-template-columns:1fr !important;}}</style>';
   h += '<div style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px;" class="min-grid">';
   h += '<div class="table-wrap"><table class="coverage"><thead><tr>' +
    '<th data-msort="ticker" style="cursor:pointer;">Ticker</th>' +
