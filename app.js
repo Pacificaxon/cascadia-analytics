@@ -1148,6 +1148,7 @@
  }
  function ratingCls(r) {
   r = String(r || "").toLowerCase();
+  if (r === "strong buy") return "rating-strong-buy";
   if (r === "buy") return "rating-buy";
   if (r === "sell") return "rating-sell";
   return "rating-hold";
