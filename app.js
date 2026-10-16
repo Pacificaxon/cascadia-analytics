@@ -202,6 +202,7 @@
    if (sections.ticker_ma) flat.ticker_ma = sections.ticker_ma;
    if (sections.ticker_ohlcv) flat.ticker_ohlcv = sections.ticker_ohlcv;
    if (sections.macro_indicators) flat.macro_indicators = sections.macro_indicators;
+   if (sections.technical_analysis) flat.technical_analysis = sections.technical_analysis;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -746,6 +747,52 @@
    "</div>" +
    '<div style="font-size:12px;color:#e8ecf1;">Put $' + d.put_strike.toFixed(2) + " / Call $" + d.call_strike.toFixed(2) + " · " + d.dte + " DTE</div>" +
    '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
+ }
+
+ /* Multi-timeframe Technical Analysis (Pro) */
+ function technicalAnalysisHtml(tk) {
+  const ta = (D.technical_analysis || {})[tk];
+  if (!ta) return '<div class="card"><p style="color:var(--muted)">Technical analysis not available for ' + esc(tk) + '.</p></div>';
+
+  const biasColor = { BULLISH: "#3fb950", BEARISH: "#f85149", NEUTRAL: "#d29922" };
+  const bc = biasColor[ta.confluence.overallBias] || "#e8ecf1";
+
+  const tfCard = (name, tf) => {
+   const tc = biasColor[tf.trend] || "#e8ecf1";
+   return '<div style="background:#161b26;border-radius:10px;padding:14px;flex:1;min-width:200px;">' +
+    '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">' + name + ' <span style="color:' + tc + ';">' + tf.trend + "</span></div>" +
+    '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">RSI(14): <b>' + tf.rsi.value.toFixed(1) + "</b> (" + tf.rsi.status + ")</div>" +
+    '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">MACD: ' + esc(tf.macd.signal) + "</div>" +
+    '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">EMA50 vs EMA200: ' + esc(tf.movingAverages.ema50VsEma200) + "</div>" +
+    (tf.keyPattern ? '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">Pattern: ' + esc(tf.keyPattern) + "</div>" : "") +
+    '<div style="font-size:12px;color:#a0a8b8;">' + esc(tf.summary) + "</div>" +
+    "</div>";
+  };
+
+  const kl = ta.keyLevels;
+  const supHtml = kl.support.map((s, i) => '<div>S' + (i+1) + ': <b>$' + s.toFixed(2) + "</b></div>").join("");
+  const resHtml = kl.resistance.map((r, i) => '<div>R' + (i+1) + ': <b>$' + r.toFixed(2) + "</b></div>").join("");
+
+  return '<div class="card">' +
+   '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">' +
+   '<div style="font-size:15px;font-weight:700;">Overall: <span style="color:' + bc + ';">' + ta.confluence.overallBias + "</span></div>" +
+   '<div style="font-size:13px;color:#e8ecf1;">Confidence: <b>' + ta.confluence.confidenceScore + '%</b></div>' +
+   '<div style="font-size:12px;color:#a0a8b8;">' + ta.confluence.timeframeAlignment.replace(/_/g, " ") + "</div>" +
+   "</div>" +
+   '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' +
+   tfCard("Daily", ta.timeframes.daily) + tfCard("Weekly", ta.timeframes.weekly) + tfCard("Monthly", ta.timeframes.monthly) +
+   "</div>" +
+   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">' +
+   '<div><div style="font-size:13px;font-weight:700;color:#3fb950;margin-bottom:6px;">Support</div><div style="font-size:13px;color:#e8ecf1;">' + supHtml + "</div></div>" +
+   '<div><div style="font-size:13px;font-weight:700;color:#f85149;margin-bottom:6px;">Resistance</div><div style="font-size:13px;color:#e8ecf1;">' + resHtml + "</div></div>" +
+   "</div>" +
+   '<div style="font-size:13px;color:#e8ecf1;margin-bottom:8px;">Entry Zone: <b>' + esc(kl.suggestedEntryZone) + "</b> · Stop: <b>$" + kl.stopLoss.toFixed(2) + "</b> · Target: <b>$" + kl.targetPrice.toFixed(2) + "</b></div>" +
+   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+   '<div style="background:#0f2818;border-radius:8px;padding:12px;"><div style="font-size:12px;font-weight:700;color:#3fb950;margin-bottom:4px;">Bullish Case</div><div style="font-size:12px;color:#e8ecf1;">' + esc(ta.scenarios.bullishCase) + "</div></div>" +
+   '<div style="background:#2a1215;border-radius:8px;padding:12px;"><div style="font-size:12px;font-weight:700;color:#f85149;margin-bottom:4px;">Bearish Case</div><div style="font-size:12px;color:#e8ecf1;">' + esc(ta.scenarios.bearishCase) + "</div></div>" +
+   "</div>" +
+   '<div style="font-size:12px;color:#a0a8b8;margin-top:8px;">Risk/Reward: <b>' + esc(ta.scenarios.riskRewardRatio) + "</b> · As of " + esc(ta.asOfDate) + "</div>" +
+   "</div>";
  }
 
  /* Barchart-style Gamma Exposure by Strike chart.
@@ -3243,6 +3290,13 @@
   h += gated("Short Interest, Pro",
    "Biweekly short interest for " + tk + " from FINRA, red bars show shares short, white line shows days to cover.",
    '<div id="short-interest-' + esc(tk) + '"></div>');
+  h += "</div>";
+
+  // Technical Analysis (Pro), multi-timeframe
+  h += '<div class="section"><div class="section-title">Technical Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("Technical Analysis, Pro",
+   "Multi-timeframe technical analysis (daily, weekly, monthly) with RSI, MACD, moving averages, and key levels for " + tk + ".",
+   () => technicalAnalysisHtml(tk));
   h += "</div>";
 
   // Company-specific significant news (free)

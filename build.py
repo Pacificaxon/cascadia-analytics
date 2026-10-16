@@ -135,6 +135,10 @@ def main():
         macro_indicators = load(os.path.join(MR, "macro_indicators.json"))
     except FileNotFoundError:
         macro_indicators = {}
+    try:
+        technical_analysis = load(os.path.join(MR, "technical_analysis.json"))
+    except FileNotFoundError:
+        technical_analysis = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
@@ -311,6 +315,7 @@ def main():
         "ticker_ma": site.pop("ticker_ma", {}),
         "ticker_ohlcv": site.pop("ticker_ohlcv", {}),
         "macro_indicators": macro_indicators,
+        "technical_analysis": technical_analysis,
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}
