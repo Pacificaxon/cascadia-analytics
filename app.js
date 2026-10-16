@@ -297,13 +297,17 @@
   // Do NOT set PRO_DATA = null here - preserves data across navigations
   refreshTickers();
   updateAuthBtn();
-  render();
-  // If Pro state changed during auth resolution, force re-renders
-  // to ensure the route picks up the new state (fixes iOS race condition
-  // where initial render happens before auth completes)
+  // Debounce renders to prevent flashing: only re-render once if Pro state changed
+  // (fixes iOS race condition where initial render happens before auth completes)
   if (prevProState !== isPro()) {
-   setTimeout(() => render(), 100);
-   setTimeout(() => render(), 500);
+   // Clear any pending render to avoid multiple flashes
+   if (window._proRenderTimeout) clearTimeout(window._proRenderTimeout);
+   window._proRenderTimeout = setTimeout(() => {
+    render();
+    window._proRenderTimeout = null;
+   }, 300);
+  } else {
+   render();
   }
   // Re-run visual embedding after auth completes (for analysis route)
   // This ensures visuals load even if PRO_DATA wasn't ready on first render
