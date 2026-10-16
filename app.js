@@ -714,6 +714,50 @@
  }
 
 
+ function tickerInsiderHtml(tk) {
+  const d = (D.ticker_insider || {})[tk];
+  if (!d || !d.transactions || !d.transactions.length) {
+   return '<p style="color:var(--muted)">No recent insider transactions filed.</p>';
+  }
+  const s = d.summary || {};
+  const omBuys = s.buys || 0, omSells = s.sells || 0;
+  // Summary line: highlight open-market conviction activity
+  let h = '<div style="display:flex;gap:16px;margin-bottom:12px;font-size:13px;">';
+  h += '<div><span style="color:var(--muted)">Open-market buys:</span> <b style="color:#3fb950">' + omBuys + '</b></div>';
+  h += '<div><span style="color:var(--muted)">Open-market sells:</span> <b style="color:#f85149">' + omSells + '</b></div>';
+  if (s.automatic_count) h += '<div><span style="color:var(--muted)">Automatic:</span> ' + s.automatic_count + '</div>';
+  h += '</div>';
+  h += '<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;border-collapse:collapse;">';
+  h += '<thead><tr style="color:var(--muted);text-align:left;border-bottom:1px solid #2a3348;">' +
+   '<th style="padding:6px 8px;">Date</th><th style="padding:6px 8px;">Insider</th>' +
+   '<th style="padding:6px 8px;">Type</th><th style="padding:6px 8px;text-align:right;">Shares</th>' +
+   '<th style="padding:6px 8px;text-align:right;">Price</th><th style="padding:6px 8px;text-align:right;">Value</th></tr></thead><tbody>';
+  d.transactions.slice(0, 15).forEach((t) => {
+   const isOM = t.category === "open_market";
+   const isBuy = t.type === "buy";
+   // Open market = conviction: highlighted. Automatic = dimmed.
+   const rowStyle = isOM
+    ? (isBuy ? "background:rgba(63,185,80,0.08);" : "background:rgba(248,81,73,0.08);")
+    : "opacity:0.55;";
+   const typeColor = isBuy ? "#3fb950" : "#f85149";
+   const typeLabel = (isBuy ? "Buy" : "Sell") + (isOM ? "" : ' <span style="color:var(--muted);font-size:10px;">(' + esc(t.code_label || "auto") + ")</span>");
+   const convictBadge = isOM ? ' <span style="font-size:9px;background:' + (isBuy ? "#3fb950" : "#f85149") + ';color:#fff;padding:1px 5px;border-radius:3px;font-weight:700;">OPEN MARKET</span>' : "";
+   h += '<tr style="border-bottom:1px solid #1a2030;' + rowStyle + '">' +
+    '<td style="padding:6px 8px;color:var(--muted);">' + esc(t.date || "") + '</td>' +
+    '<td style="padding:6px 8px;">' + esc(t.insider || "") +
+    (t.title ? '<div style="font-size:10px;color:var(--muted);">' + esc(t.title) + '</div>' : '') + '</td>' +
+    '<td style="padding:6px 8px;color:' + typeColor + ';font-weight:700;">' + typeLabel + convictBadge + '</td>' +
+    '<td style="padding:6px 8px;text-align:right;">' + (t.shares != null ? t.shares.toLocaleString() : "-") + '</td>' +
+    '<td style="padding:6px 8px;text-align:right;">' + (t.price != null ? "$" + t.price.toFixed(2) : "-") + '</td>' +
+    '<td style="padding:6px 8px;text-align:right;">' + (t.value != null ? "$" + Math.round(t.value).toLocaleString() : "-") + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-top:8px;">Open-market buys/sells signal conviction. ' +
+   'Automatic transactions (tax withholding, option exercises, grants) are routine and dimmed. Source: SEC Form 4.</p>';
+  return h;
+ }
+
+
  function tickerGexHtml(tk, d) {
   const isPos = d.regime === "positive";
   const regimeColor = isPos ? "#3fb950" : "#f85149";
@@ -3348,6 +3392,13 @@
   h += gated("Short Interest, Pro",
    "Biweekly short interest for " + tk + " from FINRA, red bars show shares short, white line shows days to cover.",
    '<div id="short-interest-' + esc(tk) + '"></div>');
+  h += "</div>";
+
+  // Insider Transactions (Pro), SEC Form 4
+  h += '<div class="section"><div class="section-title">Insider Transactions <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("Insider Transactions, Pro",
+   "Recent insider buys and sells for " + tk + " from SEC Form 4 filings. Open-market transactions signal conviction and are highlighted.",
+   tickerInsiderHtml(tk));
   h += "</div>";
 
   // Technical Analysis (Pro), multi-timeframe
