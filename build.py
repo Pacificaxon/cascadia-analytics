@@ -158,6 +158,12 @@ def main():
         premarket_report = {}
     try:
         fear_index = load(os.path.join(MR, "fear_index.json"))
+        # Sanitize: component weights stay private, strip from client payload
+        _inds = fear_index.get("indicators")
+        if isinstance(_inds, dict):
+            for _k, _v in _inds.items():
+                if isinstance(_v, dict):
+                    _v.pop("weight", None)
     except FileNotFoundError:
         fear_index = {}
     try:
