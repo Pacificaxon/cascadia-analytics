@@ -200,6 +200,11 @@ def main():
         financials = load(os.path.join(HERE, "financials.json"))
     except FileNotFoundError:
         financials = {}
+    # --- Income charts: 5 annual + 5 quarterly revenue/net income/margin per ticker ---
+    try:
+        income_charts = load(os.path.join(MR, "income_charts.json"))
+    except FileNotFoundError:
+        income_charts = {}
     # --- Earnings calendar: next earnings date per ticker (YYYY-MM-DD).
     # NOTE: when a new ticker is added to coverage, add its next earnings date here.
     # Dates verified 2026-10-14 via Nasdaq calendar API + Zacks/MarketBeat/Finviz/company IR.
@@ -275,6 +280,9 @@ def main():
         # Financial statements (free for all users)
         if tk in financials:
             t["financials"] = financials[tk]
+        # Income chart data: annual + quarterly revenue/net income/margin (free)
+        if tk in income_charts:
+            t["income_chart"] = income_charts[tk]
         tickers[tk] = t
 
     # --- Copy chart images ---

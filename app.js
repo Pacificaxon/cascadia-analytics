@@ -557,7 +557,8 @@ function bindZoomHandlers() {
        aaii: "AAII Investor Sentiment",
        cot: "Commitments of Traders",
        macro: "Macroeconomic Analysis",
-       leadership: "Market Leadership, MLS by Component"
+       leadership: "Market Leadership, MLS by Component",
+       income: "Income Statement, " + (el.dataset.ticker || ""),
       };
       // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
       if (kind === "gex-ticker") {
@@ -931,6 +932,45 @@ function bindZoomHandlers() {
             yPrice: { position: "right", ticks: { color: "#2979FF", callback: (v) => "$" + v }, grid: { display: false }, title: { display: true, text: "Price", color: "#2979FF" } } } }
          });
         }
+       } else if (kind === "income") {
+        const tk2 = el.dataset.ticker;
+        const mode = el.dataset.mode || "quarterly";
+        const t2 = (D.tickers || {})[tk2];
+        const ic = t2 && t2.income_chart;
+        const records = (ic && ic[mode]) || [];
+        const fmtM = (v) => {
+         if (v == null) return "N/A";
+         const a = Math.abs(v), s = v < 0 ? "-" : "";
+         if (a >= 1e9) return s + "$" + (a / 1e9).toFixed(2) + "B";
+         if (a >= 1e6) return s + "$" + (a / 1e6).toFixed(1) + "M";
+         return s + "$" + Math.round(a).toLocaleString();
+        };
+        new Chart(zc, {
+         data: {
+          labels: records.map((r) => r.period),
+          datasets: [
+           { type: "line", label: "Net margin %", data: records.map((r) => r.net_margin_pct),
+             borderColor: "#f97316", backgroundColor: "#f97316", borderWidth: 2.5,
+             pointRadius: 4, pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+             yAxisID: "yMargin", order: 1, tension: 0.15, spanGaps: true },
+           { type: "bar", label: "Revenue", data: records.map((r) => r.revenue),
+             backgroundColor: "#3b82f6", borderRadius: 3, yAxisID: "yAmount", order: 2 },
+           { type: "bar", label: "Net income", data: records.map((r) => r.net_income),
+             backgroundColor: "#22d3ee", borderRadius: 3, yAxisID: "yAmount", order: 3 },
+          ],
+         },
+         options: { responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12,
+            callbacks: { label: (c) => c.dataset.yAxisID === "yMargin"
+             ? " Net margin: " + (c.parsed.y == null ? "N/A" : c.parsed.y.toFixed(1) + "%")
+             : " " + c.dataset.label + ": " + fmtM(c.parsed.y) } } },
+          scales: {
+           x: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" } },
+           yMargin: { position: "left", ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Net margin %", color: "#f97316" } },
+           yAmount: { position: "right", ticks: { color: "#e8ecf1", callback: fmtM }, grid: { display: false }, title: { display: true, text: "Revenue / Net income", color: "#e8ecf1" } } } }
+        });
        }
       } catch (e) { console.error("Zoom chart error", e); }
      });
@@ -3882,6 +3922,7 @@ function bindZoomHandlers() {
   if (isPro()) initSandbox(tk, t);
   wireEarningsTabs(tk);
   wireFinTabs(tk);
+  wireIncomeChart(tk);
   // Short interest chart (Pro), render after DOM insert
   // Retry up to 5 times waiting for ShortInterestChart to load
   let siAttempts = 0;
@@ -4070,11 +4111,125 @@ function bindZoomHandlers() {
    '<button class="fin-tab" data-fin="balance">Balance Sheet</button>' +
    '<button class="fin-tab" data-fin="cashflow">Cash Flow</button>' +
    "</div>" +
-   '<div class="fin-panel" id="' + uid + '-income">' + stmtTable(f.income, INC_ROWS) + "</div>" +
+   '<div class="fin-panel" id="' + uid + '-income">' + incomeChartHtml(t) + stmtTable(f.income, INC_ROWS) + "</div>" +
    '<div class="fin-panel" id="' + uid + '-balance" style="display:none">' + stmtTable(f.balance, BAL_ROWS) + "</div>" +
    '<div class="fin-panel" id="' + uid + '-cashflow" style="display:none">' + stmtTable(f.cashflow, CF_ROWS) + "</div>" +
    '<div class="panel-asof">Source: company filings via Yahoo Finance</div></div>';
   return h;
+ }
+
+ // Interactive dual-axis income chart: Revenue + Net Income bars, Net Margin % line
+ // Annual/Quarterly toggle. Data from t.income_chart (collect_income_charts.py).
+ function incomeChartHtml(t) {
+  const ic = t.income_chart;
+  if (!ic || (!ic.annual.length && !ic.quarterly.length)) return "";
+  const uid = "inc-" + t.ticker;
+  let h = '<div style="margin-bottom:20px;">' +
+   '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">' +
+   '<div style="font-size:14px;font-weight:700;color:#e8ecf1;">Revenue, Net Income & Margin</div>' +
+   '<div class="inc-toggle" id="' + uid + '-toggle" style="display:inline-flex;padding:3px;background:#0f1420;border-radius:8px;">' +
+   '<button data-mode="annual" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:transparent;color:#8b93a7;">Annual</button>' +
+   '<button data-mode="quarterly" class="active" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:#2a4a73;color:#fff;">Quarterly</button>' +
+   "</div></div>" +
+   '<div class="zoomable-chart" data-chart="income" data-ticker="' + esc(t.ticker) + '" data-mode="quarterly" id="' + uid + '-wrap" style="position:relative;height:300px;cursor:zoom-in;" title="Click to zoom">' +
+   '<canvas id="' + uid + '-canvas"></canvas></div>' +
+   '<div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:10px;font-size:12px;color:#c8d0dc;">' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#3b82f6;display:inline-block;"></span>Revenue</span>' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#22d3ee;display:inline-block;"></span>Net income</span>' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;border:2px solid #f97316;display:inline-block;"></span>Net margin %</span>' +
+   "</div>" +
+   (ic.collected_at ? '<div style="font-size:11px;color:#8b93a7;margin-top:6px;text-align:right;">Updated ' + esc(ic.collected_at) + "</div>" : "") +
+   "</div>";
+  return h;
+ }
+
+ // Render (or re-render) the income chart for a ticker + mode
+ function renderIncomeChart(tk, mode) {
+  const t = (D.tickers || {})[tk];
+  const ic = t && t.income_chart;
+  if (!ic) return;
+  const uid = "inc-" + tk;
+  const canvas = document.getElementById(uid + "-canvas");
+  if (!canvas) return;
+  const records = ic[mode] || [];
+  const fmtMoney = (v) => {
+   if (v == null) return "N/A";
+   const a = Math.abs(v), s = v < 0 ? "-" : "";
+   if (a >= 1e9) return s + "$" + (a / 1e9).toFixed(2) + "B";
+   if (a >= 1e6) return s + "$" + (a / 1e6).toFixed(1) + "M";
+   return s + "$" + Math.round(a).toLocaleString();
+  };
+  if (canvas._chart) canvas._chart.destroy();
+  canvas._chart = new Chart(canvas, {
+   data: {
+    labels: records.map((r) => r.period),
+    datasets: [
+     {
+      type: "line", label: "Net margin %",
+      data: records.map((r) => r.net_margin_pct),
+      borderColor: "#f97316", backgroundColor: "#f97316",
+      borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
+      pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+      yAxisID: "yMargin", order: 1, tension: 0.15, spanGaps: true,
+     },
+     {
+      type: "bar", label: "Revenue",
+      data: records.map((r) => r.revenue),
+      backgroundColor: "#3b82f6", borderRadius: 3,
+      barPercentage: 0.7, categoryPercentage: 0.65,
+      yAxisID: "yAmount", order: 2,
+     },
+     {
+      type: "bar", label: "Net income",
+      data: records.map((r) => r.net_income),
+      backgroundColor: "#22d3ee", borderRadius: 3,
+      barPercentage: 0.7, categoryPercentage: 0.65,
+      yAxisID: "yAmount", order: 3,
+     },
+    ],
+   },
+   options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: {
+     legend: { display: false },
+     tooltip: {
+      backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+      titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+      callbacks: {
+       label: (c) => {
+        if (c.dataset.yAxisID === "yMargin")
+         return " Net margin: " + (c.parsed.y == null ? "N/A" : c.parsed.y.toFixed(1) + "%");
+        return " " + c.dataset.label + ": " + fmtMoney(c.parsed.y);
+       },
+      },
+     },
+    },
+    scales: {
+     x: { ticks: { color: "#e8ecf1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
+     yMargin: {
+      type: "linear", position: "left",
+      ticks: { color: "#a1a1aa", callback: (v) => v + "%", font: { size: 11 } },
+      grid: { color: (c) => c.tick.value === 0 ? "#52525b" : "rgba(42,46,57,0.35)" },
+     },
+     yAmount: {
+      type: "linear", position: "right",
+      ticks: { color: "#a1a1aa", callback: fmtMoney, font: { size: 11 } },
+      grid: { display: false },
+     },
+    },
+   },
+  });
+  // Update toggle button styles + wrap mode for zoom
+  const wrap = document.getElementById(uid + "-wrap");
+  if (wrap) wrap.dataset.mode = mode;
+  const tog = document.getElementById(uid + "-toggle");
+  if (tog) tog.querySelectorAll("button").forEach((b) => {
+   const active = b.dataset.mode === mode;
+   b.classList.toggle("active", active);
+   b.style.background = active ? "#2a4a73" : "transparent";
+   b.style.color = active ? "#fff" : "#8b93a7";
+  });
  }
 
  function sotpHtml(t) {
@@ -4613,7 +4768,24 @@ function bindZoomHandlers() {
     const p = document.getElementById(uid + "-" + k);
     if (p) p.style.display = k === b.dataset.fin ? "" : "none";
    });
+   // Re-render income chart when its tab becomes visible (canvas sizing)
+   if (b.dataset.fin === "income") {
+    const wrap = document.getElementById("inc-" + tk + "-wrap");
+    renderIncomeChart(tk, wrap ? wrap.dataset.mode || "quarterly" : "quarterly");
+   }
   }));
+ }
+
+ // Bind Annual/Quarterly toggle + initial render for the income chart
+ function wireIncomeChart(tk) {
+  const t = (D.tickers || {})[tk];
+  if (!t || !t.income_chart) return;
+  const tog = document.getElementById("inc-" + tk + "-toggle");
+  if (tog) tog.querySelectorAll("button").forEach((b) => b.addEventListener("click", (e) => {
+   e.stopPropagation();
+   renderIncomeChart(tk, b.dataset.mode);
+  }));
+  renderIncomeChart(tk, "quarterly");
  }
 
  /* ---------- charts ---------- */
