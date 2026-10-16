@@ -282,6 +282,14 @@
     "changePercent": 20.29
    },
    {
+    "date": "2026-04-15",
+    "shortInterest": 4365055,
+    "prevShortInterest": 4617063,
+    "avgDailyVolume": 951169,
+    "daysToCover": 4.59,
+    "changePercent": -5.46
+   },
+   {
     "date": "2026-04-30",
     "shortInterest": 4515039,
     "prevShortInterest": 4365055,
