@@ -219,7 +219,12 @@
       promise = Promise.resolve(opts.data);
     } else {
       // FINRA local file needs no key; FMP needs apiKey; custom URL needs dataUrl
-      promise = fetchShortInterest(ticker, opts.apiKey, opts.dataUrl);
+      // Add timeout to prevent hanging
+      var fetchPromise = fetchShortInterest(ticker, opts.apiKey, opts.dataUrl);
+      var timeoutPromise = new Promise(function (_, reject) {
+        setTimeout(function () { reject(new Error("Request timed out")); }, 10000);
+      });
+      promise = Promise.race([fetchPromise, timeoutPromise]);
     }
 
     promise.then(function (rows) {
