@@ -5225,7 +5225,7 @@ function bindZoomHandlers() {
    if (!d) return "";
    let h = '<div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">';
    // Ticker card
-   h += '<div class="card" style="padding:24px;"><h1 style="font-size:28px;margin:0 0 8px;">' + esc(tk) + ' <span style="font-weight:400;font-size:18px;color:var(--muted)">- ' + esc(d.name || tk) + '</span></h1>';
+   h += '<div class="card" style="padding:24px;"><div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;"><div>' + tickerLogo(tk) + '</div><h1 style="font-size:28px;margin:0;">' + esc(tk) + ' <span style="font-weight:400;font-size:18px;color:var(--muted)">- ' + esc(d.name || tk) + '</span></h1></div>';
    if (d.upcoming) {
     h += '<p style="color:var(--muted);margin:0;">Next earnings: <b style="color:#fff;">' + fmtD(d.upcoming.date) + '</b>';
     if (d.upcoming.eps_est != null) h += ' &nbsp; Est. EPS ' + fmt$(d.upcoming.eps_est);
