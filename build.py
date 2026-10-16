@@ -276,7 +276,7 @@ def main():
         "ticker_order": sorted(tickers.keys()),
         "macro_feed": macro_items,
         "company_news": news_items,
-        "ticker_macro": {k: v[:8] for k, v in ticker_macro.items()},
+        "ticker_macro": {k: [{kk: vv for kk, vv in item.items() if kk != "take"} for item in v[:8]] for k, v in ticker_macro.items()},
         "ticker_indicator_takes": ticker_indicator_takes,
         "panels": panels,
         "ticker_ma": ticker_ma,
@@ -318,6 +318,7 @@ def main():
         "ticker_ohlcv": site.pop("ticker_ohlcv", {}),
         "macro_indicators": macro_indicators,
         "technical_analysis": technical_analysis,
+        "ticker_macro_takes": {k: v[:8] for k, v in ticker_macro.items()},
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}

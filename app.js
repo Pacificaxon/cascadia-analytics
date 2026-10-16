@@ -203,6 +203,7 @@
    if (sections.ticker_ohlcv) flat.ticker_ohlcv = sections.ticker_ohlcv;
    if (sections.macro_indicators) flat.macro_indicators = sections.macro_indicators;
    if (sections.technical_analysis) flat.technical_analysis = sections.technical_analysis;
+   if (sections.ticker_macro_takes) flat.ticker_macro_takes = sections.ticker_macro_takes;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -3328,12 +3329,15 @@
    h += "</div></div>";
   }
 
-  // Macro takes (free) - headlines, links, analysis, and indicator trends all free
+  // Macro takes: headlines/links free, take analysis Pro-gated, indicator trends free
   const takes = (D.ticker_macro || {})[tk] || [];
+  const proTakes = (D.ticker_macro_takes || {})[tk] || [];
   const indTakes = (D.ticker_indicator_takes || {})[tk] || [];
+  // For Pro users, use the full takes with analysis text
+  const displayTakes = isPro() && proTakes.length ? proTakes : takes;
   if (takes.length || indTakes.length) {
    h += '<div class="section"><div class="section-title">Macro Takes</div><div class="card">';
-   // 12-month indicator trends first (structural macro context)
+   // 12-month indicator trends first (structural macro context, free)
    if (indTakes.length) {
     h += '<div style="font-size:12px;font-weight:700;color:#c9a961;margin-bottom:8px;">12-MONTH INDICATOR TRENDS</div>';
     h += indTakes.map((m) => '<div class="news-item">' +
@@ -3341,13 +3345,14 @@
      '<div class="panel-summary">' + esc(m.take || "") + "</div>" +
      '<div class="news-meta"><span>' + esc(m.period || "") + "</span></div></div>").join("");
    }
-   // Recent news takes
+   // Recent news takes: headlines + links free, analysis Pro-gated
    if (takes.length) {
     h += '<div style="font-size:12px;font-weight:700;color:#c9a961;margin:12px 0 8px;">RECENT MACRO NEWS</div>';
-    h += takes.map((m) => '<div class="news-item">' +
+    h += displayTakes.map((m) => '<div class="news-item">' +
      (m.url ? '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" class="news-h" style="text-decoration:none;color:inherit;"><div class="news-headline">' + esc(m.headline) + "</div></a>"
       : '<div class="news-headline">' + esc(m.headline) + "</div>") +
-     '<div class="panel-summary">' + esc(m.take || "") + "</div>" +
+     (isPro() && m.take ? '<div class="panel-summary">' + esc(m.take) + "</div>"
+      : '<div style="font-size:12px;color:var(--muted);font-style:italic;">Pro analysis available. <a href="#/pricing" style="color:#c9a961;">Upgrade to Pro</a></div>') +
      '<div class="news-meta"><span>' + timeAgo(m.timestamp) + (m.source ? " · " + esc(m.source) : "") + "</span></div></div>").join("");
    }
    h += "</div></div>";
