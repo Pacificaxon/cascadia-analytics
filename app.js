@@ -3523,6 +3523,18 @@
   h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
   h += "</div>";
 
+  // Trading Trends (FREE), quarterly hedge fund + insider flows with price
+  h += '<div class="section"><div class="section-title">Trading Trends</div>';
+  h += '<div class="section-sub">Quarterly institutional and insider buy/sell flows with the price trend. Hedge fund data from 13F filings, insider data from SEC Form 4.</div>';
+  h += tickerTrendsHtml(tk);
+  h += "</div>";
+
+  // Insider Transactions (FREE), SEC Form 4
+  h += '<div class="section"><div class="section-title">Insider Transactions</div>';
+  h += '<div class="section-sub">Recent insider buys and sells from SEC Form 4 filings. Open-market transactions signal conviction and are highlighted.</div>';
+  h += tickerInsiderHtml(tk);
+  h += "</div>";
+
   // Gamma Exposure (Pro), per-ticker dealer positioning
   const tg = (D.ticker_gex || {})[tk];
   if (tg && tg.available) {
@@ -3550,20 +3562,6 @@
   h += gated("Short Interest, Pro",
    "Biweekly short interest for " + tk + " from FINRA, red bars show shares short, white line shows days to cover.",
    '<div id="short-interest-' + esc(tk) + '"></div>');
-  h += "</div>";
-
-  // Trading Trends (Pro), quarterly hedge fund + insider flows with price
-  h += '<div class="section"><div class="section-title">Trading Trends <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
-  h += gated("Trading Trends, Pro",
-   "Quarterly institutional and insider buy/sell flows for " + tk + " with the price trend. Hedge fund data from 13F filings, insider data from SEC Form 4.",
-   tickerTrendsHtml(tk));
-  h += "</div>";
-
-  // Insider Transactions (Pro), SEC Form 4
-  h += '<div class="section"><div class="section-title">Insider Transactions <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
-  h += gated("Insider Transactions, Pro",
-   "Recent insider buys and sells for " + tk + " from SEC Form 4 filings. Open-market transactions signal conviction and are highlighted.",
-   tickerInsiderHtml(tk));
   h += "</div>";
 
   // Technical Analysis (Pro), multi-timeframe
