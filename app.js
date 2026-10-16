@@ -3123,18 +3123,6 @@
   return h;
  }
 
- function fearComponentNote(key) {
-  const notes = {
-   fixed_strike_skew: "High readings mean institutions are paying up heavily for crash protection, a classic sign of hedging demand ahead of stress.",
-   vol_term_structure: "Backwardation (VIX above 3-month VIX) means traders expect more volatility now than later, the signature of an active scare.",
-   vix_spot: "The market's baseline fear gauge. Low teens is calm, 20s is nervous, 30+ is a genuine risk-off regime.",
-   credit_risk: "When junk bonds lag investment grade, credit desks are pricing default risk. This often leads equity weakness by days to weeks.",
-   safe_haven: "Gold beating stocks over two weeks means real money is rotating into hard hedges rather than chasing equity beta.",
-   momentum: "A market far below its 50-day average is washed out. Capitulation bottoms often print here, but so do the early legs of real drawdowns."
-  };
-  return notes[key] || "Component of the composite fear gauge.";
- }
-
  function fearIndexHtml() {
   const fi = D.fear_index;
   if (!fi || fi.fear_index === undefined) {
@@ -3147,21 +3135,6 @@
   const canvasId = "fear-hist-" + Math.random().toString(36).slice(2, 8);
   let h = '<div class="section" style="max-width:none;"><div class="section-title">Quantitative Fear Index</div>';
   h += '<div class="section-sub">A quantitative Fear Index combines fixed-strike downside option skew, volatility term structure backwardation, credit spread stress, safe-haven capital rotation, and market momentum into a single daily 0-100 gauge (0 = Extreme Complacency, 100 = Extreme Panic). Computed every trading morning. As of ' + esc(fi.timestamp || "") + '.</div>';
-  // Component weights explainer
-  const inds = fi.indicators || {};
-  const keys = Object.keys(inds);
-  if (keys.length) {
-   h += '<div class="card" style="padding:16px 20px;margin-bottom:16px;">' +
-    '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin-bottom:10px;letter-spacing:0.5px;">HOW IT IS BUILT</div>' +
-    '<div style="font-size:13px;line-height:1.9;color:#c9d1d9;">' +
-    '<div><span style="color:#3fb950;">▸</span> <strong>Fixed-Strike Put Skew (25%)</strong>: how much institutions overpay for deep out-of-the-money crash protection vs baseline volatility. Falling back to the Cboe SKEW index when option chains are stale.</div>' +
-    '<div><span style="color:#3fb950;">▸</span> <strong>VIX Term Structure (20%)</strong>: VIX vs 3-month VIX. Above 1.0 means backwardation, immediate panic outpacing medium-term expectations. Below 0.9 means complacent contango.</div>' +
-    '<div><span style="color:#3fb950;">▸</span> <strong>VIX Spot Level (20%)</strong>: absolute 30-day implied volatility, the market\'s baseline fear reading.</div>' +
-    '<div><span style="color:#3fb950;">▸</span> <strong>Credit Spread Stress (15%)</strong>: junk bonds (HYG) vs investment grade (LQD) against the 20-day average. Credit stress historically front-runs equity sell-offs.</div>' +
-    '<div><span style="color:#3fb950;">▸</span> <strong>Safe-Haven Flow (10%)</strong>: gold vs S&P 500 over 15 days. Capital rotating into hard hedges signals fear.</div>' +
-    '<div><span style="color:#3fb950;">▸</span> <strong>50-Day Momentum (10%)</strong>: S&P 500 distance from its 50-day average. Deep oversold reads as capitulation.</div>' +
-    '</div></div>';
-  }
   // Gauge card
   h += '<div class="card" style="padding:24px;text-align:center;">';
   h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1.5px;margin-bottom:8px;">FEAR INDEX</div>';
@@ -3175,65 +3148,23 @@
   h += '<div style="display:flex;justify-content:space-between;max-width:520px;margin:0 auto;font-size:10px;color:var(--muted);">' +
    '<span>COMPLACENCY</span><span>NEUTRAL</span><span>EXTREME FEAR</span></div>';
   h += '</div>';
-  // Component cards (click to expand contribution math)
+  // Component cards: name + current score + reading. Weights and methodology stay private.
+  const inds = fi.indicators || {};
+  const keys = Object.keys(inds);
   if (keys.length) {
-   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">MODEL COMPONENTS <span style="font-weight:400;color:var(--muted);letter-spacing:0;">(click a card for details)</span></div>';
+   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">MODEL COMPONENTS</div>';
    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;">';
-   keys.forEach((k, i) => {
+   keys.forEach((k) => {
     const c = inds[k];
     const cs = c.score || 0;
-    const w = parseFloat(String(c.weight).replace("%", "")) / 100 || 0;
-    const contrib = (cs * w).toFixed(1);
     const cc = cs > 60 ? "#ff7b1c" : (cs < 40 ? "#3fb950" : "#e8ecf1");
-    const cardId = "fear-card-" + i + "-" + canvasId;
-    const detailId = "fear-detail-" + i + "-" + canvasId;
-    h += '<div id="' + cardId + '" style="background:#161b26;border-radius:8px;padding:12px;cursor:pointer;" data-fear-toggle="' + detailId + '">' +
-     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
-     '<span style="font-size:11px;color:var(--muted);">' + esc(c.name) + '</span>' +
-     '<span style="font-size:10px;background:#0f1420;color:#8b8fa3;padding:2px 6px;border-radius:4px;">' + esc(c.weight) + '</span></div>' +
+    h += '<div style="background:#161b26;border-radius:8px;padding:12px;">' +
+     '<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">' + esc(c.name) + '</div>' +
      '<div style="font-size:20px;font-weight:700;color:' + cc + ';">' + cs + '</div>' +
-     '<div style="font-size:11px;color:var(--muted);margin-top:2px;">' + esc(c.details) + '</div>' +
-     '<div id="' + detailId + '" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid #2a3242;">' +
-     '<div style="font-size:12px;color:#e8ecf1;line-height:1.7;">Contributes <strong style="color:' + cc + ';">' + contrib + ' points</strong> to the composite (' + cs + ' x ' + esc(c.weight) + ').</div>' +
-     '<div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.6;">' + esc(fearComponentNote(k)) + '</div></div></div>';
+     '<div style="font-size:11px;color:var(--muted);margin-top:2px;">' + esc(c.details) + '</div></div>';
    });
    h += '</div>';
-   h += '<script>document.querySelectorAll("[data-fear-toggle]").forEach(function(el){el.addEventListener("click",function(){var d=document.getElementById(el.getAttribute("data-fear-toggle"));if(d)d.style.display=d.style.display==="none"?"block":"none";});});</script>';
   }
-  // Weight simulator
-  if (keys.length) {
-   const simId = "fear-sim-" + canvasId;
-   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">WEIGHT SIMULATOR <span style="font-weight:400;color:var(--muted);letter-spacing:0;">(drag to recalibrate)</span></div>';
-   h += '<div class="card" style="padding:16px 20px;">';
-   h += '<div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap;">' +
-    '<div style="font-size:13px;color:var(--muted);">Simulated index:</div>' +
-    '<div id="' + simId + '-score" style="font-size:32px;font-weight:800;color:' + color + ';">' + score + '</div>' +
-    '<div id="' + simId + '-label" style="font-size:12px;font-weight:700;color:' + color + ';letter-spacing:1px;">' + esc(label).toUpperCase() + '</div>' +
-    '<button id="' + simId + '-reset" style="margin-left:auto;background:#0f1420;color:#8b8fa3;border:1px solid #2a3242;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;">Reset weights</button></div>';
-   h += '<div id="' + simId + '-sliders"></div>';
-   h += '<div style="font-size:11px;color:var(--muted);margin-top:10px;">Weights are normalized to 100%. Scores are today\'s actual component readings.</div>';
-   h += '</div>';
-   const compJson = JSON.stringify(keys.map((k) => ({ name: inds[k].name, score: inds[k].score || 0, weight: parseFloat(String(inds[k].weight).replace("%", "")) || 0 })));
-   h += '<script>(function(){var comps=' + compJson + ';var wrap=document.getElementById("' + simId + '-sliders");if(!wrap)return;' +
-    'var orig=comps.map(function(c){return c.weight;});' +
-    'function fearColor(s){return s>=75?"#f85149":(s>=55?"#ff7b1c":(s>=45?"#d4a017":"#3fb950"));} ' +
-    'function fearLabel(s){return s>=75?"EXTREME FEAR":(s>=55?"ELEVATED FEAR":(s>=45?"NEUTRAL":(s>=25?"COMPLACENCY":"EXTREME COMPLACENCY")));} ' +
-    'function render(){wrap.innerHTML="";var total=comps.reduce(function(a,c){return a+c.w;},0)||1;' +
-    'comps.forEach(function(c,i){var row=document.createElement("div");row.style.cssText="display:flex;align-items:center;gap:10px;margin-bottom:8px;";' +
-    'row.innerHTML="<span style=\'font-size:12px;color:#e8ecf1;width:180px;flex-shrink:0;\'>"+c.name+"</span>"+' +
-    '"<input type=\'range\' min=\'0\' max=\'50\' step=\'1\' value=\'"+c.w+"\' data-i=\'"+i+"\' style=\'flex:1;accent-color:#2979FF;\'>"+' +
-    '"<span style=\'font-size:12px;color:#8b8fa3;width:44px;text-align:right;\'>"+c.w+"%</span>";wrap.appendChild(row);});' +
-    'wrap.querySelectorAll("input").forEach(function(inp){inp.addEventListener("input",function(){comps[+inp.dataset.i].w=+inp.value;update();});});}' +
-    'function update(){var total=comps.reduce(function(a,c){return a+c.w;},0);if(total<=0)return;' +
-    'var s=comps.reduce(function(a,c){return a+c.score*(c.w/total);},0);s=Math.round(s*10)/10;' +
-    'var sc=document.getElementById("' + simId + '-score"),lb=document.getElementById("' + simId + '-label");' +
-    'if(sc){sc.textContent=s;sc.style.color=fearColor(s);}if(lb){lb.textContent=fearLabel(s);lb.style.color=fearColor(s);}' +
-    'wrap.querySelectorAll("span:last-child").forEach(function(sp,i){if(comps[i])sp.textContent=comps[i].w+"%";});}' +
-    'comps=comps.map(function(c){c.w=c.weight;return c;});render();' +
-    'document.getElementById("' + simId + '-reset").addEventListener("click",function(){comps.forEach(function(c,i){c.w=orig[i];});render();update();});' +
-    '})();</script>';
-  }
-  // 30-day history chart
   if (fi.history && fi.history.length > 1) {
    h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">30-DAY HISTORY</div>';
    h += '<div class="card" style="padding:16px;"><div style="height:180px;"><canvas id="' + canvasId + '"></canvas></div></div>';
@@ -3391,29 +3322,57 @@
 
   app.innerHTML = h;
 
-  // Load current subscriptions and render toggles
-  loadAlertSubscriptions();
-  loadMaAlerts();
-  loadPriceAlerts();
+  // Single batched load: all three lists fetch in parallel and render in one
+  // synchronous pass, so the page populates once instead of flashing 3 times
+  loadAllAlerts();
  });
 
- async function loadAlertSubscriptions() {
+ /* Batch-load all alert sections in parallel, then render synchronously.
+    Fetching the three lists together and writing the DOM in one pass avoids
+    the staggered re-renders that made the page flash on first navigation. */
+ async function loadAllAlerts() {
+  if (!authUser) return;
+  populateMaSymbols();
+  wireAlertButtons();
   const listEl = document.getElementById("alerts-list");
-  if (!listEl || !authUser) return;
-
+  const maListEl = document.getElementById("ma-alerts-list");
+  const priceListEl = document.getElementById("price-alerts-list");
+  if (!listEl || !maListEl || !priceListEl) return;
   try {
-   const { data, error } = await supa
-    .from("alert_subscriptions")
-    .select("tracker_key, is_active")
-    .eq("user_id", authUser.id)
-    .eq("subscription_type", "tracker");
-
-   if (error) throw error;
-
+   const [tRes, mRes, pRes] = await Promise.all([
+    supa.from("alert_subscriptions").select("tracker_key, is_active")
+     .eq("user_id", authUser.id).eq("subscription_type", "tracker"),
+    supa.from("alert_subscriptions").select("id, ticker, ma_period, ma_direction, is_active")
+     .eq("user_id", authUser.id).eq("subscription_type", "ma_cross").eq("is_active", true).order("ticker"),
+    supa.from("alert_subscriptions").select("id, ticker, target_price, price_direction, is_active")
+     .eq("user_id", authUser.id).eq("subscription_type", "price_alert").eq("is_active", true).order("ticker"),
+   ]);
+   if (tRes.error) throw tRes.error;
+   if (mRes.error) throw mRes.error;
+   if (pRes.error) throw pRes.error;
    const activeMap = {};
-   (data || []).forEach((s) => { activeMap[s.tracker_key] = s.is_active; });
+   (tRes.data || []).forEach((s) => { activeMap[s.tracker_key] = s.is_active; });
+   // All three renders happen back-to-back with no awaits between: one visual update
+   renderTrackerToggles(activeMap);
+   renderMaAlerts(mRes.data || []);
+   renderPriceAlerts(pRes.data || []);
+  } catch (err) {
+   console.error("Failed to load alerts:", err);
+   listEl.innerHTML = '<p style="color:#f85149;">Failed to load subscriptions. Please try again.</p>';
+   maListEl.innerHTML = '<p style="color:#f85149;">Failed to load MA alerts.</p>';
+   priceListEl.innerHTML = '<p style="color:#f85149;">Failed to load price alerts.</p>';
+  }
+ }
 
-   listEl.innerHTML = ALERT_TRACKERS.map((t) => {
+ // Thin wrappers kept for the add/remove mutation paths (re-render everything at once)
+ async function loadAlertSubscriptions() { return loadAllAlerts(); }
+ async function loadMaAlerts() { return loadAllAlerts(); }
+ async function loadPriceAlerts() { return loadAllAlerts(); }
+
+ function renderTrackerToggles(activeMap) {
+  const listEl = document.getElementById("alerts-list");
+  if (!listEl) return;
+  listEl.innerHTML = ALERT_TRACKERS.map((t) => {
     const isOn = activeMap[t.key] === true;
     return '<div style="background:#161b26;border-radius:10px;padding:16px;display:flex;align-items:center;gap:16px;">' +
      '<div style="flex:1;">' +
@@ -3442,10 +3401,6 @@
      if (knob) knob.style.left = isActive ? "27px" : "3px";
     });
    });
-  } catch (err) {
-   console.error("Failed to load subscriptions:", err);
-   listEl.innerHTML = '<p style="color:#f85149;">Failed to load subscriptions. Please try again.</p>';
-  }
  }
 
  async function saveAlertSubscription(trackerKey, isActive) {
@@ -3494,19 +3449,10 @@
   }
  }
 
- async function loadMaAlerts() {
+ function renderMaAlerts(data) {
   const listEl = document.getElementById("ma-alerts-list");
-  if (!listEl || !authUser) return;
-  populateMaSymbols();
-  try {
-   const { data, error } = await supa
-    .from("alert_subscriptions")
-    .select("id, ticker, ma_period, ma_direction, is_active")
-    .eq("user_id", authUser.id)
-    .eq("subscription_type", "ma_cross")
-    .eq("is_active", true)
-    .order("ticker");
-   if (error) throw error;
+  if (!listEl) return;
+  {
    if (!data || !data.length) {
     listEl.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">No MA cross alerts yet. Add one above.</p>';
    } else {
@@ -3524,46 +3470,59 @@
      });
     });
    }
-   // Wire add button
-   const addBtn = document.getElementById("ma-add-btn");
-   if (addBtn && !addBtn.dataset.wired) {
-    addBtn.dataset.wired = "1";
-    addBtn.addEventListener("click", async () => {
-     const ticker = document.getElementById("ma-symbol").value;
-     const period = parseInt(document.getElementById("ma-period").value, 10);
-     const direction = document.getElementById("ma-direction").value;
-     if (!ticker) return;
-     const { error } = await supa.from("alert_subscriptions").insert({
-      user_id: authUser.id,
-      subscription_type: "ma_cross",
-      ticker: ticker,
-      ma_period: period,
-      ma_direction: direction,
-      is_active: true,
-     });
-     if (error) { console.error("Failed to add MA alert:", error); return; }
-     loadMaAlerts();
+  }
+ }
+
+ /* Wire the MA and price "Add" buttons once (called from loadAllAlerts) */
+ function wireAlertButtons() {
+  const maAddBtn = document.getElementById("ma-add-btn");
+  if (maAddBtn && !maAddBtn.dataset.wired) {
+   maAddBtn.dataset.wired = "1";
+   maAddBtn.addEventListener("click", async () => {
+    const ticker = document.getElementById("ma-symbol").value;
+    const period = parseInt(document.getElementById("ma-period").value, 10);
+    const direction = document.getElementById("ma-direction").value;
+    if (!ticker) return;
+    const { error } = await supa.from("alert_subscriptions").insert({
+     user_id: authUser.id,
+     subscription_type: "ma_cross",
+     ticker: ticker,
+     ma_period: period,
+     ma_direction: direction,
+     is_active: true,
     });
-   }
-  } catch (err) {
-   console.error("Failed to load MA alerts:", err);
-   listEl.innerHTML = '<p style="color:#f85149;">Failed to load MA alerts.</p>';
+    if (error) { console.error("Failed to add MA alert:", error); return; }
+    loadMaAlerts();
+   });
+  }
+  const priceAddBtn = document.getElementById("price-add-btn");
+  if (priceAddBtn && !priceAddBtn.dataset.wired) {
+   priceAddBtn.dataset.wired = "1";
+   priceAddBtn.addEventListener("click", async () => {
+    const ticker = document.getElementById("price-ticker").value;
+    const target = parseFloat(document.getElementById("price-target").value);
+    const direction = document.getElementById("price-direction").value;
+    if (!ticker || !target || target <= 0) return;
+    const { error } = await supa.from("alert_subscriptions").insert({
+     user_id: authUser.id,
+     subscription_type: "price_alert",
+     ticker: ticker,
+     target_price: target,
+     price_direction: direction,
+     is_active: true,
+    });
+    if (error) { console.error("Failed to add price alert:", error); return; }
+    document.getElementById("price-target").value = "";
+    loadPriceAlerts();
+   });
   }
  }
 
  /* ---------- Price Alerts ---------- */
- async function loadPriceAlerts() {
+ function renderPriceAlerts(data) {
   const listEl = document.getElementById("price-alerts-list");
-  if (!listEl || !authUser) return;
-  try {
-   const { data, error } = await supa
-    .from("alert_subscriptions")
-    .select("id, ticker, target_price, price_direction, is_active")
-    .eq("user_id", authUser.id)
-    .eq("subscription_type", "price_alert")
-    .eq("is_active", true)
-    .order("ticker");
-   if (error) throw error;
+  if (!listEl) return;
+  {
    if (!data || !data.length) {
     listEl.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">No price alerts yet. Add one above.</p>';
    } else {
@@ -3581,31 +3540,6 @@
      });
     });
    }
-   // Wire add button
-   const addBtn = document.getElementById("price-add-btn");
-   if (addBtn && !addBtn.dataset.wired) {
-    addBtn.dataset.wired = "1";
-    addBtn.addEventListener("click", async () => {
-     const ticker = document.getElementById("price-ticker").value;
-     const target = parseFloat(document.getElementById("price-target").value);
-     const direction = document.getElementById("price-direction").value;
-     if (!ticker || !target || target <= 0) return;
-     const { error } = await supa.from("alert_subscriptions").insert({
-      user_id: authUser.id,
-      subscription_type: "price_alert",
-      ticker: ticker,
-      target_price: target,
-      price_direction: direction,
-      is_active: true,
-     });
-     if (error) { console.error("Failed to add price alert:", error); return; }
-     document.getElementById("price-target").value = "";
-     loadPriceAlerts();
-    });
-   }
-  } catch (err) {
-   console.error("Failed to load price alerts:", err);
-   listEl.innerHTML = '<p style="color:#f85149;">Failed to load price alerts.</p>';
   }
  }
 
