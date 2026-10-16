@@ -3814,6 +3814,10 @@ function bindZoomHandlers() {
   h += '<div class="card"><h3>Reverse DCF</h3><div class="section-sub">What the market is pricing in at the current quote.</div>' +
    reverseDcfHtml(t) + "</div>";
 
+  // Valuation multiples (free) - logo colors: forest green + gold
+  h += '<div class="card"><h3>Valuation</h3><div class="section-sub">Market cap, enterprise value and trading multiples.</div>' +
+   valuationHtml(t) + "</div>";
+
   // Sum of the parts (AXON only, Pro-gated)
   if (t.sotp) {
    h += '<div class="section"><div class="section-title">Sum of the Parts</div>';
@@ -3987,6 +3991,7 @@ function bindZoomHandlers() {
   wireIncomeChart(tk);
   wireBalanceChart(tk);
   wireCashflowChart(tk);
+  wireValuation(tk);
   // Short interest chart (Pro), render after DOM insert
   // Retry up to 5 times waiting for ShortInterestChart to load
   let siAttempts = 0;
@@ -4034,46 +4039,37 @@ function bindZoomHandlers() {
     "</div></div>";
   }
 
-  // Sensitivity table: implied price across revenue CAGR assumptions
-  // Uses base-case FCF shape scaled to each CAGR, discounted at WACC
-  // shares_m must come from market data, never default to a hardcoded value
-  const fcf = (t.fcf && t.fcf.base && t.fcf.base.fcf_m) || [];
-  const wacc = t.wacc || 0.10, shares = t.shares_m;
-  if (!shares) return h + '<p style="color:var(--muted)">Share count unavailable, reverse DCF cannot be computed.</p>';
-  if (fcf.length >= 2 && shares) {
-   const f0 = fcf[0] > 0 ? fcf[0] : fcf.find((v) => v > 0) || 100;
-   const n = fcf.length;
-   const implPrice = (g) => {
-    let pv = 0;
-    for (let y = 1; y <= n; y++) pv += (f0 * Math.pow(1 + g, y)) / Math.pow(1 + wacc, y);
-    const tv = (f0 * Math.pow(1 + g, n) * 1.03) / (wacc - 0.03) / Math.pow(1 + wacc, n);
-    return (pv + tv) / shares;
-   };
-   const cagrs = [0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 75, 100];
-   // find market-implied CAGR by interpolation (search 0–100%)
-   let implG = null;
-   const p0 = implPrice(0), pMax = implPrice(1.0);
-   if (t.price >= p0 && t.price <= pMax) {
-    let loG = 0, hiG = 1.0;
-    for (let i = 0; i < 40; i++) {
-     const mid = (loG + hiG) / 2;
-     if (implPrice(mid) < t.price) loG = mid; else hiG = mid;
-    }
-    implG = (loG + hiG) / 2;
+  // Reverse DCF from the DCF sheet (source of truth for market-implied CAGR).
+  // The sheet's Reverse DCF tab computes this properly with the full model;
+  // the old JS recomputation used a flawed single-point growth approximation.
+  const rdcf = t.reverse_dcf;
+  if (rdcf && rdcf.implied_cagr != null) {
+   const cagrPct = (rdcf.implied_cagr * 100).toFixed(1);
+   h += '<div style="margin-top:20px;padding:14px;background:#16191f;border:1px solid #232833;border-radius:12px;">' +
+    '<div style="font-size:13px;color:#c8d0dc;font-weight:600;margin-bottom:8px;">Market-implied revenue CAGR</div>' +
+    '<div style="font-size:28px;font-weight:800;color:#c7af7f;">' + cagrPct + '%</div>';
+   if (rdcf.verdict && typeof rdcf.verdict === "string" && rdcf.verdict.length > 2)
+    h += '<div style="font-size:13px;color:#9ba3af;margin-top:6px;">' + esc(rdcf.verdict) + "</div>";
+   if (rdcf.fcf_margin != null)
+    h += '<div style="font-size:12px;color:#8b93a7;margin-top:6px;">Base-case FCF margin: ' + (rdcf.fcf_margin * 100).toFixed(1) + '% (held flat)</div>';
+   h += "</div>";
+   const tbl = rdcf.table || [];
+   if (tbl.length) {
+    const step = Math.max(1, Math.floor(tbl.length / 12));
+    const rows = tbl.filter((_, i) => i % step === 0).slice(0, 12);
+    h += '<div style="margin-top:16px;"><div style="font-size:13px;color:#c8d0dc;margin-bottom:10px;font-weight:600;">Implied price by revenue CAGR (from DCF model)</div>' +
+     '<div class="table-wrap"><table class="coverage ma-table" style="color:#e8ecf1;"><thead><tr><th style="color:#a8b0bc;">CAGR</th><th style="color:#a8b0bc;">Implied price</th><th style="color:#a8b0bc;">vs current</th></tr></thead><tbody>' +
+     rows.map((r) => {
+      const g = r[0] * 100, p = r[2];
+      if (p == null) return "";
+      const isImpl = Math.abs(r[0] - rdcf.implied_cagr) < 0.015;
+      const chg = t.price ? (p / t.price - 1) * 100 : null;
+      return "<tr" + (isImpl ? ' style="background:rgba(201,169,97,0.15);"' : "") + '><td style="color:#e8ecf1;">' + g.toFixed(1) + "%" + (isImpl ? " \u2190 market" : "") + '</td><td style="color:#e8ecf1;">' + fmt$(p) +
+       '</td><td class="' + (chg == null ? "" : cls(chg)) + '">' + (chg == null ? "N/A" : fmtPct(chg)) + "</td></tr>";
+     }).join("") + "</tbody></table></div></div>";
    }
-   h += '<div style="margin-top:20px;"><div style="font-size:13px;color:#c8d0dc;margin-bottom:10px;font-weight:600;">Implied price by revenue CAGR (base-case FCF margin, ' + (wacc * 100).toFixed(1) + '% WACC)</div>' +
-    '<div class="table-wrap"><table class="coverage ma-table" style="color:#e8ecf1;"><thead><tr><th style="color:#a8b0bc;">CAGR</th><th style="color:#a8b0bc;">Implied price</th><th style="color:#a8b0bc;">vs current</th></tr></thead><tbody>' +
-    cagrs.map((g) => {
-     const p = implPrice(g / 100);
-     const isImpl = implG != null && Math.abs(g / 100 - implG) < 0.03;
-     const chg = (p / t.price - 1) * 100;
-     return "<tr" + (isImpl ? ' style="background:rgba(201,169,97,0.15);"' : "") + '><td style="color:#e8ecf1;">' + g + "%" + (isImpl ? " ← market" : "") + '</td><td style="color:#e8ecf1;">' + fmt$(p) +
-      '</td><td class="' + cls(chg) + '">' + fmtPct(chg) + "</td></tr>";
-    }).join("") + "</tbody></table></div>";
-   if (implG != null)
-    h += '<div class="panel-asof" style="color:#a8b0bc;">Market-implied 5-yr revenue CAGR: ~' + (implG * 100).toFixed(1) + '%</div>';
-   else
-    h += '<div class="panel-asof" style="color:#a8b0bc;">Current price falls outside the 0–100% CAGR range.</div>';
+  } else {
+   h += '<p style="color:var(--muted);margin-top:12px;">Reverse DCF details unavailable for this ticker.</p>';
   }
   return h;
  }
@@ -4873,6 +4869,93 @@ function bindZoomHandlers() {
    renderIncomeChart(tk, b.dataset.mode);
   }));
   renderIncomeChart(tk, "quarterly");
+ }
+
+ // Valuation multiples section (free): market cap, EV, year switcher, multiple cards
+ // Logo colors: forest green #46634d, gold #c7af7f
+ function valuationHtml(t) {
+  const v = t.valuation;
+  if (!v || !v.years || !v.years.length)
+   return '<p style="color:var(--muted)">Valuation data not available.</p>';
+  const uid = "val-" + t.ticker;
+  const fmtBig = (n) => {
+   if (n == null) return "N/A";
+   const a = Math.abs(n);
+   if (a >= 1e12) return "$" + (n / 1e12).toFixed(2) + "T";
+   if (a >= 1e9) return "$" + (n / 1e9).toFixed(1) + "B";
+   if (a >= 1e6) return "$" + (n / 1e6).toFixed(0) + "M";
+   return "$" + Math.round(n).toLocaleString();
+  };
+  const fmtX = (n, dec) => n == null ? "N/A" : n.toFixed(dec == null ? 1 : dec) + "x";
+  // Default to NTM (forward) if available, else TTM
+  const defIdx = v.years.findIndex((y) => y.is_estimate);
+  const dIdx = defIdx >= 0 ? defIdx : 0;
+  let h = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">' +
+   '<div style="background:#16191f;border:1px solid #232833;border-radius:12px;padding:16px;">' +
+   '<div style="font-size:12px;color:#9ba3af;margin-bottom:6px;">Market cap</div>' +
+   '<div style="font-size:24px;font-weight:800;color:#c7af7f;">' + fmtBig(v.market_cap) + "</div></div>" +
+   '<div style="background:#16191f;border:1px solid #232833;border-radius:12px;padding:16px;">' +
+   '<div style="font-size:12px;color:#9ba3af;margin-bottom:6px;">Enterprise value</div>' +
+   '<div style="font-size:24px;font-weight:800;color:#c7af7f;">' + fmtBig(v.enterprise_value) + "</div></div>" +
+   "</div>";
+  // Year switcher pills
+  h += '<div id="' + uid + '-pills" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">' +
+   v.years.map((y, i) =>
+    '<button data-vyear="' + i + '" style="padding:6px 18px;font-size:13px;font-weight:700;border:0;border-radius:999px;cursor:pointer;' +
+    (i === dIdx ? "background:#c7af7f;color:#0d0f12;" : "background:#1c2028;color:#9ba3af;") + '">' +
+    esc(y.label) + "</button>").join("") + "</div>";
+  // Multiple cards grid
+  h += '<div id="' + uid + '-cards"></div>';
+  h += '<div style="font-size:11px;color:#8b93a7;margin-top:10px;">' +
+   "TTM figures from reported financials. Forward estimates from analyst consensus (Yahoo Finance). " +
+   "EV/GP, EV/EBITDA, EV/EBIT and EV/FCF for estimate years hold TTM margins flat." +
+   (v.collected_at ? " Updated " + esc(v.collected_at) + "." : "") + "</div>";
+  // Store data for the renderer
+  h += "<script>window.__val_" + t.ticker + " = " + JSON.stringify(v.years) + ";</script>";
+  return h;
+ }
+
+ function renderValuation(tk, yearIdx) {
+  const years = window["__val_" + tk];
+  if (!years || !years[yearIdx]) return;
+  const y = years[yearIdx];
+  const el = document.getElementById("val-" + tk + "-cards");
+  if (!el) return;
+  const fmtX = (n, dec) => n == null ? "N/A" : n.toFixed(dec == null ? 1 : dec) + "x";
+  const cards = [
+   ["EV / Revenue", fmtX(y.ev_revenue, 2)],
+   ["EV / GP", fmtX(y.ev_gp)],
+   ["EV / EBITDA", fmtX(y.ev_ebitda)],
+   ["EV / EBIT", fmtX(y.ev_ebit)],
+   ["EV / FCF", fmtX(y.ev_fcf)],
+   ["P / E", fmtX(y.pe)],
+   ["PEG", y.peg == null ? "N/A" : y.peg.toFixed(2) + "x"],
+  ];
+  el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">' +
+   cards.map((c) =>
+    '<div style="background:#16191f;border:1px solid #232833;border-radius:12px;padding:14px;">' +
+    '<div style="font-size:12px;color:#9ba3af;margin-bottom:6px;">' + c[0] + "</div>" +
+    '<div style="font-size:22px;font-weight:800;color:' + (c[1] === "N/A" ? "#5a6270" : "#e8ecf1") + ';">' + c[1] + "</div></div>"
+   ).join("") + "</div>";
+  // Update pill styles
+  const pills = document.getElementById("val-" + tk + "-pills");
+  if (pills) pills.querySelectorAll("button").forEach((b) => {
+   const active = parseInt(b.dataset.vyear, 10) === yearIdx;
+   b.style.background = active ? "#c7af7f" : "#1c2028";
+   b.style.color = active ? "#0d0f12" : "#9ba3af";
+  });
+ }
+
+ function wireValuation(tk) {
+  const t = (D.tickers || {})[tk];
+  if (!t || !t.valuation || !t.valuation.years || !t.valuation.years.length) return;
+  const pills = document.getElementById("val-" + tk + "-pills");
+  if (pills) pills.querySelectorAll("button").forEach((b) => b.addEventListener("click", (e) => {
+   e.stopPropagation();
+   renderValuation(tk, parseInt(b.dataset.vyear, 10));
+  }));
+  const defIdx = t.valuation.years.findIndex((y) => y.is_estimate);
+  renderValuation(tk, defIdx >= 0 ? defIdx : 0);
  }
 
  // Balance Sheet chart HTML: Cash vs Total Debt bars + Current Ratio line

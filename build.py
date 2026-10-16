@@ -205,6 +205,11 @@ def main():
         income_charts = load(os.path.join(MR, "income_charts.json"))
     except FileNotFoundError:
         income_charts = {}
+    # --- Valuation multiples: market cap, EV, TTM + forward multiples per ticker (free) ---
+    try:
+        val_multiples = load(os.path.join(MR, "valuation_multiples.json"))
+    except FileNotFoundError:
+        val_multiples = {}
     # --- Earnings calendar: next earnings date per ticker (YYYY-MM-DD).
     # NOTE: when a new ticker is added to coverage, add its next earnings date here.
     # Dates verified 2026-10-14 via Nasdaq calendar API + Zacks/MarketBeat/Finviz/company IR.
@@ -265,6 +270,10 @@ def main():
             shares_backfill = {}
         if t["shares_m"] is None and tk in shares_backfill:
             t["shares_m"] = shares_backfill[tk]
+        # Reverse DCF from the DCF sheet (free) — the sheet is the source of truth
+        # for market-implied CAGR, not the JS recomputation
+        if d.get("reverse_dcf"):
+            t["reverse_dcf"] = d["reverse_dcf"]
         # AXON sum-of-the-parts (Pro-gated on the ticker page) — full detailed model
         if tk == "AXON":
             try:
@@ -283,6 +292,9 @@ def main():
         # Income chart data: annual + quarterly revenue/net income/margin (free)
         if tk in income_charts:
             t["income_chart"] = income_charts[tk]
+        # Valuation multiples: market cap, EV, TTM + forward multiples (free)
+        if tk in val_multiples:
+            t["valuation"] = val_multiples[tk]
         tickers[tk] = t
 
     # --- Copy chart images ---
