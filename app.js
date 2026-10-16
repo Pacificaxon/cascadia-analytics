@@ -4708,7 +4708,7 @@
   const sd = D.screener_data;
   const meta = (sd && sd.metadata) || {};
   let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener</div>';
-  h += '<div class="section-sub">Institutional alpha factors across a liquid large-cap universe. Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning.</div>';
+  h += '<div class="section-sub">Institutional alpha factors across the full S&P 500. Refreshed twice per quarter to capture earnings-season changes. Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC.</div>';
   h += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;">';
   h += '<div style="flex:1;min-width:220px;"><label style="font-size:11px;color:var(--muted);letter-spacing:1px;">SEARCH</label><br>' +
    '<input id="q-search" type="text" placeholder="Ticker or company" style="width:100%;background:#0d1117;border:1px solid #2a3242;border-radius:6px;color:#e8ecf1;padding:8px 10px;margin-top:4px;"></div>';
@@ -4857,7 +4857,7 @@
   const md = D.minervini_data;
   const meta = (md && md.metadata) || {};
   let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener</div>';
-  h += '<div class="section-sub">Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across 50 growth names. ' +
+  h += '<div class="section-sub">Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across the full S&P 500. ' +
    (meta.fullStage2Count != null ? '<b style="color:#3fb950;">' + meta.fullStage2Count + ' names pass all 8</b>. ' : '') +
    'Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning. Click a row to inspect its criteria card.</div>';
   h += '<div style="display:grid;grid-template-columns:1fr;gap:16px;" id="min-wrap">';
@@ -5032,11 +5032,11 @@
   } else {
    const t1 = document.createElement("div");
    t1.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener</div>' +
-    proTeaser("Quantitative Factor Screener, Pro", "Screen 36 liquid names on institutional alpha factors: ROIC, PEG, FCF yield, EV/EBITDA, Piotroski F-Score, operating leverage, golden trend. Sliders, sortable columns, CSV export.") + "</div>";
+    proTeaser("Quantitative Factor Screener, Pro", "Screen the full S&P 500 on institutional alpha factors: ROIC, PEG, FCF yield, EV/EBITDA, Piotroski F-Score, operating leverage, golden trend. Sliders, sortable columns, CSV export.") + "</div>";
    app.appendChild(t1);
    const t2 = document.createElement("div");
    t2.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener</div>' +
-    proTeaser("Technical Factor Screener, Pro", "Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across 50 growth names. Click any ticker to inspect its full criteria card.") + "</div>";
+    proTeaser("Technical Factor Screener, Pro", "Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across the full S&P 500. Click any ticker to inspect its full criteria card.") + "</div>";
    app.appendChild(t2);
   }
  });
