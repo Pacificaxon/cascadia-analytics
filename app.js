@@ -1152,6 +1152,7 @@ function bindZoomHandlers() {
    statusLine +
    (isPro()
     ? '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-bottom:8px;text-decoration:none;">Manage subscription</a>' +
+     '<div id="nl-toggle-wrap" style="margin:12px 0;padding:12px;border:1px solid var(--border);border-radius:8px;"></div>' +
      '<button class="btn secondary" id="pro-logout" style="width:100%">Log out</button>'
     : (authUser
      ? '<a class="cta-btn" style="display:block;text-align:center;margin:14px 0;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Subscribe, $19/mo</a>'
@@ -1163,6 +1164,77 @@ function bindZoomHandlers() {
   if (li) li.onclick = () => showAuthModal("login");
   const lo = document.getElementById("pro-logout");
   if (lo) lo.onclick = () => doLogout();
+  // Newsletter toggle for Pro users
+  const nlWrap = document.getElementById("nl-toggle-wrap");
+  if (nlWrap) renderNewsletterToggle(nlWrap);
+ }
+
+ // Morning briefing newsletter toggle (Pro only)
+ async function newsletterStatus() {
+  try {
+   if (!authUser) return null;
+   const { data, error } = await supa.from("profiles")
+    .select("is_pro, newsletter_subscribed")
+    .eq("user_id", authUser.id).maybeSingle();
+   if (error) return null;
+   return { is_pro: data?.is_pro || false, subscribed: data?.newsletter_subscribed || false };
+  } catch (e) { return null; }
+ }
+ async function renderNewsletterToggle(wrap) {
+  wrap.innerHTML = "<p style='color:var(--muted);font-size:13px'>Loading newsletter settings...</p>";
+  const st = await newsletterStatus();
+  if (!st || !st.is_pro) { wrap.innerHTML = ""; return; }
+  const on = !!st.subscribed;
+  wrap.innerHTML =
+   "<label style='display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px'>" +
+   "<input type='checkbox' id='nl-check' " + (on ? "checked" : "") + " style='width:18px;height:18px;accent-color:#c7af7f'>" +
+   "<span><b>Morning briefing newsletter</b><br><span style='color:var(--muted);font-size:12px'>Daily pre-market email with the full market analysis. Unsubscribe anytime.</span></span></label>";
+  document.getElementById("nl-check").onchange = async (e) => {
+   const want = e.target.checked;
+   try {
+    const upd = {
+     newsletter_subscribed: want,
+     updated_at: new Date().toISOString(),
+     ...(want
+      ? { newsletter_subscribed_at: new Date().toISOString(), newsletter_unsubscribed_at: null }
+      : { newsletter_unsubscribed_at: new Date().toISOString() })
+    };
+    const { error } = await supa.from("profiles").update(upd).eq("user_id", authUser.id);
+    if (error) throw error;
+   } catch (err) {
+    e.target.checked = !want;
+    alert("Could not update newsletter setting. Please try again.");
+   }
+  };
+ }
+ // Post-checkout newsletter signup prompt
+ async function maybeShowNewsletterPrompt() {
+  const st = await newsletterStatus();
+  if (!st || !st.is_pro || st.subscribed) return;
+  // Don't nag: only show once per session after a fresh upgrade
+  if (sessionStorage.getItem("__nl_prompted")) return;
+  sessionStorage.setItem("__nl_prompted", "1");
+  const root = document.getElementById("modal-root");
+  root.innerHTML =
+   '<div class="modal-back" id="mb"><div class="modal">' +
+   '<div class="modal-logo"><img src="logo-icon.png" alt="Cascadia Analytics"></div>' +
+   "<h3>Welcome to Pro</h3>" +
+   "<p style='color:var(--muted);font-size:14px'>Want the morning briefing in your inbox? A daily pre-market email with the full market analysis, gamma levels, Fed odds, and macro takes. Free with Pro, unsubscribe anytime.</p>" +
+   '<button class="cta-btn" id="nl-yes" style="display:block;width:100%;margin:12px 0;">Yes, send me the briefing</button>' +
+   '<button class="btn secondary" id="nl-no" style="width:100%">Not now</button>' +
+   "</div></div>";
+  document.getElementById("nl-yes").onclick = async () => {
+   try {
+    await supa.from("profiles").update({
+     newsletter_subscribed: true,
+     newsletter_subscribed_at: new Date().toISOString(),
+     newsletter_unsubscribed_at: null,
+     updated_at: new Date().toISOString()
+    }).eq("user_id", authUser.id);
+   } catch (e) {}
+   root.innerHTML = "";
+  };
+  document.getElementById("nl-no").onclick = () => { root.innerHTML = ""; };
  }
 
  document.getElementById("brand-home").onclick = () => nav("");
@@ -5915,6 +5987,8 @@ function bindZoomHandlers() {
   if (params.get("checkout") === "success") {
    // Returning from Stripe, clear the param and verify subscription status
    history.replaceState(null, "", location.pathname + location.hash);
+   // Ask new Pro users if they want the morning briefing newsletter
+   setTimeout(() => maybeShowNewsletterPrompt(), 2500);
   }
   // Don't render until auth resolves - prevents logged-out flicker for Pro users
   // refreshAuth() renders when complete
