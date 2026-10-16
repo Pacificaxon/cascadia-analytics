@@ -553,6 +553,21 @@
   else routes.home();
   // Draw GEX strike charts after HTML is in the DOM
   drawGexStrikeCharts();
+  // Restore scroll position if returning to same route (e.g., after tab switch)
+  // Skip on fresh navigation (hash changed) to avoid jumping
+  try {
+   const prevHash = sessionStorage.getItem("__last_hash");
+   // __last_hash was just set to current hash above, so check if we have a saved position
+   // and the page is at the top (indicating a reset happened)
+   const saved = sessionStorage.getItem("__scroll_" + location.hash);
+   if (saved != null && window.scrollY === 0) {
+    const y = parseInt(saved, 10);
+    if (!isNaN(y) && y > 100) {
+     // Only restore if user had scrolled significantly
+     requestAnimationFrame(() => window.scrollTo(0, y));
+    }
+   }
+  } catch (e) {}
  }
  function updateProBtn() {
   const b = document.getElementById("pro-btn");
@@ -637,6 +652,26 @@
   if (document.visibilityState === "hidden") {
    try {
     sessionStorage.setItem("__scroll_" + location.hash, String(window.scrollY || 0));
+   } catch (e) {}
+  } else if (document.visibilityState === "visible") {
+   // Restore scroll position when returning to the tab (fixes mobile tab-switch reset)
+   try {
+    const saved = sessionStorage.getItem("__scroll_" + location.hash);
+    if (saved != null) {
+     const y = parseInt(saved, 10);
+     if (!isNaN(y) && y > 0) {
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+       window.scrollTo(0, y);
+       // Double-check after a short delay (mobile browsers may reset)
+       setTimeout(() => {
+        if (Math.abs(window.scrollY - y) > 50) {
+         window.scrollTo(0, y);
+        }
+       }, 100);
+      });
+     }
+    }
    } catch (e) {}
   }
  });
