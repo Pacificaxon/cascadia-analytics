@@ -205,6 +205,7 @@
    if (sections.technical_analysis) flat.technical_analysis = sections.technical_analysis;
    if (sections.ticker_macro_takes) flat.ticker_macro_takes = sections.ticker_macro_takes;
    if (sections.premarket_report) flat.premarket_report = sections.premarket_report;
+   if (sections.fear_index) flat.fear_index = sections.fear_index;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -3079,6 +3080,7 @@
   { key: "gex", name: "Gamma Exposure (GEX)", desc: "Dealer positioning, notified on volatility regime shifts." },
   { key: "volatility_skew", name: "Volatility Skew", desc: "Put/call skew, notified on significant fear spikes." },
   { key: "macro_analysis", name: "Macroeconomic Analysis", desc: "CPI, PPI, retail sales, PMI, energy, notified when new reports are released." },
+  { key: "fear_index", name: "Quantitative Fear Index", desc: "0-100 market fear gauge, notified when extreme tail risk is detected (score 75+)." },
  ];
 
  function premarketHtml() {
@@ -3121,6 +3123,80 @@
   return h;
  }
 
+ function fearIndexHtml() {
+  const fi = D.fear_index;
+  if (!fi || fi.fear_index === undefined) {
+   return '<div class="section"><div class="section-title">Quantitative Fear Index</div>' +
+    '<div class="card"><p style="color:var(--muted)">The Fear Index has not been computed yet. Check back after the morning refresh.</p></div></div>';
+  }
+  const score = fi.fear_index;
+  const label = fi.sentiment || "";
+  const color = score >= 75 ? "#f85149" : (score >= 55 ? "#ff7b1c" : (score >= 45 ? "#d4a017" : "#3fb950"));
+  const canvasId = "fear-hist-" + Math.random().toString(36).slice(2, 8);
+  let h = '<div class="section" style="max-width:none;"><div class="section-title">Quantitative Fear Index</div>';
+  h += '<div class="section-sub">A quantitative Fear Index combines fixed-strike downside option skew, volatility term structure backwardation, credit spread stress, safe-haven capital rotation, and market momentum into a single daily 0-100 gauge (0 = Extreme Complacency, 100 = Extreme Panic). Computed every trading morning. As of ' + esc(fi.timestamp || "") + '.</div>';
+  // Component weights explainer
+  const inds = fi.indicators || {};
+  const keys = Object.keys(inds);
+  if (keys.length) {
+   h += '<div class="card" style="padding:16px 20px;margin-bottom:16px;">' +
+    '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin-bottom:10px;letter-spacing:0.5px;">HOW IT IS BUILT</div>' +
+    '<div style="font-size:13px;line-height:1.9;color:#c9d1d9;">' +
+    '<div><span style="color:#3fb950;">▸</span> <strong>Fixed-Strike Put Skew (25%)</strong>: how much institutions overpay for deep out-of-the-money crash protection vs baseline volatility. Falling back to the Cboe SKEW index when option chains are stale.</div>' +
+    '<div><span style="color:#3fb950;">▸</span> <strong>VIX Term Structure (20%)</strong>: VIX vs 3-month VIX. Above 1.0 means backwardation, immediate panic outpacing medium-term expectations. Below 0.9 means complacent contango.</div>' +
+    '<div><span style="color:#3fb950;">▸</span> <strong>VIX Spot Level (20%)</strong>: absolute 30-day implied volatility, the market\'s baseline fear reading.</div>' +
+    '<div><span style="color:#3fb950;">▸</span> <strong>Credit Spread Stress (15%)</strong>: junk bonds (HYG) vs investment grade (LQD) against the 20-day average. Credit stress historically front-runs equity sell-offs.</div>' +
+    '<div><span style="color:#3fb950;">▸</span> <strong>Safe-Haven Flow (10%)</strong>: gold vs S&P 500 over 15 days. Capital rotating into hard hedges signals fear.</div>' +
+    '<div><span style="color:#3fb950;">▸</span> <strong>50-Day Momentum (10%)</strong>: S&P 500 distance from its 50-day average. Deep oversold reads as capitulation.</div>' +
+    '</div></div>';
+  }
+  // Gauge card
+  h += '<div class="card" style="padding:24px;text-align:center;">';
+  h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1.5px;margin-bottom:8px;">FEAR INDEX</div>';
+  h += '<div style="font-size:56px;font-weight:800;color:' + color + ';line-height:1;">' + score + '</div>';
+  h += '<div style="font-size:14px;font-weight:700;color:' + color + ';margin-top:6px;letter-spacing:1px;">' + esc(label).toUpperCase() + '</div>';
+  // Meter bar
+  h += '<div style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin:16px auto 4px;max-width:520px;">' +
+   '<div style="flex:25;background:#3fb950;"></div><div style="flex:20;background:#7bbf3f;"></div>' +
+   '<div style="flex:10;background:#d4a017;"></div><div style="flex:20;background:#ff7b1c;"></div>' +
+   '<div style="flex:25;background:#f85149;"></div></div>';
+  h += '<div style="display:flex;justify-content:space-between;max-width:520px;margin:0 auto;font-size:10px;color:var(--muted);">' +
+   '<span>COMPLACENCY</span><span>NEUTRAL</span><span>EXTREME FEAR</span></div>';
+  h += '</div>';
+  // Component cards
+  if (keys.length) {
+   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">MODEL COMPONENTS</div>';
+   h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;">';
+   keys.forEach((k) => {
+    const c = inds[k];
+    const cs = c.score || 0;
+    const cc = cs > 60 ? "#ff7b1c" : (cs < 40 ? "#3fb950" : "#e8ecf1");
+    h += '<div style="background:#161b26;border-radius:8px;padding:12px;">' +
+     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+     '<span style="font-size:11px;color:var(--muted);">' + esc(c.name) + '</span>' +
+     '<span style="font-size:10px;background:#0f1420;color:#8b8fa3;padding:2px 6px;border-radius:4px;">' + esc(c.weight) + '</span></div>' +
+     '<div style="font-size:20px;font-weight:700;color:' + cc + ';">' + cs + '</div>' +
+     '<div style="font-size:11px;color:var(--muted);margin-top:2px;">' + esc(c.details) + '</div></div>';
+   });
+   h += '</div>';
+  }
+  // 30-day history chart
+  if (fi.history && fi.history.length > 1) {
+   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">30-DAY HISTORY</div>';
+   h += '<div class="card" style="padding:16px;"><div style="height:180px;"><canvas id="' + canvasId + '"></canvas></div></div>';
+   const histData = fi.history.map((p) => ({ x: p.date, y: p.score }));
+   h += '<script>if(window.Chart){new Chart(document.getElementById("' + canvasId + '"),{type:"line",data:{labels:' +
+    JSON.stringify(histData.map((p) => p.x.slice(5))) + ',datasets:[{data:' + JSON.stringify(histData.map((p) => p.y)) +
+    ',borderColor:"#2979FF",borderWidth:2,tension:0.3,fill:false,pointRadius:0}]},' +
+    'options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},' +
+    'zoom:{zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:"x"},pan:{enabled:true,mode:"x"}}},' +
+    'scales:{x:{grid:{display:false},ticks:{color:"#525252",font:{size:9}}},' +
+    'y:{min:0,max:100,grid:{color:"#1a1a1a"},ticks:{color:"#525252",font:{size:9},stepSize:25}}}}});}</script>';
+  }
+  h += '</div>';
+  return h;
+ }
+
  route("analysis", async function () {
   // Ensure Pro data is loaded before rendering (fixes race condition)
   await ensureProData();
@@ -3140,6 +3216,8 @@
    "<p class='hero-sub'>Institutional-grade briefing synthesizing macro, internals, and derivatives positioning. Updated every trading morning.</p></div></div>";
   // Pre-market cross-asset snapshot (Pro)
   h += premarketHtml();
+  // Quantitative Fear Index (Pro)
+  h += fearIndexHtml();
   if (r && r.available) {
    h += '<div class="section" style="max-width:none;">' +
     '<div class="section-sub">Published ' + esc((r.as_of || "").slice(0, 16).replace("T", " ")) + " ET</div>" +
