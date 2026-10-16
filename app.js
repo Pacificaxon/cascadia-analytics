@@ -3294,7 +3294,7 @@
 
   // Technical Analysis (Pro), multi-timeframe
   h += '<div class="section"><div class="section-title">Technical Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
-  h += gated("Technical Analysis, Pro",
+  h += gatedSafe("Technical Analysis, Pro",
    "Multi-timeframe technical analysis (daily, weekly, monthly) with RSI, MACD, moving averages, and key levels for " + tk + ".",
    () => technicalAnalysisHtml(tk));
   h += "</div>";
