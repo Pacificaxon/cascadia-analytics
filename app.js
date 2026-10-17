@@ -218,6 +218,7 @@
    if (sections.comps_matrix) flat.comps_matrix = sections.comps_matrix;
    if (sections.correction_risk) flat.correction_risk = sections.correction_risk;
    if (sections.liquidity_drain) flat.liquidity_drain = sections.liquidity_drain;
+   if (sections.rv_shock) flat.rv_shock = sections.rv_shock;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -6442,6 +6443,101 @@ function bindZoomHandlers() {
   return h;
  }
 
+ function rvShockHtml() {
+  const R = D.rv_shock || {};
+  if (!R.countdown) {
+   return '<div class="section"><div class="section-title">RV Shock Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="card"><p style="color:var(--muted)">RV Shock data unavailable. Check back after the next refresh.</p></div></div>';
+  }
+  const cd = R.countdown, rv = R.rvCurrent || {};
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+  const c = colorMap[cd.statusColor] || "#e8ecf1";
+  const vcf = rv.vcfExposurePercentile || 0;
+  const vcfColor = vcf >= 80 ? "#f85149" : vcf >= 50 ? "#d29922" : "#3fb950";
+
+  let h = '<div class="section"><div class="section-title">RV Shock Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section-sub">Realized volatility shocks and systematic fund positioning. When volatility has been quiet too long, mechanical sellers are fully loaded.</div>';
+
+  // What this means (for everyone)
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+   '<b style="color:#e8ecf1;">The simple version:</b> Markets go through calm stretches and stormy stretches. This model counts how long it has been since the last storm. The longer the calm lasts, the more likely a storm is coming, because big automated funds pile into stocks when things are quiet and are forced to sell when volatility spikes.<br><br>' +
+   '<b style="color:#e8ecf1;">For long-term investors:</b> When the gauge reads OVERDUE, consider it a yellow light, not a sell signal. It is a good time to make sure your position sizes are comfortable and avoid adding leverage. When it reads RECENTLY UNWOUND, the mechanical selling pressure has passed.<br><br>' +
+   '<b style="color:#e8ecf1;">For active traders:</b> An OVERDUE reading with VCF exposure above 80% has historically preceded pullbacks. The forward price action tables below show exactly what happened in the 15 trading days after each past signal: the hit rate, average decline, and worst case. Use these as a statistical roadmap, not a prediction.' +
+   '</div></div>';
+
+  // Status banner
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">STATUS</div>' +
+   '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(cd.statusLabel) + "</div>" +
+   '<div style="font-size:12px;color:#8b949e;margin-top:4px;max-width:600px;">' + esc(cd.statusDesc) + "</div></div></div>";
+
+  // Countdown stats
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
+  const statCard = (label, val, sub) =>
+   '<div style="background:#161b26;border-radius:10px;padding:12px;text-align:center;">' +
+   '<div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
+   '<div style="font-size:24px;font-weight:800;color:#e8ecf1;">' + val + '</div>' +
+   '<div style="font-size:11px;color:#8b949e;">' + sub + '</div></div>';
+  h += statCard("AVG TIME BETWEEN SHOCKS", cd.avgTimeBetweenTd + " td", "~" + cd.avgTimeBetweenCal + " calendar days");
+  h += statCard("MEDIAN GAP", cd.medianGapTd + " td", "shortest " + cd.shortestGapTd + " / longest " + cd.longestGapTd);
+  h += statCard("SINCE LAST SHOCK", cd.sinceLastSpikeTd + " td", "last: " + esc(cd.lastSpikeDate || ""));
+  h += "</div>";
+
+  // VCF exposure bar
+  h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:4px;">Systematic fund exposure (the "spring tension")</div>' +
+   '<div style="font-size:12px;color:#8b949e;margin-bottom:10px;">Volatility-control funds mechanically buy stocks when realized volatility is low and sell when it spikes. Low volatility = they are fully loaded = the spring is coiled tight.</div>' +
+   '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">' +
+   '<span style="font-size:12px;color:#8b949e;">Estimated equity exposure</span>' +
+   '<span style="font-size:28px;font-weight:800;color:' + vcfColor + ';">' + vcf + '%</span></div>' +
+   '<div style="width:100%;background:#1f2937;height:10px;border-radius:5px;overflow:hidden;">' +
+   '<div style="height:100%;width:' + vcf + '%;background:' + vcfColor + ';border-radius:5px;"></div></div>' +
+   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;">' +
+   '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">10-day RV</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (rv.rv10 != null ? rv.rv10 + "%" : "-") + '</div></div>' +
+   '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">20-day RV</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (rv.rv20 != null ? rv.rv20 + "%" : "-") + '</div></div>' +
+   '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">60-day RV</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (rv.rv60 != null ? rv.rv60 + "%" : "-") + '</div></div>' +
+   "</div></div>";
+
+  // Forward PA tables
+  ["signal1", "signal2"].forEach((key) => {
+   const sig = R[key] || {};
+   const sum = sig.summary || {};
+   const rows = sig.rows || [];
+   if (!sum.signalCount) return;
+   h += '<div style="margin:16px 0;"><div style="font-size:14px;font-weight:700;color:#e8ecf1;margin-bottom:4px;">' + esc(sig.title || key) + '</div>' +
+    '<div style="font-size:12px;color:#8b949e;margin-bottom:8px;">What happened in the 15 trading days after each past signal. ' +
+    '<b style="color:#3fb950;">Hit rate ' + (sum.hitRate != null ? sum.hitRate : "-") + '%</b> (' + esc(sum.hitFraction || "") + ') ' +
+    'means that share of signals saw a peak decline worse than -1.5%. Avg peak decline <b style="color:#f85149;">' + (sum.avgPeakDecline != null ? sum.avgPeakDecline : "-") + '%</b>, ' +
+    'worst <b style="color:#f85149;">' + (sum.worstDecline != null ? sum.worstDecline : "-") + '%</b>.</div>';
+   h += '<div class="table-wrap" style="max-height:400px;overflow-y:auto;"><table class="coverage ma-table" style="color:#e8ecf1;font-size:11px;"><thead><tr>' +
+    '<th style="color:#a8b0bc;position:sticky;top:0;background:#161b26;">Date</th>';
+   for (let d = 1; d <= 15; d++) h += '<th style="color:#a8b0bc;position:sticky;top:0;background:#161b26;">D+' + d + "</th>";
+   h += '<th style="color:#a8b0bc;position:sticky;top:0;background:#161b26;">Max DD</th></tr></thead><tbody>';
+   rows.forEach((r) => {
+    h += '<tr><td style="color:#e8ecf1;font-weight:600;white-space:nowrap;">' + esc(r.date) + "</td>";
+    for (let d = 1; d <= 15; d++) {
+     const v = (r.returns || {})["D+" + d];
+     const col = v == null ? "#8b949e" : v < 0 ? "#f85149" : "#3fb950";
+     h += '<td style="color:' + col + ';">' + (v == null ? "-" : (v > 0 ? "+" : "") + v + "%") + "</td>";
+    }
+    h += '<td style="color:#f85149;font-weight:700;">' + (r.peakDecline != null ? r.peakDecline + "%" : "-") + "</td></tr>";
+   });
+   // Average row
+   const avg = sum.averageCurve || {};
+   h += '<tr style="background:rgba(201,169,97,0.08);font-weight:700;"><td style="color:#c9a961;">AVG</td>';
+   for (let d = 1; d <= 15; d++) {
+    const v = avg["D+" + d];
+    const col = v == null ? "#8b949e" : v < 0 ? "#f85149" : "#3fb950";
+    h += '<td style="color:' + col + ';">' + (v == null ? "-" : (v > 0 ? "+" : "") + v + "%") + "</td>";
+   }
+   h += '<td style="color:#c9a961;">' + (sum.avgPeakDecline != null ? sum.avgPeakDecline + "%" : "-") + "</td></tr>";
+   h += "</tbody></table></div></div>";
+  });
+
+  h += '<div class="panel-asof">As of ' + esc((R.as_of || "").slice(0, 10)) + " · SPY $" + (R.currentPrice != null ? R.currentPrice : "-") + "</div></div>";
+  return h;
+ }
+
  function correctionRiskHtml() {
   const cr = D.correction_risk || {};
   if (!cr.totalRiskScore && cr.totalRiskScore !== 0) {
@@ -6487,7 +6583,7 @@ function bindZoomHandlers() {
     '<div class="hero"><div><h1 class="hero-h">Risk Models.</h1>' +
     "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
     '<div class="section"><div class="section-title">Risk Models <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    return;
   }
   let h = '<div class="crumb">RISK MODELS</div>' +
@@ -6495,6 +6591,7 @@ function bindZoomHandlers() {
    "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>";
   h += correctionRiskHtml();
   h += liquidityDrainHtml();
+  h += rvShockHtml();
   h += fearIndexHtml();
   app.innerHTML = h;
   bindZoomHandlers();

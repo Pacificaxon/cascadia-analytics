@@ -465,6 +465,7 @@ def main():
         "comps_matrix": load(os.path.join(MR, "comps_matrix.json")) if os.path.exists(os.path.join(MR, "comps_matrix.json")) else {},
         "correction_risk": load(os.path.join(MR, "correction_risk.json")) if os.path.exists(os.path.join(MR, "correction_risk.json")) else {},
         "liquidity_drain": load(os.path.join(MR, "liquidity_drain.json")) if os.path.exists(os.path.join(MR, "liquidity_drain.json")) else {},
+        "rv_shock": load(os.path.join(MR, "rv_shock.json")) if os.path.exists(os.path.join(MR, "rv_shock.json")) else {},
         "transcript_tone": load(os.path.join(MR, "transcript_tone.json")) if os.path.exists(os.path.join(MR, "transcript_tone.json")) else {},
     }
     # Per-ticker transcript tone detail files
