@@ -902,6 +902,96 @@
     "changePercent": 5.47
    }
   ],
+  "ENS": [
+   {
+    "date": "2026-03-31",
+    "shortInterest": 1094867,
+    "prevShortInterest": 1230732,
+    "avgDailyVolume": 377481,
+    "daysToCover": 2.9,
+    "changePercent": -11.04
+   },
+   {
+    "date": "2026-04-15",
+    "shortInterest": 1159220,
+    "prevShortInterest": 1094867,
+    "avgDailyVolume": 301594,
+    "daysToCover": 3.84,
+    "changePercent": 5.88
+   },
+   {
+    "date": "2026-04-30",
+    "shortInterest": 1195911,
+    "prevShortInterest": 1159220,
+    "avgDailyVolume": 279301,
+    "daysToCover": 4.28,
+    "changePercent": 3.17
+   },
+   {
+    "date": "2026-05-15",
+    "shortInterest": 1402558,
+    "prevShortInterest": 1195911,
+    "avgDailyVolume": 372506,
+    "daysToCover": 3.77,
+    "changePercent": 17.28
+   },
+   {
+    "date": "2026-06-15",
+    "shortInterest": 1249245,
+    "prevShortInterest": 1221654,
+    "avgDailyVolume": 504145,
+    "daysToCover": 2.48,
+    "changePercent": 2.26
+   },
+   {
+    "date": "2026-06-30",
+    "shortInterest": 1797442,
+    "prevShortInterest": 1249245,
+    "avgDailyVolume": 760287,
+    "daysToCover": 2.36,
+    "changePercent": 43.88
+   },
+   {
+    "date": "2026-07-15",
+    "shortInterest": 2053797,
+    "prevShortInterest": 1797442,
+    "avgDailyVolume": 467425,
+    "daysToCover": 4.39,
+    "changePercent": 14.26
+   },
+   {
+    "date": "2026-07-31",
+    "shortInterest": 2095942,
+    "prevShortInterest": 2053797,
+    "avgDailyVolume": 442931,
+    "daysToCover": 4.73,
+    "changePercent": 2.05
+   },
+   {
+    "date": "2026-08-31",
+    "shortInterest": 2173042,
+    "prevShortInterest": 2176864,
+    "avgDailyVolume": 502676,
+    "daysToCover": 4.32,
+    "changePercent": -0.18
+   },
+   {
+    "date": "2026-09-15",
+    "shortInterest": 3010838,
+    "prevShortInterest": 2173042,
+    "avgDailyVolume": 548586,
+    "daysToCover": 5.49,
+    "changePercent": 38.55
+   },
+   {
+    "date": "2026-09-30",
+    "shortInterest": 2869290,
+    "prevShortInterest": 3010838,
+    "avgDailyVolume": 570487,
+    "daysToCover": 5.03,
+    "changePercent": -4.7
+   }
+  ],
   "IA": [
    {
     "date": "2026-08-31",
