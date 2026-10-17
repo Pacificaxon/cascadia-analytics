@@ -4438,8 +4438,27 @@ function bindZoomHandlers() {
    h += "</div>";
    const tbl = rdcf.table || [];
    if (tbl.length) {
-    const step = Math.max(1, Math.floor(tbl.length / 12));
-    const rows = tbl.filter((_, i) => i % step === 0).slice(0, 12);
+    // Pick rows at 10% CAGR increments (e.g., -10%, 0%, 10%, 20%...)
+    // plus the market-implied row, sorted by CAGR
+    const picked = [];
+    const seen = new Set();
+    for (const r of tbl) {
+     const gPct = Math.round(r[0] * 100);
+     if (gPct % 10 === 0 && !seen.has(gPct)) {
+      seen.add(gPct);
+      picked.push(r);
+     }
+    }
+    // Always include the market-implied row
+    let implRow = null;
+    let bestDiff = 0.005;
+    for (const r of tbl) {
+     const d = Math.abs(r[0] - rdcf.implied_cagr);
+     if (d < bestDiff) { bestDiff = d; implRow = r; }
+    }
+    if (implRow && !picked.includes(implRow)) picked.push(implRow);
+    picked.sort((a, b) => a[0] - b[0]);
+    const rows = picked.slice(0, 14);
     h += '<div style="margin-top:16px;"><div style="font-size:13px;color:#c8d0dc;margin-bottom:10px;font-weight:600;">Implied price by revenue CAGR (from DCF model)</div>' +
      '<div class="table-wrap"><table class="coverage ma-table" style="color:#e8ecf1;"><thead><tr><th style="color:#a8b0bc;">CAGR</th><th style="color:#a8b0bc;">Implied price</th><th style="color:#a8b0bc;">vs current</th></tr></thead><tbody>' +
      rows.map((r) => {
