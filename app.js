@@ -219,6 +219,7 @@
    if (sections.correction_risk) flat.correction_risk = sections.correction_risk;
    if (sections.liquidity_drain) flat.liquidity_drain = sections.liquidity_drain;
    if (sections.rv_shock) flat.rv_shock = sections.rv_shock;
+   if (sections.contagion) flat.contagion = sections.contagion;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -575,6 +576,7 @@ function bindZoomHandlers() {
        breakeven: "10Y Breakeven Inflation",
        "correction-risk": "Correction Risk Model",
        "liquidity-drain": "Liquidity Drain Model",
+       "contagion": "Cross-Asset Contagion Tracker",
        cot: "Commitments of Traders",
        macro: "Macroeconomic Analysis",
        leadership: "Market Leadership, MLS by Component",
@@ -928,6 +930,35 @@ function bindZoomHandlers() {
            }},
          });
         } catch (e) { console.error("Liquidity drain chart error:", e); }
+       } else if (kind === "contagion") {
+        const cg = D.contagion || {};
+        const hist = cg.history || [];
+        if (!hist.length) return;
+        try {
+         const canvas = zc.tagName === "CANVAS" ? zc : (zc.querySelector("canvas") || document.getElementById("contagion-chart"));
+         if (!canvas) return;
+         const old = Chart.getChart(canvas);
+         if (old) old.destroy();
+         new Chart(canvas, {
+          data: {
+           labels: hist.map((r) => r.date),
+           datasets: [
+            { type: "line", label: "Contagion Score", data: hist.map((r) => r.contagionScore),
+              borderColor: "#d29922", backgroundColor: "rgba(210,153,34,0.1)", fill: true,
+              borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yScore" },
+            { type: "line", label: "SPY", data: hist.map((r) => r.spy),
+              borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+           ]},
+          options: { animation: false, responsive: true, maintainAspectRatio: false,
+           interaction: { mode: "index", intersect: false },
+           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           scales: {
+            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
+            yScore: {position: "left", min: 0, max: 100, ticks: {color: "#d29922"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
+           }},
+         });
+        } catch (e) { console.error("Contagion chart error:", e); }
        } else if (kind === "cot") {
         const hist = (D.cot_data.history || []);
         const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
@@ -6538,6 +6569,68 @@ function bindZoomHandlers() {
   return h;
  }
 
+ function contagionHtml() {
+  const C = D.contagion || {};
+  if (!C.composite) {
+   return '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="card"><p style="color:var(--muted)">Contagion data unavailable. Check back after the next refresh.</p></div></div>';
+  }
+  const comp = C.composite, pillars = C.pillars || {};
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+  const c = colorMap[comp.threatColor] || "#e8ecf1";
+
+  let h = '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section-sub">Currency, rates, and commodity stress as early warnings before shocks reach stocks.</div>';
+
+  // Plain-English explainer
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+   '<b style="color:#e8ecf1;">The simple version:</b> Sometimes trouble starts outside the stock market, in currencies, bonds, or commodities, and spills over later. This model watches those three areas and warns you when they are flashing red while stocks still look calm.<br><br>' +
+   '<b style="color:#e8ecf1;">For long-term investors:</b> A CRITICAL or ELEVATED reading means the odds of a market drawdown driven by outside forces are higher than normal. It is not a sell signal, but a good time to check that you are comfortable with your risk level.<br><br>' +
+   '<b style="color:#e8ecf1;">For active traders:</b> The divergence warning is the highest-value signal here. When stocks are calm (VIX under 20) but this model is flashing, history says the calm is often false. Tighten stops and reduce size into strength.' +
+   '</div></div>';
+
+  // Threat banner
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">THREAT LEVEL</div>' +
+   '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(comp.threatLevel) + '</div>' +
+   '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(comp.threatBadge || "") + "</div></div>" +
+   '<div style="margin-left:auto;text-align:right;"><div style="font-size:11px;color:#8b949e;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div></div>';
+
+  // Divergence warning
+  if (comp.divergenceActive) {
+   h += '<div style="background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.4);border-radius:12px;padding:14px;margin:12px 0;">' +
+    '<div style="font-size:12px;font-weight:700;color:#f85149;margin-bottom:4px;">DIVERGENCE WARNING</div>' +
+    '<div style="font-size:13px;color:#e8ecf1;">' + esc(comp.divergenceText || "") + "</div></div>";
+  }
+
+  // Three pillars
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
+  ["currency", "rates", "commodities"].forEach((key) => {
+   const p = pillars[key] || {};
+   const pc = (p.score || 0) >= 50 ? "#f85149" : (p.score || 0) >= 30 ? "#d29922" : "#3fb950";
+   h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-top:3px solid ' + pc + ';">' +
+    '<div style="font-size:12px;font-weight:700;color:#e8ecf1;">' + esc(p.title || key) + '</div>' +
+    '<div style="font-size:11px;color:#8b949e;margin:2px 0;">Weight ' + esc(p.weight || "") + " · " + esc(p.status || "") + "</div>" +
+    '<div style="font-size:20px;font-weight:800;color:' + pc + ';">' + (p.score != null ? p.score : "-") + '<span style="font-size:12px;color:#8b949e;">/100</span></div>';
+   (p.metrics || []).forEach((m) => {
+    h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #232833;">' +
+     '<div style="font-size:11px;color:#e8ecf1;font-weight:600;">' + esc(m.label) + (m.stress ? ' <span style="color:#f85149;">●</span>' : "") + "</div>" +
+     '<div style="font-size:12px;color:' + (m.stress ? "#f85149" : "#8b949e") + ';font-weight:600;">' + esc(m.value) + "</div>" +
+     '<div style="font-size:11px;color:#6b7280;margin-top:2px;">' + esc(m.detail || "") + "</div></div>";
+   });
+   h += "</div>";
+  });
+  h += "</div>";
+
+  // History chart
+  h += '<div class="zoomable-chart" data-chart="contagion" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="contagion-chart"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '<div class="panel-asof">As of ' + esc((C.as_of || "").slice(0, 10)) + "</div></div>";
+  return h;
+ }
+
  function correctionRiskHtml() {
   const cr = D.correction_risk || {};
   if (!cr.totalRiskScore && cr.totalRiskScore !== 0) {
@@ -6583,7 +6676,7 @@ function bindZoomHandlers() {
     '<div class="hero"><div><h1 class="hero-h">Risk Models.</h1>' +
     "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
     '<div class="section"><div class="section-title">Risk Models <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Cross-Asset Contagion Tracker, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    return;
   }
   let h = '<div class="crumb">RISK MODELS</div>' +
@@ -6592,6 +6685,7 @@ function bindZoomHandlers() {
   h += correctionRiskHtml();
   h += liquidityDrainHtml();
   h += rvShockHtml();
+  h += contagionHtml();
   h += fearIndexHtml();
   app.innerHTML = h;
   bindZoomHandlers();
@@ -6642,6 +6736,33 @@ function bindZoomHandlers() {
      scales: {
       x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
       yLiq: {position: "left", ticks: {color: "#c9a961"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
+     }},
+   });
+  }
+  // Draw contagion chart inline
+  const cg = D.contagion || {};
+  const cgHist = cg.history || [];
+  const cgCv = document.getElementById("contagion-chart");
+  if (cgCv && cgHist.length && window.Chart) {
+   const oldCg = Chart.getChart(cgCv);
+   if (oldCg) oldCg.destroy();
+   new Chart(cgCv, {
+    data: {
+     labels: cgHist.map((r) => r.date),
+     datasets: [
+      { type: "line", label: "Contagion Score", data: cgHist.map((r) => r.contagionScore),
+        borderColor: "#d29922", backgroundColor: "rgba(210,153,34,0.1)", fill: true,
+        borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yScore" },
+      { type: "line", label: "SPY", data: cgHist.map((r) => r.spy),
+        borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+     ]},
+    options: { animation: false, responsive: true, maintainAspectRatio: false,
+     interaction: { mode: "index", intersect: false },
+     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     scales: {
+      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
+      yScore: {position: "left", min: 0, max: 100, ticks: {color: "#d29922"}, grid: {color: "rgba(42,46,57,0.4)"}},
       ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
      }},
    });
