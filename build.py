@@ -153,6 +153,10 @@ def main():
     except FileNotFoundError:
         ticker_insider = {}
     try:
+        ticker_short_interest = load(os.path.join(MR, "ticker_short_interest.json"))
+    except FileNotFoundError:
+        ticker_short_interest = {}
+    try:
         ticker_13f = load(os.path.join(MR, "ticker_13f.json"))
     except FileNotFoundError:
         ticker_13f = {}
@@ -387,6 +391,7 @@ def main():
         "skew_data": skew_data,
         "ticker_skew": ticker_skew,
         "ticker_insider": ticker_insider,
+        "ticker_short_interest": ticker_short_interest,
         "ticker_13f": ticker_13f,
         "ticker_trends": ticker_trends,
         "aaii_sentiment": aaii_sentiment,

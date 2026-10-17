@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-16",
+ "as_of": "2026-10-17",
  "source": "FINRA consolidatedShortInterest",
  "tickers": {
   "ALAB": [
@@ -270,6 +270,96 @@
     "avgDailyVolume": 6005257,
     "daysToCover": 3.8,
     "changePercent": 0.57
+   }
+  ],
+  "ASML": [
+   {
+    "date": "2026-03-31",
+    "shortInterest": 692629,
+    "prevShortInterest": 968476,
+    "avgDailyVolume": 1693962,
+    "daysToCover": 1.0,
+    "changePercent": -28.48
+   },
+   {
+    "date": "2026-04-15",
+    "shortInterest": 746113,
+    "prevShortInterest": 692629,
+    "avgDailyVolume": 1901917,
+    "daysToCover": 1.0,
+    "changePercent": 7.72
+   },
+   {
+    "date": "2026-04-30",
+    "shortInterest": 730102,
+    "prevShortInterest": 746113,
+    "avgDailyVolume": 1694460,
+    "daysToCover": 1.0,
+    "changePercent": -2.15
+   },
+   {
+    "date": "2026-05-15",
+    "shortInterest": 984988,
+    "prevShortInterest": 730102,
+    "avgDailyVolume": 1733499,
+    "daysToCover": 1.0,
+    "changePercent": 34.91
+   },
+   {
+    "date": "2026-06-15",
+    "shortInterest": 1659513,
+    "prevShortInterest": 1026452,
+    "avgDailyVolume": 2235781,
+    "daysToCover": 1.0,
+    "changePercent": 61.67
+   },
+   {
+    "date": "2026-06-30",
+    "shortInterest": 1132572,
+    "prevShortInterest": 1659513,
+    "avgDailyVolume": 2192317,
+    "daysToCover": 1.0,
+    "changePercent": -31.75
+   },
+   {
+    "date": "2026-07-15",
+    "shortInterest": 1284921,
+    "prevShortInterest": 1132572,
+    "avgDailyVolume": 2091755,
+    "daysToCover": 1.0,
+    "changePercent": 13.45
+   },
+   {
+    "date": "2026-07-31",
+    "shortInterest": 1068098,
+    "prevShortInterest": 1284921,
+    "avgDailyVolume": 1971017,
+    "daysToCover": 1.0,
+    "changePercent": -16.87
+   },
+   {
+    "date": "2026-08-31",
+    "shortInterest": 1524269,
+    "prevShortInterest": 1352364,
+    "avgDailyVolume": 1117823,
+    "daysToCover": 1.36,
+    "changePercent": 12.71
+   },
+   {
+    "date": "2026-09-15",
+    "shortInterest": 1477623,
+    "prevShortInterest": 1524269,
+    "avgDailyVolume": 1236034,
+    "daysToCover": 1.2,
+    "changePercent": -3.06
+   },
+   {
+    "date": "2026-09-30",
+    "shortInterest": 1450298,
+    "prevShortInterest": 1477623,
+    "avgDailyVolume": 1378510,
+    "daysToCover": 1.05,
+    "changePercent": -1.85
    }
   ],
   "AVAV": [
@@ -1106,6 +1196,96 @@
     "avgDailyVolume": 735244,
     "daysToCover": 8.08,
     "changePercent": 9.56
+   }
+  ],
+  "LRCX": [
+   {
+    "date": "2026-03-31",
+    "shortInterest": 27966572,
+    "prevShortInterest": 26933774,
+    "avgDailyVolume": 11454429,
+    "daysToCover": 2.44,
+    "changePercent": 3.83
+   },
+   {
+    "date": "2026-04-15",
+    "shortInterest": 26059416,
+    "prevShortInterest": 27966572,
+    "avgDailyVolume": 8576527,
+    "daysToCover": 3.04,
+    "changePercent": -6.82
+   },
+   {
+    "date": "2026-04-30",
+    "shortInterest": 28556454,
+    "prevShortInterest": 26059416,
+    "avgDailyVolume": 9347516,
+    "daysToCover": 3.05,
+    "changePercent": 9.58
+   },
+   {
+    "date": "2026-05-15",
+    "shortInterest": 32918359,
+    "prevShortInterest": 28556454,
+    "avgDailyVolume": 9267681,
+    "daysToCover": 3.55,
+    "changePercent": 15.27
+   },
+   {
+    "date": "2026-06-15",
+    "shortInterest": 29877317,
+    "prevShortInterest": 32072543,
+    "avgDailyVolume": 11187375,
+    "daysToCover": 2.67,
+    "changePercent": -6.84
+   },
+   {
+    "date": "2026-06-30",
+    "shortInterest": 28314664,
+    "prevShortInterest": 29877317,
+    "avgDailyVolume": 15403932,
+    "daysToCover": 1.84,
+    "changePercent": -5.23
+   },
+   {
+    "date": "2026-07-15",
+    "shortInterest": 29520485,
+    "prevShortInterest": 28314664,
+    "avgDailyVolume": 12261057,
+    "daysToCover": 2.41,
+    "changePercent": 4.26
+   },
+   {
+    "date": "2026-07-31",
+    "shortInterest": 26963996,
+    "prevShortInterest": 29520485,
+    "avgDailyVolume": 12158330,
+    "daysToCover": 2.22,
+    "changePercent": -8.66
+   },
+   {
+    "date": "2026-08-31",
+    "shortInterest": 27751158,
+    "prevShortInterest": 28419138,
+    "avgDailyVolume": 7312752,
+    "daysToCover": 3.79,
+    "changePercent": -2.35
+   },
+   {
+    "date": "2026-09-15",
+    "shortInterest": 26081081,
+    "prevShortInterest": 27751158,
+    "avgDailyVolume": 8455032,
+    "daysToCover": 3.08,
+    "changePercent": -6.02
+   },
+   {
+    "date": "2026-09-30",
+    "shortInterest": 25810795,
+    "prevShortInterest": 26081081,
+    "avgDailyVolume": 9844598,
+    "daysToCover": 2.62,
+    "changePercent": -1.04
    }
   ],
   "MELI": [
