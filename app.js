@@ -837,6 +837,27 @@ function bindZoomHandlers() {
            y: { ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
             title: { display: true, text: "Sentiment %", color: "#e8ecf1" } } } }
         });
+       } else if (kind === "breakeven") {
+        const bdata = D.breakeven_inflation || {};
+        const hist = (bdata.history || []).slice(-756);
+        const ctx0 = zc.getContext("2d");
+        const grad = ctx0.createLinearGradient(0, 0, 0, 300);
+        grad.addColorStop(0, "rgba(6,182,212,0.35)");
+        grad.addColorStop(1, "rgba(6,182,212,0)");
+        new Chart(zc, {
+         type: "line",
+         data: { labels: hist.map((r) => r.date), datasets: [
+          { label: "10Y Breakeven (%)", data: hist.map((r) => r.value), borderColor: "#06b6d4", borderWidth: 1.5, backgroundColor: grad, fill: true, pointRadius: 0, pointHoverRadius: 4, tension: 0.1 },
+         ]},
+         options: { animation: false, responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { display: false },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+            callbacks: { label: (c) => " " + c.parsed.y.toFixed(2) + "%" } } },
+          scales: {
+           x: { ticks: { color: "#6b7280", maxTicksLimit: 6, maxRotation: 0 }, grid: { display: false } },
+           y: { position: "right", ticks: { color: "#6b7280", callback: (v) => v.toFixed(1) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
+        });
        } else if (kind === "cot") {
         const hist = (D.cot_data.history || []);
         const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
@@ -2435,9 +2456,6 @@ function bindZoomHandlers() {
    const latest = d.latest, chg = d.change_bps || 0;
    const chgCls = chg > 0 ? "#3fb950" : chg < 0 ? "#f85149" : "#8b949e";
    const chgTxt = (chg >= 0 ? "+" : "") + chg.toFixed(1) + " bps";
-   const hist = (d.history || []).slice(-756); // ~3Y of daily
-   const labels = hist.map((p) => p.date);
-   const vals = hist.map((p) => p.value);
    const cid = "breakeven-chart";
    // Reading: above 2.5% = elevated expectations, below 2% = disinflation fears
    const read = latest >= 2.5 ? "Elevated" : latest < 2.0 ? "Subdued" : "Anchored";
@@ -2468,16 +2486,6 @@ function bindZoomHandlers() {
     'For equity positioning, compare the trend here against CPI prints: when breakevens lead CPI higher, inflation trades have room to run.</div>' +
     '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Source: Federal Reserve Bank of St. Louis (FRED series T10YIE), updated every trading morning.</div></div>';
    h += '</div></div>';
-   h += '<script>(function(){var cv=document.getElementById("' + cid + '");if(!cv||!window.Chart)return;' +
-    'var labels=' + JSON.stringify(labels) + ';var vals=' + JSON.stringify(vals) + ';' +
-    'var ctx=cv.getContext("2d");var g=ctx.createLinearGradient(0,0,0,300);' +
-    'g.addColorStop(0,"rgba(6,182,212,0.35)");g.addColorStop(1,"rgba(6,182,212,0)");' +
-    'new Chart(cv,{type:"line",data:{labels:labels,datasets:[{data:vals,borderColor:"#06b6d4",borderWidth:1.5,' +
-    'backgroundColor:g,fill:true,pointRadius:0,pointHoverRadius:4,tension:0.1}]},' +
-    'options:{animation:false,responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},' +
-    'plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.y.toFixed(2)+"%";}}}},' +
-    'scales:{x:{grid:{display:false},ticks:{maxTicksLimit:6,maxRotation:0,color:"#6b7280"}},' +
-    'y:{position:"right",grid:{color:"#1f2937"},ticks:{color:"#6b7280",callback:function(v){return v.toFixed(1)+"%";}}}}}});})();</script>';
    return h;
   }
   function fedFundsHtml(d) {
@@ -2708,8 +2716,8 @@ function bindZoomHandlers() {
     const cur = D.jaw_history.current;
     const open = cur.jaw_open;
     return wrap(
-     "<p><b>What am I looking at?</b> This chart plots two lines: the <b style='color:#ffd60a'>S&amp;P 500 price</b> (yellow, left axis) " +
-     "and <b style='color:#00e676'>forward 12-month earnings estimates</b> (green, right axis), what analysts expect S&amp;P 500 companies to earn over the next year. " +
+     "<p><b>What am I looking at?</b> This chart plots two lines: the <b style='color:#ffd60a'>S&P 500 price</b> (yellow, left axis) " +
+     "and <b style='color:#00e676'>forward 12-month earnings estimates</b> (green, right axis), what analysts expect S&P 500 companies to earn over the next year. " +
      "In a healthy market, these two move together: prices rise because earnings are expected to rise.</p>" +
      "<p><b>What is the \u2018jaw\u2019?</b> The jaw <b>opens</b> when prices keep climbing to new highs <i>while</i> earnings estimates are being cut. " +
      "Picture an alligator opening its mouth: the top jaw (price) rises while the bottom jaw (earnings) drops. " +
@@ -2766,7 +2774,7 @@ function bindZoomHandlers() {
     }
     return wrap(
      "<p><b>What am I looking at?</b> This chart measures whether the <i>whole</i> market is participating in the rally, or just a handful of big stocks. " +
-     "The blue line is the <b>breadth spread</b>: how far the median S&amp;P 500 stock sits below its 52-week high, minus how far the index itself sits below its high. " +
+     "The blue line is the <b>breadth spread</b>: how far the median S&P 500 stock sits below its 52-week high, minus how far the index itself sits below its high. " +
      "The green and amber lines show what percentage of stocks are above their 50-day and 200-day moving averages.</p>" +
      "<p><b>How to read it.</b> In a healthy rally, most stocks rise together, the breadth spread stays near zero and the % above moving averages is high. " +
      "When the spread drops below <b>−10 percentage points</b>, a few giants are holding the index up while the average stock lags badly. " +
