@@ -129,6 +129,10 @@ def main():
     except FileNotFoundError:
         fed_funds = {}
     try:
+        breakeven_inflation = load(os.path.join(MR, "breakeven_inflation.json"))
+    except FileNotFoundError:
+        breakeven_inflation = {}
+    try:
         market_analysis_report = load(os.path.join(MR, "market_analysis_report.json"))
     except FileNotFoundError:
         market_analysis_report = {}
@@ -393,6 +397,7 @@ def main():
         "rsi_cd_history": rsi_cd_history,
         "gex_data": gex_data,
         "fed_funds": fed_funds,
+        "breakeven_inflation": breakeven_inflation,
         "market_analysis_report": market_analysis_report,
         "leadership": leadership,
         "ticker_gex": ticker_gex,

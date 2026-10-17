@@ -2114,6 +2114,10 @@ function bindZoomHandlers() {
   if (D.fed_funds && D.fed_funds.available) {
    h += fedFundsHtml(D.fed_funds);
   }
+  // 10Y Breakeven Inflation, FREE, updates every morning
+  if (D.breakeven_inflation && D.breakeven_inflation.latest != null) {
+   h += breakevenHtml(D.breakeven_inflation);
+  }
   // Market Internals trackers - each individually Pro-locked with badge
   h += '<div class="section"><div class="section-title">Market Internals Trackers</div>' +
    '<div class="section-sub">Breadth, positioning, volatility, and rotation signals. Free users see previews below.</div></div>';
@@ -2419,6 +2423,56 @@ function bindZoomHandlers() {
   }
 
   /* ---------- Fed Funds Futures HTML (FREE) ---------- */
+  /* ---------- 10Y Breakeven Inflation HTML (FREE) ---------- */
+  function breakevenHtml(d) {
+   const latest = d.latest, chg = d.change_bps || 0;
+   const chgCls = chg > 0 ? "#3fb950" : chg < 0 ? "#f85149" : "#8b949e";
+   const chgTxt = (chg >= 0 ? "+" : "") + chg.toFixed(1) + " bps";
+   const hist = (d.history || []).slice(-756); // ~3Y of daily
+   const labels = hist.map((p) => p.date);
+   const vals = hist.map((p) => p.value);
+   const cid = "breakeven-chart";
+   // Reading: above 2.5% = elevated expectations, below 2% = disinflation fears
+   const read = latest >= 2.5 ? "Elevated" : latest < 2.0 ? "Subdued" : "Anchored";
+   const readCls = latest >= 2.5 ? "#f85149" : latest < 2.0 ? "#58a6ff" : "#3fb950";
+   let h = '<div class="section"><div class="section-title">10Y Breakeven Inflation <span style="font-size:11px;background:#3fb950;color:#0d1117;padding:2px 8px;border-radius:4px;vertical-align:middle;font-weight:700;">FREE</span></div>';
+   h += '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">' +
+    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">LATEST READING</div>' +
+    '<div style="font-size:36px;font-weight:700;color:#fff;font-family:monospace;">' + latest.toFixed(2) + '%</div></div>' +
+    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">DAY CHANGE</div>' +
+    '<div style="font-size:20px;font-weight:700;color:' + chgCls + ';font-family:monospace;">' + chgTxt + '</div></div>' +
+    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">READING</div>' +
+    '<div style="font-size:20px;font-weight:700;color:' + readCls + ';">' + read + '</div></div>' +
+    '<div style="font-size:11px;color:#8b949e;">As of ' + esc(d.as_of || "") + ' · FRED T10YIE</div></div>' +
+    '<div class="zoomable-chart" data-chart="breakeven" style="position:relative;height:300px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + cid + '"></canvas>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   // Explanation card
+   h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;">' +
+    '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">What is this?</div>' +
+    '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;">' +
+    'The <b>10-year breakeven inflation rate</b> is the market\'s implied average annual inflation expectation over the next 10 years. ' +
+    'It is calculated as the 10-year nominal Treasury yield minus the 10-year TIPS (inflation-protected) real yield. ' +
+    'When investors demand more compensation for expected inflation, the breakeven rate rises.</div>' +
+    '<div style="font-size:13px;font-weight:700;color:#fff;margin:12px 0 8px;">Why it matters</div>' +
+    '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;">' +
+    'Rising breakevens signal the bond market expects hotter inflation, which typically pressures growth-stock multiples and supports commodities, energy, and value. ' +
+    'Falling breakevens signal disinflation fears, which favors long-duration growth. The Fed watches this closely: ' +
+    'a breakeven persistently above 2.5% argues against rate cuts, while one sliding toward 2% or below gives the Fed room to ease. ' +
+    'For equity positioning, compare the trend here against CPI prints: when breakevens lead CPI higher, inflation trades have room to run.</div>' +
+    '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Source: Federal Reserve Bank of St. Louis (FRED series T10YIE), updated every trading morning.</div></div>';
+   h += '</div></div>';
+   h += '<script>(function(){var cv=document.getElementById("' + cid + '");if(!cv||!window.Chart)return;' +
+    'var labels=' + JSON.stringify(labels) + ';var vals=' + JSON.stringify(vals) + ';' +
+    'var ctx=cv.getContext("2d");var g=ctx.createLinearGradient(0,0,0,300);' +
+    'g.addColorStop(0,"rgba(6,182,212,0.35)");g.addColorStop(1,"rgba(6,182,212,0)");' +
+    'new Chart(cv,{type:"line",data:{labels:labels,datasets:[{data:vals,borderColor:"#06b6d4",borderWidth:1.5,' +
+    'backgroundColor:g,fill:true,pointRadius:0,pointHoverRadius:4,tension:0.1}]},' +
+    'options:{animation:false,responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},' +
+    'plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.y.toFixed(2)+"%";}}}},' +
+    'scales:{x:{grid:{display:false},ticks:{maxTicksLimit:6,maxRotation:0,color:"#6b7280"}},' +
+    'y:{position:"right",grid:{color:"#1f2937"},ticks:{color:"#6b7280",callback:function(v){return v.toFixed(1)+"%";}}}}}});})();</script>';
+   return h;
+  }
   function fedFundsHtml(d) {
    if (!d || !d.available) return '<p style="color:#e8ecf1">Fed funds futures data unavailable.</p>';
    const meetings = (d.meetings || []).slice(0, 6);
