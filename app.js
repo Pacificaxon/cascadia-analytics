@@ -220,6 +220,7 @@
    if (sections.liquidity_drain) flat.liquidity_drain = sections.liquidity_drain;
    if (sections.rv_shock) flat.rv_shock = sections.rv_shock;
    if (sections.contagion) flat.contagion = sections.contagion;
+   if (sections.flow_divergence) flat.flow_divergence = sections.flow_divergence;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -577,6 +578,7 @@ function bindZoomHandlers() {
        "correction-risk": "Correction Risk Model",
        "liquidity-drain": "Liquidity Drain Model",
        "contagion": "Cross-Asset Contagion Tracker",
+       "flow-divergence": "Institutional Flow Divergence",
        cot: "Commitments of Traders",
        macro: "Macroeconomic Analysis",
        leadership: "Market Leadership, MLS by Component",
@@ -959,6 +961,35 @@ function bindZoomHandlers() {
            }},
          });
         } catch (e) { console.error("Contagion chart error:", e); }
+       } else if (kind === "flow-divergence") {
+        const F = D.flow_divergence || {};
+        const hist = F.history || [];
+        if (!hist.length) return;
+        try {
+         const canvas = zc.tagName === "CANVAS" ? zc : (zc.querySelector("canvas") || document.getElementById("flow-divergence-chart"));
+         if (!canvas) return;
+         const old = Chart.getChart(canvas);
+         if (old) old.destroy();
+         new Chart(canvas, {
+          data: {
+           labels: hist.map((r) => r.date),
+           datasets: [
+            { type: "line", label: "Divergence Oscillator", data: hist.map((r) => r.oscillator),
+              borderColor: "#f85149", backgroundColor: "rgba(248,81,73,0.1)", fill: true,
+              borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yOsc" },
+            { type: "line", label: "SPY", data: hist.map((r) => r.spy),
+              borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+           ]},
+          options: { animation: false, responsive: true, maintainAspectRatio: false,
+           interaction: { mode: "index", intersect: false },
+           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           scales: {
+            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
+            yOsc: {position: "left", min: -3, max: 3, ticks: {color: "#f85149"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
+           }},
+         });
+        } catch (e) { console.error("Flow divergence chart error:", e); }
        } else if (kind === "cot") {
         const hist = (D.cot_data.history || []);
         const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
@@ -6569,8 +6600,59 @@ function bindZoomHandlers() {
   return h;
  }
 
- function contagionHtml() {
-  const C = D.contagion || {};
+ function flowDivergenceHtml() {
+  const F = D.flow_divergence || {};
+  if (!F.current) {
+   return '<div class="section"><div class="section-title">Institutional Flow Divergence <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="card"><p style="color:var(--muted)">Flow divergence data unavailable. Check back after the next refresh.</p></div></div>';
+  }
+  const cur = F.current;
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+  const c = colorMap[cur.color] || "#e8ecf1";
+
+  let h = '<div class="section"><div class="section-title">Institutional Flow Divergence <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section-sub">Retail sentiment vs institutional positioning, as a contrarian risk gauge.</div>';
+
+  // Plain-English explainer
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+   '<b style="color:#e8ecf1;">The simple version:</b> This model compares what everyday investors are feeling against what big institutions are actually doing. When the crowd is extremely optimistic but institutions are quietly hedging or selling, the market is vulnerable. When the crowd is fearful but institutions are buying, it is often a good time to be.<br><br>' +
+   '<b style="color:#e8ecf1;">For long-term investors:</b> Extreme readings are rare and worth respecting. A HIGH VULNERABILITY reading means tops tend to form in this setup, so avoid adding aggressively. An INSTITUTIONAL ACCUMULATION reading means fear is high while smart buyers step in, historically a good backdrop for long-term purchases.<br><br>' +
+   '<b style="color:#e8ecf1;">For active traders:</b> The oscillator crossing +2.0 is the highest-conviction short-term risk signal on this page. Treat it like a storm warning: reduce leverage, tighten stops, and do not chase breakouts.' +
+   '</div></div>';
+
+  // Status banner
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">FLOW REGIME</div>' +
+   '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(cur.status) + "</div>" +
+   '<div style="font-size:12px;color:#9ba3af;margin-top:4px;max-width:560px;">' + esc(cur.description || "") + "</div></div>" +
+   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8b949e;">OSCILLATOR</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + (cur.oscillator > 0 ? "+" : "") + cur.oscillator + '<span style="font-size:16px;color:#8b949e;">σ</span></div></div></div>';
+
+  // Component cards
+  const ret = cur.retail || {}, inst = cur.institutional || {};
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
+  h += '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
+   '<div style="font-size:12px;font-weight:700;color:#e8ecf1;">Retail Sentiment</div>' +
+   '<div style="font-size:11px;color:#8b949e;margin:2px 0;">' + esc(ret.metric || "") + '</div>' +
+   '<div style="font-size:20px;font-weight:800;color:#e8ecf1;">' + esc(ret.value || "-") + '</div>' +
+   '<div style="font-size:11px;color:#8b949e;">Z-score ' + (ret.zScore > 0 ? "+" : "") + (ret.zScore != null ? ret.zScore : "-") + ' · ' + esc(ret.reading || "") + "</div>" +
+   '<div style="font-size:11px;color:#6b7280;margin-top:6px;">' + esc(ret.detail || "") + "</div></div>";
+  h += '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
+   '<div style="font-size:12px;font-weight:700;color:#e8ecf1;">Institutional Positioning</div>' +
+   '<div style="font-size:11px;color:#8b949e;margin:2px 0;">' + esc(inst.dixMetric || "") + ': <b style="color:#e8ecf1;">' + esc(inst.dixValue || "-") + '</b></div>' +
+   '<div style="font-size:11px;color:#8b949e;margin:2px 0;">' + esc(inst.cotMetric || "") + ': <b style="color:#e8ecf1;">' + esc(inst.cotValue || "-") + '</b></div>' +
+   '<div style="font-size:11px;color:#6b7280;margin-top:6px;">' + esc(inst.dixDetail || "") + " " + esc(inst.cotDetail || "") + "</div></div>";
+  h += "</div>";
+
+  // History chart
+  h += '<div class="zoomable-chart" data-chart="flow-divergence" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="flow-divergence-chart"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '<div class="panel-asof">As of ' + esc((F.as_of || "").slice(0, 10)) + "</div></div>";
+  return h;
+ }
+
+ function contagionHtml() {  const C = D.contagion || {};
   if (!C.composite) {
    return '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     '<div class="card"><p style="color:var(--muted)">Contagion data unavailable. Check back after the next refresh.</p></div></div>';
@@ -6676,7 +6758,7 @@ function bindZoomHandlers() {
     '<div class="hero"><div><h1 class="hero-h">Risk Models.</h1>' +
     "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
     '<div class="section"><div class="section-title">Risk Models <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Cross-Asset Contagion Tracker, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    return;
   }
   let h = '<div class="crumb">RISK MODELS</div>' +
@@ -6686,6 +6768,7 @@ function bindZoomHandlers() {
   h += liquidityDrainHtml();
   h += rvShockHtml();
   h += contagionHtml();
+  h += flowDivergenceHtml();
   h += fearIndexHtml();
   app.innerHTML = h;
   bindZoomHandlers();
@@ -6763,6 +6846,33 @@ function bindZoomHandlers() {
      scales: {
       x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
       yScore: {position: "left", min: 0, max: 100, ticks: {color: "#d29922"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
+     }},
+   });
+  }
+  // Draw flow divergence chart inline
+  const FD = D.flow_divergence || {};
+  const fdHist = FD.history || [];
+  const fdCv = document.getElementById("flow-divergence-chart");
+  if (fdCv && fdHist.length && window.Chart) {
+   const oldFd = Chart.getChart(fdCv);
+   if (oldFd) oldFd.destroy();
+   new Chart(fdCv, {
+    data: {
+     labels: fdHist.map((r) => r.date),
+     datasets: [
+      { type: "line", label: "Divergence Oscillator", data: fdHist.map((r) => r.oscillator),
+        borderColor: "#f85149", backgroundColor: "rgba(248,81,73,0.1)", fill: true,
+        borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yOsc" },
+      { type: "line", label: "SPY", data: fdHist.map((r) => r.spy),
+        borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+     ]},
+    options: { animation: false, responsive: true, maintainAspectRatio: false,
+     interaction: { mode: "index", intersect: false },
+     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     scales: {
+      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
+      yOsc: {position: "left", min: -3, max: 3, ticks: {color: "#f85149"}, grid: {color: "rgba(42,46,57,0.4)"}},
       ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
      }},
    });
