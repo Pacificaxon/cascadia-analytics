@@ -3844,12 +3844,24 @@ function bindZoomHandlers() {
   if (sandboxChart) { sandboxChart.destroy(); sandboxChart = null; }
 
   const score = cascadiaScore(t);
+  const attrScore = t.scorecard && t.scorecard.score;
+  const attrBand = attrScore != null ? (attrScore >= 80 ? "Highly Attractive" : attrScore >= 65 ? "Attractive" : attrScore >= 50 ? "Fair" : attrScore >= 35 ? "Unattractive" : "Avoid") : null;
   let h = '<div class="tk-kicker">DCF COVERAGE · SINGLE-NAME RESEARCH</div>';
   h += '<div class="ticker-head" style="display:flex;align-items:center;gap:12px;"><div>' + tickerLogo(tk) + '</div><div><h1 style="margin:0;">' + esc(tk) + '</h1><span class="co-name">' + esc(t.name) + "</span>";
   const ind = tickerIndustry(tk);
   if (ind) h += '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + esc(ind) + "</div>";
   h += "</div>";
-  if (score != null && isPro()) h += ' <span class="score-badge ' + scoreClass(score) + '" title="' + esc(scoreTooltip(t)) + '">' + score + "</span>";
+  // Scores: Cascadia Score and Attractiveness (scorecard), labelled and distinguishable
+  if (isPro()) {
+    h += '<div style="display:flex;gap:16px;align-items:center;margin-left:8px;">';
+    if (score != null) {
+      h += '<div style="text-align:center;"><span class="score-badge ' + scoreClass(score) + '" title="' + esc(scoreTooltip(t)) + '">' + score + '</span><div style="font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:0.5px;">CASCADIA</div></div>';
+    }
+    if (attrScore != null) {
+      h += '<div style="text-align:center;"><span class="score-badge ' + scoreClass(attrScore) + '" style="border:2px solid #c9a961;" title="Investment Scorecard: ' + attrBand + ' (Pro)">' + attrScore + '</span><div style="font-size:10px;color:#c9a961;margin-top:4px;letter-spacing:0.5px;font-weight:600;">ATTRACTIVENESS</div></div>';
+    }
+    h += '</div>';
+  }
   h += "</div>";
   h += '<div class="price-line"><span class="price-big">' + fmt$(t.price) + "</span>" +
    '<span class="price-date">AS OF ' + esc(refreshTs(t)) + "</span>" +
