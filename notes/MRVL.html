@@ -1,101 +1,89 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-body { font-family: Georgia, serif; max-width: 750px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; line-height: 1.6; }
-h1 { font-size: 28px; border-bottom: 3px solid #0F243C; padding-bottom: 10px; }
-h2 { font-size: 20px; color: #0F243C; margin-top: 30px; }
-.byline { color: #666; font-style: italic; margin-bottom: 30px; }
-.rating-box { background: #E8F8F5; border: 2px solid #1E8449; padding: 15px 20px; margin: 20px 0; }
-.rating-box .rating { font-size: 22px; font-weight: bold; color: #1E8449; }
-table { border-collapse: collapse; width: 100%; margin: 15px 0; }
-th, td { border: 1px solid #D5D8DC; padding: 8px 12px; text-align: left; }
-th { background: #34495E; color: white; }
-tr:nth-child(even) { background: #F4F6F9; }
-.target-row td { background: #F9E79F; font-weight: bold; }
-.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 12px; color: #888; }
-</style>
-</head>
+<html><head><meta charset="utf-8"><style>
+body { font-family: Georgia, serif; max-width: 820px; margin: 30px auto; padding: 0 25px; color: #1a1a1a; line-height: 1.6; font-size: 14.5px; }
+.top-bar { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid #0F243C; padding-bottom: 10px; margin-bottom: 15px; }
+.top-bar .left { font-size: 12px; letter-spacing: 1px; color: #0F243C; font-weight: bold; }
+.top-bar .center { font-size: 12px; color: #666; letter-spacing: 0.5px; }
+.top-bar .right { font-size: 12px; color: #666; }
+.title-block { margin: 15px 0; }
+.title-block h1 { font-size: 22px; margin: 0 0 8px 0; color: #0F243C; }
+.title-block .thesis { font-size: 15px; font-style: italic; color: #333; }
+.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
+.metric { border: 1px solid #D5D8DC; padding: 10px; text-align: center; background: #F8F9FA; }
+.metric .v { font-size: 18px; font-weight: bold; color: #0F243C; }
+.metric .l { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+.metric.buy .v { color: #1E8449; }
+.metric.hold .v { color: #B7950B; }
+h2 { font-size: 17px; color: #0F243C; border-bottom: 2px solid #0F243C; padding-bottom: 6px; margin: 30px 0 15px 0; }
+h3 { font-size: 15px; color: #1F4E79; margin: 18px 0 8px 0; }
+.our-read { background: #FEF9E7; border-left: 4px solid #D4AC0D; padding: 10px 15px; margin: 15px 0; font-size: 14px; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13.5px; }
+th { background: #0F243C; color: white; padding: 8px 10px; text-align: left; }
+td { border: 1px solid #D5D8DC; padding: 7px 10px; }
+tr:nth-child(even) td { background: #F4F6F9; }
+.theme { margin: 15px 0; }
+.theme h3 { margin-bottom: 5px; }
+.theme .status { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+.bull-box { background: #E8F8F5; border: 1px solid #1E8449; padding: 15px; margin: 15px 0; }
+.bear-box { background: #FDEDEC; border: 1px solid #C0392B; padding: 15px; margin: 15px 0; }
+.bull-box h3 { color: #1E8449; margin-top: 0; }
+.bear-box h3 { color: #C0392B; margin-top: 0; }
+.footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 11px; color: #888; text-align: center; }
+a { color: #1F4E79; }
+</style></head>
 <body>
-
-<h1>Marvell Technology, Inc. (NASDAQ: MRVL)</h1>
-<div class="byline">Analyst: Justin Wen | October 16, 2026</div>
-
-<div class="rating-box">
-<div class="rating">BUY</div>
-<p><strong>Base Case Target: $387</strong> | Spot: $228 | Upside: +69.7%<br>
-Bear: $242 | Bull: $507 | Blended: $391</p>
+<div class="top-bar">
+<span class="left">EQUITY RESEARCH &nbsp; Analyst: Justin Wen</span>
+<span class="center">TECHNOLOGY / SEMICONDUCTORS</span>
+<span class="right">OCTOBER 16, 2026</span>
 </div>
 
-<h2>Headline</h2>
-<p>Marvell's Investor Day reset the growth trajectory. With $12B guided for FY2027, $20B for FY2028, and $70-90B targeted for FY2031, the stock at $228 prices in 36% CAGR while the company's own plan implies 46%. We see 70% upside to our base case.</p>
+<div class="title-block">
+<h1>Marvell Technology, Inc. (MRVL): Buy</h1>
+<p class="thesis">The premier AI networking pure-play at a discount to its own plan. At $228, the market prices in 36% CAGR versus management's 55-60% implied target. Our DCF sees $387 base case, 70% upside.</p>
+</div>
+
+<div class="metric-grid"><div class="metric buy"><div class="v">Buy</div><div class="l">RATING</div></div><div class="metric buy"><div class="v">$387</div><div class="l">BASE TARGET</div></div><div class="metric buy"><div class="v">$228</div><div class="l">SPOT (OCT 16, 2026)</div></div><div class="metric buy"><div class="v">+69.7%</div><div class="l">UPSIDE TO BASE</div></div></div>
+<div class="metric-grid"><div class="metric buy"><div class="v">$242 / $507</div><div class="l">BEAR / BULL TARGETS</div></div><div class="metric buy"><div class="v">10.0%</div><div class="l">LIVE WACC (AVG)</div></div><div class="metric buy"><div class="v">$200B</div><div class="l">MARKET CAP</div></div><div class="metric buy"><div class="v">36.6%</div><div class="l">Q2 NON-GAAP OP MARGIN</div></div><div class="metric buy"><div class="v">$12B</div><div class="l">FY2027 REVENUE GUIDE</div></div><div class="metric buy"><div class="v">1.50</div><div class="l">BETA (NORMALIZED)</div></div></div>
 
 <h2>Executive Summary</h2>
-<p>We are initiating coverage on Marvell Technology with a <strong>BUY</strong> rating and a 12-month base case target of $387, implying 69.7% upside from the current $228.</p>
-<p>Marvell is the premier pure-play on AI data center networking. The company holds a duopoly with Broadcom in PAM4 optical DSPs (the chips that move data between AI accelerators at 800G and 1.6T speeds) and is rapidly scaling a custom ASIC business that competes directly with Broadcom for hyperscaler compute silicon. At its October 6 Investor Day, management guided FY2027 revenue to $12 billion (up 47% from FY2026's $8.2 billion), FY2028 to $20 billion (up 67%), and set a FY2031 target of $70-90 billion. Twenty-one analysts raised price targets following the event; JPMorgan went to $360, RBC to $425.</p>
-<p>Our DCF uses a normalized beta of 1.50 (Yahoo raw 2.26 deemed overstated per our cyclical framework; peer average ~1.45) decaying to 1.20, with live CAPM driving a 10.0% average WACC. We model FY2027-2032 revenue of $12B → $20B → $32B → $48B → $65B → $80B (the midpoint of the $70-90B target), with EBIT margins expanding from 32% to 38% on operating leverage. The reverse DCF is the key insight: at $228, the market implies 36.2% revenue CAGR, well below both our 46% base case and the company's 55-60% implied target. The market is underpricing Marvell's own plan.</p>
-<p>This is a high-beta AI infrastructure name with real execution risk, but the risk/reward at $228 is compelling. The company's guidance is grounded in existing hyperscaler design wins, not hope.</p>
 
-<h2>Bull Case</h2>
-<p><strong>Custom ASIC inflection.</strong> Marvell is winning custom compute designs at AWS, Google, and Microsoft as hyperscalers seek a second source to Broadcom. Each design win represents multi-billion-dollar lifetime value with 5-7 year visibility.</p>
-<p><strong>Optical supercycle.</strong> The 800G to 1.6T transition requires Marvell's next-gen PAM4 DSPs. As an oligopoly supplier, Marvell captures pricing power and 60%+ gross margins on these products.</p>
-<p><strong>FY2031 target achievability.</strong> The $70-90B target implies 55-60% CAGR from FY2026. While aggressive, it is anchored in the $400B addressable market management sees by 2030 and existing customer commitments.</p>
-<p><strong>Operating leverage.</strong> R&D at ~25% of revenue today will leverage dramatically as revenue scales 6-8x. We model EBIT margins reaching 38% by FY2031, driving 32% FCF margins.</p>
-<p>Our bull case ($507, +122%) assumes the high end of the FY2031 target ($95B revenue) with 42% terminal EBIT margins.</p>
+<p>We initiate coverage of Marvell Technology with a <strong>Buy</strong> rating. Marvell is the premier pure-play on AI data center networking, holding a duopoly with Broadcom in PAM4 optical DSPs and rapidly scaling a custom ASIC business for hyperscalers.</p>
+<p>At its October 6 Investor Day, management guided FY2027 revenue to $12B (up 47%), FY2028 to $20B (up 67%), and set a FY2031 target of $70-90B. Twenty-one analysts raised price targets; JPMorgan went to $360, RBC to $425.</p>
+<p>Our six-year DCF (FY2027-2032) models $12B to $80B revenue (midpoint of the $70-90B target), with EBIT margins expanding from 32% to 38%. Using live CAPM (1.50 normalized beta, 5.1% 10-year, 3.7% ERP), we get 10.0% average WACC and a $387 base-case target, 69.7% above spot.</p>
+<p>The key insight: at $228, the market implies 36.2% revenue CAGR, well below our 46% base case and the company's 55-60% implied target. The market is underpricing Marvell's own plan.</p>
+<div class="our-read"><strong>Our read:</strong> This is the most asymmetric setup in our semiconductor coverage. The Investor Day guidance is unprecedented in scale and specificity, backed by 21 analyst raises. At $228, you are paying for 36% growth while the company guides to 55-60%. Even our bear case ($242) is above spot.</div>
 
-<h2>Bear Case</h2>
-<p><strong>Execution risk.</strong> The FY2031 target requires flawless execution on custom silicon ramps and optical transitions. Any hyperscaler design loss or delay would impair the trajectory.</p>
-<p><strong>Customer concentration.</strong> A handful of hyperscalers drive the AI revenue. Loss of share at any major customer would be material.</p>
-<p><strong>Cyclicality.</strong> Semiconductors remain cyclical. An AI capex pause would hit Marvell disproportionately given its high beta (2.26 raw) and growth multiple.</p>
-<p><strong>Competition.</strong> Broadcom is the entrenched leader in custom ASICs. While Marvell is gaining share, Broadcom's scale and incumbency are formidable.</p>
-<p>Our bear case ($242, +6.1%) assumes FY2031 revenue of only $55B with 34% terminal EBIT margins.</p>
-
-<h2>Verdict</h2>
-<p>Marvell is the highest-conviction AI networking name in our coverage. The Investor Day guidance ($12B → $20B → $70-90B) is unprecedented in its scale and specificity, backed by 21 analyst target raises. At $228, the market prices in 36% CAGR; our $387 base case requires 46%, still below the company's implied 55-60%. The asymmetry is attractive.</p>
-<p>We rate the stock <strong>BUY</strong> with 69.7% upside to our base case. This is a volatile name (beta 2.26 raw), so position sizing should reflect that, but the fundamental trajectory is the strongest we have seen in semiconductors.</p>
-
-<h2>Key Themes</h2>
-<table>
-<tr><th>Theme</th><th>Status</th><th>Our Take</th></tr>
-<tr><td>AI data center capex</td><td>Accelerating</td><td>Hyperscalers committing to multi-year buildouts. Marvell's $400B TAM by 2030.</td></tr>
-<tr><td>Custom ASIC share gains</td><td>Inflecting</td><td>Design wins at Tier-1 hyperscalers entering production. Second source to Broadcom.</td></tr>
-<tr><td>Optical DSP dominance</td><td>Strong</td><td>Duopoly with Broadcom at 800G/1.6T. 60%+ gross margins on leading products.</td></tr>
-<tr><td>Enterprise/carrier recovery</td><td>Bottoming</td><td>Inventory correction ending. Removes drag on consolidated margins.</td></tr>
-<tr><td>Operating leverage</td><td>Expanding</td><td>36.6% op margin in Q2 FY27, guiding to 38-40% by Q4. R&D leverage ahead.</td></tr>
+<h2>Base-Case Assumptions</h2>
+<table><tr><th>INPUT</th><th>BEAR</th><th>BASE</th><th>BULL</th></tr>
+<tr><td>FY2031 revenue ($B)</td><td>55</td><td><strong>80</strong></td><td>95</td></tr><tr><td>Revenue CAGR (6-yr)</td><td>38%</td><td><strong>46%</strong></td><td>52%</td></tr><tr><td>Terminal EBIT margin</td><td>34%</td><td><strong>38%</strong></td><td>42%</td></tr><tr><td>Terminal growth</td><td>4.0%</td><td><strong>4.0%</strong></td><td>4.0%</td></tr><tr><td>Target per share ($)</td><td>$242</td><td><strong>$387</strong></td><td>$507</td></tr>
 </table>
 
-<h2>Other KPIs</h2>
-<table>
-<tr><th>Metric</th><th>Latest</th><th>Comment</th></tr>
-<tr><td>Revenue (Q2 FY27)</td><td>$2.74B</td><td>+37% YoY, accelerating</td></tr>
-<tr><td>Data center revenue</td><td>79% of total</td><td>+46% YoY</td></tr>
-<tr><td>Non-GAAP EPS</td><td>$0.94</td><td>+40% YoY</td></tr>
-<tr><td>Non-GAAP op margin</td><td>36.6%</td><td>Targeting 38-40% by Q4</td></tr>
-<tr><td>FY2026 revenue</td><td>$8.2B</td><td>+42% YoY</td></tr>
-<tr><td>FY2027 guide</td><td>$12B</td><td>+47% YoY</td></tr>
-<tr><td>FY2028 guide</td><td>$20B</td><td>+67% YoY</td></tr>
-<tr><td>FY2031 target</td><td>$70-90B</td><td>55-60% CAGR implied</td></tr>
-</table>
+<h2>Bull / Bear / Verdict</h2>
+<div class="bull-box"><h3>Bull case</h3><p>Marvell hits the high end of the FY2031 target ($95B) with 42% EBIT margins on operating leverage. Custom ASIC wins compound. Worth $507, or 122% above spot.</p></div>
+<div class="bear-box"><h3>Bear case</h3><p>Execution stumbles, hyperscaler share losses. Revenue reaches only $55B by 2031. Worth $242, still 6% above spot. The downside is protected by the current $12B run-rate.</p></div>
+<h3>Verdict</h3>
+<p><strong>We rate MRVL Buy.</strong> This is the highest-conviction AI networking name in our coverage. The 70% upside to base case, with a bear case above spot, offers exceptional risk/reward. Volatile (beta 2.26 raw), so size accordingly.</p>
+<h3>What would change our mind</h3>
+<ul><li><strong>Design loss:</strong> loss of a major hyperscaler custom ASIC socket to Broadcom.</li><li><strong>AI capex pause:</strong> hyperscaler capex cuts would impair the 2028-2030 trajectory.</li><li><strong>Execution miss:</strong> two consecutive quarters missing the $12B FY27 pace.</li></ul>
 
-<h2>Guidance</h2>
-<p><strong>Q3 FY2027:</strong> Revenue of approximately $3.15 billion, implying over 50% year-over-year growth.</p>
-<p><strong>Full year FY2027:</strong> $12 billion revenue (Investor Day guidance).</p>
-<p><strong>FY2028:</strong> $20 billion revenue (Investor Day guidance).</p>
-<p><strong>FY2031:</strong> $70-90 billion revenue target (Investor Day, October 6, 2026).</p>
+<h2>Key Themes / KPIs / Guidance</h2>
+<div class="theme"><h3>1. Custom ASIC inflection <span class="status">ACCELERATING</span></h3><p>Design wins at AWS, Google, Microsoft entering production. Second source to Broadcom.</p></div><div class="theme"><h3>2. Optical DSP duopoly <span class="status">STABLE</span></h3><p>PAM4 DSPs for 800G/1.6T. 60%+ gross margins, pricing power.</p></div><div class="theme"><h3>3. Investor Day guidance <span class="status">ACCELERATING</span></h3><p>$12B FY27, $20B FY28, $70-90B FY31. 21 analysts raised targets.</p></div><div class="theme"><h3>4. Data center mix <span class="status">ACCELERATING</span></h3><p>79% of revenue, up 46% YoY. AI networking driving growth.</p></div><div class="theme"><h3>5. Operating leverage <span class="status">ACCELERATING</span></h3><p>36.6% op margin in Q2, guiding to 38-40% by Q4.</p></div>
+<h3>Other KPIs</h3>
+<table><tr><th>METRIC</th><th>VALUE</th></tr><tr><td>Market cap (at $228)</td><td>$200B</td></tr><tr><td>Enterprise value</td><td>$201B</td></tr><tr><td>Q2 FY27 revenue / YoY</td><td>$2.74B / +37%</td></tr><tr><td>Data center revenue</td><td>79% of total (+46% YoY)</td></tr><tr><td>Q2 non-GAAP EPS</td><td>$0.94 (+40% YoY)</td></tr><tr><td>Q2 non-GAAP op margin</td><td>36.6%</td></tr><tr><td>Net debt</td><td>$1.4B</td></tr></table>
+<h3>Guidance</h3>
+<p><strong>Q3 FY2027:</strong> Revenue ~$3.15B (+50% YoY). <strong>FY2027:</strong> $12B revenue. <strong>FY2028:</strong> $20B revenue. <strong>FY2031:</strong> $70-90B target (Investor Day, Oct 6, 2026).</p>
 
-<h2>DCF Summary</h2>
-<table>
-<tr><th>Scenario</th><th>FY2031 Revenue</th><th>Terminal EBIT</th><th>Target</th><th>Implied Upside</th></tr>
-<tr><td>Bear</td><td>$55B</td><td>34%</td><td>$242</td><td>+6.1%</td></tr>
-<tr class="target-row"><td>Base</td><td>$80B</td><td>38%</td><td>$387</td><td>+69.7%</td></tr>
-<tr><td>Bull</td><td>$95B</td><td>42%</td><td>$507</td><td>+122.4%</td></tr>
-</table>
-<p>WACC: approximately 10.0% average (live CAPM, beta 1.50 normalized from 2.26 raw, decaying to 1.20, 10Y at 5.1%, ERP at 3.7%). Terminal growth: 4.0%. Net debt of $1.36 billion. 877M diluted shares.</p>
+<h2>Valuation Detail</h2>
+<h3>Reverse DCF: what the market is pricing in</h3>
+<p>At $228, Marvell carries a $200B market cap. Running the model's six-year framework in reverse, the market-implied revenue CAGR is <strong>36.2%</strong>, below our 46% base case and the company's 55-60% implied target. The market is conservative relative to the plan.</p>
+<table><tr><th>SCENARIO</th><th>REVENUE</th><th>TARGET</th></tr><tr><td>Market-implied</td><td>~36.2% CAGR</td><td>$228 (spot)</td></tr><tr><td>Bull case</td><td>52% CAGR</td><td>$507</td></tr><tr><td>Base case</td><td>46% CAGR</td><td>$387</td></tr><tr><td>Bear case</td><td>38% CAGR</td><td>$242</td></tr></table>
+<h3>Model</h3>
+<p>Full three-scenario DCF with live CAPM and implied-ERP tab: <a href="https://docs.google.com/spreadsheets/d/1sfhaMfFuIGYl7EhW8TpSYd3rJwayJgT1WgzStLXo4Vo/edit">https://docs.google.com/spreadsheets/d/1sfhaMfFuIGYl7EhW8TpSYd3rJwayJgT1WgzStLXo4Vo/edit</a></p>
+<h3>Risks to our Buy</h3>
+<ul><li>Execution risk on $70-90B FY31 target.</li><li>Customer concentration in hyperscalers.</li><li>Broadcom competition in custom ASICs.</li><li>Semiconductor cyclicality and high beta.</li></ul>
 
 <div class="footer">
-<p>Cascadia Analytics | This report is for informational purposes only and does not constitute investment advice. Valuation models involve assumptions and uncertainties. Past performance does not guarantee future results.</p>
+<p>Justin Wen Equity Research &mdash; Not investment advice and for entertainment purposes only.</p>
 </div>
-
-</body>
-</html>
+</body></html>
