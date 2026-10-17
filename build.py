@@ -468,6 +468,7 @@ def main():
         "rv_shock": load(os.path.join(MR, "rv_shock.json")) if os.path.exists(os.path.join(MR, "rv_shock.json")) else {},
         "contagion": load(os.path.join(MR, "contagion.json")) if os.path.exists(os.path.join(MR, "contagion.json")) else {},
         "flow_divergence": load(os.path.join(MR, "flow_divergence.json")) if os.path.exists(os.path.join(MR, "flow_divergence.json")) else {},
+        "dynamic_concentration": load(os.path.join(MR, "dynamic_concentration.json")) if os.path.exists(os.path.join(MR, "dynamic_concentration.json")) else {},
         "transcript_tone": load(os.path.join(MR, "transcript_tone.json")) if os.path.exists(os.path.join(MR, "transcript_tone.json")) else {},
     }
     # Per-ticker transcript tone detail files
