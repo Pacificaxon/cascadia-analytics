@@ -5761,7 +5761,7 @@ function bindZoomHandlers() {
    '<button class="btn secondary" id="f-export">Export CSV</button>' +
    "</div>" +
    '<div class="table-wrap"><table class="coverage"><thead><tr>' +
-   "<th>Ticker</th><th>Score</th><th>Price</th><th>Base</th><th>Upside</th><th>Rating</th>" +
+   "<th>Ticker</th><th>Score</th><th>Attractiveness</th><th>Price</th><th>Base</th><th>Upside</th><th>Rating</th>" +
    "</tr></thead><tbody id='scr-body'></tbody></table></div></div></div>";
   app.innerHTML = h;
   const body = document.getElementById("scr-body");
@@ -5774,19 +5774,23 @@ function bindZoomHandlers() {
     .sort((a, b) => (b.s || 0) - (a.s || 0));
   }
   function draw() {
-   body.innerHTML = rows().map((r) =>
-    '<tr data-tk="' + esc(r.tk) + '"><td><a href="#/ticker/' + esc(r.tk) + '" class="ticker-cell" style="text-decoration:none;">' + esc(r.tk) + "</a></td>" +
+   body.innerHTML = rows().map((r) => {
+    const attr = r.t.scorecard && r.t.scorecard.score;
+    const attrBand = attr != null ? (attr >= 80 ? "Highly Attractive" : attr >= 65 ? "Attractive" : attr >= 50 ? "Fair" : attr >= 35 ? "Unattractive" : "Avoid") : null;
+    return '<tr data-tk="' + esc(r.tk) + '"><td><a href="#/ticker/' + esc(r.tk) + '" class="ticker-cell" style="text-decoration:none;">' + esc(r.tk) + "</a></td>" +
     "<td>" + (r.s != null ? '<span class="score-badge ' + scoreClass(r.s) + '" style="width:36px;height:36px;font-size:13px;" title="' + esc(scoreTooltip(r.t)) + '">' + r.s + "</span>" : " - ") + "</td>" +
+    "<td>" + (attr != null ? '<span class="score-badge ' + scoreClass(attr) + '" style="width:36px;height:36px;font-size:13px;" title="Investment Scorecard: ' + attrBand + '">' + attr + "</span>" : " - ") + "</td>" +
     "<td>" + fmt$(r.t.price) + "</td><td>" + fmt$(r.t.base, 0) + "</td>" +
     '<td class="' + cls(r.t.upside_base) + '">' + fmtPct(r.t.upside_base) + "</td>" +
-    '<td class="' + ratingCls(r.t.rating) + '">' + esc(r.t.rating || " - ") + "</td></tr>").join("") ||
-    '<tr><td colspan="6" style="text-align:center;color:var(--muted)">No matches.</td></tr>';
+    '<td class="' + ratingCls(r.t.rating) + '">' + esc(r.t.rating || " - ") + "</td></tr>"; }).join("") ||
+    '<tr><td colspan="7" style="text-align:center;color:var(--muted)">No matches.</td></tr>';
    body.querySelectorAll("tr[data-tk]").forEach((tr) => tr.addEventListener("click", () => nav("ticker/" + tr.dataset.tk)));
   }
   ["f-rating", "f-score", "f-upside"].forEach((id) => document.getElementById(id).addEventListener("change", draw));
   document.getElementById("f-export").addEventListener("click", () => {
-   const csv = "ticker,name,score,price,base,upside_pct,rating\n" + rows().map((r) =>
-    [r.tk, '"' + (r.t.name || "").replace(/"/g, "") + '"', r.s || "", r.t.price || "", r.t.base || "", r.t.upside_base || "", r.t.rating || ""].join(",")).join("\n");
+   const csv = "ticker,name,score,attractiveness,price,base,upside_pct,rating\n" + rows().map((r) => {
+    const attr = r.t.scorecard && r.t.scorecard.score;
+    return [r.tk, '"' + (r.t.name || "").replace(/"/g, "") + '"', r.s || "", attr || "", r.t.price || "", r.t.base || "", r.t.upside_base || "", r.t.rating || ""].join(","); }).join("\n");
    dl("cascadia_screener.csv", csv, "text/csv");
   });
   draw();

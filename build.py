@@ -28,6 +28,30 @@ def esc(s):
     return html.escape("" if s is None else str(s), quote=True)
 
 
+def scorecard_score(tk):
+    """Composite 0-100 score from the investment scorecard data JSON, or None.
+    Reads the stored composite_score written by generate_scorecard.py so the
+    site matches the PDF exactly."""
+    p = os.path.join(WS, "scorecard", f"scorecard_data_{tk}.json")
+    if not os.path.exists(p):
+        return None
+    try:
+        d = json.load(open(p))
+        s = d.get("composite_score")
+        if s is not None:
+            return int(s)
+        # Fallback: compute from pillars (older JSONs without stored score)
+        pillars = d.get("pillars", [])
+        weights = [0.20, 0.20, 0.20, 0.25, 0.15]
+        active = [(pl, w) for pl, w in zip(pillars, weights) if pl.get("score") is not None]
+        if not active:
+            return None
+        total_w = sum(w for _, w in active)
+        return round(sum(pl["score"] * w for pl, w in active) / total_w)
+    except Exception:
+        return None
+
+
 # AXON sum-of-the-parts: five-segment bottom-up build (2036E).
 # Source: AXON client note "Full sum of the parts" (30 Sep 2026).
 AXON_SOTP = {
@@ -250,6 +274,7 @@ def main():
             "scorecard": {
                 "pdf": ("scorecards/" + tk + ".pdf") if os.path.exists(os.path.join(HERE, "scorecards", tk + ".pdf")) else None,
                 "pdf_exists": os.path.exists(os.path.join(HERE, "scorecards", tk + ".pdf")),
+                "score": scorecard_score(tk),
             },
         }
         for sc in ("bear", "base", "bull"):
