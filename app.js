@@ -215,7 +215,6 @@
    if (sections.minervini_data) flat.minervini_data = sections.minervini_data;
    if (sections.earnings_dashboard) flat.earnings_dashboard = sections.earnings_dashboard;
    if (sections.ticker_short_interest) flat.ticker_short_interest = sections.ticker_short_interest;
-   if (sections.dark_pool) flat.dark_pool = sections.dark_pool;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -1582,8 +1581,9 @@ function bindZoomHandlers() {
 
  /* Dark Pool & Off-Exchange Flow (Pro) */
  function darkPoolHtml(tk) {
-  const dp = (D.dark_pool || {}).tickers || {};
-  const d = dp[tk];
+  const dp = D.dark_pool || {};
+  const tickers = dp.tickers || {};
+  const d = tickers[tk];
   if (!d) return '<p style="color:var(--muted)">No dark pool data for this ticker.</p>';
   const sentimentColors = {
    "BULLISH ACCUMULATION": "#3fb950",
@@ -1625,7 +1625,7 @@ function bindZoomHandlers() {
     }).join("") +
     "</div></div>";
   }
-  const macro = (D.dark_pool || {}).macro || {};
+  const macro = dp.macro || {};
   if (macro.dix) {
    h += '<div class="panel-asof">S&P 500 Dark Pool Index (DIX): ' + (macro.dix * 100).toFixed(1) + "% (" + esc(macro.regime || "") + ") · As of " + esc(d.date || "") + "</div>";
   }
@@ -4010,6 +4010,12 @@ function bindZoomHandlers() {
   h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
   h += "</div>";
 
+  // Dark Pool & Off-Exchange Flow (FREE), FINRA Reg SHO daily
+  h += '<div class="section"><div class="section-title">Dark Pool Flow</div>';
+  h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Institutional off-exchange sentiment for ' + esc(tk) + ' from FINRA Reg SHO daily files. High dark short ratio means dealers are shorting to fill institutional buy orders (accumulation).</div>';
+  h += darkPoolHtml(tk);
+  h += "</div>";
+
   // Gamma Exposure (Pro), per-ticker dealer positioning
   const tg = (D.ticker_gex || {})[tk];
   if (tg && tg.available) {
@@ -4037,13 +4043,6 @@ function bindZoomHandlers() {
   h += gated("Short Interest, Pro",
    "Biweekly short interest for " + tk + " from FINRA, red bars show shares short, white line shows days to cover.",
    '<div id="short-interest-' + esc(tk) + '"></div>');
-  h += "</div>";
-
-  // Dark Pool & Off-Exchange Flow (Pro), FINRA Reg SHO daily
-  h += '<div class="section"><div class="section-title">Dark Pool Flow <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
-  h += gated("Dark Pool Flow, Pro",
-   "Institutional off-exchange sentiment for " + tk + " from FINRA Reg SHO daily files. High dark short ratio means dealers are shorting to fill institutional buy orders (accumulation).",
-   darkPoolHtml(tk));
   h += "</div>";
 
   // Technical Analysis (Pro), multi-timeframe

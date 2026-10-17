@@ -430,7 +430,6 @@ def main():
         "screener_data": screener_data,
         "minervini_data": minervini_data,
         "earnings_dashboard": load(os.path.join(MR, "earnings_dashboard.json")) if os.path.exists(os.path.join(MR, "earnings_dashboard.json")) else {},
-        "dark_pool": site.pop("dark_pool", {}),
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}
