@@ -214,6 +214,7 @@
    if (sections.screener_data) flat.screener_data = sections.screener_data;
    if (sections.minervini_data) flat.minervini_data = sections.minervini_data;
    if (sections.earnings_dashboard) flat.earnings_dashboard = sections.earnings_dashboard;
+   if (sections.liquidity) flat.liquidity = sections.liquidity;
    if (sections.ticker_short_interest) flat.ticker_short_interest = sections.ticker_short_interest;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
@@ -2185,8 +2186,74 @@ function bindZoomHandlers() {
    }
    }).join("") + "</div>";
 
+  // Global Liquidity Tracker (Pro), 4-factor score
+  h += '<div class="section" style="max-width:none;"><div class="section-title">Global Liquidity Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section-sub">Net US liquidity, dollar pressure, credit stress, and volatility in one 0-100 score.</div>';
+  h += gated("Global Liquidity, Pro",
+   "Four institutional-grade liquidity proxies aggregated into a single risk-on/risk-off score, refreshed daily.",
+   liquidityHtml());
+  h += "</div>";
+
   /* ---------- tracker explainers (visual first, explanation after) ---------- */
   /* ---------- GEX tracker HTML (Pro-gated) ---------- */
+  /* ---------- Global Liquidity Tracker HTML (Pro-gated) ---------- */
+  function liquidityHtml() {
+   const L = D.liquidity || {};
+   if (!L.total_score && L.total_score !== 0) return '<p style="color:var(--muted)">Liquidity data unavailable.</p>';
+   const colorMap = { green: "#3fb950", amber: "#d29922", red: "#f85149" };
+   const c = colorMap[L.color] || "#e8ecf1";
+   const m = L.metrics || {};
+   let h = '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
+    '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + L.total_score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(L.regime || "") + "</div>" +
+    '<div style="font-size:12px;color:#8b949e;margin-top:4px;">Net liquidity $' + (m.net_liquidity_b != null ? m.net_liquidity_b.toLocaleString() : "-") + "B" +
+    (m.net_liquidity_4w_change_b != null ? ' (' + (m.net_liquidity_4w_change_b >= 0 ? "+" : "") + m.net_liquidity_4w_change_b + "B 4W)" : "") + "</div></div>" +
+    "</div>";
+   // 4-factor breakdown
+   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
+   (L.score_breakdown || []).forEach((b) => {
+    const bc = b.points > 0 ? "#3fb950" : "#f85149";
+    h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
+     '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + esc(b.metric) + "</div>" +
+     '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + " (" + b.points + " pts)</div>" +
+     '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(b.value) + "</div>" +
+     (b.detail ? '<div style="font-size:11px;color:#8b949e;margin-top:2px;font-style:italic;">' + esc(b.detail) + "</div>" : "") +
+     "</div>";
+   });
+   h += "</div>";
+   // Fed balance sheet decomposition
+   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">' +
+    '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">FED ASSETS</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">$' + (m.fed_assets_b != null ? m.fed_assets_b.toLocaleString() : "-") + "B</div></div>" +
+    '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">TGA</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">$' + (m.tga_b != null ? m.tga_b.toLocaleString() : "-") + "B</div></div>" +
+    '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">REVERSE REPO</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">$' + (m.rrp_b != null ? m.rrp_b.toLocaleString() : "-") + "B</div></div>" +
+    "</div>";
+   // Net liquidity history chart (simple bars)
+   if (L.history && L.history.length > 10) {
+    const hist = L.history.slice(-60);
+    const vals = hist.map(x => x.net_liquidity_b);
+    const mn = Math.min(...vals), mx = Math.max(...vals);
+    h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#8b949e;margin-bottom:6px;">NET US LIQUIDITY, LAST 60 SESSIONS ($B)</div>' +
+     '<div style="display:flex;align-items:flex-end;gap:1px;height:70px;">' +
+     hist.map(x => {
+      const ht = 8 + ((x.net_liquidity_b - mn) / Math.max(1, mx - mn) * 58);
+      return '<div title="' + x.date + ": $" + x.net_liquidity_b.toLocaleString() + 'B" style="flex:1;background:#58a6ff;height:' + ht.toFixed(0) + 'px;border-radius:1px;min-width:2px;opacity:0.8;"></div>';
+     }).join("") + "</div></div>";
+   }
+   // Explainer card: why liquidity matters
+   h += '<div class="panel-about" style="text-align:left;max-width:none;margin:16px 0;">' +
+    '<div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">Why global liquidity matters</div>' +
+    '<div style="font-size:12px;color:#8b949e;line-height:1.6;">' +
+    '<p style="margin:0 0 8px;">On an institutional desk, the saying goes: earnings drive single stocks, but liquidity drives the market. Since 2008, asset prices have tracked central bank balance sheets more than fundamentals.</p>' +
+    '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">The multiple expansion engine:</b> abundant liquidity means cheap capital. Institutions lever up and push cash out the risk curve, expanding P/E multiples across the board.</p>' +
+    '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">The dollar wrecking ball:</b> the world runs on dollars. A strong DXY tightens financial conditions globally, choking emerging markets and multinationals on expensive USD debt.</p>' +
+    '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">Stealth QE:</b> true net US liquidity = Fed assets minus the Treasury General Account minus reverse repo. Even during QT, a draining TGA or RRP can push net liquidity higher, sparking stealth bull markets.</p>' +
+    '<p style="margin:0;"><b style="color:#e8ecf1;">Desk rule of thumb:</b> scores of 75+ mean structural tailwinds favor risk assets (expand exposure, buy dips). Scores of 25 or below mean contraction (tighten stops, favor defensives, hold cash).</p>' +
+    "</div></div>";
+   h += '<div class="panel-asof">As of ' + esc(L.as_of || "") + " · Sources: FRED (WALCL, WTREGEN, RRPONTSYD), Yahoo Finance (DXY, VIX, HYG, IEF)</div>";
+   return h;
+  }
+
   /* ---------- Macroeconomic Analysis HTML (Pro-gated) ---------- */
   function macroAnalysisHtml(d) {
    const hist = d.history || [];
