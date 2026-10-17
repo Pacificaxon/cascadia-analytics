@@ -6296,7 +6296,8 @@ function bindZoomHandlers() {
    if (old) old.destroy();
    const yKey = usePE ? "forwardPe" : "ntmEvRevenue";
    const r2 = usePE ? (meta.regressions || {}).forwardPe || {} : reg;
-   const colors = {"Semiconductors":"#10b981","Enterprise Software":"#38bdf8","Mega-Cap Tech":"#a855f7","Consumer & Marketplace":"#f59e0b","Fintech & Digital Assets":"#ec4899","Public Safety & Defense Tech":"#c99a6b","MedTech":"#6366f1","MedTech & Robotics":"#6366f1"};
+   const colors = {"Semiconductors":"#10b981","Enterprise Software":"#38bdf8","Mega-Cap Tech":"#a855f7","Consumer & Marketplace":"#f59e0b","Fintech & Digital Assets":"#ec4899","Public Safety & Defense Tech":"#c99a6b","MedTech":"#6366f1","MedTech & Robotics":"#6366f1",
+    "Information Technology":"#38bdf8","Health Care":"#6366f1","Financials":"#10b981","Consumer Discretionary":"#f59e0b","Consumer Staples":"#84cc16","Industrials":"#94a3b8","Energy":"#ef4444","Utilities":"#facc15","Real Estate":"#a855f7","Materials":"#f97316","Communication Services":"#ec4899","Other":"#6b7280"};
    const bySec = {};
    recs.forEach((r) => {
     if (usePE && !(r.forwardPe > 0 && r.forwardPe < 150)) return;
