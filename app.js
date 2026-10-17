@@ -62,9 +62,10 @@
  const tickerLogo = (tk) => {
   const meta = TICKER_META[tk];
   if (!meta || !meta.domain) return "";
-  return '<img src="https://logo.clearbit.com/' + meta.domain + '" alt="" ' +
+  // Primary: DuckDuckGo icons (reliable). Fallback: Clearbit (higher quality when up).
+  return '<img src="https://icons.duckduckgo.com/ip3/' + meta.domain + '.ico" alt="" ' +
    'style="width:36px;height:36px;border-radius:8px;object-fit:contain;background:#fff;padding:2px;" ' +
-   'onerror="this.style.display=\'none\'" />';
+   'onerror="this.onerror=null;this.src=\'https://logo.clearbit.com/' + meta.domain + '\';" />';
  };
  const tickerIndustry = (tk) => {
   const meta = TICKER_META[tk];
