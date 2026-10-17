@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MRVL Investment Scorecard</title>
+<style>
+:root { --accent: #2471a3; --ink: #1a1a1a; --muted: #666; --line: #ddd; --bg: #fff; --card: #f8f9fa; }
+:root[data-theme="dark"] { --ink: #e8e8e8; --muted: #aaa; --line: #444; --bg: #1a1a1a; --card: #2a2a2a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink: #e8e8e8; --muted: #aaa; --line: #444; --bg: #1a1a1a; --card: #2a2a2a; } }
+* { box-sizing: border-box; }
+body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); max-width: 900px; margin: 0 auto; padding: 24px; font-size: 14px; line-height: 1.5; }
+h1 { font-size: 28px; margin: 0; } h2 { font-size: 18px; margin: 24px 0 8px; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 16px; }
+.ticker { font-size: 32px; font-weight: 800; color: var(--accent); }
+.price { font-size: 24px; font-weight: 700; text-align: right; }
+.sub { color: var(--muted); font-size: 13px; }
+.tag { display: inline-block; font-size: 10px; background: #e8f0fe; color: #1a56db; border-radius: 3px; padding: 1px 5px; margin-left: 4px; vertical-align: middle; white-space: nowrap; }
+:root[data-theme="dark"] .tag { background: #1a3a5c; }
+.page1-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; margin: 16px 0; }
+.score-card { border: 1px solid var(--line); border-radius: 8px; padding: 16px; text-align: center; }
+.gauge { width: 100%; max-width: 240px; }
+.gauge-num { font-size: 42px; font-weight: 800; fill: var(--ink); }
+.gauge-band { font-size: 13px; font-weight: 700; fill: var(--muted); letter-spacing: 1px; }
+.conf { color: var(--muted); font-size: 13px; margin-top: 8px; }
+.pillar { margin: 12px 0; }
+.pillar-head { display: flex; align-items: center; gap: 10px; }
+.pillar-name { font-weight: 700; min-width: 150px; }
+.bar { flex: 1; height: 12px; background: #e0e0e0; border-radius: 6px; overflow: hidden; }
+.fill { height: 100%; border-radius: 6px; }
+.pillar-score { font-weight: 800; font-size: 16px; min-width: 30px; text-align: right; font-variant-numeric: tabular-nums; }
+.pillar-why { color: var(--muted); font-size: 13px; margin: 4px 0 0 160px; }
+.thesis { border: 1px solid var(--line); border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+.thesis li { margin: 8px 0; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+td.num, th.num { text-align: right; }
+.val-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.val-box { background: var(--card); border-radius: 8px; padding: 12px; }
+.val-box h3 { margin: 0 0 8px; font-size: 14px; color: var(--accent); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.catalyst { border-left: 3px solid var(--accent); padding: 6px 0 6px 12px; margin: 10px 0; }
+.cat-date { font-weight: 700; color: var(--accent); }
+.risk-head { color: #c0392b; }
+.scrollx { overflow-x: auto; }
+.disclaimer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); margin-top: 24px; padding-top: 12px; }
+.disclaimer-strong { font-weight: 700; text-align: center; margin-top: 8px; }
+.missing { font-size: 12px; color: var(--muted); }
+@media print {
+  @page { margin: 0.6in; }
+  body { padding: 0; }
+  .page-break { page-break-before: always; }
+  .disclaimer { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE ONE -->
+<div class="header">
+  <div><div class="ticker">MRVL</div><div class="sub">Marvell Technology, Inc. (NASDAQ)</div>
+  <div class="sub">As-of: 16-Oct-2026 | Latest Filing: Q2 FY27 (10-Q) | Currency: USD</div></div>
+  <div><div class="price">$227.83 <span class="tag">[Mkt 16-Oct-26]</span></div><div class="sub">Market Cap: $204.8B <span class="tag">[Mkt 16-Oct-26]</span></div></div>
+</div>
+
+<div class="page1-grid">
+  <div class="score-card">
+    <h2 style="border:none;margin:0 0 8px">Attractiveness Score</h2>
+    
+    <svg viewBox="0 0 200 110" class="gauge">
+      <path d="M 20 95 A 80 80 0 0 1 180 95" fill="none" stroke="#e0e0e0" stroke-width="18" stroke-linecap="round"/>
+      <path d="M 20 95 A 80 80 0 0 1 166.2 50.0" fill="none" stroke="#1e8449" stroke-width="18" stroke-linecap="round"/>
+      <text x="100" y="78" text-anchor="middle" class="gauge-num">81</text>
+      <text x="100" y="98" text-anchor="middle" class="gauge-band">HIGHLY ATTRACTIVE</text>
+    </svg>
+    <div class="conf">Confidence: <strong>High</strong> (0 pillars excluded)</div>
+  </div>
+  <div>
+    <h2 style="border:none;margin:0 0 4px">Pillar Breakdown</h2>
+    
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">1. Operating Quality</span>
+        <div class="bar"><div class="fill" style="width:82%;background:#f39c12"></div></div>
+        <span class="pillar-score">82</span></div>
+      <div class="pillar-why">Duopoly in optical DSPs with 60%+ gross margins on leading products. Fabless model, strong IP moat, switching costs in custom ASICs.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">2. Recent Trend</span>
+        <div class="bar"><div class="fill" style="width:90%;background:#2471a3"></div></div>
+        <span class="pillar-score">90</span></div>
+      <div class="pillar-why">Revenue growth accelerating: 22% to 28% to 37% YoY. Margins expanding to 36.6%. Data center at 79% of mix. Textbook inflection.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">3. Forward Growth</span>
+        <div class="bar"><div class="fill" style="width:92%;background:#1e8449"></div></div>
+        <span class="pillar-score">92</span></div>
+      <div class="pillar-why">$12B to $20B to $70-90B guidance is unprecedented. 21 analysts raised targets. Design wins are confirmed, not speculative.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">4. Valuation</span>
+        <div class="bar"><div class="fill" style="width:72%;background:#e74c3c"></div></div>
+        <span class="pillar-score">72</span></div>
+      <div class="pillar-why">Market implies 36% CAGR vs our 46% base case and 55-60% company target. DCF base $387 implies 70% upside. Market underprices the plan.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">5. Catalysts & Risk</span>
+        <div class="bar"><div class="fill" style="width:70%;background:#2471a3"></div></div>
+        <span class="pillar-score">70</span></div>
+      <div class="pillar-why">Q3 earnings in November test the $3.15B guide. Custom ASIC ramps are near-term positives. High beta (2.26 raw) means volatility. Positive skew.</div>
+    </div>
+  </div>
+</div>
+
+<div class="thesis">
+  <h2 style="border:none;margin:0 0 8px">Investment Thesis</h2>
+  <ul><li><strong>AI Networking Pure Play:</strong> Duopoly with Broadcom in PAM4 DSPs for 800G/1.6T. Custom ASICs competing as second source to hyperscalers. 79% of revenue from data center [10-Q Q2 FY27].</li><li><strong>Guidance Resets Trajectory:</strong> Investor Day: $12B FY27, $20B FY28, $70-90B FY31 [8-K guid]. 21 analysts raised targets. JPM $360, RBC $425. Growth is confirmed, not hoped.</li><li><strong>Market Underprices Plan:</strong> At $228 [Mkt 16-Oct-26], market implies 36% CAGR. Our $387 base needs 46%, still below the company's 55-60%. 70% upside with positive skew.</li></ul>
+</div>
+
+<h2>Key Operating Metrics</h2>
+<div class="scrollx"><table>
+<tr><th>Metric</th><th class="num">Latest</th><th class="num">YoY Change</th><th class="num">3Y Trend</th></tr>
+<tr><td>Revenue (Q2 FY27)</td><td class="num">$2.74B <span class="tag">[10-Q Q2 FY27]</span></td><td class="num">+37.0% <span class="tag">[10-Q Q2 FY27]</span></td><td class="num">Up</td></tr><tr><td>Data Center Mix</td><td class="num">79% <span class="tag">[10-Q Q2 FY27]</span></td><td class="num">+46% YoY <span class="tag">[10-Q Q2 FY27]</span></td><td class="num">Up</td></tr><tr><td>Op Margin (non-GAAP)</td><td class="num">36.6% <span class="tag">[10-Q Q2 FY27]</span></td><td class="num">+1.8 pts <span class="tag">[10-Q Q2 FY27]</span></td><td class="num">Up</td></tr><tr><td>EPS (non-GAAP)</td><td class="num">$0.94 <span class="tag">[10-Q Q2 FY27]</span></td><td class="num">+40% <span class="tag">[10-Q Q2 FY27]</span></td><td class="num">Up</td></tr><tr><td>FY2026 Revenue</td><td class="num">$8.2B <span class="tag">[8-K guid]</span></td><td class="num">+42% <span class="tag">[8-K guid]</span></td><td class="num">Up</td></tr><tr><td>FY2027 Guide</td><td class="num">$12B <span class="tag">[8-K guid]</span></td><td class="num">+47% <span class="tag">[8-K guid]</span></td><td class="num">Up</td></tr><tr><td>FY2028 Guide</td><td class="num">$20B <span class="tag">[8-K guid]</span></td><td class="num">+67% <span class="tag">[8-K guid]</span></td><td class="num">Up</td></tr>
+</table></div>
+
+<!-- PAGE TWO -->
+<div class="page-break"></div>
+
+<h2>Historical Financial Trend</h2>
+<div class="scrollx"><table>
+<tr><th>Metric</th><th class="num">FY23</th><th class="num">FY24</th><th class="num">FY25</th><th class="num">FY26</th><th class="num">TTM</th></tr>
+<tr><td>Revenue</td><td class="num">$5.5B <span class="tag">[10-K FY23]</span></td><td class="num">$5.5B <span class="tag">[10-K FY24]</span></td><td class="num">$5.8B <span class="tag">[10-K FY25]</span></td><td class="num">$8.2B <span class="tag">[10-K FY26]</span></td><td class="num">$9.5B <span class="tag">[Cons]</span></td></tr><tr><td>Gross Margin</td><td class="num">50.1% <span class="tag">[10-K FY23]</span></td><td class="num">51.3% <span class="tag">[10-K FY24]</span></td><td class="num">52.8% <span class="tag">[10-K FY25]</span></td><td class="num">55.0% <span class="tag">[Cons]</span></td><td class="num">60.5% <span class="tag">[Cons]</span></td></tr><tr><td>Op Margin</td><td class="num">18.2% <span class="tag">[10-K FY23]</span></td><td class="num">16.5% <span class="tag">[10-K FY24]</span></td><td class="num">22.1% <span class="tag">[10-K FY25]</span></td><td class="num">28.4% <span class="tag">[Cons]</span></td><td class="num">36.6% <span class="tag">[10-Q Q2 FY27]</span></td></tr>
+</table></div>
+
+<h2>Valuation</h2>
+<div class="val-grid">
+  <div class="val-box"><h3>Absolute (7/10)</h3><p>P/E (fwd) 31x [Mkt 16-Oct-26]<br>DCF Base $387 [Mkt 16-Oct-26]<br>PEG 0.6 [Mkt 16-Oct-26]</p><p>DCF implies 70% upside. PEG of 0.6 suggests growth is underpriced.</p></div>
+  <div class="val-box"><h3>Versus Peers (6/8)</h3><p>AVGO 28x P/E [Peers 16-Oct-26]<br>ALAB 45x P/E [Peers 16-Oct-26]</p><p>MRVL trades at a discount to high-growth peers despite superior guidance.</p></div>
+  <div class="val-box"><h3>Versus History (5/7)</h3><p>Current multiples [Mkt 16-Oct-26]<br>elevated vs history</p><p>Trading above historical multiples, but growth trajectory is unprecedented.</p></div>
+</div>
+
+<div class="two-col">
+<div>
+<h2>Catalyst Timeline</h2>
+<div class="catalyst"><span class="cat-date">Nov 2026 <span class="tag">[Cons]</span></span><br>Q3 FY27 Earnings (Positive): $3.15B guide implies 50%+ YoY growth. Test of acceleration thesis.</div><div class="catalyst"><span class="cat-date">2027 <span class="tag">[8-K guid]</span></span><br>Custom ASIC Ramps (Positive): Hyperscaler designs entering volume production.</div><div class="catalyst"><span class="cat-date">2028 <span class="tag">[8-K guid]</span></span><br>$20B Revenue Target (Two-Sided): 67% growth target; execution is the risk.</div>
+<h2>What Would Change Our Score</h2>
+<p>A Q3 FY27 miss on the $3.15B guide would cut Forward Growth and Trend. Conversely, custom ASIC share gains beyond expectations could push the bull case ($507) into play.</p>
+</div>
+<div>
+<h2>Top Risk Factors (Item 1A)</h2>
+<p><strong class="risk-head">1. Customer Concentration:</strong> A handful of hyperscalers drive AI revenue; loss of share at any major customer would be material to the growth trajectory. <span class="tag">[10-K FY26]</span></p><p><strong class="risk-head">2. Execution Risk:</strong> The $70-90B FY2031 target requires flawless execution on custom silicon and optical transitions over five years. <span class="tag">[10-K FY26]</span></p><p><strong class="risk-head">3. Broadcom Competition:</strong> Broadcom is the entrenched custom ASIC leader with superior scale; Marvell is gaining share but faces a formidable incumbent. <span class="tag">[10-K FY26]</span></p>
+<h2>Forward Growth Drivers</h2>
+<ul><li>Custom ASIC design wins at AWS, Google, Microsoft entering production <span class="tag">[8-K guid]</span></li><li>800G/1.6T optical DSP upgrade cycle with duopoly pricing power <span class="tag">[8-K guid]</span></li><li>$400B addressable market by 2030 in AI infrastructure <span class="tag">[8-K guid]</span></li></ul>
+</div>
+</div>
+
+<div class="missing">
+<h2>Missing / Modified Data Log</h2>
+<ul><li>ROIC not explicitly disclosed; used operating margin trajectory qualitatively.</li><li>5-year multiple history from market data, tagged [Mkt 16-Oct-26].</li></ul>
+</div>
+
+<div class="disclaimer">
+This scorecard is for educational and informational purposes only. It is not financial, investment, or tax advice, and nothing here is a recommendation to buy or sell any security. It is generated by an AI model and does not consider your individual circumstances. All figures are approximate, may be out of date, and are not guaranteed to be accurate. Verify independently and consult a licensed professional before investing. You are responsible for your own investment decisions.
+<div class="disclaimer-strong">Not financial advice. For educational purposes only. Do your own research.</div>
+</div>
+
+</body>
+</html>
