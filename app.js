@@ -6662,7 +6662,7 @@ function bindZoomHandlers() {
    '<div class="section-sub">Realized volatility shocks and systematic fund positioning. When volatility has been quiet too long, mechanical sellers are fully loaded.</div>';
 
   // What this means (for everyone)
-  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
    '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
    '<b style="color:#e8ecf1;">The simple version:</b> Markets go through calm stretches and stormy stretches. This model counts how long it has been since the last storm. The longer the calm lasts, the more likely a storm is coming, because big automated funds pile into stocks when things are quiet and are forced to sell when volatility spikes.<br><br>' +
    '<b style="color:#e8ecf1;">For long-term investors:</b> When the gauge reads OVERDUE, consider it a yellow light, not a sell signal. It is a good time to make sure your position sizes are comfortable and avoid adding leverage. When it reads RECENTLY UNWOUND, the mechanical selling pressure has passed.<br><br>' +
@@ -6738,6 +6738,7 @@ function bindZoomHandlers() {
   });
 
   h += '<div class="panel-asof">As of ' + esc((R.as_of || "").slice(0, 10)) + " · SPY $" + (R.currentPrice != null ? R.currentPrice : "-") + "</div></div>";
+  h += explainerHtml;
   return h;
  }
 
@@ -6754,7 +6755,7 @@ function bindZoomHandlers() {
   let h = '<div class="section"><div class="section-title">Dynamic Concentration Risk Gauge <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
    '<div class="section-sub">Which sector is leading, how stretched it is, and whether the index can survive without it.</div>';
 
-  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
    '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
    '<b style="color:#e8ecf1;">The simple version:</b> The stock market is sometimes carried by one hot sector while everything else goes nowhere. This model finds which sector is leading right now, checks how stretched it is, and warns you when the market depends too much on that one area.<br><br>' +
    '<b style="color:#e8ecf1;">For long-term investors:</b> A high fragility score means your index fund is more concentrated than it looks. If the leading sector stumbles, the whole index drops with it even if most companies are fine. Consider whether you are comfortable with that.<br><br>' +
@@ -6794,6 +6795,7 @@ function bindZoomHandlers() {
   h += '<div class="zoomable-chart" data-chart="concentration" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="concentration-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="panel-asof">As of ' + esc((K.as_of || "").slice(0, 10)) + "</div></div>";
+  h += explainerHtml;
   return h;
  }
 
@@ -6811,7 +6813,7 @@ function bindZoomHandlers() {
    '<div class="section-sub">Retail sentiment vs institutional positioning, as a contrarian risk gauge.</div>';
 
   // Plain-English explainer
-  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
    '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
    '<b style="color:#e8ecf1;">The simple version:</b> This model compares what everyday investors are feeling against what big institutions are actually doing. When the crowd is extremely optimistic but institutions are quietly hedging or selling, the market is vulnerable. When the crowd is fearful but institutions are buying, it is often a good time to be.<br><br>' +
    '<b style="color:#e8ecf1;">For long-term investors:</b> Extreme readings are rare and worth respecting. A HIGH VULNERABILITY reading means tops tend to form in this setup, so avoid adding aggressively. An INSTITUTIONAL ACCUMULATION reading means fear is high while smart buyers step in, historically a good backdrop for long-term purchases.<br><br>' +
@@ -6846,6 +6848,7 @@ function bindZoomHandlers() {
   h += '<div class="zoomable-chart" data-chart="flow-divergence" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="flow-divergence-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="panel-asof">As of ' + esc((F.as_of || "").slice(0, 10)) + "</div></div>";
+  h += explainerHtml;
   return h;
  }
 
@@ -6862,7 +6865,7 @@ function bindZoomHandlers() {
    '<div class="section-sub">Currency, rates, and commodity stress as early warnings before shocks reach stocks.</div>';
 
   // Plain-English explainer
-  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
    '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
    '<b style="color:#e8ecf1;">The simple version:</b> Sometimes trouble starts outside the stock market, in currencies, bonds, or commodities, and spills over later. This model watches those three areas and warns you when they are flashing red while stocks still look calm.<br><br>' +
    '<b style="color:#e8ecf1;">For long-term investors:</b> A CRITICAL or ELEVATED reading means the odds of a market drawdown driven by outside forces are higher than normal. It is not a sell signal, but a good time to check that you are comfortable with your risk level.<br><br>' +
@@ -6907,6 +6910,7 @@ function bindZoomHandlers() {
   h += '<div class="zoomable-chart" data-chart="contagion" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="contagion-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="panel-asof">As of ' + esc((C.as_of || "").slice(0, 10)) + "</div></div>";
+  h += explainerHtml;
   return h;
  }
 
@@ -6972,7 +6976,7 @@ function bindZoomHandlers() {
      '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div></div>";
    };
    let freeH = '<div class="crumb">RISK MODELS</div>' +
-    '<div class="hero"><div><h1 class="hero-h">Risk Models.</h1>' +
+    '<div class="hero"><div><h1 class="hero-h">Risk Models</h1>' +
     "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
     '<div class="section"><div class="section-title">Daily Snapshot <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>' +
     ' <span style="font-size:11px;color:#8b949e;font-weight:400;">as of ' + esc((D.generated_at || "").slice(0, 10)) + '</span></div>' +
@@ -6991,7 +6995,7 @@ function bindZoomHandlers() {
    return;
   }
   let h = '<div class="crumb">RISK MODELS</div>' +
-   '<div class="hero"><div><h1 class="hero-h">Risk Models.</h1>' +
+   '<div class="hero"><div><h1 class="hero-h">Risk Models</h1>' +
    "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>";
   h += correctionRiskHtml();
   h += liquidityDrainHtml();
