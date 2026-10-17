@@ -221,6 +221,7 @@
    if (sections.rv_shock) flat.rv_shock = sections.rv_shock;
    if (sections.contagion) flat.contagion = sections.contagion;
    if (sections.dynamic_concentration) flat.dynamic_concentration = sections.dynamic_concentration;
+   if (sections.trend_signals) flat.trend_signals = sections.trend_signals;
    if (sections.flow_divergence) flat.flow_divergence = sections.flow_divergence;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
@@ -1826,6 +1827,27 @@ function bindZoomHandlers() {
   return h;
  }
 
+ /* Trend Conviction & Exhaustion gauges (per-ticker, from trend_signals.json) */
+ function trendGaugesHtml(tk) {
+  const sig = ((D.trend_signals || {}).tickers || {})[tk];
+  if (!sig) return "";
+  const tc = sig.trendScore >= 60 ? "#3fb950" : sig.trendScore >= 30 ? "#d29922" : "#8b949e";
+  const ec = sig.exhaustionScore >= 60 ? "#f85149" : sig.exhaustionScore >= 30 ? "#d29922" : "#3fb950";
+  const flags = (sig.reversalFlags || []).map((f) =>
+   '<div style="font-size:11px;color:' + (f.indexOf("No exhaustion") === 0 ? "#8b949e" : "#f85149") + ';margin-top:4px;">' + esc(f) + "</div>").join("");
+  return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
+   '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
+   '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">TREND CONVICTION</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + tc + ';">' + sig.trendScore + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
+   '<div style="font-size:11px;color:#e8ecf1;margin-top:2px;">' + esc(sig.alignment) + " · ADX " + sig.adx + " · " + esc(sig.trendDirection) + "</div>" +
+   '<div style="font-size:11px;color:#6b7280;margin-top:4px;">High RSI alone does not kill a trend. Conviction above 60 means the trend is structurally sound.</div></div>' +
+   '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
+   '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">EXHAUSTION / REVERSAL RISK</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + ec + ';">' + sig.exhaustionScore + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
+   '<div style="font-size:11px;color:#e8ecf1;margin-top:2px;">RSI ' + sig.rsi + "</div>" + flags +
+   "</div></div>";
+ }
+
  /* Multi-timeframe Technical Analysis (Pro) */
  function technicalAnalysisHtml(tk) {
   const ta = (D.technical_analysis || {})[tk];
@@ -1856,6 +1878,7 @@ function bindZoomHandlers() {
    '<div style="font-size:13px;color:#e8ecf1;">Confidence: <b>' + ta.confluence.confidenceScore + '%</b></div>' +
    '<div style="font-size:12px;color:#a0a8b8;">' + ta.confluence.timeframeAlignment.replace(/_/g, " ") + "</div>" +
    "</div>" +
+   trendGaugesHtml(tk) +
    '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' +
    tfCard("Daily", ta.timeframes.daily) + tfCard("Weekly", ta.timeframes.weekly) + tfCard("Monthly", ta.timeframes.monthly) +
    "</div>" +
@@ -6110,6 +6133,74 @@ function bindZoomHandlers() {
   draw();
  }
 
+ /* Trend & Reversal screener (Pro): conviction + exhaustion across coverage */
+ function trendScreenerHtml() {
+  const tk = ((D.trend_signals || {}).tickers) || {};
+  const keys = Object.keys(tk).sort();
+  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += '<div class="section-sub">Trend Conviction (is this a real trend?) vs Exhaustion Risk (is momentum diverging?) for every coverage ticker. ' +
+   'High conviction + low exhaustion = healthy trend. High conviction + high exhaustion = crowded trade, tighten up. Updated ' +
+   esc((((D.trend_signals || {}).timestampUTC) || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning.</div>';
+  h += '<div class="card"><div class="table-wrap"><table class="coverage"><thead><tr>' +
+   '<th data-tsort="ticker" style="cursor:pointer;">Ticker</th>' +
+   '<th data-tsort="price" style="cursor:pointer;text-align:right;">Price</th>' +
+   '<th data-tsort="trend" style="cursor:pointer;text-align:right;">Conviction</th>' +
+   '<th data-tsort="exh" style="cursor:pointer;text-align:right;">Exhaustion</th>' +
+   '<th data-tsort="dir" style="cursor:pointer;">Direction</th>' +
+   '<th data-tsort="adx" style="cursor:pointer;text-align:right;">ADX</th>' +
+   '<th data-tsort="rsi" style="cursor:pointer;text-align:right;">RSI</th>' +
+   '<th>Signal</th>' +
+   '</tr></thead><tbody id="trend-body"></tbody></table></div></div></div>';
+  return h;
+ }
+ function initTrendScreener() {
+  const tk = ((D.trend_signals || {}).tickers) || {};
+  const body = document.getElementById("trend-body");
+  if (!body) return;
+  let sortK = "trend", sortD = -1;
+  const sigLabel = (s) => {
+   if (s.trendScore >= 60 && s.exhaustionScore < 40) return '<span style="color:#3fb950;font-weight:700;">Healthy trend</span>';
+   if (s.trendScore >= 60 && s.exhaustionScore >= 60) return '<span style="color:#f85149;font-weight:700;">Crowded, caution</span>';
+   if (s.exhaustionScore >= 60) return '<span style="color:#d29922;font-weight:700;">Reversal risk</span>';
+   if (s.trendScore < 30) return '<span style="color:#8b949e;">Chop</span>';
+   return '<span style="color:#e8ecf1;">Developing</span>';
+  };
+  const draw = () => {
+   const rows = Object.keys(tk).map((k) => ({ k, s: tk[k] }));
+   rows.sort((a, b) => {
+    const av = sortK === "ticker" ? a.k : sortK === "dir" ? a.s.trendDirection :
+     sortK === "trend" ? a.s.trendScore : sortK === "exh" ? a.s.exhaustionScore :
+     sortK === "adx" ? a.s.adx : sortK === "rsi" ? a.s.rsi : a.s.price;
+    const bv = sortK === "ticker" ? b.k : sortK === "dir" ? b.s.trendDirection :
+     sortK === "trend" ? b.s.trendScore : sortK === "exh" ? b.s.exhaustionScore :
+     sortK === "adx" ? b.s.adx : sortK === "rsi" ? b.s.rsi : b.s.price;
+    return (av > bv ? 1 : av < bv ? -1 : 0) * sortD;
+   });
+   body.innerHTML = rows.map((r) => {
+    const s = r.s;
+    const tc = s.trendScore >= 60 ? "#3fb950" : s.trendScore >= 30 ? "#d29922" : "#8b949e";
+    const ec = s.exhaustionScore >= 60 ? "#f85149" : s.exhaustionScore >= 30 ? "#d29922" : "#3fb950";
+    return '<tr style="cursor:pointer;" data-tk="' + r.k + '">' +
+     '<td style="font-weight:700;"><a href="#/' + r.k + '" style="color:#58a6ff;">' + r.k + "</a></td>" +
+     '<td style="text-align:right;">$' + s.price.toFixed(2) + "</td>" +
+     '<td style="text-align:right;color:' + tc + ';font-weight:700;">' + s.trendScore + "</td>" +
+     '<td style="text-align:right;color:' + ec + ';font-weight:700;">' + s.exhaustionScore + "</td>" +
+     '<td style="color:' + (s.trendDirection === "Bullish" ? "#3fb950" : "#f85149") + ';">' + s.trendDirection + "</td>" +
+     '<td style="text-align:right;">' + s.adx + "</td>" +
+     '<td style="text-align:right;">' + s.rsi + "</td>" +
+     "<td>" + sigLabel(s) + "</td></tr>";
+   }).join("");
+  };
+  document.querySelectorAll("[data-tsort]").forEach((th) => {
+   th.addEventListener("click", () => {
+    const k = th.getAttribute("data-tsort");
+    if (sortK === k) sortD *= -1; else { sortK = k; sortD = -1; }
+    draw();
+   });
+  });
+  draw();
+ }
+
  /* Technical factor screener: Minervini Trend Template (Pro) */
  function minerviniHtml() {
   const md = D.minervini_data;
@@ -6292,6 +6383,11 @@ function bindZoomHandlers() {
    minDiv.innerHTML = minerviniHtml();
    app.appendChild(minDiv);
    initMinervini();
+   // Trend & Reversal screener (Pro), below Minervini
+   const trendDiv = document.createElement("div");
+   trendDiv.innerHTML = trendScreenerHtml();
+   app.appendChild(trendDiv);
+   initTrendScreener();
   } else {
    const t1 = document.createElement("div");
    t1.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
@@ -6301,6 +6397,10 @@ function bindZoomHandlers() {
    t2.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     proTeaser("Technical Factor Screener, Pro", "Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across the full S&P 500. Click any ticker to inspect its full criteria card.") + "</div>";
    app.appendChild(t2);
+   const t3 = document.createElement("div");
+   t3.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Trend & Reversal Screener, Pro", "Trend Conviction vs Exhaustion Risk for every coverage ticker. Spot healthy trends, crowded trades, and MACD divergences before reversals.") + "</div>";
+   app.appendChild(t3);
   }
  });
 
