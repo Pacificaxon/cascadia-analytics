@@ -37,6 +37,7 @@
   "INTC": { domain: "intel.com", industry: "Semiconductors" },
   "ISRG": { domain: "intuitive.com", industry: "Medical Devices" },
   "LEU": { domain: "centrusenergy.com", industry: "Uranium" },
+  "LRCX": { domain: "lamresearch.com", industry: "Semiconductor Equipment" },
   "MELI": { domain: "mercadolibre.com", industry: "E-commerce" },
   "META": { domain: "meta.com", industry: "Social Media" },
   "MITK": { domain: "miteksystems.com", industry: "Software" },
