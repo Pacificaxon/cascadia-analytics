@@ -216,6 +216,7 @@
    if (sections.earnings_dashboard) flat.earnings_dashboard = sections.earnings_dashboard;
    if (sections.liquidity) flat.liquidity = sections.liquidity;
    if (sections.comps_matrix) flat.comps_matrix = sections.comps_matrix;
+   if (sections.correction_risk) flat.correction_risk = sections.correction_risk;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -570,6 +571,7 @@ function bindZoomHandlers() {
        trends: "Trading Trends, " + (el.dataset.ticker || ""),
        aaii: "AAII Investor Sentiment",
        breakeven: "10Y Breakeven Inflation",
+       "correction-risk": "Correction Risk Model",
        cot: "Commitments of Traders",
        macro: "Macroeconomic Analysis",
        leadership: "Market Leadership, MLS by Component",
@@ -868,6 +870,33 @@ function bindZoomHandlers() {
            y: { position: "right", ticks: { color: "#6b7280", callback: (v) => v.toFixed(1) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
         });
         } catch (e) { console.error("Breakeven chart error:", e); }
+       } else if (kind === "correction-risk") {
+        const cr = D.correction_risk || {};
+        const hist = cr.history || [];
+        if (!hist.length) return;
+        try {
+         const canvas = zc.tagName === "CANVAS" ? zc : (zc.querySelector("canvas") || document.getElementById("correction-risk-chart"));
+         if (!canvas) return;
+         const existing = Chart.getChart(canvas);
+         if (existing) existing.destroy();
+         new Chart(canvas, {
+          data: {
+           labels: hist.map((r) => r.date),
+           datasets: [
+            {type: "line", label: "SPY", data: hist.map((r) => r.price), borderColor: "#c99a6b", borderWidth: 2, pointRadius: 0, yAxisID: "yPrice"},
+            {type: "bar", label: "Risk Score", data: hist.map((r) => r.score), backgroundColor: hist.map((r) => r.color), yAxisID: "yScore", barPercentage: 1.0, categoryPercentage: 1.0},
+           ],
+          },
+          options: {animation: false, responsive: true, maintainAspectRatio: false,
+           interaction: {mode: "index", intersect: false},
+           plugins: {legend: {display: false}},
+           scales: {
+            x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
+            yPrice: {position: "left", ticks: {color: "#c99a6b"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            yScore: {position: "right", min: 0, max: 100, ticks: {color: "#8b949e", stepSize: 25}, grid: {display: false}},
+           }},
+         });
+        } catch (e) { console.error("Correction risk chart error:", e); }
        } else if (kind === "cot") {
         const hist = (D.cot_data.history || []);
         const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
@@ -3706,8 +3735,6 @@ function bindZoomHandlers() {
    "<p class='hero-sub'>Institutional-grade briefing synthesizing macro, internals, and derivatives positioning. Updated every trading morning.</p></div></div>";
   // Pre-market cross-asset snapshot (Pro)
   h += premarketHtml();
-  // Quantitative Fear Index (Pro)
-  h += fearIndexHtml();
   // Rotation & Pairs Engine (Pro), before the morning briefing
   h += rotationHtml();
   if (r && r.available) {
@@ -6291,6 +6318,89 @@ function bindZoomHandlers() {
      tooltip: {callbacks: {title: (it) => it[0].raw.ticker || "Peer fair value", label: (c) => c.raw.ticker ? ["Growth: " + c.raw.x.toFixed(1) + "%", "Multiple: " + c.raw.y.toFixed(1) + "x"] : "Fair: " + c.raw.y.toFixed(1) + "x"}}},
     scales: {x: {title: {display: true, text: "NTM Revenue Growth (%)", color: "#8b949e"}, ticks: {color: "#8b949e", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
      y: {title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#8b949e"}, ticks: {color: "#8b949e", callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}});
+  }
+ });
+
+ /* ================= RISK MODELS (PRO) ================= */
+ function correctionRiskHtml() {
+  const cr = D.correction_risk || {};
+  if (!cr.totalRiskScore && cr.totalRiskScore !== 0) {
+   return '<div class="section"><div class="section-title">Correction Risk Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="card"><p style="color:var(--muted)">The Correction Risk Model has not been computed yet. Check back after the next refresh.</p></div></div>';
+  }
+  const score = cr.totalRiskScore;
+  const regime = cr.regime || "";
+  const colorMap = {emerald: "#10b981", amber: "#f59e0b", rose: "#f43f5e", slate: "#94a3b8"};
+  const rc = colorMap[cr.color] || "#94a3b8";
+  let h = '<div class="section" style="max-width:none;"><div class="section-title">Correction Risk Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += '<div class="section-sub">Multi-factor risk score combining price extension, volatility trend, credit stress, and market breadth. Signals when a market top is forming. Updated ' + esc((cr.as_of || "").slice(0, 10)) + '.</div>';
+  // Regime banner
+  h += '<div class="card" style="border:1px solid ' + rc + '55;padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">';
+  h += '<div><div style="font-size:11px;color:#8b949e;letter-spacing:1.5px;">CURRENT REGIME</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + rc + ';">' + esc(regime) + '</div></div>';
+  h += '<div style="text-align:right;"><div style="font-size:48px;font-weight:800;color:' + rc + ';line-height:1;">' + score + '<span style="font-size:20px;color:#8b949e;">/100</span></div>' +
+   '<div style="font-size:11px;color:#8b949e;">LEVEL ' + (cr.riskLevel || 1) + '</div></div></div>';
+  // Breakdown cards
+  const bd = cr.scoreBreakdown || [];
+  if (bd.length) {
+   h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-top:12px;">';
+   bd.forEach((b) => {
+    const bc = b.points > 0 ? "#f43f5e" : "#10b981";
+    h += '<div class="card" style="padding:14px;"><div style="font-size:11px;color:#c99a6b;font-weight:700;letter-spacing:0.5px;">' + esc(b.metric).toUpperCase() + '</div>' +
+     '<div style="font-size:14px;font-weight:700;color:' + bc + ';margin:4px 0;">' + esc(b.status) + ' (' + b.points + ' pts)</div>' +
+     '<div style="font-size:12px;color:#8b949e;">' + esc(b.value) + '</div></div>';
+   });
+   h += '</div>';
+  }
+  // History chart
+  h += '<div class="section-title" style="margin-top:16px;">Risk Score History (90 days)</div>';
+  h += '<div class="zoomable-chart" data-chart="correction-risk" style="position:relative;height:320px;cursor:zoom-in;" title="Click to zoom"><canvas id="correction-risk-chart"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '</div>';
+  return h;
+ }
+
+ route("risk", async function () {
+  await ensureProData();
+  if (!isPro()) {
+   app.innerHTML = '<div class="crumb">RISK MODELS</div>' +
+    '<div class="hero"><div><h1 class="hero-h">Risk Models.</h1>' +
+    "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
+    '<div class="section"><div class="section-title">Risk Models <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+   return;
+  }
+  let h = '<div class="crumb">RISK MODELS</div>' +
+   '<div class="hero"><div><h1 class="hero-h">Risk Models.</h1>' +
+   "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>";
+  h += correctionRiskHtml();
+  h += fearIndexHtml();
+  app.innerHTML = h;
+  bindZoomHandlers();
+  // Draw correction risk chart
+  const cr = D.correction_risk || {};
+  const hist = cr.history || [];
+  const cv = document.getElementById("correction-risk-chart");
+  if (cv && hist.length && window.Chart) {
+   const old = Chart.getChart(cv);
+   if (old) old.destroy();
+   new Chart(cv, {
+    data: {
+     labels: hist.map((r) => r.date),
+     datasets: [
+      {type: "line", label: "SPY", data: hist.map((r) => r.price), borderColor: "#c99a6b", borderWidth: 2, pointRadius: 0, yAxisID: "yPrice"},
+      {type: "bar", label: "Risk Score", data: hist.map((r) => r.score), backgroundColor: hist.map((r) => r.color), yAxisID: "yScore", barPercentage: 1.0, categoryPercentage: 1.0},
+     ],
+    },
+    options: {animation: false, responsive: true, maintainAspectRatio: false,
+     interaction: {mode: "index", intersect: false},
+     plugins: {legend: {display: false}},
+     scales: {
+      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
+      yPrice: {position: "left", ticks: {color: "#c99a6b"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      yScore: {position: "right", min: 0, max: 100, ticks: {color: "#8b949e", stepSize: 25}, grid: {display: false}},
+     }},
+   });
   }
  });
 
