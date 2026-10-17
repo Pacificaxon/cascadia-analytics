@@ -30,3 +30,5 @@ Disallow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://cascadia-analytics.pages.dev/sitemap.xml
