@@ -2209,7 +2209,7 @@ function bindZoomHandlers() {
   h += '<div class="hero"><div>' +
    '<h1 class="hero-h" style="color:var(--gold);">The signals moving markets, in one research view.</h1>' +
    "<p class='hero-sub' style=\"color:var(--gold);opacity:0.85;\">Track macro releases and central-bank commentary, gauge market risk across seven quantitative models, " +
-   "screen 500+ stocks on quality and momentum factors, then move directly into company valuation work across 36 DCF-covered names.</p></div>" +
+   "screen 500+ stocks on quality and momentum factors, then move directly into company valuation work across " + ORDER.length + " DCF-covered names.</p></div>" +
    '<div class="hero-right">' +
    '<div class="statbox"><div class="mono-label">Coverage</div><div class="statbox-v">' + ORDER.length + " DCF models</div></div>" +
    '<div class="statbox"><div class="mono-label">Macro wire</div><div class="statbox-v">Newest first</div></div>' +
@@ -6504,7 +6504,7 @@ function bindZoomHandlers() {
     '<div class="hero"><div><h1 class="hero-h">Relative Valuation.</h1>' +
     "<p class='hero-sub'>Cross-reference DCF values with regression-modeled peer multiples.</p></div></div>" +
     '<div class="section"><div class="section-title">Comps Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("Comps Matrix, Pro", "OLS regression of EV/Revenue and P/E against NTM growth across all 36 tickers. Find discounted growth and stretched multiples.") + "</div>";
+    proTeaser("Comps Matrix, Pro", "OLS regression of EV/Revenue and P/E against NTM growth across all " + ORDER.length + " tickers. Find discounted growth and stretched multiples.") + "</div>";
    return;
   }
   const cm = D.comps_matrix || {};
@@ -7163,7 +7163,7 @@ function bindZoomHandlers() {
    '<div style="font-size:36px;font-weight:800;color:#fff;margin-bottom:4px;">$0</div>' +
    '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">forever</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
-   '<li>✓ Full DCF valuation coverage, 36 tickers with Bear/Base/Bull targets</li>' +
+   '<li>✓ Full DCF valuation coverage, ' + ORDER.length + ' tickers with Bear/Base/Bull targets</li>' +
    '<li>✓ Reverse DCF, what the market is pricing in at the current quote</li>' +
    '<li>✓ Valuation multiples, market cap, EV, TTM and forward multiples</li>' +
    '<li>✓ Interactive price charts with moving averages (10/20/50/100/200-day)</li>' +
@@ -7203,7 +7203,7 @@ function bindZoomHandlers() {
    '<li>✓ Interactive FCF simulation sandbox</li>' +
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ Earnings call transcript tone analysis, executive confidence scoring via AI</li>' +
-   '<li>✓ 36 client research notes (PDF, full institutional format)</li>' +
+   '<li>✓ ' + ORDER.length + ' client research notes (PDF, full institutional format)</li>' +
    '<li>✓ Investment scorecard PDFs, one-glance 0-100 attractiveness rating</li>' +
    '<li>✓ Morning Briefing, institutional-grade daily synthesis of macro, internals, and positioning</li>' +
    '<li>✓ All future DCF models and ticker coverage, the coverage universe is constantly expanding and Pro members get every new name automatically</li>' +
