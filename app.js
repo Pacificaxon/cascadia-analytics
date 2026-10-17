@@ -568,6 +568,7 @@ function bindZoomHandlers() {
        "gex-index": "Gamma Exposure, " + (el.dataset.symbol || ""),
        trends: "Trading Trends, " + (el.dataset.ticker || ""),
        aaii: "AAII Investor Sentiment",
+       breakeven: "10Y Breakeven Inflation",
        cot: "Commitments of Traders",
        macro: "Macroeconomic Analysis",
        leadership: "Market Leadership, MLS by Component",
@@ -840,6 +841,8 @@ function bindZoomHandlers() {
        } else if (kind === "breakeven") {
         const bdata = D.breakeven_inflation || {};
         const hist = (bdata.history || []).slice(-756);
+        if (!hist.length) return;
+        try {
         const ctx0 = zc.getContext("2d");
         const grad = ctx0.createLinearGradient(0, 0, 0, 300);
         grad.addColorStop(0, "rgba(6,182,212,0.35)");
@@ -858,6 +861,7 @@ function bindZoomHandlers() {
            x: { ticks: { color: "#6b7280", maxTicksLimit: 6, maxRotation: 0 }, grid: { display: false } },
            y: { position: "right", ticks: { color: "#6b7280", callback: (v) => v.toFixed(1) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
         });
+        } catch (e) { console.error("Breakeven chart error:", e); }
        } else if (kind === "cot") {
         const hist = (D.cot_data.history || []);
         const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
