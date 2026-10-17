@@ -2000,7 +2000,8 @@ function bindZoomHandlers() {
    '<div class="news-sec-head"><div><div class="mono-label">' + esc(label) + "</div>" +
    '<div class="news-sec-title">' + esc(title) + "</div></div>" +
    (tags ? '<div class="news-sec-tags">' + esc(tags) + "</div>" : "") + "</div>" +
-   (rowsHtml || '<div class="news-empty">No recent items.</div>') + "</section>";
+   '<div class="news-scroll">' +
+   (rowsHtml || '<div class="news-empty">No recent items.</div>') + "</div></section>";
  }
 
  /* ---------- shared bits ---------- */

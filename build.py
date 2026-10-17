@@ -380,8 +380,9 @@ def main():
     sa_macro = [sa_row(i) for i in sa_items if i.get("category") == "macro"]
     sa_perf = [sa_row(i) for i in sa_items if i.get("category") == "performance"]
     # Merge SA items into existing feeds (SA first = freshest)
-    news_items = (sa_company + news_items)[:40]
-    macro_items = (sa_macro + macro_items)[:60]
+    # Keep 2 weeks of history; UI scrolls
+    news_items = (sa_company + news_items)[:100]
+    macro_items = (sa_macro + macro_items)[:100]
 
     # --- Bellwether readthroughs keyed by ticker ---
     readthroughs = {}
@@ -402,7 +403,7 @@ def main():
         "ticker_order": sorted(tickers.keys()),
         "macro_feed": macro_items,
         "company_news": news_items,
-        "market_performance": sa_perf[:15],
+        "market_performance": sa_perf[:30],
         "ticker_macro": {k: [{kk: vv for kk, vv in item.items() if kk != "take"} for item in v[:8]] for k, v in ticker_macro.items()},
         "ticker_indicator_takes": ticker_indicator_takes,
         "panels": panels,
