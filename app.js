@@ -2880,7 +2880,8 @@ function bindZoomHandlers() {
       { label: "VIX z-score", data: vz, borderColor: "#2962ff", borderWidth: 1.5,
        pointRadius: 0, tension: 0.1, borderDash: [5, 3], order: 2 },
      ]},
-     options: { responsive: true, maintainAspectRatio: false,
+     options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
       interaction: { mode: "index", intersect: false },
       plugins: {
        legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
@@ -2917,7 +2918,8 @@ function bindZoomHandlers() {
        { label: "Forward 12m EPS", data: eps, borderColor: "#00e676", borderWidth: 2,
         pointRadius: 0, tension: 0.1, yAxisID: "y1", order: 1 },
       ]},
-      options: { responsive: true, maintainAspectRatio: false,
+      options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
         legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
@@ -2990,7 +2992,8 @@ function bindZoomHandlers() {
      new Chart(trc, {
       type: "scatter",
       data: { datasets },
-      options: { responsive: true, maintainAspectRatio: false,
+      options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
        plugins: {
         legend: { display: false },
         tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
@@ -3022,7 +3025,8 @@ function bindZoomHandlers() {
        { label: "RUT vs 200d (%)", data: hist.map((r) => r.rut_vs_200d), borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.1 },
        { label: "MID vs 200d (%)", data: hist.map((r) => r.mid_vs_200d), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1 },
       ]},
-      options: { responsive: true, maintainAspectRatio: false,
+      options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
         legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
@@ -3049,7 +3053,8 @@ function bindZoomHandlers() {
        { label: "Spread z", data: hist.map((r) => r.spread_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
        { label: "VIX z", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
       ]},
-      options: { responsive: true, maintainAspectRatio: false,
+      options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
         tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 } },
@@ -3072,7 +3077,8 @@ function bindZoomHandlers() {
        { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
        { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
       ]},
-      options: { responsive: true, maintainAspectRatio: false,
+      options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
         tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 } },
@@ -3097,7 +3103,8 @@ function bindZoomHandlers() {
        { label: "Overbought (70)", data: hist.map(() => 70), borderColor: "#f85149", borderWidth: 1, pointRadius: 0, borderDash: [5, 3], yAxisID: "y" },
        { label: "Oversold (30)", data: hist.map(() => 30), borderColor: "#3fb950", borderWidth: 1, pointRadius: 0, borderDash: [5, 3], yAxisID: "y" },
       ]},
-      options: { responsive: true, maintainAspectRatio: false,
+      options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
         legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
@@ -3134,7 +3141,8 @@ function bindZoomHandlers() {
        { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#c8d0dc", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
        { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.1 },
       ]},
-      options: { responsive: true, maintainAspectRatio: false,
+      options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
         legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
@@ -3165,7 +3173,8 @@ function bindZoomHandlers() {
        { label: "Large Specs net", data: hist.map((r) => (r.markets[mkey] || {}).large_specs?.net), borderColor: "#c678dd", borderWidth: 2, pointRadius: 0, tension: 0.1 },
        { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
       ]},
-      options: { responsive: true, maintainAspectRatio: false,
+      options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
         legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
@@ -3224,7 +3233,8 @@ function bindZoomHandlers() {
      const chart = new Chart(macroCv, {
       type: "line",
       data: { labels: labels, datasets: buildDatasets() },
-      options: { responsive: true, maintainAspectRatio: false,
+      options: {
+          animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
         legend: { display: false },
@@ -3341,6 +3351,7 @@ function bindZoomHandlers() {
         }],
        },
        options: {
+          animation: false,
         indexAxis: "y",
         responsive: true, maintainAspectRatio: false,
         plugins: {
