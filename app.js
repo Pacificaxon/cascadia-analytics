@@ -33,6 +33,7 @@
   "BSX": { domain: "bostonscientific.com", industry: "Medical Devices" },
   "CDNL": { domain: "cardinalhealth.com", industry: "Healthcare" },
   "CSX": { domain: "csx.com", industry: "Railroads" },
+  "ENS": { domain: "enersys.com", industry: "Electrical Equipment" },
   "IA": { domain: "i-a.com", industry: "Technology" },
   "INTC": { domain: "intel.com", industry: "Semiconductors" },
   "ISRG": { domain: "intuitive.com", industry: "Medical Devices" },
@@ -214,6 +215,7 @@
    if (sections.minervini_data) flat.minervini_data = sections.minervini_data;
    if (sections.earnings_dashboard) flat.earnings_dashboard = sections.earnings_dashboard;
    if (sections.ticker_short_interest) flat.ticker_short_interest = sections.ticker_short_interest;
+   if (sections.dark_pool) flat.dark_pool = sections.dark_pool;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
    flat._fcf_projections = sections.fcf_projections || {};
@@ -1576,6 +1578,58 @@ function bindZoomHandlers() {
    "</div>" +
    '<div style="font-size:12px;color:#e8ecf1;">Put $' + d.put_strike.toFixed(2) + " / Call $" + d.call_strike.toFixed(2) + " · " + d.dte + " DTE</div>" +
    '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
+ }
+
+ /* Dark Pool & Off-Exchange Flow (Pro) */
+ function darkPoolHtml(tk) {
+  const dp = (D.dark_pool || {}).tickers || {};
+  const d = dp[tk];
+  if (!d) return '<p style="color:var(--muted)">No dark pool data for this ticker.</p>';
+  const sentimentColors = {
+   "BULLISH ACCUMULATION": "#3fb950",
+   "MODERATE BUY BIAS": "#58a6ff",
+   "INSTITUTIONAL DISTRIBUTION": "#f85149",
+   "BEARISH FADE": "#d29922",
+   "NEUTRAL / BALANCED": "#8b949e",
+  };
+  const sc = sentimentColors[d.sentiment] || "#e8ecf1";
+  const flowM = d.net_dark_flow_usd / 1e6;
+  const flowStr = (flowM >= 0 ? "+$" : "-$") + Math.abs(flowM).toFixed(1) + "M";
+  const zStr = (d.z_score >= 0 ? "+" : "") + d.z_score.toFixed(2);
+  let h = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">' +
+   '<div><div style="font-size:11px;color:#8b949e;">DARK SHORT RATIO</div>' +
+   '<div style="font-size:20px;font-weight:700;color:' + sc + ';">' + d.dpsr.toFixed(1) + '%</div>' +
+   '<div style="font-size:11px;color:#8b949e;">' + (d.dpsr >= 50 ? "Dealers shorting to fill buys" : d.dpsr < 40 ? "Dealers absorbing sells" : "Balanced") + "</div></div>" +
+   '<div><div style="font-size:11px;color:#8b949e;">PARTICIPATION</div>' +
+   '<div style="font-size:20px;font-weight:700;color:#e8ecf1;">' + d.dpr.toFixed(1) + '%</div>' +
+   '<div style="font-size:11px;color:#8b949e;">of volume off-exchange</div></div>' +
+   '<div><div style="font-size:11px;color:#8b949e;">NET DARK FLOW</div>' +
+   '<div style="font-size:20px;font-weight:700;color:' + (flowM >= 0 ? "#3fb950" : "#f85149") + ';">' + flowStr + "</div>" +
+   '<div style="font-size:11px;color:#8b949e;">Z-score ' + zStr + "</div></div>" +
+   "</div>" +
+   '<div style="margin:12px 0;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border-left:3px solid ' + sc + ';">' +
+   '<div style="font-size:13px;font-weight:700;color:' + sc + ';">' + esc(d.sentiment) + "</div>" +
+   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">High dark short ratio (&gt;50%) means wholesale dealers are selling short from inventory to satisfy aggressive institutional buy orders. Low ratio (&lt;40%) means dealers are absorbing institutional sell tickets.</div>' +
+   "</div>";
+  // 10-day DPSR history bars
+  if (d.history && d.history.length > 1) {
+   const hist = d.history.slice(-10);
+   const maxDpsr = Math.max(...hist.map(x => x.dpsr * 100), 60);
+   h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#8b949e;margin-bottom:6px;">DARK SHORT RATIO, LAST 10 SESSIONS</div>' +
+    '<div style="display:flex;align-items:flex-end;gap:3px;height:60px;">' +
+    hist.map(x => {
+     const v = x.dpsr * 100;
+     const ht = Math.max(4, (v / maxDpsr * 56));
+     const c = v >= 55 ? "#3fb950" : v >= 50 ? "#58a6ff" : v < 40 ? "#f85149" : "#8b949e";
+     return '<div title="' + x.date + ": " + v.toFixed(1) + '%" style="flex:1;background:' + c + ";height:" + ht + 'px;border-radius:2px;min-width:8px;"></div>';
+    }).join("") +
+    "</div></div>";
+  }
+  const macro = (D.dark_pool || {}).macro || {};
+  if (macro.dix) {
+   h += '<div class="panel-asof">S&P 500 Dark Pool Index (DIX): ' + (macro.dix * 100).toFixed(1) + "% (" + esc(macro.regime || "") + ") · As of " + esc(d.date || "") + "</div>";
+  }
+  return h;
  }
 
  /* Multi-timeframe Technical Analysis (Pro) */
@@ -3983,6 +4037,13 @@ function bindZoomHandlers() {
   h += gated("Short Interest, Pro",
    "Biweekly short interest for " + tk + " from FINRA, red bars show shares short, white line shows days to cover.",
    '<div id="short-interest-' + esc(tk) + '"></div>');
+  h += "</div>";
+
+  // Dark Pool & Off-Exchange Flow (Pro), FINRA Reg SHO daily
+  h += '<div class="section"><div class="section-title">Dark Pool Flow <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("Dark Pool Flow, Pro",
+   "Institutional off-exchange sentiment for " + tk + " from FINRA Reg SHO daily files. High dark short ratio means dealers are shorting to fill institutional buy orders (accumulation).",
+   darkPoolHtml(tk));
   h += "</div>";
 
   // Technical Analysis (Pro), multi-timeframe

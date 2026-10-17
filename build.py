@@ -157,6 +157,10 @@ def main():
     except FileNotFoundError:
         ticker_short_interest = {}
     try:
+        dark_pool = load(os.path.join(MR, "dark_pool.json"))
+    except FileNotFoundError:
+        dark_pool = {}
+    try:
         ticker_13f = load(os.path.join(MR, "ticker_13f.json"))
     except FileNotFoundError:
         ticker_13f = {}
@@ -392,6 +396,7 @@ def main():
         "ticker_skew": ticker_skew,
         "ticker_insider": ticker_insider,
         "ticker_short_interest": ticker_short_interest,
+        "dark_pool": dark_pool,
         "ticker_13f": ticker_13f,
         "ticker_trends": ticker_trends,
         "aaii_sentiment": aaii_sentiment,
@@ -425,6 +430,7 @@ def main():
         "screener_data": screener_data,
         "minervini_data": minervini_data,
         "earnings_dashboard": load(os.path.join(MR, "earnings_dashboard.json")) if os.path.exists(os.path.join(MR, "earnings_dashboard.json")) else {},
+        "dark_pool": site.pop("dark_pool", {}),
     }
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}
