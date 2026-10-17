@@ -843,11 +843,16 @@ function bindZoomHandlers() {
         const hist = (bdata.history || []).slice(-756);
         if (!hist.length) return;
         try {
-        const ctx0 = zc.getContext("2d");
+        // Resolve the actual <canvas> whether zc is the div or the canvas
+        const canvas = zc.tagName === "CANVAS" ? zc : (zc.querySelector("canvas") || document.getElementById("breakeven-chart"));
+        if (!canvas) return;
+        const existingChart = Chart.getChart(canvas);
+        if (existingChart) existingChart.destroy();
+        const ctx0 = canvas.getContext("2d");
         const grad = ctx0.createLinearGradient(0, 0, 0, 300);
         grad.addColorStop(0, "rgba(6,182,212,0.35)");
         grad.addColorStop(1, "rgba(6,182,212,0)");
-        new Chart(zc, {
+        new Chart(canvas, {
          type: "line",
          data: { labels: hist.map((r) => r.date), datasets: [
           { label: "10Y Breakeven (%)", data: hist.map((r) => r.value), borderColor: "#06b6d4", borderWidth: 1.5, backgroundColor: grad, fill: true, pointRadius: 0, pointHoverRadius: 4, tension: 0.1 },
