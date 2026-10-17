@@ -6227,7 +6227,6 @@ function bindZoomHandlers() {
   const cm = D.comps_matrix || {};
   const recs = cm.records || [];
   const meta = cm.metadata || {};
-  const reg = (meta.regressions || {}).evRevenue || {};
   if (!recs.length) {
    app.innerHTML = '<div class="crumb">COMPS MATRIX</div><div class="card"><p style="color:var(--muted)">No comps data available yet.</p></div>';
    return;
@@ -6258,7 +6257,7 @@ function bindZoomHandlers() {
   h += '<div style="margin-bottom:8px;"><button class="btn" id="comps-toggle" style="font-size:12px;">Switch to Forward P/E</button></div>';
   h += '<div class="zoomable-chart" data-chart="comps" style="position:relative;height:420px;cursor:zoom-in;" title="Click to zoom"><canvas id="comps-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
-  h += '<div style="font-size:11px;color:#8b949e;margin-top:6px;">OLS trendline: EV/Rev = ' + (reg.slope || 0).toFixed(3) + ' × growth + ' + (reg.intercept || 0).toFixed(2) + ' (R² ' + (reg.rSquared || 0) + '). Dashed gold line is the peer fair-value frontier.</div></div>';
+  h += '<div style="font-size:11px;color:#8b949e;margin-top:6px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market.</div></div>';
   // Table
   h += '<div class="section"><div class="section-title">Comps Table</div><div class="card" style="overflow-x:auto;">';
   h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid #2a3448;color:#8b949e;text-align:right;">' +
@@ -6295,7 +6294,6 @@ function bindZoomHandlers() {
    const old = Chart.getChart(cv);
    if (old) old.destroy();
    const yKey = usePE ? "forwardPe" : "ntmEvRevenue";
-   const r2 = usePE ? (meta.regressions || {}).forwardPe || {} : reg;
    const colors = {"Semiconductors":"#10b981","Enterprise Software":"#38bdf8","Mega-Cap Tech":"#a855f7","Consumer & Marketplace":"#f59e0b","Fintech & Digital Assets":"#ec4899","Public Safety & Defense Tech":"#c99a6b","MedTech":"#6366f1","MedTech & Robotics":"#6366f1",
     "Information Technology":"#38bdf8","Health Care":"#6366f1","Financials":"#10b981","Consumer Discretionary":"#f59e0b","Consumer Staples":"#84cc16","Industrials":"#94a3b8","Energy":"#ef4444","Utilities":"#facc15","Real Estate":"#a855f7","Materials":"#f97316","Communication Services":"#ec4899","Other":"#6b7280"};
    const bySec = {};
@@ -6311,12 +6309,20 @@ function bindZoomHandlers() {
     borderColor: colors[sec] || "#38bdf8",
     borderWidth: 1,
    }));
+   // Sector-relative trendlines: each visible sector gets its own OLS line
+   const secRegs = (meta.sectorRegressions || {});
    const xs = recs.map((r) => r.ntmRevGrowth);
    const x0 = Math.floor(Math.min(...xs, 0)), x1 = Math.ceil(Math.max(...xs, 60));
-   datasets.unshift({type: "line", label: "Peer fair value", data: [{x: x0, y: r2.slope * x0 + r2.intercept}, {x: x1, y: r2.slope * x1 + r2.intercept}], borderColor: "#c99a6b", borderWidth: 2, borderDash: [6, 4], pointRadius: 0, fill: false});
+   Object.keys(bySec).forEach((sec) => {
+    const sr = secRegs[sec];
+    const rr = sr && (usePE ? sr.forwardPe : sr.evRevenue);
+    if (!rr) return;
+    datasets.unshift({type: "line", label: sec + " fair value", data: [{x: x0, y: rr.slope * x0 + rr.intercept}, {x: x1, y: rr.slope * x1 + rr.intercept}],
+     borderColor: colors[sec] || "#c99a6b", borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, fill: false});
+   });
    new Chart(cv, {data: {datasets}, options: {animation: false, responsive: true, maintainAspectRatio: false,
     plugins: {legend: {position: "bottom", labels: {color: "#8b949e", boxWidth: 10, font: {size: 10}}},
-     tooltip: {callbacks: {title: (it) => it[0].raw.ticker || "Peer fair value", label: (c) => c.raw.ticker ? ["Growth: " + c.raw.x.toFixed(1) + "%", "Multiple: " + c.raw.y.toFixed(1) + "x"] : "Fair: " + c.raw.y.toFixed(1) + "x"}}},
+     tooltip: {callbacks: {title: (it) => it[0].raw.ticker || it[0].dataset.label || "Fair value", label: (c) => c.raw.ticker ? ["Growth: " + c.raw.x.toFixed(1) + "%", "Multiple: " + c.raw.y.toFixed(1) + "x"] : "Sector fair: " + c.raw.y.toFixed(1) + "x"}}},
     scales: {x: {title: {display: true, text: "NTM Revenue Growth (%)", color: "#8b949e"}, ticks: {color: "#8b949e", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
      y: {title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#8b949e"}, ticks: {color: "#8b949e", callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}});
   }
