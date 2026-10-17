@@ -215,6 +215,13 @@
    if (sections.minervini_data) flat.minervini_data = sections.minervini_data;
    if (sections.earnings_dashboard) flat.earnings_dashboard = sections.earnings_dashboard;
    if (sections.liquidity) flat.liquidity = sections.liquidity;
+   // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
+   if (sections.transcript_tone_detail) {
+    flat.transcript_tone = flat.transcript_tone || {};
+    Object.keys(sections.transcript_tone_detail).forEach((tk) => {
+     flat.transcript_tone[tk] = sections.transcript_tone_detail[tk];
+    });
+   }
    if (sections.ticker_short_interest) flat.ticker_short_interest = sections.ticker_short_interest;
    // DCF targets merged per-ticker
    flat._dcf_targets = sections.dcf_targets || {};
@@ -4246,6 +4253,14 @@ function bindZoomHandlers() {
   h += gated("Earnings History, Pro", "Four-quarter rolling earnings reviews: verdict, bull/bear cases, KPIs, guidance.", earningsHtml(tk));
   h += "</div>";
 
+  // Earnings Call Tone (Pro) - AI NLP analysis of executive tone
+  const toneData = (D.transcript_tone || {})[tk];
+  if (toneData) {
+   h += '<div class="section"><div class="section-title">Earnings Call Tone <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+   h += gated("Earnings Tone, Pro", "AI-powered NLP analysis of the latest earnings call: executive confidence, tone classification, pillar breakdown, and Q&A deconstruction.", toneHtml(tk, toneData));
+   h += "</div>";
+  }
+
   // Client note (Pro)
   h += '<div class="section"><div class="section-title">Client Note</div>';
   h += gated("Client Note, Pro", "Full research note with model detail.",
@@ -5055,6 +5070,56 @@ function bindZoomHandlers() {
    '</tbody></table></div><div class="panel-asof" style="color:#a8b0bc;">As of ' + esc(asOf) + " · Source: Yahoo Finance</div></div>";
  }
 
+ /* ---------- Earnings Call Tone (Pro, Gemini Flash NLP) ---------- */
+ function toneHtml(tk, d) {
+  if (!d || d.confidenceScore == null) return '<div class="card"><p style="color:var(--muted)">No transcript analysis available yet for this ticker.</p></div>';
+  const toneCls = d.netToneScore > 40 ? "#3fb950" : d.netToneScore >= 0 ? "#d29922" : "#f85149";
+  const delta = d.toneShiftDelta || 0;
+  const deltaCls = delta >= 0 ? "#3fb950" : "#f85149";
+  const deltaTxt = (delta >= 0 ? "▲ +" : "▼ ") + delta + " pts";
+  const pillars = d.pillarBreakdown || {};
+  const pillarNames = { demandEnvironment: "Demand Environment", pricingPower: "Pricing Power", marginOutlook: "Margin Outlook", capexAndAi: "CapEx & AI" };
+  let pillarHtml = "";
+  Object.keys(pillarNames).forEach((k) => {
+   const p = pillars[k];
+   if (!p) return;
+   const sc = p.score || 0;
+   const scCls = sc >= 80 ? "#3fb950" : sc >= 60 ? "#58a6ff" : "#f85149";
+   pillarHtml += '<div style="background:#161b26;border-radius:8px;padding:12px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+    '<span style="font-size:12px;color:#e8ecf1;font-weight:600;">' + pillarNames[k] + '</span>' +
+    '<span style="font-size:14px;font-weight:700;color:' + scCls + ';">' + sc + '</span></div>' +
+    '<div style="font-size:12px;color:#a8b0bc;line-height:1.5;">' + esc(p.assessment || "") + '</div></div>';
+  });
+  let qaHtml = "";
+  (d.qaDeconstruction || []).forEach((q) => {
+   const convCls = q.defenseConviction === "High" ? "#3fb950" : q.defenseConviction === "Moderate" ? "#d29922" : "#f85149";
+   qaHtml += '<div style="background:#161b26;border-radius:8px;padding:14px;margin-bottom:10px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">' +
+    '<span style="font-size:13px;font-weight:700;color:#fff;">' + esc(q.analyst || "Analyst") + '</span>' +
+    '<span style="font-size:11px;color:' + convCls + ';font-weight:600;">Conviction: ' + esc(q.defenseConviction || "") + '</span></div>' +
+    '<div style="font-size:11px;color:#8b949e;margin-bottom:4px;">' + esc(q.targetTheme || "") + '</div>' +
+    '<div style="font-size:12px;color:#e8ecf1;margin-bottom:6px;"><b style="color:#8b949e;">Q:</b> ' + esc(q.questionSummary || "") + '</div>' +
+    '<div style="font-size:12px;color:#e8ecf1;"><b style="color:#c9a961;">Defense:</b> ' + esc(q.managementDefense || "") + '</div></div>';
+  });
+  const kwHtml = (d.hedgingKeywordsFound || []).map((kw) =>
+   '<span style="background:#1a2332;border:1px solid #2a3448;color:#a8b0bc;padding:2px 8px;border-radius:4px;font-size:11px;">"' + esc(kw) + '"</span>').join(" ");
+  return '<div class="card">' +
+   '<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:16px;">' +
+   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">CONFIDENCE</div>' +
+   '<div style="font-size:32px;font-weight:700;color:#fff;">' + d.confidenceScore + '<span style="font-size:14px;color:#8b949e;">/100</span></div></div>' +
+   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">TONE</div>' +
+   '<div style="font-size:20px;font-weight:700;color:' + toneCls + ';">' + esc(d.toneClassification || "") + '</div></div>' +
+   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">QOQ SHIFT</div>' +
+   '<div style="font-size:20px;font-weight:700;color:' + deltaCls + ';">' + deltaTxt + '</div></div>' +
+   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">HEDGING</div>' +
+   '<div style="font-size:16px;font-weight:600;color:#e8ecf1;">' + esc(d.hedgingFrequency || "") + '</div></div></div>' +
+   '<div style="font-size:12px;color:#8b949e;margin-bottom:12px;">' + esc(d.quarter || "") + ' call · Net tone ' + (d.netToneScore >= 0 ? "+" : "") + d.netToneScore + ' · Keywords: ' + kwHtml + '</div>' +
+   '<div style="font-size:13px;font-weight:700;color:#fff;margin:14px 0 8px;">PILLAR BREAKDOWN</div>' +
+   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:6px;">' + pillarHtml + '</div>' +
+   '<div style="font-size:13px;font-weight:700;color:#fff;margin:14px 0 8px;">Q&A DECONSTRUCTION</div>' + qaHtml +
+   '<div class="panel-asof">AI analysis via Gemini Flash · Source: earnings call transcript</div></div>';
+ }
  function earningsHtml(tk) {
   const hist = (D.earnings_history || {})[tk] || [];
   if (!hist.length) return '<div class="card"><p style="color:var(--muted)">No earnings reviews yet for this ticker. Coverage begins with the next reported quarter.</p></div>';

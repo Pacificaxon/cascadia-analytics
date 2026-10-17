@@ -441,7 +441,18 @@ def main():
         "minervini_data": minervini_data,
         "earnings_dashboard": load(os.path.join(MR, "earnings_dashboard.json")) if os.path.exists(os.path.join(MR, "earnings_dashboard.json")) else {},
         "liquidity": site.pop("liquidity", {}),
+        "transcript_tone": load(os.path.join(MR, "transcript_tone.json")) if os.path.exists(os.path.join(MR, "transcript_tone.json")) else {},
     }
+    # Per-ticker transcript tone detail files
+    import glob
+    transcript_detail = {}
+    for f in glob.glob(os.path.join(MR, "transcript_tone_*.json")):
+        tk = os.path.basename(f).replace("transcript_tone_", "").replace(".json", "")
+        try:
+            transcript_detail[tk] = load(f)
+        except Exception:
+            pass
+    pro_sections["transcript_tone_detail"] = transcript_detail
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}
     fcf_projections = {}
