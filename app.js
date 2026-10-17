@@ -4174,25 +4174,21 @@ function bindZoomHandlers() {
 
   // Gamma Exposure (Pro), per-ticker dealer positioning
   const tg = (D.ticker_gex || {})[tk];
-  if (tg && tg.available) {
-   h += '<div class="section"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
-   h += gated("Gamma Exposure, Pro",
-    "Live dealer gamma positioning for " + tk + ", see whether market makers will dampen or amplify the next move.",
-    tickerGexHtml(tk, tg) +
-    '<div class="section-title" style="margin-top:16px;">GEX by Strike</div>' +
-    gexStrikeChartHtml(tk, tg, "gex-strike-" + tk));
-   h += "</div>";
-  }
+  h += '<div class="section"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("Gamma Exposure, Pro",
+   "Live dealer gamma positioning for " + tk + ", see whether market makers will dampen or amplify the next move.",
+   (tg && tg.available) ? tickerGexHtml(tk, tg) +
+   '<div class="section-title" style="margin-top:16px;">GEX by Strike</div>' +
+   gexStrikeChartHtml(tk, tg, "gex-strike-" + tk) : '<div class="card"><p style="color:var(--muted)">No GEX data available for this ticker.</p></div>');
+  h += "</div>";
 
   // Volatility Skew (Pro), per-ticker put/call IV skew
   const ts = (D.ticker_skew || {})[tk];
-  if (ts && ts.available) {
-   h += '<div class="section"><div class="section-title">Volatility Skew <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
-   h += gated("Volatility Skew, Pro",
-    "Put vs call implied volatility for " + tk + ", what is smart money paying for?",
-    tickerSkewHtml(tk, ts));
-   h += "</div>";
-  }
+  h += '<div class="section"><div class="section-title">Volatility Skew <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("Volatility Skew, Pro",
+   "Put vs call implied volatility for " + tk + ", what is smart money paying for?",
+   (ts && ts.available) ? tickerSkewHtml(tk, ts) : '<div class="card"><p style="color:var(--muted)">No skew data available for this ticker.</p></div>');
+  h += "</div>";
 
   // Short Interest (Pro), FINRA biweekly data
   h += '<div class="section"><div class="section-title">Short Interest <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
