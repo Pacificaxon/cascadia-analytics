@@ -217,6 +217,7 @@
    if (sections.liquidity) flat.liquidity = sections.liquidity;
    if (sections.comps_matrix) flat.comps_matrix = sections.comps_matrix;
    if (sections.correction_risk) flat.correction_risk = sections.correction_risk;
+   if (sections.liquidity_drain) flat.liquidity_drain = sections.liquidity_drain;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -572,6 +573,7 @@ function bindZoomHandlers() {
        aaii: "AAII Investor Sentiment",
        breakeven: "10Y Breakeven Inflation",
        "correction-risk": "Correction Risk Model",
+       "liquidity-drain": "Liquidity Drain Model",
        cot: "Commitments of Traders",
        macro: "Macroeconomic Analysis",
        leadership: "Market Leadership, MLS by Component",
@@ -897,6 +899,34 @@ function bindZoomHandlers() {
            }},
          });
         } catch (e) { console.error("Correction risk chart error:", e); }
+       } else if (kind === "liquidity-drain") {
+        const ld = D.liquidity_drain || {};
+        const hist = ld.history || [];
+        if (!hist.length) return;
+        try {
+         const canvas = zc.tagName === "CANVAS" ? zc : (zc.querySelector("canvas") || document.getElementById("liquidity-drain-chart"));
+         if (!canvas) return;
+         const old = Chart.getChart(canvas);
+         if (old) old.destroy();
+         new Chart(canvas, {
+          data: {
+           labels: hist.map((r) => r.date),
+           datasets: [
+            { type: "line", label: "Net Liquidity ($B)", data: hist.map((r) => r.netLiquidity),
+              borderColor: "#c9a961", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yLiq" },
+            { type: "line", label: "SPY", data: hist.map((r) => r.spy),
+              borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+           ]},
+          options: { animation: false, responsive: true, maintainAspectRatio: false,
+           interaction: { mode: "index", intersect: false },
+           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           scales: {
+            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
+            yLiq: {position: "left", ticks: {color: "#c9a961"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
+           }},
+         });
+        } catch (e) { console.error("Liquidity drain chart error:", e); }
        } else if (kind === "cot") {
         const hist = (D.cot_data.history || []);
         const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
@@ -2266,14 +2296,6 @@ function bindZoomHandlers() {
     return '<div class="card"><p style="color:#f85149;">Failed to load ' + esc(p.name) + '</p></div>';
    }
    }).join("") + "</div>";
-
-  // Global Liquidity Tracker (Pro), 4-factor score
-  h += '<div class="section" style="max-width:none;"><div class="section-title">Global Liquidity Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-   '<div class="section-sub">Net US liquidity, dollar pressure, credit stress, and volatility in one 0-100 score.</div>';
-  h += gated("Global Liquidity, Pro",
-   "Four institutional-grade liquidity proxies aggregated into a single risk-on/risk-off score, refreshed daily.",
-   liquidityHtml());
-  h += "</div>";
 
   /* ---------- tracker explainers (visual first, explanation after) ---------- */
   /* ---------- GEX tracker HTML (Pro-gated) ---------- */
@@ -6386,6 +6408,40 @@ function bindZoomHandlers() {
  });
 
  /* ================= RISK MODELS (PRO) ================= */
+ function liquidityDrainHtml() {
+  const L = D.liquidity_drain || {};
+  if (L.totalScore == null) {
+   return '<div class="section"><div class="section-title">Liquidity Drain Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="card"><p style="color:var(--muted)">Liquidity data unavailable. Check back after the next refresh.</p></div></div>';
+  }
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+  const c = colorMap[L.color] || "#e8ecf1";
+  const m = L.currentMetrics || {};
+  let h = '<div class="section"><div class="section-title">Liquidity Drain Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section-sub">Net US liquidity, USD strength, and yield curve dynamics. Markets rarely crash when liquidity expands; they become vulnerable when it drains.</div>';
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + L.totalScore + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(L.regime || "") + "</div>" +
+   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">Net liquidity $' + (m.netLiquidityB != null ? m.netLiquidityB.toLocaleString() : "-") + "B" +
+   (m.dxy != null ? " · DXY " + m.dxy : "") +
+   (m.t10y2y != null ? " · 10Y-2Y " + m.t10y2y + "%" : "") + "</div></div></div>";
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
+  (L.scoreBreakdown || []).forEach((b) => {
+   const bc = b.points >= 30 ? "#3fb950" : b.points > 0 ? "#d29922" : "#f85149";
+   h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
+    '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + esc(b.metric) + "</div>" +
+    '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + " (" + b.points + " pts)</div>" +
+    '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
+  });
+  h += "</div>";
+  // Chart: net liquidity vs SPY
+  h += '<div class="zoomable-chart" data-chart="liquidity-drain" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="liquidity-drain-chart"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '<div class="panel-asof">As of ' + esc((L.as_of || "").slice(0, 10)) + "</div></div>";
+  return h;
+ }
+
  function correctionRiskHtml() {
   const cr = D.correction_risk || {};
   if (!cr.totalRiskScore && cr.totalRiskScore !== 0) {
@@ -6431,13 +6487,14 @@ function bindZoomHandlers() {
     '<div class="hero"><div><h1 class="hero-h">Risk Models.</h1>' +
     "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
     '<div class="section"><div class="section-title">Risk Models <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    return;
   }
   let h = '<div class="crumb">RISK MODELS</div>' +
    '<div class="hero"><div><h1 class="hero-h">Risk Models.</h1>' +
    "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>";
   h += correctionRiskHtml();
+  h += liquidityDrainHtml();
   h += fearIndexHtml();
   app.innerHTML = h;
   bindZoomHandlers();
@@ -6463,6 +6520,32 @@ function bindZoomHandlers() {
       x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
       yPrice: {position: "left", ticks: {color: "#c99a6b"}, grid: {color: "rgba(42,46,57,0.4)"}},
       yScore: {position: "right", min: 0, max: 100, ticks: {color: "#8b949e", stepSize: 25}, grid: {display: false}},
+     }},
+   });
+  }
+  // Draw liquidity drain chart (net liquidity vs SPY)
+  const ld = D.liquidity_drain || {};
+  const ldHist = ld.history || [];
+  const ldCv = document.getElementById("liquidity-drain-chart");
+  if (ldCv && ldHist.length && window.Chart) {
+   const oldLd = Chart.getChart(ldCv);
+   if (oldLd) oldLd.destroy();
+   new Chart(ldCv, {
+    data: {
+     labels: ldHist.map((r) => r.date),
+     datasets: [
+      { type: "line", label: "Net Liquidity ($B)", data: ldHist.map((r) => r.netLiquidity),
+        borderColor: "#c9a961", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yLiq" },
+      { type: "line", label: "SPY", data: ldHist.map((r) => r.spy),
+        borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+     ]},
+    options: { animation: false, responsive: true, maintainAspectRatio: false,
+     interaction: { mode: "index", intersect: false },
+     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     scales: {
+      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
+      yLiq: {position: "left", ticks: {color: "#c9a961"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
      }},
    });
   }
