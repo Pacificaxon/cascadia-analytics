@@ -4399,7 +4399,7 @@ function bindZoomHandlers() {
    u > 10 ? "The market is pricing in below-base-case growth; moderate upside to the base target." :
    u > -10 ? "The market is pricing in roughly the base case; the stock screens as fairly valued on our numbers." :
    "The market is pricing in a bull-case outcome; limited upside to our targets at the current quote.";
-  let h = '<div class="panel-summary">Base-case upside of <b class="' + cls(u) + '">' + fmtPct(u) + "</b> at " + fmt$(t.price) +
+  let h = '<div class="panel-summary">Base-case upside of&nbsp;<b class="' + cls(u) + '">' + fmtPct(u) + "</b>&nbsp;at&nbsp;" + fmt$(t.price) +
    ". " + verdict + "</div>";
 
   // Price vs targets visual

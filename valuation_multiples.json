@@ -1,0 +1,1052 @@
+{
+ "ALAB": {
+  "company_name": "Astera Labs, Inc.",
+  "currency": "USD",
+  "market_cap": 49585512448,
+  "enterprise_value": 48376967168,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 56.75,
+    "ev_gp": 75.0,
+    "ev_ebitda": 268.4,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 226.3,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 27.75,
+    "ev_gp": 36.7,
+    "ev_ebitda": 131.2,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 44.6,
+    "peg": 0.21
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "AMKR": {
+  "company_name": "Amkor Technology, Inc.",
+  "currency": "USD",
+  "market_cap": 10366028800,
+  "enterprise_value": 10588575744,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 1.58,
+    "ev_gp": 11.3,
+    "ev_ebitda": 9.1,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 27.7,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 1.26,
+    "ev_gp": 9.0,
+    "ev_ebitda": 7.3,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 14.9,
+    "peg": 0.76
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "AMPX": {
+  "company_name": "Amprius Technologies, Inc.",
+  "currency": "USD",
+  "market_cap": 1126281600,
+  "enterprise_value": 1058141568,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 14.71,
+    "ev_gp": 128.0,
+    "ev_ebitda": -56.7,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": null,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 6.51,
+    "ev_gp": 56.7,
+    "ev_ebitda": -25.1,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 77.1,
+    "peg": null
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "ASML": {
+  "company_name": "ASML Holding N.V.",
+  "currency": "USD",
+  "market_cap": 632670912512,
+  "enterprise_value": 619700000000.0,
+  "years": [
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": null,
+    "ev_gp": null,
+    "ev_ebitda": null,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 26.2,
+    "peg": 0.96
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "AVAV": {
+  "company_name": "AeroVironment, Inc.",
+  "currency": "USD",
+  "market_cap": 6189453824,
+  "enterprise_value": 6437087232,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 3.26,
+    "ev_gp": 12.9,
+    "ev_ebitda": -184.1,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": null,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 3.08,
+    "ev_gp": 12.2,
+    "ev_ebitda": -174.1,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 27.6,
+    "peg": 1.57
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "AVGO": {
+  "company_name": "Broadcom Inc.",
+  "currency": "USD",
+  "market_cap": 1569330823168,
+  "enterprise_value": 1604774789120,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 25.12,
+    "ev_gp": 37.1,
+    "ev_ebitda": 46.2,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 67.9,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 13.54,
+    "ev_gp": 20.0,
+    "ev_ebitda": 24.9,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 17.0,
+    "peg": 0.34
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "AXON": {
+  "company_name": "Axon Enterprise, Inc.",
+  "currency": "USD",
+  "market_cap": 31706150912,
+  "enterprise_value": 32864223232,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 11.82,
+    "ev_gp": null,
+    "ev_ebitda": 167.4,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 254.3,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 8.74,
+    "ev_gp": null,
+    "ev_ebitda": 123.7,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 37.0,
+    "peg": 1.5
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "BSX": {
+  "company_name": "Boston Scientific Corporation",
+  "currency": "USD",
+  "market_cap": 64331300864,
+  "enterprise_value": 76658294784,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 3.82,
+    "ev_gp": 5.5,
+    "ev_ebitda": 15.0,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 22.2,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 3.55,
+    "ev_gp": 5.1,
+    "ev_ebitda": 14.0,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 13.1,
+    "peg": 0.62
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "CDNL": {
+  "company_name": "Cardinal Infrastructure Group Inc.",
+  "currency": "USD",
+  "market_cap": 313385632,
+  "enterprise_value": 535625824,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 1.17,
+    "ev_gp": 5.6,
+    "ev_ebitda": 7.4,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 13.8,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 0.55,
+    "ev_gp": 2.6,
+    "ev_ebitda": 3.5,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 4.5,
+    "peg": 0.02
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "CSX": {
+  "company_name": "CSX Corporation",
+  "currency": "USD",
+  "market_cap": 90178478080,
+  "enterprise_value": 108237496320,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 7.68,
+    "ev_gp": 23.1,
+    "ev_ebitda": 17.2,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 31.2,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 6.98,
+    "ev_gp": 21.0,
+    "ev_ebitda": 15.6,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 21.3,
+    "peg": 1.75
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "ENS": {
+  "company_name": "EnerSys",
+  "currency": "USD",
+  "market_cap": 6084924416,
+  "enterprise_value": 6665232384,
+  "years": [
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": null,
+    "ev_gp": null,
+    "ev_ebitda": null,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 11.7,
+    "peg": 0.89
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "IA": {
+  "company_name": "Innovative Aerosystems, Inc.",
+  "currency": "USD",
+  "market_cap": 346348992,
+  "enterprise_value": 389965984,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 4.63,
+    "ev_gp": 9.6,
+    "ev_ebitda": 15.3,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 22.2,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 4.18,
+    "ev_gp": 8.7,
+    "ev_ebitda": 13.9,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 17.8,
+    "peg": 0.83
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "INTC": {
+  "company_name": "Intel Corporation",
+  "currency": "USD",
+  "market_cap": 474956529664,
+  "enterprise_value": 489614409728,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 9.26,
+    "ev_gp": 26.6,
+    "ev_ebitda": 34.1,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": null,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 7.39,
+    "ev_gp": 21.2,
+    "ev_ebitda": 27.2,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 42.7,
+    "peg": 1.36
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "ISRG": {
+  "company_name": "Intuitive Surgical, Inc.",
+  "currency": "USD",
+  "market_cap": 150743744512,
+  "enterprise_value": 145656840192,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 14.47,
+    "ev_gp": 21.9,
+    "ev_ebitda": 40.2,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": null,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 12.21,
+    "ev_gp": 18.5,
+    "ev_ebitda": 33.9,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 35.2,
+    "peg": 1.99
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "LEU": {
+  "company_name": "Centrus Energy Corp.",
+  "currency": "USD",
+  "market_cap": 2350880256,
+  "enterprise_value": 1602381440,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 3.57,
+    "ev_gp": 13.6,
+    "ev_ebitda": 14.6,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 29.2,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 3.13,
+    "ev_gp": 12.0,
+    "ev_ebitda": 12.8,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 30.1,
+    "peg": 2.87
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "LRCX": {
+  "company_name": "Lam Research Corporation",
+  "currency": "USD",
+  "market_cap": 330300948480,
+  "enterprise_value": 328816066560,
+  "years": [
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": null,
+    "ev_gp": null,
+    "ev_ebitda": null,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 22.4,
+    "peg": 1.29
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "MELI": {
+  "company_name": "MercadoLibre, Inc.",
+  "currency": "USD",
+  "market_cap": 92977930240,
+  "enterprise_value": 100439932928,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 3.48,
+    "ev_gp": 7.8,
+    "ev_ebitda": 26.3,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 46.6,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 2.32,
+    "ev_gp": 5.2,
+    "ev_ebitda": 17.6,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 32.4,
+    "peg": 1.01
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "META": {
+  "company_name": "Meta Platforms, Inc.",
+  "currency": "USD",
+  "market_cap": 1807009841152,
+  "enterprise_value": 1829067816960,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 9.1,
+    "ev_gp": 11.1,
+    "ev_ebitda": 17.3,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 25.9,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 7.11,
+    "ev_gp": 8.7,
+    "ev_ebitda": 13.5,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 20.5,
+    "peg": 0.97
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "MITK": {
+  "company_name": "Mitek Systems, Inc.",
+  "currency": "USD",
+  "market_cap": 726921536,
+  "enterprise_value": 683385472,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 3.8,
+    "ev_gp": 4.5,
+    "ev_ebitda": 18.5,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 82.6,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 3.22,
+    "ev_gp": 3.8,
+    "ev_ebitda": 15.7,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 13.5,
+    "peg": 1.38
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "MRNA": {
+  "company_name": "Moderna, Inc.",
+  "currency": "USD",
+  "market_cap": 87037419520,
+  "enterprise_value": 83186417664,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 43.28,
+    "ev_gp": 78.9,
+    "ev_ebitda": -32.7,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": null,
+    "peg": null
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "MRVL": {
+  "company_name": "Marvell Technology, Inc.",
+  "currency": "USD",
+  "market_cap": 204751880192,
+  "enterprise_value": 201137422336,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 24.55,
+    "ev_gp": 48.1,
+    "ev_ebitda": 44.3,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 74.8,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 17.98,
+    "ev_gp": 35.2,
+    "ev_ebitda": 32.5,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 31.3,
+    "peg": 0.6
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "MSI": {
+  "company_name": "Motorola Solutions, Inc.",
+  "currency": "USD",
+  "market_cap": 76648448000,
+  "enterprise_value": 85573451776,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 7.33,
+    "ev_gp": 14.2,
+    "ev_ebitda": 23.8,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 35.6,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 6.47,
+    "ev_gp": 12.5,
+    "ev_ebitda": 21.0,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 23.8,
+    "peg": 2.01
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "NSC": {
+  "company_name": "Norfolk Southern Corporation",
+  "currency": "USD",
+  "market_cap": 73428967424,
+  "enterprise_value": 89509969920,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 7.35,
+    "ev_gp": 20.2,
+    "ev_ebitda": 15.3,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 25.6,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 6.6,
+    "ev_gp": 18.2,
+    "ev_ebitda": 13.7,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 22.8,
+    "peg": 3.83
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "PLPC": {
+  "company_name": "Preformed Line Products Company",
+  "currency": "USD",
+  "market_cap": 1725271424,
+  "enterprise_value": 1701486464,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 2.54,
+    "ev_gp": 8.2,
+    "ev_ebitda": 24.3,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 48.9,
+    "peg": null
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "POWW": {
+  "company_name": "Outdoor Holding Company",
+  "currency": "USD",
+  "market_cap": 253012832,
+  "enterprise_value": 195014176,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 3.81,
+    "ev_gp": 4.4,
+    "ev_ebitda": 17.3,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": null,
+    "peg": null
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "RBRK": {
+  "company_name": "Rubrik, Inc.",
+  "currency": "USD",
+  "market_cap": 23137189888,
+  "enterprise_value": 22705029120,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 17.25,
+    "ev_gp": 21.5,
+    "ev_ebitda": -83.4,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": null,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 12.51,
+    "ev_gp": 15.6,
+    "ev_ebitda": -60.5,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 146.4,
+    "peg": null
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "RNMBY": {
+  "company_name": "Rheinmetall AG",
+  "currency": "USD",
+  "market_cap": 57341050880,
+  "enterprise_value": 60861050880,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 6.13,
+    "ev_gp": 11.7,
+    "ev_ebitda": 27.8,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 82.4,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 3.63,
+    "ev_gp": 6.9,
+    "ev_ebitda": 16.5,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 21.5,
+    "peg": 0.43
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "ROAD": {
+  "company_name": "Construction Partners, Inc.",
+  "currency": "USD",
+  "market_cap": 4694252032,
+  "enterprise_value": 6491289088,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 2.31,
+    "ev_gp": 14.8,
+    "ev_ebitda": 17.4,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 39.2,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 1.8,
+    "ev_gp": 11.5,
+    "ev_ebitda": 13.6,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 22.0,
+    "peg": 1.57
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "SMTC": {
+  "company_name": "Semtech Corporation",
+  "currency": "USD",
+  "market_cap": 12760412160,
+  "enterprise_value": 13081355264,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 12.46,
+    "ev_gp": 24.1,
+    "ev_ebitda": 331.2,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": null,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 9.39,
+    "ev_gp": 18.2,
+    "ev_ebitda": 249.6,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 23.3,
+    "peg": 1.21
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "SNPS": {
+  "company_name": "Synopsys, Inc.",
+  "currency": "USD",
+  "market_cap": 87123763200,
+  "enterprise_value": 94356725760,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 13.38,
+    "ev_gp": 17.4,
+    "ev_ebitda": 37.7,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 65.4,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 9.39,
+    "ev_gp": 12.2,
+    "ev_ebitda": 26.5,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 24.4,
+    "peg": 2.44
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "TSM": {
+  "company_name": "Taiwan Semiconductor Manufacturing Company Limited",
+  "currency": "USD",
+  "market_cap": 2139990917120,
+  "enterprise_value": 2080000000000.0,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 0.55,
+    "ev_gp": 0.9,
+    "ev_ebitda": 0.8,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 1.3,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 0.36,
+    "ev_gp": 0.6,
+    "ev_ebitda": 0.5,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 17.6,
+    "peg": 0.75
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "TTMI": {
+  "company_name": "TTM Technologies, Inc.",
+  "currency": "USD",
+  "market_cap": 9890151424,
+  "enterprise_value": 10485443584,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 3.61,
+    "ev_gp": 17.4,
+    "ev_ebitda": 26.0,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 55.7,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 2.63,
+    "ev_gp": 12.7,
+    "ev_ebitda": 18.9,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 11.9,
+    "peg": 0.36
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "UNP": {
+  "company_name": "Union Pacific Corporation",
+  "currency": "USD",
+  "market_cap": 171711594496,
+  "enterprise_value": 200766586880,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 8.19,
+    "ev_gp": 17.9,
+    "ev_ebitda": 15.5,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 24.1,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 7.35,
+    "ev_gp": 16.0,
+    "ev_ebitda": 13.9,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 20.3,
+    "peg": 2.87
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "VIAV": {
+  "company_name": "Viavi Solutions Inc.",
+  "currency": "USD",
+  "market_cap": 8208880640,
+  "enterprise_value": 8285509120,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 5.46,
+    "ev_gp": 9.5,
+    "ev_ebitda": 49.3,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": null,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 3.58,
+    "ev_gp": 6.2,
+    "ev_ebitda": 32.3,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 17.1,
+    "peg": 1.34
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "VLO": {
+  "company_name": "Valero Energy Corporation",
+  "currency": "USD",
+  "market_cap": 128044220416,
+  "enterprise_value": 134786220032,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 1.1,
+    "ev_gp": 25.1,
+    "ev_ebitda": 20.1,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 54.5,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 0.72,
+    "ev_gp": 16.5,
+    "ev_ebitda": 13.2,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 9.4,
+    "peg": 1.91
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ },
+ "VST": {
+  "company_name": "Vistra Corp.",
+  "currency": "USD",
+  "market_cap": 51023265792,
+  "enterprise_value": 73584263168,
+  "years": [
+   {
+    "label": "TTM",
+    "is_estimate": false,
+    "ev_revenue": 4.15,
+    "ev_gp": 12.6,
+    "ev_ebitda": 14.6,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 54.1,
+    "peg": null
+   },
+   {
+    "label": "NTM",
+    "is_estimate": true,
+    "ev_revenue": 4.39,
+    "ev_gp": 13.3,
+    "ev_ebitda": 15.4,
+    "ev_ebit": null,
+    "ev_fcf": null,
+    "pe": 14.7,
+    "peg": 0.43
+   }
+  ],
+  "collected_at": "2026-10-17 14:42 UTC"
+ }
+}
