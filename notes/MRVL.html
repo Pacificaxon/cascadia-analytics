@@ -1,89 +1,101 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><style>
-body { font-family: Georgia, serif; max-width: 820px; margin: 30px auto; padding: 0 25px; color: #1a1a1a; line-height: 1.6; font-size: 14.5px; }
-.top-bar { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid #0F243C; padding-bottom: 10px; margin-bottom: 15px; }
-.top-bar .left { font-size: 12px; letter-spacing: 1px; color: #0F243C; font-weight: bold; }
-.top-bar .center { font-size: 12px; color: #666; letter-spacing: 0.5px; }
-.top-bar .right { font-size: 12px; color: #666; }
-.title-block { margin: 15px 0; }
-.title-block h1 { font-size: 22px; margin: 0 0 8px 0; color: #0F243C; }
-.title-block .thesis { font-size: 15px; font-style: italic; color: #333; }
-.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
-.metric { border: 1px solid #D5D8DC; padding: 10px; text-align: center; background: #F8F9FA; }
-.metric .v { font-size: 18px; font-weight: bold; color: #0F243C; }
-.metric .l { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-.metric.buy .v { color: #1E8449; }
-.metric.hold .v { color: #B7950B; }
-h2 { font-size: 17px; color: #0F243C; border-bottom: 2px solid #0F243C; padding-bottom: 6px; margin: 30px 0 15px 0; }
-h3 { font-size: 15px; color: #1F4E79; margin: 18px 0 8px 0; }
-.our-read { background: #FEF9E7; border-left: 4px solid #D4AC0D; padding: 10px 15px; margin: 15px 0; font-size: 14px; }
-table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13.5px; }
-th { background: #0F243C; color: white; padding: 8px 10px; text-align: left; }
-td { border: 1px solid #D5D8DC; padding: 7px 10px; }
-tr:nth-child(even) td { background: #F4F6F9; }
-.theme { margin: 15px 0; }
-.theme h3 { margin-bottom: 5px; }
-.theme .status { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
-.bull-box { background: #E8F8F5; border: 1px solid #1E8449; padding: 15px; margin: 15px 0; }
-.bear-box { background: #FDEDEC; border: 1px solid #C0392B; padding: 15px; margin: 15px 0; }
-.bull-box h3 { color: #1E8449; margin-top: 0; }
-.bear-box h3 { color: #C0392B; margin-top: 0; }
-.footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 11px; color: #888; text-align: center; }
-a { color: #1F4E79; }
+@page { size: letter; margin: 55px 50px 60px 50px;
+  @bottom-center { content: "Justin Wen Equity Research — Not investment advice and for entertainment purposes only.";
+    font-family: Georgia, serif; font-size: 9px; color: #999; font-style: italic; } }
+body { font-family: Georgia, 'Times New Roman', serif; color: #1a1a1a; line-height: 1.6; font-size: 13.5px; }
+.watermark { position: fixed; top: 40%; left: 10%; font-size: 120px; color: rgba(200,200,200,0.13);
+  transform: rotate(-25deg); font-weight: 700; pointer-events: none; z-index: -1; white-space: nowrap; }
+.ia-top { display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 10px; letter-spacing: 1.4px; color: #0F243C; text-transform: uppercase;
+  border-bottom: 1px solid #0F243C; padding-bottom: 7px; margin-bottom: 16px; }
+.sec-head { display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 10px; letter-spacing: 1.4px; color: #1F4E79; text-transform: uppercase;
+  border-bottom: 1px solid #1F4E79; padding-bottom: 7px; margin: 30px 0 14px 0; }
+h1.ia-title { font-size: 25px; margin: 0 0 2px 0; color: #0F243C; font-weight: 700; }
+.ia-analyst { font-size: 12px; color: #1F4E79; font-weight: 600; margin: 0 0 2px 0; }
+.ia-analyst-u { width: 52px; height: 3px; background: #1F8A8A; margin: 0 0 10px 0; }
+.ia-thesis { font-size: 14px; font-style: italic; color: #555; margin: 6px 0 18px 0; line-height: 1.55; }
+.mrow1 { display: flex; gap: 8px; margin: 16px 0 8px 0; }
+.mrow2 { display: flex; gap: 8px; margin: 0 0 20px 0; flex-wrap: wrap; }
+.mbox-rate { background: #1E8449; color: #fff; padding: 10px 14px; width: 150px; flex-shrink: 0; }
+.mbox-rate .v { font-size: 19px; font-weight: 700; }
+.mbox-rate .l { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.92; margin-top: 2px; }
+.mbox { border-top: 3px solid #1F8A8A; background: #F4F8F8; padding: 8px 12px; flex: 1; min-width: 100px; }
+.mbox .v { font-size: 18px; font-weight: 700; color: #0F243C; }
+.mbox .l { font-size: 8.5px; letter-spacing: 0.7px; text-transform: uppercase; color: #777; margin-top: 3px; line-height: 1.4; }
+.mbox2 { border-top: 3px solid #1F8A8A; background: #F4F8F8; padding: 7px 10px; flex: 1; min-width: 90px; }
+.mbox2 .v { font-size: 14px; font-weight: 700; color: #0F243C; }
+.mbox2 .l { font-size: 8px; letter-spacing: 0.7px; text-transform: uppercase; color: #777; margin-top: 3px; line-height: 1.4; }
+h2.ia-h { font-size: 14.5px; color: #1F4E79; border-bottom: 1px solid #D5D8DC; padding-bottom: 5px; margin: 24px 0 12px 0; font-weight: 700; }
+h3.ia-h3 { font-size: 13px; color: #1F4E79; margin: 14px 0 8px 0; font-weight: 700; }
+.our-read { background: #EFF6F6; border-left: 4px solid #1F8A8A; padding: 10px 14px; margin: 12px 0; font-size: 13px; }
+table.ia { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 12.5px; }
+table.ia th { background: #0F243C; color: white; padding: 7px 10px; text-align: left; font-size: 11.5px; letter-spacing: 0.4px; }
+table.ia td { border-bottom: 1px solid #E5E8EC; padding: 6px 10px; }
+table.ia tr:nth-child(even) td { background: #F7F9FA; }
+.pill { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; padding: 2px 10px;
+  border-radius: 4px; margin-left: 8px; vertical-align: middle; text-transform: uppercase; }
+.pill-green { background: #D5F5E3; color: #1E8449; }
+.pill-red { background: #FADBD8; color: #C0392B; }
+.pill-gray { background: #EAEDED; color: #666; }
+.verdict-box { background: #EFF6F6; border-left: 4px solid #1F8A8A; padding: 10px 14px; margin: 12px 0; font-size: 13px; }
+.theme { margin: 12px 0; }
+.theme p { margin: 4px 0 0 0; }
+.kpi-note { font-size: 11px; color: #777; margin-top: 6px; font-style: italic; }
+a { color: #1F4E79; word-break: break-all; }
+ul { margin: 8px 0; padding-left: 18px; }
+li { margin-bottom: 5px; }
+p { margin: 8px 0; }
+.page-break { page-break-before: always; }
 </style></head>
 <body>
-<div class="top-bar">
-<span class="left">EQUITY RESEARCH &nbsp; Analyst: Justin Wen</span>
-<span class="center">TECHNOLOGY / SEMICONDUCTORS</span>
-<span class="right">OCTOBER 16, 2026</span>
-</div>
+<div class="watermark">Justin Wen</div>
+<div class="ia-top"><span>EQUITY RESEARCH &mdash; SEMICONDUCTORS</span><span>OCTOBER 16, 2026</span></div>
+<h1 class="ia-title">Marvell Technology, Inc. (MRVL): BUY</h1>
+<div class="ia-analyst">Analyst: Justin Wen</div><div class="ia-analyst-u"></div>
+<p class="ia-thesis">The premier AI networking pure-play at a discount to its own plan. At $228, the market prices in 36% CAGR versus management's 55-60% implied target. Our DCF sees $387 base case, 70% upside.</p>
+<div class="mrow1"><div class="mbox-rate"><div class="v">BUY</div><div class="l">RATING</div></div><div class="mbox"><div class="v">$387</div><div class="l">BASE TARGET</div></div><div class="mbox"><div class="v">$227.83</div><div class="l">SPOT (10/16)</div></div><div class="mbox"><div class="v">+69.9%</div><div class="l">UPSIDE TO BASE</div></div></div>
+<div class="mrow2"><div class="mbox2"><div class="v">Buy</div><div class="l">RATING</div></div><div class="mbox2"><div class="v">$387</div><div class="l">BASE TARGET</div></div><div class="mbox2"><div class="v">$228</div><div class="l">SPOT (OCT 16, 2026)</div></div><div class="mbox2"><div class="v">+69.7%</div><div class="l">UPSIDE TO BASE</div></div><div class="mbox2"><div class="v">$242 / $507</div><div class="l">BEAR / BULL TARGETS</div></div><div class="mbox2"><div class="v">10.0%</div><div class="l">LIVE WACC (AVG)</div></div><div class="mbox2"><div class="v">$200B</div><div class="l">MARKET CAP</div></div><div class="mbox2"><div class="v">36.6%</div><div class="l">Q2 NON-GAAP OP MARGIN</div></div><div class="mbox2"><div class="v">$12B</div><div class="l">FY2027 REVENUE GUIDE</div></div><div class="mbox2"><div class="v">1.50</div><div class="l">BETA (NORMALIZED)</div></div></div>
 
-<div class="title-block">
-<h1>Marvell Technology, Inc. (MRVL): Buy</h1>
-<p class="thesis">The premier AI networking pure-play at a discount to its own plan. At $228, the market prices in 36% CAGR versus management's 55-60% implied target. Our DCF sees $387 base case, 70% upside.</p>
-</div>
-
-<div class="metric-grid"><div class="metric buy"><div class="v">Buy</div><div class="l">RATING</div></div><div class="metric buy"><div class="v">$387</div><div class="l">BASE TARGET</div></div><div class="metric buy"><div class="v">$228</div><div class="l">SPOT (OCT 16, 2026)</div></div><div class="metric buy"><div class="v">+69.7%</div><div class="l">UPSIDE TO BASE</div></div></div>
-<div class="metric-grid"><div class="metric buy"><div class="v">$242 / $507</div><div class="l">BEAR / BULL TARGETS</div></div><div class="metric buy"><div class="v">10.0%</div><div class="l">LIVE WACC (AVG)</div></div><div class="metric buy"><div class="v">$200B</div><div class="l">MARKET CAP</div></div><div class="metric buy"><div class="v">36.6%</div><div class="l">Q2 NON-GAAP OP MARGIN</div></div><div class="metric buy"><div class="v">$12B</div><div class="l">FY2027 REVENUE GUIDE</div></div><div class="metric buy"><div class="v">1.50</div><div class="l">BETA (NORMALIZED)</div></div></div>
-
-<h2>Executive Summary</h2>
-
+<h2 class="ia-h">Executive summary</h2>
 <p>We initiate coverage of Marvell Technology with a <strong>Buy</strong> rating. Marvell is the premier pure-play on AI data center networking, holding a duopoly with Broadcom in PAM4 optical DSPs and rapidly scaling a custom ASIC business for hyperscalers.</p>
 <p>At its October 6 Investor Day, management guided FY2027 revenue to $12B (up 47%), FY2028 to $20B (up 67%), and set a FY2031 target of $70-90B. Twenty-one analysts raised price targets; JPMorgan went to $360, RBC to $425.</p>
 <p>Our six-year DCF (FY2027-2032) models $12B to $80B revenue (midpoint of the $70-90B target), with EBIT margins expanding from 32% to 38%. Using live CAPM (1.50 normalized beta, 5.1% 10-year, 3.7% ERP), we get 10.0% average WACC and a $387 base-case target, 69.7% above spot.</p>
 <p>The key insight: at $228, the market implies 36.2% revenue CAGR, well below our 46% base case and the company's 55-60% implied target. The market is underpricing Marvell's own plan.</p>
 <div class="our-read"><strong>Our read:</strong> This is the most asymmetric setup in our semiconductor coverage. The Investor Day guidance is unprecedented in scale and specificity, backed by 21 analyst raises. At $228, you are paying for 36% growth while the company guides to 55-60%. Even our bear case ($242) is above spot.</div>
 
-<h2>Base-Case Assumptions</h2>
-<table><tr><th>INPUT</th><th>BEAR</th><th>BASE</th><th>BULL</th></tr>
-<tr><td>FY2031 revenue ($B)</td><td>55</td><td><strong>80</strong></td><td>95</td></tr><tr><td>Revenue CAGR (6-yr)</td><td>38%</td><td><strong>46%</strong></td><td>52%</td></tr><tr><td>Terminal EBIT margin</td><td>34%</td><td><strong>38%</strong></td><td>42%</td></tr><tr><td>Terminal growth</td><td>4.0%</td><td><strong>4.0%</strong></td><td>4.0%</td></tr><tr><td>Target per share ($)</td><td>$242</td><td><strong>$387</strong></td><td>$507</td></tr>
-</table>
+<h2 class="ia-h">Base-case assumptions</h2>
+<table class="ia"><tr><th>INPUT</th><th>BEAR</th><th>BASE</th><th>BULL</th></tr><tr><td>FY2031 revenue ($B)</td><td>55</td><td><strong>80</strong></td><td>95</td></tr><tr><td>Revenue CAGR (6-yr)</td><td>38%</td><td><strong>46%</strong></td><td>52%</td></tr><tr><td>Terminal EBIT margin</td><td>34%</td><td><strong>38%</strong></td><td>42%</td></tr><tr><td>Terminal growth</td><td>4.0%</td><td><strong>4.0%</strong></td><td>4.0%</td></tr><tr><td>Target per share ($)</td><td>$242</td><td><strong>$387</strong></td><td>$507</td></tr></table>
 
-<h2>Bull / Bear / Verdict</h2>
-<div class="bull-box"><h3>Bull case</h3><p>Marvell hits the high end of the FY2031 target ($95B) with 42% EBIT margins on operating leverage. Custom ASIC wins compound. Worth $507, or 122% above spot.</p></div>
-<div class="bear-box"><h3>Bear case</h3><p>Execution stumbles, hyperscaler share losses. Revenue reaches only $55B by 2031. Worth $242, still 6% above spot. The downside is protected by the current $12B run-rate.</p></div>
-<h3>Verdict</h3>
-<p><strong>We rate MRVL Buy.</strong> This is the highest-conviction AI networking name in our coverage. The 70% upside to base case, with a bear case above spot, offers exceptional risk/reward. Volatile (beta 2.26 raw), so size accordingly.</p>
-<h3>What would change our mind</h3>
+
+<div class="page-break"></div>
+<div class="sec-head"><span>MARVELL TECHNOLOGY, INC. (MRVL)</span><span>BULL / BEAR / VERDICT</span></div>
+<h2 class="ia-h">Bull case: $507<span class="pill pill-green">AI ACCELERATION</span></h2>
+<p>Marvell hits the high end of the FY2031 target ($95B) with 42% EBIT margins on operating leverage. Custom ASIC wins compound. Worth $507, or 122% above spot.</p>
+<h2 class="ia-h">Bear case: $242<span class="pill pill-red">AI DIGESTION</span></h2>
+<p>Execution stumbles, hyperscaler share losses. Revenue reaches only $55B by 2031. Worth $242, still 6% above spot. The downside is protected by the current $12B run-rate.</p>
+<h2 class="ia-h">Verdict</h2>
+<div class="verdict-box"><p><strong>We rate MRVL Buy.</strong> This is the highest-conviction AI networking name in our coverage. The 70% upside to base case, with a bear case above spot, offers exceptional risk/reward. Volatile (beta 2.26 raw), so size accordingly.</p></div>
+<h2 class="ia-h">What would change our mind</h2>
 <ul><li><strong>Design loss:</strong> loss of a major hyperscaler custom ASIC socket to Broadcom.</li><li><strong>AI capex pause:</strong> hyperscaler capex cuts would impair the 2028-2030 trajectory.</li><li><strong>Execution miss:</strong> two consecutive quarters missing the $12B FY27 pace.</li></ul>
 
-<h2>Key Themes / KPIs / Guidance</h2>
-<div class="theme"><h3>1. Custom ASIC inflection <span class="status">ACCELERATING</span></h3><p>Design wins at AWS, Google, Microsoft entering production. Second source to Broadcom.</p></div><div class="theme"><h3>2. Optical DSP duopoly <span class="status">STABLE</span></h3><p>PAM4 DSPs for 800G/1.6T. 60%+ gross margins, pricing power.</p></div><div class="theme"><h3>3. Investor Day guidance <span class="status">ACCELERATING</span></h3><p>$12B FY27, $20B FY28, $70-90B FY31. 21 analysts raised targets.</p></div><div class="theme"><h3>4. Data center mix <span class="status">ACCELERATING</span></h3><p>79% of revenue, up 46% YoY. AI networking driving growth.</p></div><div class="theme"><h3>5. Operating leverage <span class="status">ACCELERATING</span></h3><p>36.6% op margin in Q2, guiding to 38-40% by Q4.</p></div>
-<h3>Other KPIs</h3>
-<table><tr><th>METRIC</th><th>VALUE</th></tr><tr><td>Market cap (at $228)</td><td>$200B</td></tr><tr><td>Enterprise value</td><td>$201B</td></tr><tr><td>Q2 FY27 revenue / YoY</td><td>$2.74B / +37%</td></tr><tr><td>Data center revenue</td><td>79% of total (+46% YoY)</td></tr><tr><td>Q2 non-GAAP EPS</td><td>$0.94 (+40% YoY)</td></tr><tr><td>Q2 non-GAAP op margin</td><td>36.6%</td></tr><tr><td>Net debt</td><td>$1.4B</td></tr></table>
-<h3>Guidance</h3>
+<div class="page-break"></div>
+<div class="sec-head"><span>MARVELL TECHNOLOGY, INC. (MRVL)</span><span>KEY THEMES / KPIS / GUIDANCE</span></div>
+<h2 class="ia-h">Key themes</h2>
+<div class="theme"><p><strong>1. Custom ASIC inflection</strong><span class="pill pill-green">ACCELERATING</span></p><p>Design wins at AWS, Google, Microsoft entering production. Second source to Broadcom.</p></div><div class="theme"><p><strong>2. Optical DSP duopoly</strong><span class="pill pill-gray">STABLE</span></p><p>PAM4 DSPs for 800G/1.6T. 60%+ gross margins, pricing power.</p></div><div class="theme"><p><strong>3. Investor Day guidance</strong><span class="pill pill-green">ACCELERATING</span></p><p>$12B FY27, $20B FY28, $70-90B FY31. 21 analysts raised targets.</p></div><div class="theme"><p><strong>4. Data center mix</strong><span class="pill pill-green">ACCELERATING</span></p><p>79% of revenue, up 46% YoY. AI networking driving growth.</p></div><div class="theme"><p><strong>5. Operating leverage</strong><span class="pill pill-green">ACCELERATING</span></p><p>36.6% op margin in Q2, guiding to 38-40% by Q4.</p></div>
+<h2 class="ia-h">Other KPIs</h2>
+<table class="ia"><tr><th>METRIC</th><th style="text-align:right">VALUE</th></tr><tr><td>Market cap (at $228)</td><td style='text-align:right'>$200B</td></tr><tr><td>Enterprise value</td><td style='text-align:right'>$201B</td></tr><tr><td>Q2 FY27 revenue / YoY</td><td style='text-align:right'>$2.74B / +37%</td></tr><tr><td>Data center revenue</td><td style='text-align:right'>79% of total (+46% YoY)</td></tr><tr><td>Q2 non-GAAP EPS</td><td style='text-align:right'>$0.94 (+40% YoY)</td></tr><tr><td>Q2 non-GAAP op margin</td><td style='text-align:right'>36.6%</td></tr><tr><td>Net debt</td><td style='text-align:right'>$1.4B</td></tr></table>
+<h2 class="ia-h">Guidance</h2>
 <p><strong>Q3 FY2027:</strong> Revenue ~$3.15B (+50% YoY). <strong>FY2027:</strong> $12B revenue. <strong>FY2028:</strong> $20B revenue. <strong>FY2031:</strong> $70-90B target (Investor Day, Oct 6, 2026).</p>
 
-<h2>Valuation Detail</h2>
-<h3>Reverse DCF: what the market is pricing in</h3>
+<div class="page-break"></div>
+<div class="sec-head"><span>MARVELL TECHNOLOGY, INC. (MRVL)</span><span>VALUATION DETAIL</span></div>
+<h2 class="ia-h">Reverse DCF: what the market is pricing in</h2>
 <p>At $228, Marvell carries a $200B market cap. Running the model's six-year framework in reverse, the market-implied revenue CAGR is <strong>36.2%</strong>, below our 46% base case and the company's 55-60% implied target. The market is conservative relative to the plan.</p>
-<table><tr><th>SCENARIO</th><th>REVENUE</th><th>TARGET</th></tr><tr><td>Market-implied</td><td>~36.2% CAGR</td><td>$228 (spot)</td></tr><tr><td>Bull case</td><td>52% CAGR</td><td>$507</td></tr><tr><td>Base case</td><td>46% CAGR</td><td>$387</td></tr><tr><td>Bear case</td><td>38% CAGR</td><td>$242</td></tr></table>
-<h3>Model</h3>
-<p>Full three-scenario DCF with live CAPM and implied-ERP tab: <a href="https://docs.google.com/spreadsheets/d/1sfhaMfFuIGYl7EhW8TpSYd3rJwayJgT1WgzStLXo4Vo/edit">https://docs.google.com/spreadsheets/d/1sfhaMfFuIGYl7EhW8TpSYd3rJwayJgT1WgzStLXo4Vo/edit</a></p>
-<h3>Risks to our Buy</h3>
+<table class="ia"><tr><th>SCENARIO</th><th style="text-align:right">REVENUE</th><th style="text-align:right">TARGET</th></tr><tr><td>Market-implied</td><td style='text-align:right'>~36.2% CAGR</td><td style='text-align:right'><strong>$228 (spot)</strong></td></tr><tr><td>Bull case</td><td style='text-align:right'>52% CAGR</td><td style='text-align:right'><strong>$507</strong></td></tr><tr><td>Base case</td><td style='text-align:right'>46% CAGR</td><td style='text-align:right'><strong>$387</strong></td></tr><tr><td>Bear case</td><td style='text-align:right'>38% CAGR</td><td style='text-align:right'><strong>$242</strong></td></tr></table>
+<h2 class="ia-h">Model</h2>
+<p>Full three-scenario DCF with live CAPM and implied-ERP tab:<br><a href="https://docs.google.com/spreadsheets/d/1sfhaMfFuIGYl7EhW8TpSYd3rJwayJgT1WgzStLXo4Vo/edit">https://docs.google.com/spreadsheets/d/1sfhaMfFuIGYl7EhW8TpSYd3rJwayJgT1WgzStLXo4Vo/edit</a></p>
+<h2 class="ia-h">Risks to our BUY</h2>
 <ul><li>Execution risk on $70-90B FY31 target.</li><li>Customer concentration in hyperscalers.</li><li>Broadcom competition in custom ASICs.</li><li>Semiconductor cyclicality and high beta.</li></ul>
-
-<div class="footer">
-<p>Justin Wen Equity Research &mdash; Not investment advice and for entertainment purposes only.</p>
-</div>
 </body></html>

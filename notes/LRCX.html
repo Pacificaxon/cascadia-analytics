@@ -1,88 +1,100 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><style>
-body { font-family: Georgia, serif; max-width: 820px; margin: 30px auto; padding: 0 25px; color: #1a1a1a; line-height: 1.6; font-size: 14.5px; }
-.top-bar { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid #0F243C; padding-bottom: 10px; margin-bottom: 15px; }
-.top-bar .left { font-size: 12px; letter-spacing: 1px; color: #0F243C; font-weight: bold; }
-.top-bar .center { font-size: 12px; color: #666; letter-spacing: 0.5px; }
-.top-bar .right { font-size: 12px; color: #666; }
-.title-block { margin: 15px 0; }
-.title-block h1 { font-size: 22px; margin: 0 0 8px 0; color: #0F243C; }
-.title-block .thesis { font-size: 15px; font-style: italic; color: #333; }
-.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
-.metric { border: 1px solid #D5D8DC; padding: 10px; text-align: center; background: #F8F9FA; }
-.metric .v { font-size: 18px; font-weight: bold; color: #0F243C; }
-.metric .l { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-.metric.buy .v { color: #1E8449; }
-.metric.hold .v { color: #B7950B; }
-h2 { font-size: 17px; color: #0F243C; border-bottom: 2px solid #0F243C; padding-bottom: 6px; margin: 30px 0 15px 0; }
-h3 { font-size: 15px; color: #1F4E79; margin: 18px 0 8px 0; }
-.our-read { background: #FEF9E7; border-left: 4px solid #D4AC0D; padding: 10px 15px; margin: 15px 0; font-size: 14px; }
-table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13.5px; }
-th { background: #0F243C; color: white; padding: 8px 10px; text-align: left; }
-td { border: 1px solid #D5D8DC; padding: 7px 10px; }
-tr:nth-child(even) td { background: #F4F6F9; }
-.theme { margin: 15px 0; }
-.theme h3 { margin-bottom: 5px; }
-.theme .status { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
-.bull-box { background: #E8F8F5; border: 1px solid #1E8449; padding: 15px; margin: 15px 0; }
-.bear-box { background: #FDEDEC; border: 1px solid #C0392B; padding: 15px; margin: 15px 0; }
-.bull-box h3 { color: #1E8449; margin-top: 0; }
-.bear-box h3 { color: #C0392B; margin-top: 0; }
-.footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 11px; color: #888; text-align: center; }
-a { color: #1F4E79; }
+@page { size: letter; margin: 55px 50px 60px 50px;
+  @bottom-center { content: "Justin Wen Equity Research — Not investment advice and for entertainment purposes only.";
+    font-family: Georgia, serif; font-size: 9px; color: #999; font-style: italic; } }
+body { font-family: Georgia, 'Times New Roman', serif; color: #1a1a1a; line-height: 1.6; font-size: 13.5px; }
+.watermark { position: fixed; top: 40%; left: 10%; font-size: 120px; color: rgba(200,200,200,0.13);
+  transform: rotate(-25deg); font-weight: 700; pointer-events: none; z-index: -1; white-space: nowrap; }
+.ia-top { display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 10px; letter-spacing: 1.4px; color: #0F243C; text-transform: uppercase;
+  border-bottom: 1px solid #0F243C; padding-bottom: 7px; margin-bottom: 16px; }
+.sec-head { display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 10px; letter-spacing: 1.4px; color: #1F4E79; text-transform: uppercase;
+  border-bottom: 1px solid #1F4E79; padding-bottom: 7px; margin: 30px 0 14px 0; }
+h1.ia-title { font-size: 25px; margin: 0 0 2px 0; color: #0F243C; font-weight: 700; }
+.ia-analyst { font-size: 12px; color: #1F4E79; font-weight: 600; margin: 0 0 2px 0; }
+.ia-analyst-u { width: 52px; height: 3px; background: #1F8A8A; margin: 0 0 10px 0; }
+.ia-thesis { font-size: 14px; font-style: italic; color: #555; margin: 6px 0 18px 0; line-height: 1.55; }
+.mrow1 { display: flex; gap: 8px; margin: 16px 0 8px 0; }
+.mrow2 { display: flex; gap: 8px; margin: 0 0 20px 0; flex-wrap: wrap; }
+.mbox-rate { background: #1E8449; color: #fff; padding: 10px 14px; width: 150px; flex-shrink: 0; }
+.mbox-rate .v { font-size: 19px; font-weight: 700; }
+.mbox-rate .l { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.92; margin-top: 2px; }
+.mbox { border-top: 3px solid #1F8A8A; background: #F4F8F8; padding: 8px 12px; flex: 1; min-width: 100px; }
+.mbox .v { font-size: 18px; font-weight: 700; color: #0F243C; }
+.mbox .l { font-size: 8.5px; letter-spacing: 0.7px; text-transform: uppercase; color: #777; margin-top: 3px; line-height: 1.4; }
+.mbox2 { border-top: 3px solid #1F8A8A; background: #F4F8F8; padding: 7px 10px; flex: 1; min-width: 90px; }
+.mbox2 .v { font-size: 14px; font-weight: 700; color: #0F243C; }
+.mbox2 .l { font-size: 8px; letter-spacing: 0.7px; text-transform: uppercase; color: #777; margin-top: 3px; line-height: 1.4; }
+h2.ia-h { font-size: 14.5px; color: #1F4E79; border-bottom: 1px solid #D5D8DC; padding-bottom: 5px; margin: 24px 0 12px 0; font-weight: 700; }
+h3.ia-h3 { font-size: 13px; color: #1F4E79; margin: 14px 0 8px 0; font-weight: 700; }
+.our-read { background: #EFF6F6; border-left: 4px solid #1F8A8A; padding: 10px 14px; margin: 12px 0; font-size: 13px; }
+table.ia { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 12.5px; }
+table.ia th { background: #0F243C; color: white; padding: 7px 10px; text-align: left; font-size: 11.5px; letter-spacing: 0.4px; }
+table.ia td { border-bottom: 1px solid #E5E8EC; padding: 6px 10px; }
+table.ia tr:nth-child(even) td { background: #F7F9FA; }
+.pill { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; padding: 2px 10px;
+  border-radius: 4px; margin-left: 8px; vertical-align: middle; text-transform: uppercase; }
+.pill-green { background: #D5F5E3; color: #1E8449; }
+.pill-red { background: #FADBD8; color: #C0392B; }
+.pill-gray { background: #EAEDED; color: #666; }
+.verdict-box { background: #EFF6F6; border-left: 4px solid #1F8A8A; padding: 10px 14px; margin: 12px 0; font-size: 13px; }
+.theme { margin: 12px 0; }
+.theme p { margin: 4px 0 0 0; }
+.kpi-note { font-size: 11px; color: #777; margin-top: 6px; font-style: italic; }
+a { color: #1F4E79; word-break: break-all; }
+ul { margin: 8px 0; padding-left: 18px; }
+li { margin-bottom: 5px; }
+p { margin: 8px 0; }
+.page-break { page-break-before: always; }
 </style></head>
 <body>
-<div class="top-bar">
-<span class="left">EQUITY RESEARCH &nbsp; Analyst: Justin Wen</span>
-<span class="center">TECHNOLOGY / SEMICONDUCTOR EQUIPMENT</span>
-<span class="right">OCTOBER 16, 2026</span>
-</div>
+<div class="watermark">Justin Wen</div>
+<div class="ia-top"><span>EQUITY RESEARCH &mdash; SEMICONDUCTOR EQUIPMENT</span><span>OCTOBER 16, 2026</span></div>
+<h1 class="ia-title">Lam Research Corp (LRCX): Hold, Valuation Concerns</h1>
+<div class="ia-analyst">Analyst: Justin Wen</div><div class="ia-analyst-u"></div>
+<p class="ia-thesis">The etch and deposition leader at a euphoric multiple. At $264, the market prices in 33.8% revenue CAGR, nearly double our 17% bull case. Our DCF sees $152 base case, 42% downside.</p>
+<div class="mrow1"><div class="mbox-rate"><div class="v">HOLD</div><div class="l">RATING</div></div><div class="mbox"><div class="v">$152</div><div class="l">BASE TARGET</div></div><div class="mbox"><div class="v">$263.94</div><div class="l">SPOT (10/16)</div></div><div class="mbox"><div class="v">-42.4%</div><div class="l">UPSIDE TO BASE</div></div></div>
+<div class="mrow2"><div class="mbox2"><div class="v">Hold, Valuation Concerns</div><div class="l">RATING</div></div><div class="mbox2"><div class="v">$152</div><div class="l">BASE TARGET</div></div><div class="mbox2"><div class="v">$264</div><div class="l">SPOT (OCT 16, 2026)</div></div><div class="mbox2"><div class="v">-42.4%</div><div class="l">UPSIDE TO BASE</div></div><div class="mbox2"><div class="v">$116 / $185</div><div class="l">BEAR / BULL TARGETS</div></div><div class="mbox2"><div class="v">10.0%</div><div class="l">LIVE WACC (AVG)</div></div><div class="mbox2"><div class="v">$330B</div><div class="l">MARKET CAP</div></div><div class="mbox2"><div class="v">51.7%</div><div class="l">Q4 GROSS MARGIN</div></div><div class="mbox2"><div class="v">$8.1B</div><div class="l">Q1 FY27 REVENUE GUIDE</div></div><div class="mbox2"><div class="v">1.50</div><div class="l">BETA (NORMALIZED)</div></div></div>
 
-<div class="title-block">
-<h1>Lam Research Corporation (LRCX): Hold, Valuation Concerns</h1>
-<p class="thesis">The etch and deposition leader at a euphoric multiple. At $264, the market prices in 33.8% revenue CAGR, nearly double our 17% bull case. Our DCF sees $152 base case, 42% downside.</p>
-</div>
-
-<div class="metric-grid"><div class="metric hold"><div class="v">Hold, Valuation Concerns</div><div class="l">RATING</div></div><div class="metric hold"><div class="v">$152</div><div class="l">BASE TARGET</div></div><div class="metric hold"><div class="v">$264</div><div class="l">SPOT (OCT 16, 2026)</div></div><div class="metric hold"><div class="v">-42.4%</div><div class="l">UPSIDE TO BASE</div></div></div>
-<div class="metric-grid"><div class="metric hold"><div class="v">$116 / $185</div><div class="l">BEAR / BULL TARGETS</div></div><div class="metric hold"><div class="v">10.0%</div><div class="l">LIVE WACC (AVG)</div></div><div class="metric hold"><div class="v">$330B</div><div class="l">MARKET CAP</div></div><div class="metric hold"><div class="v">51.7%</div><div class="l">Q4 GROSS MARGIN</div></div><div class="metric hold"><div class="v">$8.1B</div><div class="l">Q1 FY27 REVENUE GUIDE</div></div><div class="metric hold"><div class="v">1.50</div><div class="l">BETA (NORMALIZED)</div></div></div>
-
-<h2>Executive Summary</h2>
-
+<h2 class="ia-h">Executive summary</h2>
 <p>We initiate coverage of Lam Research with a <strong>Hold, Valuation Concerns</strong> rating. Lam is the market leader in wafer fabrication equipment for etch and deposition, critical steps in 3D NAND and advanced logic manufacturing. Q4 FY2026 was a record: $6.72B revenue (up 30%), 51.7% gross margin, 37.4% operating margin.</p>
 <p>The business is firing on all cylinders. The stock has run far ahead. Our six-year DCF (FY2026-2031) models 13.5% revenue CAGR in the base case, with EBIT margins expanding from 36.5% to 41.5%. Using live CAPM (1.50 normalized beta decaying to 1.20, 5.1% 10-year, 3.7% implied ERP), we get a 10.0% average WACC and a $152 base-case target, 42.4% below the $264 spot.</p>
 <p>The reverse DCF is stark: at $264, the market implies 33.8% revenue CAGR, nearly double our 17% bull case. This is euphoric pricing.</p>
 <div class="our-read"><strong>Our read:</strong> Lam's fundamentals are excellent, but the 33.8% implied CAGR is disconnected from the cyclicality of wafer fab equipment. Memory capex is strong today, yet the stock prices in a permanent supercycle. We see significant downside risk if WFE normalizes.</div>
 
-<h2>Base-Case Assumptions</h2>
-<table><tr><th>INPUT</th><th>BEAR</th><th>BASE</th><th>BULL</th></tr>
-<tr><td>FY2031 revenue ($B)</td><td>32</td><td><strong>45</strong></td><td>58</td></tr><tr><td>Revenue CAGR (6-yr)</td><td>8.0%</td><td><strong>13.5%</strong></td><td>17.0%</td></tr><tr><td>Terminal EBIT margin</td><td>38%</td><td><strong>41.5%</strong></td><td>45%</td></tr><tr><td>Terminal growth</td><td>3.5%</td><td><strong>3.5%</strong></td><td>3.5%</td></tr><tr><td>Target per share ($)</td><td>$116</td><td><strong>$152</strong></td><td>$185</td></tr>
-</table>
+<h2 class="ia-h">Base-case assumptions</h2>
+<table class="ia"><tr><th>INPUT</th><th>BEAR</th><th>BASE</th><th>BULL</th></tr><tr><td>FY2031 revenue ($B)</td><td>32</td><td><strong>45</strong></td><td>58</td></tr><tr><td>Revenue CAGR (6-yr)</td><td>8.0%</td><td><strong>13.5%</strong></td><td>17.0%</td></tr><tr><td>Terminal EBIT margin</td><td>38%</td><td><strong>41.5%</strong></td><td>45%</td></tr><tr><td>Terminal growth</td><td>3.5%</td><td><strong>3.5%</strong></td><td>3.5%</td></tr><tr><td>Target per share ($)</td><td>$116</td><td><strong>$152</strong></td><td>$185</td></tr></table>
 
-<h2>Bull / Bear / Verdict</h2>
-<div class="bull-box"><h3>Bull case</h3><p>WFE grows to $200B+ and Lam gains share in 3D NAND etch. Revenue reaches $58B by 2031 with 45% EBIT margins. Worth $185, still 30% below spot, showing how extreme current pricing is.</p></div>
-<div class="bear-box"><h3>Bear case</h3><p>Memory capex corrects, WFE falls to $120B. Revenue reaches only $32B by 2031. Worth $116, or 56% below spot.</p></div>
-<h3>Verdict</h3>
-<p><strong>We rate LRCX Hold, Valuation Concerns.</strong> We cannot recommend buying at $264 when our bull case is $185. The business is high quality, but the valuation demands perfection plus a permanent equipment supercycle. Avoid until a major correction.</p>
-<h3>What would change our mind</h3>
+
+<div class="page-break"></div>
+<div class="sec-head"><span>LAM RESEARCH CORP (LRCX)</span><span>BULL / BEAR / VERDICT</span></div>
+<h2 class="ia-h">Bull case: $185<span class="pill pill-green">WFE SUPERCYCLE</span></h2>
+<p>WFE grows to $200B+ and Lam gains share in 3D NAND etch. Revenue reaches $58B by 2031 with 45% EBIT margins. Worth $185, still 30% below spot, showing how extreme current pricing is.</p>
+<h2 class="ia-h">Bear case: $116<span class="pill pill-red">MEMORY DOWNTURN</span></h2>
+<p>Memory capex corrects, WFE falls to $120B. Revenue reaches only $32B by 2031. Worth $116, or 56% below spot.</p>
+<h2 class="ia-h">Verdict</h2>
+<div class="verdict-box"><p><strong>We rate LRCX Hold, Valuation Concerns.</strong> We cannot recommend buying at $264 when our bull case is $185. The business is high quality, but the valuation demands perfection plus a permanent equipment supercycle. Avoid until a major correction.</p></div>
+<h2 class="ia-h">What would change our mind</h2>
 <ul><li><strong>50% correction:</strong> at $130-140, the risk/reward would turn favorable.</li><li><strong>WFE supercycle:</strong> sustained $180B+ WFE for 3+ years would support higher targets.</li><li><strong>Share gains:</strong> major etch share wins at leading-edge nodes.</li></ul>
 
-<h2>Key Themes / KPIs / Guidance</h2>
-<div class="theme"><h3>1. WFE cycle strength <span class="status">ACCELERATING</span></h3><p>2026 WFE guided to low $150B range, raised from $140B. Memory driving growth.</p></div><div class="theme"><h3>2. 3D NAND leadership <span class="status">STABLE</span></h3><p>Lam dominates high-aspect-ratio etch for 3D NAND. Technology moat widening.</p></div><div class="theme"><h3>3. China exposure <span class="status">STABLE</span></h3><p>Mature node sales to China offsetting leading-edge restrictions.</p></div><div class="theme"><h3>4. Operating leverage <span class="status">ACCELERATING</span></h3><p>37.4% op margin in Q4, guiding to 39.5% in Q1. Mix shift to services.</p></div><div class="theme"><h3>5. Capital returns <span class="status">STABLE</span></h3><p>Strong FCF generation funding buybacks and dividends.</p></div>
-<h3>Other KPIs</h3>
-<table><tr><th>METRIC</th><th>VALUE</th></tr><tr><td>Market cap (at $264)</td><td>$330B</td></tr><tr><td>Q4 FY2026 revenue / YoY</td><td>$6.72B / +30%</td></tr><tr><td>Q4 gross margin</td><td>51.7%</td></tr><tr><td>Q4 operating margin</td><td>37.4%</td></tr><tr><td>FY2026 revenue</td><td>$23.2B</td></tr><tr><td>Q1 FY27 revenue guide</td><td>$8.1B (+/- $400M)</td></tr><tr><td>Net cash</td><td>$1.5B</td></tr></table>
-<h3>Guidance</h3>
+<div class="page-break"></div>
+<div class="sec-head"><span>LAM RESEARCH CORP (LRCX)</span><span>KEY THEMES / KPIS / GUIDANCE</span></div>
+<h2 class="ia-h">Key themes</h2>
+<div class="theme"><p><strong>1. WFE cycle strength</strong><span class="pill pill-green">ACCELERATING</span></p><p>2026 WFE guided to low $150B range, raised from $140B. Memory driving growth.</p></div><div class="theme"><p><strong>2. 3D NAND leadership</strong><span class="pill pill-gray">STABLE</span></p><p>Lam dominates high-aspect-ratio etch for 3D NAND. Technology moat widening.</p></div><div class="theme"><p><strong>3. China exposure</strong><span class="pill pill-gray">STABLE</span></p><p>Mature node sales to China offsetting leading-edge restrictions.</p></div><div class="theme"><p><strong>4. Operating leverage</strong><span class="pill pill-green">ACCELERATING</span></p><p>37.4% op margin in Q4, guiding to 39.5% in Q1. Mix shift to services.</p></div><div class="theme"><p><strong>5. Capital returns</strong><span class="pill pill-gray">STABLE</span></p><p>Strong FCF generation funding buybacks and dividends.</p></div>
+<h2 class="ia-h">Other KPIs</h2>
+<table class="ia"><tr><th>METRIC</th><th style="text-align:right">VALUE</th></tr><tr><td>Market cap (at $264)</td><td style='text-align:right'>$330B</td></tr><tr><td>Q4 FY2026 revenue / YoY</td><td style='text-align:right'>$6.72B / +30%</td></tr><tr><td>Q4 gross margin</td><td style='text-align:right'>51.7%</td></tr><tr><td>Q4 operating margin</td><td style='text-align:right'>37.4%</td></tr><tr><td>FY2026 revenue</td><td style='text-align:right'>$23.2B</td></tr><tr><td>Q1 FY27 revenue guide</td><td style='text-align:right'>$8.1B (+/- $400M)</td></tr><tr><td>Net cash</td><td style='text-align:right'>$1.5B</td></tr></table>
+<h2 class="ia-h">Guidance</h2>
 <p><strong>Q1 FY2027:</strong> Revenue $8.1B +/- $400M, operating margin 39.5%. <strong>2026 WFE:</strong> Low $150B range (raised from $140B). Next earnings October 21, 2026.</p>
 
-<h2>Valuation Detail</h2>
-<h3>Reverse DCF: what the market is pricing in</h3>
+<div class="page-break"></div>
+<div class="sec-head"><span>LAM RESEARCH CORP (LRCX)</span><span>VALUATION DETAIL</span></div>
+<h2 class="ia-h">Reverse DCF: what the market is pricing in</h2>
 <p>At $264, Lam carries a $330B market cap. Running the model's six-year framework in reverse, the market-implied revenue CAGR is <strong>33.8%</strong>, nearly double our 17% bull case. Verdict: euphoric.</p>
-<table><tr><th>SCENARIO</th><th>REVENUE</th><th>TARGET</th></tr><tr><td>Market-implied</td><td>~33.8% CAGR</td><td>$264 (spot)</td></tr><tr><td>Bull case</td><td>17.0% CAGR</td><td>$185</td></tr><tr><td>Base case</td><td>13.5% CAGR</td><td>$152</td></tr><tr><td>Bear case</td><td>8.0% CAGR</td><td>$116</td></tr></table>
-<h3>Model</h3>
-<p>Full three-scenario DCF with live CAPM and implied-ERP tab: <a href="https://docs.google.com/spreadsheets/d/1IZ46v0YM9Y-Nkn-8NdNWISXPGMFWt1g2cpha83nzAOk/edit">https://docs.google.com/spreadsheets/d/1IZ46v0YM9Y-Nkn-8NdNWISXPGMFWt1g2cpha83nzAOk/edit</a></p>
-<h3>Risks to our Hold, Valuation Concerns</h3>
+<table class="ia"><tr><th>SCENARIO</th><th style="text-align:right">REVENUE</th><th style="text-align:right">TARGET</th></tr><tr><td>Market-implied</td><td style='text-align:right'>~33.8% CAGR</td><td style='text-align:right'><strong>$264 (spot)</strong></td></tr><tr><td>Bull case</td><td style='text-align:right'>17.0% CAGR</td><td style='text-align:right'><strong>$185</strong></td></tr><tr><td>Base case</td><td style='text-align:right'>13.5% CAGR</td><td style='text-align:right'><strong>$152</strong></td></tr><tr><td>Bear case</td><td style='text-align:right'>8.0% CAGR</td><td style='text-align:right'><strong>$116</strong></td></tr></table>
+<h2 class="ia-h">Model</h2>
+<p>Full three-scenario DCF with live CAPM and implied-ERP tab:<br><a href="https://docs.google.com/spreadsheets/d/1IZ46v0YM9Y-Nkn-8NdNWISXPGMFWt1g2cpha83nzAOk/edit">https://docs.google.com/spreadsheets/d/1IZ46v0YM9Y-Nkn-8NdNWISXPGMFWt1g2cpha83nzAOk/edit</a></p>
+<h2 class="ia-h">Risks to our Hold, Valuation Concerns</h2>
 <ul><li>WFE cyclicality: equipment orders can drop 30-40% in downturns.</li><li>Memory capex concentration.</li><li>China restrictions.</li><li>Valuation compression from euphoric levels.</li></ul>
-
-<div class="footer">
-<p>Justin Wen Equity Research &mdash; Not investment advice and for entertainment purposes only.</p>
-</div>
 </body></html>

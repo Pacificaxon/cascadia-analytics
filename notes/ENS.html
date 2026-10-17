@@ -1,97 +1,104 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><style>
-body { font-family: Georgia, serif; max-width: 820px; margin: 30px auto; padding: 0 25px; color: #1a1a1a; line-height: 1.6; font-size: 14.5px; }
-.top-bar { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 3px solid #0F243C; padding-bottom: 10px; margin-bottom: 15px; }
-.top-bar .left { font-size: 12px; letter-spacing: 1px; color: #0F243C; font-weight: bold; }
-.top-bar .center { font-size: 12px; color: #666; letter-spacing: 0.5px; }
-.top-bar .right { font-size: 12px; color: #666; }
-.title-block { margin: 15px 0; }
-.title-block h1 { font-size: 22px; margin: 0 0 8px 0; color: #0F243C; }
-.title-block .thesis { font-size: 15px; font-style: italic; color: #333; }
-.metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
-.metric { border: 1px solid #D5D8DC; padding: 10px; text-align: center; background: #F8F9FA; }
-.metric .v { font-size: 18px; font-weight: bold; color: #0F243C; }
-.metric .l { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-.metric.buy .v { color: #1E8449; }
-.metric.hold .v { color: #B7950B; }
-h2 { font-size: 17px; color: #0F243C; border-bottom: 2px solid #0F243C; padding-bottom: 6px; margin: 30px 0 15px 0; }
-h3 { font-size: 15px; color: #1F4E79; margin: 18px 0 8px 0; }
-.our-read { background: #FEF9E7; border-left: 4px solid #D4AC0D; padding: 10px 15px; margin: 15px 0; font-size: 14px; }
-table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13.5px; }
-th { background: #0F243C; color: white; padding: 8px 10px; text-align: left; }
-td { border: 1px solid #D5D8DC; padding: 7px 10px; }
-tr:nth-child(even) td { background: #F4F6F9; }
-.theme { margin: 15px 0; }
-.theme h3 { margin-bottom: 5px; }
-.theme .status { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
-.bull-box { background: #E8F8F5; border: 1px solid #1E8449; padding: 15px; margin: 15px 0; }
-.bear-box { background: #FDEDEC; border: 1px solid #C0392B; padding: 15px; margin: 15px 0; }
-.bull-box h3 { color: #1E8449; margin-top: 0; }
-.bear-box h3 { color: #C0392B; margin-top: 0; }
-.footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #ccc; font-size: 11px; color: #888; text-align: center; }
-a { color: #1F4E79; }
+@page { size: letter; margin: 55px 50px 60px 50px;
+  @bottom-center { content: "Justin Wen Equity Research — Not investment advice and for entertainment purposes only.";
+    font-family: Georgia, serif; font-size: 9px; color: #999; font-style: italic; } }
+body { font-family: Georgia, 'Times New Roman', serif; color: #1a1a1a; line-height: 1.6; font-size: 13.5px; }
+.watermark { position: fixed; top: 40%; left: 10%; font-size: 120px; color: rgba(200,200,200,0.13);
+  transform: rotate(-25deg); font-weight: 700; pointer-events: none; z-index: -1; white-space: nowrap; }
+.ia-top { display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 10px; letter-spacing: 1.4px; color: #0F243C; text-transform: uppercase;
+  border-bottom: 1px solid #0F243C; padding-bottom: 7px; margin-bottom: 16px; }
+.sec-head { display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 10px; letter-spacing: 1.4px; color: #1F4E79; text-transform: uppercase;
+  border-bottom: 1px solid #1F4E79; padding-bottom: 7px; margin: 30px 0 14px 0; }
+h1.ia-title { font-size: 25px; margin: 0 0 2px 0; color: #0F243C; font-weight: 700; }
+.ia-analyst { font-size: 12px; color: #1F4E79; font-weight: 600; margin: 0 0 2px 0; }
+.ia-analyst-u { width: 52px; height: 3px; background: #1F8A8A; margin: 0 0 10px 0; }
+.ia-thesis { font-size: 14px; font-style: italic; color: #555; margin: 6px 0 18px 0; line-height: 1.55; }
+.mrow1 { display: flex; gap: 8px; margin: 16px 0 8px 0; }
+.mrow2 { display: flex; gap: 8px; margin: 0 0 20px 0; flex-wrap: wrap; }
+.mbox-rate { background: #1E8449; color: #fff; padding: 10px 14px; width: 150px; flex-shrink: 0; }
+.mbox-rate .v { font-size: 19px; font-weight: 700; }
+.mbox-rate .l { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.92; margin-top: 2px; }
+.mbox { border-top: 3px solid #1F8A8A; background: #F4F8F8; padding: 8px 12px; flex: 1; min-width: 100px; }
+.mbox .v { font-size: 18px; font-weight: 700; color: #0F243C; }
+.mbox .l { font-size: 8.5px; letter-spacing: 0.7px; text-transform: uppercase; color: #777; margin-top: 3px; line-height: 1.4; }
+.mbox2 { border-top: 3px solid #1F8A8A; background: #F4F8F8; padding: 7px 10px; flex: 1; min-width: 90px; }
+.mbox2 .v { font-size: 14px; font-weight: 700; color: #0F243C; }
+.mbox2 .l { font-size: 8px; letter-spacing: 0.7px; text-transform: uppercase; color: #777; margin-top: 3px; line-height: 1.4; }
+h2.ia-h { font-size: 14.5px; color: #1F4E79; border-bottom: 1px solid #D5D8DC; padding-bottom: 5px; margin: 24px 0 12px 0; font-weight: 700; }
+h3.ia-h3 { font-size: 13px; color: #1F4E79; margin: 14px 0 8px 0; font-weight: 700; }
+.our-read { background: #EFF6F6; border-left: 4px solid #1F8A8A; padding: 10px 14px; margin: 12px 0; font-size: 13px; }
+table.ia { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 12.5px; }
+table.ia th { background: #0F243C; color: white; padding: 7px 10px; text-align: left; font-size: 11.5px; letter-spacing: 0.4px; }
+table.ia td { border-bottom: 1px solid #E5E8EC; padding: 6px 10px; }
+table.ia tr:nth-child(even) td { background: #F7F9FA; }
+.pill { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; padding: 2px 10px;
+  border-radius: 4px; margin-left: 8px; vertical-align: middle; text-transform: uppercase; }
+.pill-green { background: #D5F5E3; color: #1E8449; }
+.pill-red { background: #FADBD8; color: #C0392B; }
+.pill-gray { background: #EAEDED; color: #666; }
+.verdict-box { background: #EFF6F6; border-left: 4px solid #1F8A8A; padding: 10px 14px; margin: 12px 0; font-size: 13px; }
+.theme { margin: 12px 0; }
+.theme p { margin: 4px 0 0 0; }
+.kpi-note { font-size: 11px; color: #777; margin-top: 6px; font-style: italic; }
+a { color: #1F4E79; word-break: break-all; }
+ul { margin: 8px 0; padding-left: 18px; }
+li { margin-bottom: 5px; }
+p { margin: 8px 0; }
+.page-break { page-break-before: always; }
 </style></head>
 <body>
-<div class="top-bar">
-<span class="left">EQUITY RESEARCH &nbsp; Analyst: Justin Wen</span>
-<span class="center">Industrials</span>
-<span class="right">October 17, 2026</span>
-</div>
+<div class="watermark">Justin Wen</div>
+<div class="ia-top"><span>EQUITY RESEARCH &mdash; INDUSTRIALS</span><span>OCTOBER 17, 2026</span></div>
+<h1 class="ia-title">EnerSys (ENS): BUY</h1>
+<div class="ia-analyst">Analyst: Justin Wen</div><div class="ia-analyst-u"></div>
+<p class="ia-thesis">Mispriced on near-term industrial headwinds while A&D backlog surges 27% and AI data centers drive backup power demand.</p>
+<div class="mrow1"><div class="mbox-rate"><div class="v">BUY</div><div class="l">RATING</div></div><div class="mbox"><div class="v">$220</div><div class="l">BASE TARGET</div></div><div class="mbox"><div class="v">$168.72</div><div class="l">SPOT (10/16)</div></div><div class="mbox"><div class="v">+30.3%</div><div class="l">UPSIDE TO BASE</div></div></div>
+<div class="mrow2"><div class="mbox2"><div class="v">$152 / $286</div><div class="l">BEAR / BULL</div></div><div class="mbox2"><div class="v">9.5%</div><div class="l">LIVE WACC</div></div><div class="mbox2"><div class="v">1.185</div><div class="l">BETA</div></div><div class="mbox2"><div class="v">$6.1B</div><div class="l">MARKET CAP</div></div><div class="mbox2"><div class="v">11.7x</div><div class="l">FORWARD P/E</div></div><div class="mbox2"><div class="v">0.91x</div><div class="l">PEG</div></div></div>
 
-<div class="title-block">
-<h1>EnerSys (ENS): BUY</h1>
-<p class="thesis">Mispriced on near-term industrial headwinds while A&D backlog surges 27% and AI data centers drive backup power demand.</p>
-</div>
-
-<div class="metric-grid"><div class="metric buy"><div class="v">BUY</div><div class="l">Rating</div></div><div class="metric buy"><div class="v">$220</div><div class="l">Base Target</div></div><div class="metric buy"><div class="v">$168.72</div><div class="l">Spot (10/16)</div></div><div class="metric buy"><div class="v">+30.3%</div><div class="l">Upside to Base</div></div></div>
-<div class="metric-grid"><div class="metric buy"><div class="v">$152 / $286</div><div class="l">Bear / Bull</div></div><div class="metric buy"><div class="v">9.5%</div><div class="l">Live WACC</div></div><div class="metric buy"><div class="v">1.185</div><div class="l">Beta</div></div><div class="metric buy"><div class="v">$6.1B</div><div class="l">Market Cap</div></div><div class="metric buy"><div class="v">11.7x</div><div class="l">Forward P/E</div></div><div class="metric buy"><div class="v">0.91x</div><div class="l">PEG</div></div></div>
-
-<h2>Executive Summary</h2>
-
+<h2 class="ia-h">Executive summary</h2>
 <p>We initiate coverage on EnerSys (NYSE: ENS) with a BUY rating and a $220 base-case target, implying 30% upside from the current $168.72. EnerSys is the global leader in stored energy solutions for industrial applications, operating through three segments: Energy Systems (telecom, broadband, data center backup power), Motive Power (forklift batteries and chargers), and Specialty (aerospace, defense, medical).</p>
 <p>The market is pricing in an industrial recession, valuing ENS as if revenue will stagnate at a 2% CAGR with compressing margins. We see this as a mispricing. Management recently disclosed that the Aerospace & Defense backlog surged 27%, with the munitions backlog up 230% year-to-date. The Specialty segment is converting this backlog into revenue at an accelerating pace. Meanwhile, AI data centers with rising power density requirements are driving demand for advanced backup battery ecosystems, a market where ENS holds a narrow-to-wide moat through switching costs and its proprietary Thin Plate Pure Lead (TPPL) technology.</p>
 <p>Q2 FY2027 results (September quarter) showed $935.6M in sales (+4.8% YoY), a 16.2% adjusted operating margin, and $217.8M in free cash flow. Net leverage sits at a comfortable 1.3x EBITDA. IRC Section 45X domestic manufacturing tax credits are structurally boosting gross margins and free cash flow, a benefit the market has not fully credited.</p>
-
 <div class="our-read"><strong>Our read:</strong> The market sees a cyclical forklift battery company. We see a defense and data center power infrastructure play trading at an industrial multiple. The 2.1% revenue CAGR implied by the current price assumes the A&D backlog and AI power demand simply do not materialize. That is too pessimistic.</div>
 
-<h2>Base-Case Assumptions</h2>
-<table><tr><th>INPUT</th><th>BEAR</th><th>BASE</th><th>BULL</th></tr>
-<tr><td>Revenue CAGR (5-yr)</td><td>2.0%</td><td><strong>6.0%</strong></td><td>9.0%</td></tr><tr><td>EBIT margin</td><td>11-12%</td><td><strong>13-14.5%</strong></td><td>15-16.5%</td></tr><tr><td>Cash tax rate</td><td>21%</td><td><strong>21%</strong></td><td>21%</td></tr><tr><td>D&A (% revenue)</td><td>3.5%</td><td><strong>3.5%</strong></td><td>3.5%</td></tr><tr><td>Capex (% revenue)</td><td>2.5%</td><td><strong>2.5%</strong></td><td>2.5%</td></tr><tr><td>Terminal growth</td><td>2.5%</td><td><strong>2.5%</strong></td><td>2.5%</td></tr><tr><td>Beta (decaying)</td><td>1.185 to 1.00</td><td><strong>1.185 to 1.00</strong></td><td>1.185 to 1.00</td></tr><tr><td>Implied target</td><td>$152</td><td><strong>$220</strong></td><td>$286</td></tr>
-</table>
+<h2 class="ia-h">Base-case assumptions</h2>
+<table class="ia"><tr><th>INPUT</th><th>BEAR</th><th>BASE</th><th>BULL</th></tr><tr><td>Revenue CAGR (5-yr)</td><td>2.0%</td><td><strong>6.0%</strong></td><td>9.0%</td></tr><tr><td>EBIT margin</td><td>11-12%</td><td><strong>13-14.5%</strong></td><td>15-16.5%</td></tr><tr><td>Cash tax rate</td><td>21%</td><td><strong>21%</strong></td><td>21%</td></tr><tr><td>D&A (% revenue)</td><td>3.5%</td><td><strong>3.5%</strong></td><td>3.5%</td></tr><tr><td>Capex (% revenue)</td><td>2.5%</td><td><strong>2.5%</strong></td><td>2.5%</td></tr><tr><td>Terminal growth</td><td>2.5%</td><td><strong>2.5%</strong></td><td>2.5%</td></tr><tr><td>Beta (decaying)</td><td>1.185 to 1.00</td><td><strong>1.185 to 1.00</strong></td><td>1.185 to 1.00</td></tr><tr><td>Implied target</td><td>$152</td><td><strong>$220</strong></td><td>$286</td></tr></table>
 
-<h2>Bull / Bear / Verdict</h2>
-<div class="bull-box"><h3>Bull case</h3>
+
+<div class="page-break"></div>
+<div class="sec-head"><span>ENERSYS (ENS)</span><span>BULL / BEAR / VERDICT</span></div>
+<h2 class="ia-h">Bull case: $286<span class="pill pill-green">A&D SUPERCYCLE</span></h2>
 <p><strong>A&D supercycle:</strong> The 230% munitions backlog converts to revenue faster than expected, and defense budgets continue expanding. Specialty segment margins expand above 20%.</p>
 <p><strong>AI data center acceleration:</strong> Hyperscale backup power orders surge as power density requirements force infrastructure upgrades. Energy Systems grows double digits.</p>
 <p><strong>45X credits expand:</strong> IRC 45X benefits prove larger and more durable than modeled, lifting FCF margins toward 16% and supporting aggressive buybacks.</p>
-</div>
-<div class="bear-box"><h3>Bear case</h3>
+<h2 class="ia-h">Bear case: $152<span class="pill pill-red">INDUSTRIAL SLOWDOWN</span></h2>
 <p><strong>Industrial recession deepens:</strong> Motive Power (forklifts/material handling) deteriorates further as warehouse automation pauses and customers defer capex. Book-to-bill stays below 1.0x.</p>
 <p><strong>A&D conversion stalls:</strong> The munitions backlog faces procurement delays or contract renegotiations, pushing revenue recognition out.</p>
 <p><strong>Margin compression:</strong> Lead prices spike or tariff benefits reverse, compressing the 16.2% adjusted operating margin back toward single digits.</p>
-</div>
-<h3>Verdict</h3>
-Our $220 base case assumes 6% revenue CAGR with 13-14.5% EBIT margins, a 21% cash tax rate, and 2.5% terminal growth. At $168.72, the stock offers 30% upside with a favorable risk/reward skew: the bear case ($152) implies only 10% downside while the bull case ($286) offers 70% upside. The 1.3x leverage ratio and $218M quarterly FCF provide downside protection.
-<h3>What would change our mind</h3>
+<h2 class="ia-h">Verdict</h2>
+<div class="verdict-box">Our $220 base case assumes 6% revenue CAGR with 13-14.5% EBIT margins, a 21% cash tax rate, and 2.5% terminal growth. At $168.72, the stock offers 30% upside with a favorable risk/reward skew: the bear case ($152) implies only 10% downside while the bull case ($286) offers 70% upside. The 1.3x leverage ratio and $218M quarterly FCF provide downside protection.</div>
+<h2 class="ia-h">What would change our mind</h2>
 <ul><li>Motive Power book-to-bill recovering above 1.0x for two consecutive quarters would signal the industrial trough has passed.</li><li>Specialty segment revenue growth decelerating below 10% would undermine the A&D thesis.</li><li>Loss of a major hyperscale data center contract to a competitor would signal moat erosion.</li><li>Net leverage rising above 2.5x would constrain the buyback and dividend.</li></ul>
 
-<h2>Key Themes / KPIs / Guidance</h2>
-<div class="theme"><h3>1. A&D Backlog Conversion <span class="status">ACCELERATING</span></h3><p>Specialty backlog +27%, munitions +230% YTD. Revenue conversion is the key metric to watch over the next 4 quarters.</p></div><div class="theme"><h3>2. AI Data Center Power <span class="status">ACCELERATING</span></h3><p>Rising rack power density requires advanced backup. ENS is qualified with major hyperscalers; design wins drive multi-year revenue.</p></div><div class="theme"><h3>3. IRC 45X Tax Credits <span class="status">STABLE</span></h3><p>Domestic manufacturing credits structurally boost FCF. Benefit is recurring as long as US production continues.</p></div><div class="theme"><h3>4. Motive Power Normalization <span class="status">STABLE</span></h3><p>Book-to-bill at 0.9x as the segment returns to pre-COVID levels. Not growing, but stabilizing.</p></div><div class="theme"><h3>5. Operational Optimization <span class="status">STABLE</span></h3><p>Monterey plant closure ahead of schedule. Cost actions support margin expansion toward the 13-14% normalized range.</p></div>
-<h3>Other KPIs</h3>
-<table><tr><th>METRIC</th><th>VALUE</th></tr><tr><td>Q2 FY2027 Sales</td><td>$935.6M (+4.8% YoY)</td></tr><tr><td>Adj. Operating Margin</td><td>16.2% (vs single digits a year ago)</td></tr><tr><td>Quarterly FCF</td><td>$217.8M (19% LTM margin)</td></tr><tr><td>Net Leverage</td><td>1.3x EBITDA (below target)</td></tr><tr><td>Quarterly Dividend</td><td>$0.2625/share</td></tr><tr><td>A&D Backlog</td><td>+27% (munitions +230% YTD)</td></tr></table>
-<h3>Guidance</h3>
+<div class="page-break"></div>
+<div class="sec-head"><span>ENERSYS (ENS)</span><span>KEY THEMES / KPIS / GUIDANCE</span></div>
+<h2 class="ia-h">Key themes</h2>
+<div class="theme"><p><strong>1. A&D Backlog Conversion</strong><span class="pill pill-green">ACCELERATING</span></p><p>Specialty backlog +27%, munitions +230% YTD. Revenue conversion is the key metric to watch over the next 4 quarters.</p></div><div class="theme"><p><strong>2. AI Data Center Power</strong><span class="pill pill-green">ACCELERATING</span></p><p>Rising rack power density requires advanced backup. ENS is qualified with major hyperscalers; design wins drive multi-year revenue.</p></div><div class="theme"><p><strong>3. IRC 45X Tax Credits</strong><span class="pill pill-gray">STABLE</span></p><p>Domestic manufacturing credits structurally boost FCF. Benefit is recurring as long as US production continues.</p></div><div class="theme"><p><strong>4. Motive Power Normalization</strong><span class="pill pill-gray">STABLE</span></p><p>Book-to-bill at 0.9x as the segment returns to pre-COVID levels. Not growing, but stabilizing.</p></div><div class="theme"><p><strong>5. Operational Optimization</strong><span class="pill pill-gray">STABLE</span></p><p>Monterey plant closure ahead of schedule. Cost actions support margin expansion toward the 13-14% normalized range.</p></div>
+<h2 class="ia-h">Other KPIs</h2>
+<table class="ia"><tr><th>METRIC</th><th style="text-align:right">VALUE</th></tr><tr><td>Q2 FY2027 Sales</td><td style='text-align:right'>$935.6M (+4.8% YoY)</td></tr><tr><td>Adj. Operating Margin</td><td style='text-align:right'>16.2% (vs single digits a year ago)</td></tr><tr><td>Quarterly FCF</td><td style='text-align:right'>$217.8M (19% LTM margin)</td></tr><tr><td>Net Leverage</td><td style='text-align:right'>1.3x EBITDA (below target)</td></tr><tr><td>Quarterly Dividend</td><td style='text-align:right'>$0.2625/share</td></tr><tr><td>A&D Backlog</td><td style='text-align:right'>+27% (munitions +230% YTD)</td></tr></table>
+<h2 class="ia-h">Guidance</h2>
 Management guides to sustained double-digit adjusted operating margins post-normalization of one-time tariff benefits. The company targets net leverage below 2.0x and continues returning capital through the $0.2625 quarterly dividend and active share repurchases funded by robust free cash flow.
 
-<h2>Valuation Detail</h2>
-<h3>Reverse DCF: what the market is pricing in</h3>
+<div class="page-break"></div>
+<div class="sec-head"><span>ENERSYS (ENS)</span><span>VALUATION DETAIL</span></div>
+<h2 class="ia-h">Reverse DCF: what the market is pricing in</h2>
 At $168.72, the market is pricing in a 2.1% five-year revenue CAGR with base-case FCF margins held flat. This sits just above our Bear case (2%) and well below our Base case (6%). The implied verdict: between Bear and Base, cautious. To justify the current price with a 9.5% WACC and 2.5% terminal growth, one must assume the A&D backlog and AI data center demand contribute nothing incremental. We view this as overly pessimistic.
-<table><tr><th>SCENARIO</th><th>REVENUE</th><th>TARGET</th></tr><tr><td>Bear (2%)</td><td>$152</td><td>-10%</td></tr><tr><td>Market implied (2.1%)</td><td>$169</td><td>current</td></tr><tr><td>Base (6%)</td><td>$220</td><td>+30%</td></tr><tr><td>Bull (9%)</td><td>$286</td><td>+70%</td></tr></table>
-<h3>Model</h3>
-<p>Full three-scenario DCF with live CAPM and implied-ERP tab: <a href="https://docs.google.com/spreadsheets/d/1P7XCXbi9ycbOjm6FG7OF5TamNUi1Bocp54zpGv4oGLY/edit">https://docs.google.com/spreadsheets/d/1P7XCXbi9ycbOjm6FG7OF5TamNUi1Bocp54zpGv4oGLY/edit</a></p>
-<h3>Risks to our BUY</h3>
+<table class="ia"><tr><th>SCENARIO</th><th style="text-align:right">REVENUE</th><th style="text-align:right">TARGET</th></tr><tr><td>Bear (2%)</td><td style='text-align:right'>$152</td><td style='text-align:right'><strong>-10%</strong></td></tr><tr><td>Market implied (2.1%)</td><td style='text-align:right'>$169</td><td style='text-align:right'><strong>current</strong></td></tr><tr><td>Base (6%)</td><td style='text-align:right'>$220</td><td style='text-align:right'><strong>+30%</strong></td></tr><tr><td>Bull (9%)</td><td style='text-align:right'>$286</td><td style='text-align:right'><strong>+70%</strong></td></tr></table>
+<h2 class="ia-h">Model</h2>
+<p>Full three-scenario DCF with live CAPM and implied-ERP tab:<br><a href="https://docs.google.com/spreadsheets/d/1P7XCXbi9ycbOjm6FG7OF5TamNUi1Bocp54zpGv4oGLY/edit">https://docs.google.com/spreadsheets/d/1P7XCXbi9ycbOjm6FG7OF5TamNUi1Bocp54zpGv4oGLY/edit</a></p>
+<h2 class="ia-h">Risks to our BUY</h2>
 <ul><li>Industrial cyclicality: Motive Power is exposed to warehouse and manufacturing capex cycles; a deep recession would pressure volumes.</li><li>Customer concentration: Loss of a major telecom or hyperscale customer would impact Energy Systems.</li><li>Lead price volatility: Lead is a key input; sharp price increases compress margins if not passed through.</li><li>Defense budget shifts: Changes in US defense spending priorities could slow A&D backlog conversion.</li><li>Competition: East Penn, Exide, and GS Yuasa compete on price in commoditized segments.</li></ul>
-
-<div class="footer">
-<p>Justin Wen Equity Research &mdash; Not investment advice and for entertainment purposes only.</p>
-</div>
 </body></html>
