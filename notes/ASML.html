@@ -1,52 +1,51 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><style>
-@page { size: letter; margin: 55px 50px 60px 50px;
+@page { size: letter; margin: 50px 48px 55px 48px;
   @bottom-center { content: "Justin Wen Equity Research — Not investment advice and for entertainment purposes only.";
-    font-family: Georgia, serif; font-size: 9px; color: #999; font-style: italic; } }
-body { font-family: Georgia, 'Times New Roman', serif; color: #1a1a1a; line-height: 1.6; font-size: 13.5px; }
-.watermark { position: fixed; top: 40%; left: 10%; font-size: 120px; color: rgba(200,200,200,0.13);
+    font-family: Georgia, serif; font-size: 8.5px; color: #999; font-style: italic; } }
+body { font-family: Georgia, 'Times New Roman', serif; color: #1a1a1a; line-height: 1.58; font-size: 13px; }
+.watermark { position: fixed; top: 42%; left: 8%; font-size: 110px; color: rgba(180,180,180,0.10);
   transform: rotate(-25deg); font-weight: 700; pointer-events: none; z-index: -1; white-space: nowrap; }
 .ia-top { display: flex; justify-content: space-between; align-items: baseline;
-  font-size: 10px; letter-spacing: 1.4px; color: #0F243C; text-transform: uppercase;
-  border-bottom: 1px solid #0F243C; padding-bottom: 7px; margin-bottom: 16px; }
+  font-size: 9.5px; letter-spacing: 1.3px; color: #0F243C; text-transform: uppercase;
+  border-bottom: 1px solid #0F243C; padding-bottom: 6px; margin-bottom: 14px; }
 .sec-head { display: flex; justify-content: space-between; align-items: baseline;
-  font-size: 10px; letter-spacing: 1.4px; color: #1F4E79; text-transform: uppercase;
-  border-bottom: 1px solid #1F4E79; padding-bottom: 7px; margin: 30px 0 14px 0; }
-h1.ia-title { font-size: 25px; margin: 0 0 2px 0; color: #0F243C; font-weight: 700; }
-.ia-analyst { font-size: 12px; color: #1F4E79; font-weight: 600; margin: 0 0 2px 0; }
-.ia-analyst-u { width: 52px; height: 3px; background: #1F8A8A; margin: 0 0 10px 0; }
-.ia-thesis { font-size: 14px; font-style: italic; color: #555; margin: 6px 0 18px 0; line-height: 1.55; }
-.mrow1 { display: flex; gap: 8px; margin: 16px 0 8px 0; }
-.mrow2 { display: flex; gap: 8px; margin: 0 0 20px 0; flex-wrap: wrap; }
-.mbox-rate { background: #1E8449; color: #fff; padding: 10px 14px; width: 150px; flex-shrink: 0; }
-.mbox-rate .v { font-size: 19px; font-weight: 700; }
-.mbox-rate .l { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.92; margin-top: 2px; }
-.mbox { border-top: 3px solid #1F8A8A; background: #F4F8F8; padding: 8px 12px; flex: 1; min-width: 100px; }
-.mbox .v { font-size: 18px; font-weight: 700; color: #0F243C; }
-.mbox .l { font-size: 8.5px; letter-spacing: 0.7px; text-transform: uppercase; color: #777; margin-top: 3px; line-height: 1.4; }
-.mbox2 { border-top: 3px solid #1F8A8A; background: #F4F8F8; padding: 7px 10px; flex: 1; min-width: 90px; }
-.mbox2 .v { font-size: 14px; font-weight: 700; color: #0F243C; }
-.mbox2 .l { font-size: 8px; letter-spacing: 0.7px; text-transform: uppercase; color: #777; margin-top: 3px; line-height: 1.4; }
-h2.ia-h { font-size: 14.5px; color: #1F4E79; border-bottom: 1px solid #D5D8DC; padding-bottom: 5px; margin: 24px 0 12px 0; font-weight: 700; }
-h3.ia-h3 { font-size: 13px; color: #1F4E79; margin: 14px 0 8px 0; font-weight: 700; }
-.our-read { background: #EFF6F6; border-left: 4px solid #1F8A8A; padding: 10px 14px; margin: 12px 0; font-size: 13px; }
-table.ia { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 12.5px; }
-table.ia th { background: #0F243C; color: white; padding: 7px 10px; text-align: left; font-size: 11.5px; letter-spacing: 0.4px; }
-table.ia td { border-bottom: 1px solid #E5E8EC; padding: 6px 10px; }
+  font-size: 9.5px; letter-spacing: 1.3px; color: #1F4E79; text-transform: uppercase;
+  border-bottom: 1px solid #1F4E79; padding-bottom: 6px; margin: 28px 0 12px 0; }
+h1.ia-title { font-size: 24px; margin: 0 0 2px 0; color: #0F243C; font-weight: 700; }
+.ia-analyst { font-size: 11.5px; color: #1F4E79; font-weight: 600; margin: 0; }
+.ia-analyst-u { width: 48px; height: 3px; background: #1F8A8A; margin: 3px 0 10px 0; }
+.ia-thesis { font-size: 13.5px; font-style: italic; color: #555; margin: 4px 0 16px 0; line-height: 1.5; }
+.mrow1 { display: flex; gap: 7px; margin: 14px 0 7px 0; }
+.mrow2 { display: flex; gap: 7px; margin: 0 0 18px 0; flex-wrap: wrap; }
+.mbox-rate { background: #1E8449; color: #fff; padding: 9px 13px; width: 140px; flex-shrink: 0; }
+.mbox-rate .v { font-size: 18px; font-weight: 700; }
+.mbox-rate .l { font-size: 8.5px; letter-spacing: 1px; text-transform: uppercase; opacity: 0.92; margin-top: 2px; }
+.mbox { border-top: 3px solid #1F8A8A; background: #F2F6F6; padding: 7px 11px; flex: 1; min-width: 95px; }
+.mbox .v { font-size: 17px; font-weight: 700; color: #0F243C; }
+.mbox .l { font-size: 8px; letter-spacing: 0.6px; text-transform: uppercase; color: #777; margin-top: 2px; line-height: 1.35; }
+.mbox2 { border-top: 3px solid #1F8A8A; background: #F2F6F6; padding: 6px 10px; flex: 1; min-width: 85px; }
+.mbox2 .v { font-size: 13px; font-weight: 700; color: #0F243C; }
+.mbox2 .l { font-size: 7.5px; letter-spacing: 0.6px; text-transform: uppercase; color: #777; margin-top: 2px; line-height: 1.35; }
+h2.ia-h { font-size: 14px; color: #1F4E79; border-bottom: 1px solid #D5D8DC; padding-bottom: 4px; margin: 22px 0 10px 0; font-weight: 700; }
+.our-read { background: #EDF4F4; border-left: 4px solid #1F8A8A; padding: 9px 13px; margin: 10px 0; font-size: 12.5px; }
+table.ia { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 12px; }
+table.ia th { background: #0F243C; color: white; padding: 6px 10px; text-align: left; font-size: 11px; letter-spacing: 0.3px; }
+table.ia td { border-bottom: 1px solid #E5E8EC; padding: 5px 10px; }
 table.ia tr:nth-child(even) td { background: #F7F9FA; }
-.pill { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; padding: 2px 10px;
-  border-radius: 4px; margin-left: 8px; vertical-align: middle; text-transform: uppercase; }
+.pill { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 2px 9px;
+  border-radius: 3px; margin-left: 7px; vertical-align: middle; text-transform: uppercase; }
 .pill-green { background: #D5F5E3; color: #1E8449; }
 .pill-red { background: #FADBD8; color: #C0392B; }
-.pill-gray { background: #EAEDED; color: #666; }
-.verdict-box { background: #EFF6F6; border-left: 4px solid #1F8A8A; padding: 10px 14px; margin: 12px 0; font-size: 13px; }
-.theme { margin: 12px 0; }
-.theme p { margin: 4px 0 0 0; }
-.kpi-note { font-size: 11px; color: #777; margin-top: 6px; font-style: italic; }
-a { color: #1F4E79; word-break: break-all; }
-ul { margin: 8px 0; padding-left: 18px; }
-li { margin-bottom: 5px; }
-p { margin: 8px 0; }
+.pill-gray { background: #EAEDED; color: #5D6D7E; }
+.verdict-box { background: #EDF4F4; padding: 9px 13px; margin: 8px 0; font-size: 12.5px; }
+.theme { margin: 10px 0; }
+.theme p { margin: 3px 0 0 0; }
+.kpi-note { font-size: 10.5px; color: #777; margin-top: 5px; }
+a { color: #1F4E79; word-break: break-all; font-size: 12px; }
+ul { margin: 6px 0; padding-left: 17px; }
+li { margin-bottom: 4px; }
+p { margin: 7px 0; }
 .page-break { page-break-before: always; }
 </style></head>
 <body>
@@ -71,11 +70,11 @@ p { margin: 8px 0; }
 <div class="page-break"></div>
 <div class="sec-head"><span>ASML HOLDING N.V. (ASML)</span><span>BULL / BEAR / VERDICT</span></div>
 <h2 class="ia-h">Bull case: $1,780<span class="pill pill-green">EUV SUPERCYCLE</span></h2>
-<p>If AI datacenter capex sustains and High-NA EUV ramps faster than expected, ASML exceeds $48B by 2031 with 46% EBIT margins. The monopoly pricing power supports premium multiples. Worth $1,780, or 8% above spot.</p>
+
 <h2 class="ia-h">Bear case: $1,161<span class="pill pill-red">CYCLE TURNS</span></h2>
-<p>Semiconductor cyclicality returns, China restrictions tighten, and memory capex pauses. Revenue reaches only $28B by 2031, margins stall at 38%. Worth $1,161, or 29% below spot.</p>
+
 <h2 class="ia-h">Verdict</h2>
-<div class="verdict-box"><p><strong>We rate ASML Hold, Valuation Concerns.</strong> The business quality is unmatched, but at $1,642 the market prices in growth above our bull case. The risk/reward is unfavorable at current levels. We would upgrade to Buy on weakness toward $1,415.</p></div>
+<div class="verdict-box"></div>
 <h2 class="ia-h">What would change our mind</h2>
 <ul><li><strong>Multiple compression:</strong> forward P/E contracting from 35x toward 25x on rate fears would bring the stock to our target without fundamental deterioration.</li><li><strong>China resolution:</strong> easing of export restrictions would unlock $5B+ of deferred demand.</li><li><strong>High-NA delay:</strong> pushout of next-gen EUV would impair the 2028-2030 growth trajectory.</li></ul>
 
@@ -92,7 +91,7 @@ p { margin: 8px 0; }
 <div class="sec-head"><span>ASML HOLDING N.V. (ASML)</span><span>VALUATION DETAIL</span></div>
 <h2 class="ia-h">Reverse DCF: what the market is pricing in</h2>
 <p>At $1,642, ASML carries a $630.5B market cap and $619.7B enterprise value. Running the model's own six-year framework in reverse, the market-implied revenue CAGR is <strong>21.9%</strong>, above our 18.5% bull case.</p>
-<table class="ia"><tr><th>SCENARIO</th><th style="text-align:right">REVENUE</th><th style="text-align:right">TARGET</th></tr><tr><td>Market-implied</td><td style='text-align:right'>~21.9% CAGR</td><td style='text-align:right'><strong>$1,642 (spot)</strong></td></tr><tr><td>Bull case</td><td style='text-align:right'>18.5% CAGR</td><td style='text-align:right'><strong>$1,780</strong></td></tr><tr><td>Base case</td><td style='text-align:right'>14.0% CAGR</td><td style='text-align:right'><strong>$1,415</strong></td></tr><tr><td>Bear case</td><td style='text-align:right'>10.5% CAGR</td><td style='text-align:right'><strong>$1,161</strong></td></tr></table>
+<table class="ia"><tr><th>SCENARIO</th><th style="text-align:right">2029 REVENUE</th><th style="text-align:right">TARGET</th></tr><tr><td>Market-implied</td><td style='text-align:right'>~21.9% CAGR</td><td style='text-align:right'><strong>$1,642 (spot)</strong></td></tr><tr><td>Bull case</td><td style='text-align:right'>18.5% CAGR</td><td style='text-align:right'><strong>$1,780</strong></td></tr><tr><td>Base case</td><td style='text-align:right'>14.0% CAGR</td><td style='text-align:right'><strong>$1,415</strong></td></tr><tr><td>Bear case</td><td style='text-align:right'>10.5% CAGR</td><td style='text-align:right'><strong>$1,161</strong></td></tr></table>
 <h2 class="ia-h">Model</h2>
 <p>Full three-scenario DCF with live CAPM and implied-ERP tab:<br><a href="https://docs.google.com/spreadsheets/d/1LyVNpmPnfMabDGP_hKJXG_6hs22OqjpmQenC-XGao0o/edit">https://docs.google.com/spreadsheets/d/1LyVNpmPnfMabDGP_hKJXG_6hs22OqjpmQenC-XGao0o/edit</a></p>
 <h2 class="ia-h">Risks to our Hold, Valuation Concerns</h2>
