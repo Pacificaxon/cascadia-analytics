@@ -215,6 +215,7 @@
    if (sections.minervini_data) flat.minervini_data = sections.minervini_data;
    if (sections.earnings_dashboard) flat.earnings_dashboard = sections.earnings_dashboard;
    if (sections.liquidity) flat.liquidity = sections.liquidity;
+   if (sections.comps_matrix) flat.comps_matrix = sections.comps_matrix;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -6183,6 +6184,114 @@ function bindZoomHandlers() {
   document.getElementById("ed-ticker").addEventListener("change", (e) => {
    document.getElementById("ed-body").innerHTML = renderDash(e.target.value);
   });
+ });
+
+ /* ================= COMPS MATRIX (PRO) ================= */
+ route("comps", async function () {
+  await ensureProData();
+  if (!isPro()) {
+   app.innerHTML = '<div class="crumb">COMPS MATRIX</div>' +
+    '<div class="hero"><div><h1 class="hero-h">Relative Valuation.</h1>' +
+    "<p class='hero-sub'>Cross-reference DCF values with regression-modeled peer multiples.</p></div></div>" +
+    '<div class="section"><div class="section-title">Comps Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Comps Matrix, Pro", "OLS regression of EV/Revenue and P/E against NTM growth across all 36 tickers. Find discounted growth and stretched multiples.") + "</div>";
+   return;
+  }
+  const cm = D.comps_matrix || {};
+  const recs = cm.records || [];
+  const meta = cm.metadata || {};
+  const reg = (meta.regressions || {}).evRevenue || {};
+  if (!recs.length) {
+   app.innerHTML = '<div class="crumb">COMPS MATRIX</div><div class="card"><p style="color:var(--muted)">No comps data available yet.</p></div>';
+   return;
+  }
+  const discounts = [...recs].sort((a, b) => a.evRevDiscountPct - b.evRevDiscountPct).slice(0, 3);
+  const premiums = [...recs].sort((a, b) => b.evRevDiscountPct - a.evRevDiscountPct).slice(0, 3);
+  let h = '<div class="crumb">COMPS MATRIX</div>' +
+   '<div class="hero"><div><h1 class="hero-h">Relative Valuation.</h1>' +
+   "<p class='hero-sub'>NTM growth vs trading multiples with OLS peer regression. Updated " + esc((meta.lastUpdated || "").slice(0, 10)) + ".</p></div></div>";
+  // Anomaly cards
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px;">';
+  h += '<div class="card" style="border:1px solid rgba(63,185,80,0.3);"><div style="font-size:12px;font-weight:700;color:#3fb950;margin-bottom:8px;">DISCOUNTED GROWTH</div>';
+  discounts.forEach((d) => {
+   h += '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #1f2937;">' +
+    '<span><b>' + esc(d.ticker) + '</b> <span style="color:#8b949e;">' + esc(d.name) + '</span></span>' +
+    '<span style="color:#3fb950;font-weight:700;">' + d.evRevDiscountPct + '%</span></div>';
+  });
+  h += '</div>';
+  h += '<div class="card" style="border:1px solid rgba(248,81,73,0.3);"><div style="font-size:12px;font-weight:700;color:#f85149;margin-bottom:8px;">PREMIUM MULTIPLES</div>';
+  premiums.forEach((p) => {
+   h += '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #1f2937;">' +
+    '<span><b>' + esc(p.ticker) + '</b> <span style="color:#8b949e;">' + esc(p.name) + '</span></span>' +
+    '<span style="color:#f85149;font-weight:700;">+' + p.evRevDiscountPct + '%</span></div>';
+  });
+  h += '</div></div>';
+  // Scatter chart
+  h += '<div class="section"><div class="section-title">Growth vs Multiple <span style="font-size:11px;color:#8b949e;">(bubble size = market cap)</span></div>';
+  h += '<div style="margin-bottom:8px;"><button class="btn" id="comps-toggle" style="font-size:12px;">Switch to Forward P/E</button></div>';
+  h += '<div class="zoomable-chart" data-chart="comps" style="position:relative;height:420px;cursor:zoom-in;" title="Click to zoom"><canvas id="comps-chart"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '<div style="font-size:11px;color:#8b949e;margin-top:6px;">OLS trendline: EV/Rev = ' + (reg.slope || 0).toFixed(3) + ' × growth + ' + (reg.intercept || 0).toFixed(2) + ' (R² ' + (reg.rSquared || 0) + '). Dashed gold line is the peer fair-value frontier.</div></div>';
+  // Table
+  h += '<div class="section"><div class="section-title">Comps Table</div><div class="card" style="overflow-x:auto;">';
+  h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid #2a3448;color:#8b949e;text-align:right;">' +
+   '<th style="text-align:left;padding:8px;">Ticker</th><th style="text-align:left;padding:8px;">Sector</th>' +
+   '<th style="padding:8px;">NTM Growth</th><th style="padding:8px;">EV/Rev</th><th style="padding:8px;">vs Peer</th>' +
+   '<th style="padding:8px;">Fwd P/E</th><th style="padding:8px;">Status</th></tr></thead><tbody>';
+  [...recs].sort((a, b) => a.evRevDiscountPct - b.evRevDiscountPct).forEach((r) => {
+   const dc = r.evRevDiscountPct < 0 ? "#3fb950" : r.evRevDiscountPct > 0 ? "#f85149" : "#8b949e";
+   const sc = r.status === "Discounted Growth" ? "#3fb950" : r.status === "Premium Multiple" ? "#f85149" : "#8b949e";
+   h += '<tr style="border-bottom:1px solid #1a2332;">' +
+    '<td style="padding:8px;"><a href="#/ticker/' + esc(r.ticker) + '" style="color:#58a6ff;font-weight:700;">' + esc(r.ticker) + '</a></td>' +
+    '<td style="padding:8px;color:#8b949e;">' + esc(r.sector) + '</td>' +
+    '<td style="padding:8px;text-align:right;">' + r.ntmRevGrowth + '%</td>' +
+    '<td style="padding:8px;text-align:right;">' + r.ntmEvRevenue + 'x</td>' +
+    '<td style="padding:8px;text-align:right;color:' + dc + ';font-weight:700;">' + (r.evRevDiscountPct > 0 ? "+" : "") + r.evRevDiscountPct + '%</td>' +
+    '<td style="padding:8px;text-align:right;">' + (r.forwardPe > 0 ? r.forwardPe + "x" : "—") + '</td>' +
+    '<td style="padding:8px;text-align:right;color:' + sc + ';">' + esc(r.status) + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<div class="panel-asof">Source: yfinance consensus estimates · OLS regression across coverage universe</div></div>';
+  app.innerHTML = h;
+  bindZoomHandlers();
+  // Toggle button
+  let usePE = false;
+  document.getElementById("comps-toggle").addEventListener("click", function () {
+   usePE = !usePE;
+   this.textContent = usePE ? "Switch to EV/Revenue" : "Switch to Forward P/E";
+   drawCompsChart(usePE);
+  });
+  drawCompsChart(false);
+  function drawCompsChart(usePE) {
+   const cv = document.getElementById("comps-chart");
+   if (!cv || !window.Chart) return;
+   const old = Chart.getChart(cv);
+   if (old) old.destroy();
+   const yKey = usePE ? "forwardPe" : "ntmEvRevenue";
+   const r2 = usePE ? (meta.regressions || {}).forwardPe || {} : reg;
+   const colors = {"Semiconductors":"#10b981","Enterprise Software":"#38bdf8","Mega-Cap Tech":"#a855f7","Consumer & Marketplace":"#f59e0b","Fintech & Digital Assets":"#ec4899","Public Safety & Defense Tech":"#c99a6b","MedTech":"#6366f1","MedTech & Robotics":"#6366f1"};
+   const bySec = {};
+   recs.forEach((r) => {
+    if (usePE && !(r.forwardPe > 0 && r.forwardPe < 150)) return;
+    (bySec[r.sector] = bySec[r.sector] || []).push(r);
+   });
+   const datasets = Object.keys(bySec).map((sec) => ({
+    type: "bubble",
+    label: sec,
+    data: bySec[sec].map((r) => ({x: r.ntmRevGrowth, y: r[yKey], ticker: r.ticker, r: Math.max(4, Math.min(14, Math.log10(r.marketCap || 1e9) * 1.1))})),
+    backgroundColor: (colors[sec] || "#38bdf8") + "AA",
+    borderColor: colors[sec] || "#38bdf8",
+    borderWidth: 1,
+   }));
+   const xs = recs.map((r) => r.ntmRevGrowth);
+   const x0 = Math.floor(Math.min(...xs, 0)), x1 = Math.ceil(Math.max(...xs, 60));
+   datasets.unshift({type: "line", label: "Peer fair value", data: [{x: x0, y: r2.slope * x0 + r2.intercept}, {x: x1, y: r2.slope * x1 + r2.intercept}], borderColor: "#c99a6b", borderWidth: 2, borderDash: [6, 4], pointRadius: 0, fill: false});
+   new Chart(cv, {data: {datasets}, options: {animation: false, responsive: true, maintainAspectRatio: false,
+    plugins: {legend: {position: "bottom", labels: {color: "#8b949e", boxWidth: 10, font: {size: 10}}},
+     tooltip: {callbacks: {title: (it) => it[0].raw.ticker || "Peer fair value", label: (c) => c.raw.ticker ? ["Growth: " + c.raw.x.toFixed(1) + "%", "Multiple: " + c.raw.y.toFixed(1) + "x"] : "Fair: " + c.raw.y.toFixed(1) + "x"}}},
+    scales: {x: {title: {display: true, text: "NTM Revenue Growth (%)", color: "#8b949e"}, ticks: {color: "#8b949e", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+     y: {title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#8b949e"}, ticks: {color: "#8b949e", callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}});
+  }
  });
 
  /* ================= PRICING ================= */
