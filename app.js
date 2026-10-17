@@ -2080,6 +2080,15 @@ function bindZoomHandlers() {
     badge: "", headline: m.headline, sub: m.detail, ts: fmtTs(m.timestamp), source: m.source, url: m.url
    })).join("") : "");
 
+  // market performance (Seeking Alpha: ETFs, index moves, market wraps)
+  const perf = (D.market_performance || []).filter((n) => n.url).slice(0, 10);
+  if (perf.length) {
+   h += newsSection("perf-sec", "MARKET PERFORMANCE", "Market Performance", "ETFs · Index Moves · Market Wraps",
+    perf.map((m) => newsRow({
+     badge: "", headline: m.headline, sub: "", ts: fmtTs(m.timestamp), source: m.source || "Seeking Alpha", url: m.url
+    })).join(""));
+  }
+
 
   // upcoming earnings
   h += '<div class="section" id="earnings-cal-sec"><div class="section-title">Upcoming Earnings</div>' +

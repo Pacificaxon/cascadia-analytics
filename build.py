@@ -84,6 +84,7 @@ def main():
     manifest = load(os.path.join(YF, "client-notes-manifest.json"))
     macro_feed = load(os.path.join(MR, "macro_feed.json"))
     company_news = load(os.path.join(MR, "company_news.json"))
+    sa_news = load(os.path.join(MR, "sa_news.json"))
     ticker_macro = load(os.path.join(MR, "ticker_macro.json"))
     ticker_indicator_takes = load(os.path.join(MR, "ticker_indicator_takes.json"))
     internals = load(os.path.join(MR, "market_internals.json"))
@@ -364,6 +365,24 @@ def main():
     macro_items = sorted(macro_feed, key=lambda x: x.get("timestamp", ""), reverse=True)[:60]
     news_items = sorted(company_news, key=lambda x: x.get("timestamp", ""), reverse=True)[:40]
 
+    # --- Seeking Alpha news (categorized) ---
+    sa_items = (sa_news.get("items", []) if isinstance(sa_news, dict) else [])
+    def sa_row(it):
+        return {
+            "headline": it.get("title", ""),
+            "url": it.get("link", ""),
+            "timestamp": it.get("pubDate", ""),
+            "source": "Seeking Alpha",
+            "ticker": (it.get("tickers") or [""])[0],
+            "summary": "",
+        }
+    sa_company = [sa_row(i) for i in sa_items if i.get("category") == "company"]
+    sa_macro = [sa_row(i) for i in sa_items if i.get("category") == "macro"]
+    sa_perf = [sa_row(i) for i in sa_items if i.get("category") == "performance"]
+    # Merge SA items into existing feeds (SA first = freshest)
+    news_items = (sa_company + news_items)[:40]
+    macro_items = (sa_macro + macro_items)[:60]
+
     # --- Bellwether readthroughs keyed by ticker ---
     readthroughs = {}
     for b in bellwethers:
@@ -383,6 +402,7 @@ def main():
         "ticker_order": sorted(tickers.keys()),
         "macro_feed": macro_items,
         "company_news": news_items,
+        "market_performance": sa_perf[:15],
         "ticker_macro": {k: [{kk: vv for kk, vv in item.items() if kk != "take"} for item in v[:8]] for k, v in ticker_macro.items()},
         "ticker_indicator_takes": ticker_indicator_takes,
         "panels": panels,
