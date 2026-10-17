@@ -2207,9 +2207,9 @@ function bindZoomHandlers() {
 
   let h = '<div class="crumb">MACRO INTELLIGENCE · DCF COVERAGE</div>';
   h += '<div class="hero"><div>' +
-   '<h1 class="hero-h">The signals moving markets, in one research view.</h1>' +
-   "<p class='hero-sub'>Track major macro releases and central-bank commentary, then move directly into company " +
-   "valuation work.</p></div>" +
+   '<h1 class="hero-h" style="color:var(--gold);">The signals moving markets, in one research view.</h1>' +
+   "<p class='hero-sub' style=\"color:var(--gold);opacity:0.85;\">Track macro releases and central-bank commentary, gauge market risk across seven quantitative models, " +
+   "screen 500+ stocks on quality and momentum factors, then move directly into company valuation work across 36 DCF-covered names.</p></div>" +
    '<div class="hero-right">' +
    '<div class="statbox"><div class="mono-label">Coverage</div><div class="statbox-v">' + ORDER.length + " DCF models</div></div>" +
    '<div class="statbox"><div class="mono-label">Macro wire</div><div class="statbox-v">Newest first</div></div>' +
@@ -7163,10 +7163,19 @@ function bindZoomHandlers() {
    '<div style="font-size:36px;font-weight:800;color:#fff;margin-bottom:4px;">$0</div>' +
    '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">forever</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
-   '<li>✓ Full DCF valuation coverage, 31 tickers with Bear/Base/Bull targets</li>' +
+   '<li>✓ Full DCF valuation coverage, 36 tickers with Bear/Base/Bull targets</li>' +
+   '<li>✓ Reverse DCF, what the market is pricing in at the current quote</li>' +
+   '<li>✓ Valuation multiples, market cap, EV, TTM and forward multiples</li>' +
    '<li>✓ Interactive price charts with moving averages (10/20/50/100/200-day)</li>' +
+   '<li>✓ 5 years of financial statements, income, balance sheet, cash flow</li>' +
+   '<li>✓ Daily Snapshot risk scores, all 7 models, score plus regime</li>' +
    '<li>✓ AAII Investor Sentiment tracker (weekly)</li>' +
    '<li>✓ COT Positioning tracker, commercial, large spec, small spec (weekly)</li>' +
+   '<li>✓ Fed funds futures tracker with meeting probabilities</li>' +
+   '<li>✓ 10Y breakeven inflation tracker</li>' +
+   '<li>✓ Dark pool flow, insider transactions, trading trends with 13F</li>' +
+   '<li>✓ Earnings revisions and 4-quarter earnings history</li>' +
+   '<li>✓ Coverage premium screener with Cascadia Score and DCF upside</li>' +
    '<li>✓ Company news feed with ticker navigation</li>' +
    '<li>✓ Macro news wire</li>' +
    '<li>✓ Earnings calendar</li>' +
@@ -7181,21 +7190,27 @@ function bindZoomHandlers() {
    '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
+   '<li>✓ All 7 Risk Models in full: Correction Risk, Liquidity Drain, RV Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Fear Index, with charts, history, and plain-English explainers</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
-   '<li>✓ All 7 Pro market internals: Volatility Divergence, Alligator Jaw, Credit Spreads, Market Breadth, Theme Rotation, Small/Mid Cap, RSI Cyclicals vs Defensives</li>' +
-   '<li>✓ Macroeconomic Analysis, CPI, PPI, retail sales, PMI with analyst writeups</li>' +
+   '<li>✓ Full market internals suite: Volatility Divergence, Alligator Jaw, Credit Spreads vs VIX, Market Breadth, Theme Rotation, Small/Mid Cap Monitor, RSI Cyclicals vs Defensives, Macroeconomic Analysis</li>' +
+   '<li>✓ Quantitative Factor Screener, full S&P 500 on ROIC, PEG, FCF yield, Piotroski, and more, with CSV export</li>' +
+   '<li>✓ Technical Factor Screener, Minervini Stage-2 trend template across the S&P 500</li>' +
+   '<li>✓ Trend & Reversal Screener, per-ticker trend conviction and exhaustion gauges</li>' +
+   '<li>✓ Sector-relative Comps Matrix, OLS valuation vs growth with anomaly detection</li>' +
+   '<li>✓ Earnings Dashboard, 8 quarters of surprises and 1-day reactions for every ticker</li>' +
    '<li>✓ Unusual options flow tracker (10 trading days per ticker)</li>' +
-   '<li>✓ Reverse DCF, what the market is pricing in</li>' +
    '<li>✓ Interactive FCF simulation sandbox</li>' +
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
-   '<li>✓ 31 client research notes (PDF, 5+ pages each)</li>' +
+   '<li>✓ Earnings call transcript tone analysis, executive confidence scoring via AI</li>' +
+   '<li>✓ 36 client research notes (PDF, full institutional format)</li>' +
+   '<li>✓ Investment scorecard PDFs, one-glance 0-100 attractiveness rating</li>' +
+   '<li>✓ Morning Briefing, institutional-grade daily synthesis of macro, internals, and positioning</li>' +
    '<li>✓ All future DCF models and ticker coverage, the coverage universe is constantly expanding and Pro members get every new name automatically</li>' +
    '<li>✓ Market Leadership tracker, automated S&P 500 leader scoring with rotation signals</li>' +
-   '<li>✓ Email alerts, all 12 market internals monitors</li>' +
+   '<li>✓ Email alerts, all 13 market monitors</li>' +
    '<li>✓ Moving average cross alerts, stocks and indices</li>' +
    '<li>✓ Custom price alerts, any covered ticker</li>' +
-   '<li>✓ Stock screener with CSV export</li>' +
    '<li style="color:#d4a017;">✓ <b>All future features included at no extra cost</b>, our team ships new trackers and tools constantly and Pro members get every one of them automatically</li>' +
    '<li style="color:#d4a017;">✓ <b>Legacy price lock</b>, your $19/mo rate is locked in. If prices increase in the future, you keep paying $19 as long as your subscription stays active.</li>' +
    "</ul>";
