@@ -3985,14 +3985,14 @@ function bindZoomHandlers() {
   const ind = tickerIndustry(tk);
   if (ind) h += '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + esc(ind) + "</div>";
   h += "</div>";
-  // Scores: Cascadia Score and Attractiveness (scorecard), labelled and distinguishable
+  // Scores: Cascadia Score and Growth & Value Index (scorecard), labelled and distinguishable
   if (isPro()) {
     h += '<div style="display:flex;gap:16px;align-items:center;margin-left:8px;">';
     if (score != null) {
       h += '<div style="text-align:center;"><span class="score-badge ' + scoreClass(score) + '" title="' + esc(scoreTooltip(t)) + '">' + score + '</span><div style="font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:0.5px;">CASCADIA</div></div>';
     }
     if (attrScore != null) {
-      h += '<div style="text-align:center;"><span class="score-badge ' + scoreClass(attrScore) + '" style="border:2px solid #c9a961;" title="Investment Scorecard: ' + attrBand + ' (Pro)">' + attrScore + '</span><div style="font-size:10px;color:#c9a961;margin-top:4px;letter-spacing:0.5px;font-weight:600;">ATTRACTIVENESS</div></div>';
+      h += '<div style="text-align:center;"><span class="score-badge ' + scoreClass(attrScore) + '" style="border:2px solid #c9a961;" title="Investment Scorecard: ' + attrBand + ' (Pro)">' + attrScore + '</span><div style="font-size:10px;color:#c9a961;margin-top:4px;letter-spacing:0.5px;font-weight:600;">GROWTH &amp; VALUE INDEX</div></div>';
     }
     h += '</div>';
   }
@@ -4204,7 +4204,7 @@ function bindZoomHandlers() {
 
   // Investment Scorecard (Pro)
   h += '<div class="section"><div class="section-title">Investment Scorecard</div>';
-  h += gated("Investment Scorecard, Pro", "One-glance 0-100 attractiveness score with five pillar breakdowns.",
+  h += gated("Investment Scorecard, Pro", "One-glance 0-100 Growth & Value Index with five pillar breakdowns.",
    t.scorecard && t.scorecard.pdf_exists
     ? '<div class="card"><h3>' + esc(t.name) + ", Investment Scorecard</h3>" +
      '<div style="margin-top:12px;"><button class="btn" onclick="openPdfModal(\'' + esc(t.scorecard.pdf).replace(/'/g, "\\'") + '\', \'' + esc(t.name + ", Investment Scorecard").replace(/'/g, "\\'") + '\')">Open PDF</button></div></div>'
@@ -5913,7 +5913,7 @@ function bindZoomHandlers() {
    '<button class="btn secondary" id="f-export">Export CSV</button>' +
    "</div>" +
    '<div class="table-wrap"><table class="coverage"><thead><tr>' +
-   "<th>Ticker</th><th>Score</th><th>Attractiveness</th><th>Price</th><th>Base</th><th>Upside</th><th>Rating</th>" +
+   "<th>Ticker</th><th>Score</th><th>Growth &amp; Value Index</th><th>Price</th><th>Base</th><th>Upside</th><th>Rating</th>" +
    "</tr></thead><tbody id='scr-body'></tbody></table></div></div></div>";
   app.innerHTML = h;
   const body = document.getElementById("scr-body");
@@ -5940,7 +5940,7 @@ function bindZoomHandlers() {
   }
   ["f-rating", "f-score", "f-upside"].forEach((id) => document.getElementById(id).addEventListener("change", draw));
   document.getElementById("f-export").addEventListener("click", () => {
-   const csv = "ticker,name,score,attractiveness,price,base,upside_pct,rating\n" + rows().map((r) => {
+   const csv = "ticker,name,score,growth_value_index,price,base,upside_pct,rating\n" + rows().map((r) => {
     const attr = r.t.scorecard && r.t.scorecard.score;
     return [r.tk, '"' + (r.t.name || "").replace(/"/g, "") + '"', r.s || "", attr || "", r.t.price || "", r.t.base || "", r.t.upside_base || "", r.t.rating || ""].join(","); }).join("\n");
    dl("cascadia_screener.csv", csv, "text/csv");
