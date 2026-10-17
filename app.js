@@ -6018,7 +6018,7 @@ function bindZoomHandlers() {
     const revCls = q.rev_surprise_pct == null ? "" : (q.rev_surprise_pct >= 0 ? "pos" : "neg");
     const epsCls = q.eps_surprise_pct == null ? "" : (q.eps_surprise_pct >= 0 ? "pos" : "neg");
     const reactCls = q.price_reaction == null ? "" : (q.price_reaction >= 0 ? "pos" : "neg");
-    const reactTxt = q.price_reaction == null ? "N/A" : (q.price_reaction >= 0 ? "Up " : "Down ") + fmtPct(Math.abs(q.price_reaction));
+    const reactTxt = q.price_reaction == null ? "N/A" : (q.price_reaction >= 0 ? "Up +" : "Down ") + Math.abs(q.price_reaction * 100).toFixed(1) + "%";
     h += "<tr><td>" + fmtD(q.date) + "</td>" +
      '<td><span class="' + revCls + '">' + fmt$(q.rev_act, true) + ' vs ' + fmt$(q.rev_est, true) + ' (' + fmtPct(q.rev_surprise_pct) + ')</span></td>' +
      '<td><span class="' + epsCls + '">' + fmt$(q.eps_act) + ' vs ' + fmt$(q.eps_est) + ' (' + fmtPct(q.eps_surprise_pct) + ')</span></td>' +
