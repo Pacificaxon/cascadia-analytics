@@ -3266,6 +3266,34 @@ function bindZoomHandlers() {
      });
     } catch (e) { console.error("AAII chart error", e); }
    }
+   // 10Y Breakeven Inflation chart (free)
+   const beCv = document.getElementById("breakeven-chart");
+   const beD = D.breakeven_inflation;
+   if (beCv && beD && (beD.history || []).length) {
+    try {
+     const hist = beD.history.slice(-756);
+     const ctx0 = beCv.getContext("2d");
+     const grad = ctx0.createLinearGradient(0, 0, 0, 300);
+     grad.addColorStop(0, "rgba(6,182,212,0.35)");
+     grad.addColorStop(1, "rgba(6,182,212,0)");
+     new Chart(beCv, {
+      type: "line",
+      data: { labels: hist.map((r) => r.date),
+       datasets: [{label: "10Y Breakeven (%)", data: hist.map((r) => r.value),
+        borderColor: "#06b6d4", borderWidth: 1.5, backgroundColor: grad, fill: true,
+        pointRadius: 0, pointHoverRadius: 4, tension: 0.1}]},
+      options: { animation: false, responsive: true, maintainAspectRatio: false,
+       interaction: {mode: "index", intersect: false},
+       plugins: {legend: {display: false},
+        tooltip: {backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+         callbacks: {label: (c) => " " + c.parsed.y.toFixed(2) + "%"}}},
+       scales: {
+        x: {ticks: {color: "#6b7280", maxTicksLimit: 6, maxRotation: 0}, grid: {display: false}},
+        y: {position: "right", ticks: {color: "#6b7280", callback: (v) => v.toFixed(1) + "%"}, grid: {color: "rgba(42,46,57,0.4)"}}}}
+     });
+    } catch (e) { console.error("Breakeven chart error", e); }
+   }
    // COT chart (free): net positioning over time for SPX
    const cotCv = document.getElementById("cot-chart");
    const cotD = D.cot_data;
