@@ -26,6 +26,7 @@
   "ALAB": { domain: "asteralabs.com", industry: "Semiconductors" },
   "AMKR": { domain: "amkor.com", industry: "Semiconductors" },
   "AMPX": { domain: "amprius.com", industry: "Batteries" },
+  "ASML": { domain: "asml.com", industry: "Semiconductor Equipment" },
   "AVAV": { domain: "avinc.com", industry: "Aerospace & Defense" },
   "AVGO": { domain: "broadcom.com", industry: "Semiconductors" },
   "AXON": { domain: "axon.com", industry: "Aerospace & Defense" },
@@ -4046,6 +4047,15 @@ function bindZoomHandlers() {
      '<div class="panel-summary">Published ' + esc(t.note.published_date || "") + "</div>" +
      '<div style="margin-top:12px;"><button class="btn" onclick="openPdfModal(\'' + esc(t.note.pdf).replace(/'/g, "\\'") + '\', \'' + esc(t.name + ", Research Note").replace(/'/g, "\\'") + '\')">Open PDF</button></div></div>'
     : '<div class="card"><p style="color:var(--muted)">No client note published for this ticker yet.</p></div>');
+  h += "</div>";
+
+  // Investment Scorecard (Pro)
+  h += '<div class="section"><div class="section-title">Investment Scorecard</div>';
+  h += gated("Investment Scorecard, Pro", "One-glance 0-100 attractiveness score with five pillar breakdowns.",
+   t.scorecard && t.scorecard.pdf_exists
+    ? '<div class="card"><h3>' + esc(t.name) + ", Investment Scorecard</h3>" +
+     '<div style="margin-top:12px;"><button class="btn" onclick="openPdfModal(\'' + esc(t.scorecard.pdf).replace(/'/g, "\\'") + '\', \'' + esc(t.name + ", Investment Scorecard").replace(/'/g, "\\'") + '\')">Open PDF</button></div></div>'
+    : '<div class="card"><p style="color:var(--muted)">No scorecard published for this ticker yet.</p></div>');
   h += "</div>";
 
   // Assumption sandbox (Pro)

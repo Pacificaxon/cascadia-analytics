@@ -247,6 +247,10 @@ def main():
                 "pdf": ("notes/" + tk + ".pdf") if m.get("pdf_exists") else None,
                 "pdf_exists": m.get("pdf_exists", False),
             },
+            "scorecard": {
+                "pdf": ("scorecards/" + tk + ".pdf") if os.path.exists(os.path.join(HERE, "scorecards", tk + ".pdf")) else None,
+                "pdf_exists": os.path.exists(os.path.join(HERE, "scorecards", tk + ".pdf")),
+            },
         }
         for sc in ("bear", "base", "bull"):
             if sc in scenarios:
