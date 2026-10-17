@@ -270,8 +270,8 @@ def main():
         t = {
             "ticker": tk,
             "name": d.get("name", tk),
-            "price": m.get("spot_price", d.get("price")),
-            "price_date": m.get("price_date", d.get("price_date")),
+            "price": d.get("price", m.get("spot_price")),
+            "price_date": d.get("price_date", m.get("price_date")),
             "currency": d.get("currency", "USD"),
             "bear": m.get("bear"),
             "base": m.get("base"),
