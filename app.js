@@ -3101,7 +3101,7 @@ function bindZoomHandlers() {
     "</div>";
    h += '<div class="section" style="max-width:none;"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     '<div class="section-sub">Options dealer positioning, will market makers dampen or amplify the next move? Updates daily at 7:00 AM PT.</div>' +
-    gated("Gamma Exposure (GEX)", "Live dealer gamma positioning for QQQ and SPY, spot the volatility regime before it shifts.", gexHtml + gexExplainer) +
+    gated("Gamma Exposure (GEX)", "Daily dealer gamma positioning for QQQ and SPY, spot the volatility regime before it shifts.", gexHtml + gexExplainer) +
     "</div>";
   }
 
@@ -3123,7 +3123,7 @@ function bindZoomHandlers() {
     "</div>";
    h += '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     '<div class="section-sub">Put vs call implied volatility, what is smart money paying for? Updates daily.</div>' +
-    gated("Volatility Skew", "Live put/call IV skew for QQQ and SPY, read institutional fear in real time.", skewHtml + skewExplainer) +
+    gated("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.", skewHtml + skewExplainer) +
     "</div>";
   }
   // render interactive vol divergence chart after DOM insert
@@ -6952,14 +6952,16 @@ function bindZoomHandlers() {
   await ensureProData();
   if (!isPro()) {
    // Free users see headline scores as a teaser (score + regime only, no analysis)
-   const cr = D.correction_risk || {};
-   const ld = D.liquidity_drain || {};
-   const rv = D.rv_shock || {};
-   const cg = D.contagion || {};
-   const fd = D.flow_divergence || {};
-   const dc = D.dynamic_concentration || {};
-   const fi = D.fear_index || {};
-   const fiColor = fi.fear_index >= 75 ? "rose" : fi.fear_index >= 55 ? "amber" : fi.fear_index >= 45 ? "slate" : "emerald";
+   // Data comes from the free risk_headlines bundle, not Pro data
+   const rh = D.risk_headlines || {};
+   const cr = rh.correction_risk || {};
+   const ld = rh.liquidity_drain || {};
+   const rv = rh.rv_shock || {};
+   const cg = rh.contagion || {};
+   const fd = rh.flow_divergence || {};
+   const dc = rh.concentration || {};
+   const fi = rh.fear_index || {};
+   const fiColor = fi.score >= 75 ? "rose" : fi.score >= 55 ? "amber" : fi.score >= 45 ? "slate" : "emerald";
    const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
    const card = (name, score, regime, color) => {
     if (score == null) return "";
@@ -6972,16 +6974,17 @@ function bindZoomHandlers() {
    let freeH = '<div class="crumb">RISK MODELS</div>' +
     '<div class="hero"><div><h1 class="hero-h">Risk Models.</h1>' +
     "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
-    '<div class="section"><div class="section-title">Live Readings <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="section"><div class="section-title">Daily Snapshot <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>' +
+    ' <span style="font-size:11px;color:#8b949e;font-weight:400;">as of ' + esc((D.generated_at || "").slice(0, 10)) + '</span></div>' +
     '<div class="section-sub">Current scores, free. The full breakdown, charts, history, and what to do about it are Pro.</div>' +
     '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">' +
-    card("Correction Risk", cr.totalRiskScore, cr.regime, cr.color) +
-    card("Liquidity Drain", ld.totalScore, ld.regime, ld.color) +
-    card("RV Shock", (rv.rvCurrent || {}).vcfExposurePercentile, (rv.countdown || {}).statusLabel, (rv.countdown || {}).statusColor) +
-    card("Contagion", (cg.composite || {}).score, (cg.composite || {}).threatLevel, (cg.composite || {}).threatColor) +
-    card("Flow Divergence", (fd.current || {}).oscillator, (fd.current || {}).status, (fd.current || {}).color) +
+    card("Correction Risk", cr.score, cr.regime, cr.color) +
+    card("Liquidity Drain", ld.score, ld.regime, ld.color) +
+    card("RV Shock", rv.score, rv.regime, rv.color) +
+    card("Contagion", cg.score, cg.regime, cg.color) +
+    card("Flow Divergence", fd.score, fd.regime, fd.color) +
     card("Concentration", dc.score, dc.regime, dc.color) +
-    card("Fear Index", fi.fear_index, fi.sentiment, fiColor) +
+    card("Fear Index", fi.score, fi.regime, fiColor) +
     "</div>" +
     proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;

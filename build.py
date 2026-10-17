@@ -500,6 +500,30 @@ def main():
     pro_sections["dcf_targets"] = dcf_targets
     pro_sections["fcf_projections"] = fcf_projections
 
+    # Free risk headlines (score + regime only, no analysis) for the #/risk teaser
+    site["risk_headlines"] = {
+        "correction_risk": {"score": pro_sections.get("correction_risk", {}).get("totalRiskScore"),
+                            "regime": pro_sections.get("correction_risk", {}).get("regime"),
+                            "color": pro_sections.get("correction_risk", {}).get("color")},
+        "liquidity_drain": {"score": pro_sections.get("liquidity_drain", {}).get("totalScore"),
+                            "regime": pro_sections.get("liquidity_drain", {}).get("regime"),
+                            "color": pro_sections.get("liquidity_drain", {}).get("color")},
+        "rv_shock": {"score": (pro_sections.get("rv_shock", {}).get("rvCurrent") or {}).get("vcfExposurePercentile"),
+                     "regime": (pro_sections.get("rv_shock", {}).get("countdown") or {}).get("statusLabel"),
+                     "color": (pro_sections.get("rv_shock", {}).get("countdown") or {}).get("statusColor")},
+        "contagion": {"score": (pro_sections.get("contagion", {}).get("composite") or {}).get("score"),
+                       "regime": (pro_sections.get("contagion", {}).get("composite") or {}).get("threatLevel"),
+                       "color": (pro_sections.get("contagion", {}).get("composite") or {}).get("threatColor")},
+        "flow_divergence": {"score": (pro_sections.get("flow_divergence", {}).get("current") or {}).get("oscillator"),
+                            "regime": (pro_sections.get("flow_divergence", {}).get("current") or {}).get("status"),
+                            "color": (pro_sections.get("flow_divergence", {}).get("current") or {}).get("color")},
+        "concentration": {"score": pro_sections.get("dynamic_concentration", {}).get("score"),
+                          "regime": pro_sections.get("dynamic_concentration", {}).get("regime"),
+                          "color": pro_sections.get("dynamic_concentration", {}).get("color")},
+        "fear_index": {"score": pro_sections.get("fear_index", {}).get("fear_index"),
+                       "regime": pro_sections.get("fear_index", {}).get("sentiment")},
+    }
+
     pro_out = {"generated_at": site.get("generated_at"), "sections": pro_sections}
     with open(os.path.join(HERE, "functions", "pro-data.json"), "w") as pf:
         json.dump(pro_out, pf)
