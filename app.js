@@ -7170,6 +7170,106 @@ function bindZoomHandlers() {
   return h;
  }
 
+ // Quality snapshot: on-demand ROIC / CROIC / Rule of 40 for any ticker (PRO).
+ // Backend: /api/quality edge function (Yahoo Finance, free).
+ let _qualityCache = {};
+ async function fetchQuality(ticker) {
+  const tk = (ticker || "").toUpperCase().trim();
+  if (!tk) return { error: "Enter a ticker." };
+  if (_qualityCache[tk]) return _qualityCache[tk];
+  try {
+   const res = await fetch("/api/quality?ticker=" + encodeURIComponent(tk));
+   const j = await res.json();
+   if (j.error) return { error: j.error };
+   _qualityCache[tk] = j;
+   return j;
+  } catch (e) {
+   return { error: "Could not load quality data. Try again shortly." };
+  }
+ }
+ function qualityCard(title, value, sub, good) {
+  const vc = good === true ? "#3fb950" : good === false ? "#f85149" : "#e8ecf1";
+  return '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
+   '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + esc(title) + "</div>" +
+   '<div style="font-size:22px;font-weight:800;color:' + vc + ';margin-top:4px;">' + value + "</div>" +
+   (sub ? '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(sub) + "</div>" : "") + "</div>";
+ }
+ function renderQualityResult(q) {
+  const el = document.getElementById("quality-result");
+  if (!el) return;
+  if (q.error) {
+   el.innerHTML = '<div class="card"><p style="color:#f85149;">' + esc(q.error) + "</p></div>";
+   return;
+  }
+  const cr = q.capitalReturns || {}, ef = q.efficiency || {}, ge = q.growthEngine || {};
+  const qs = q.qualityScore || 0;
+  const qc = qs >= 75 ? "#3fb950" : qs >= 45 ? "#d29922" : "#f85149";
+  const fmtPct = (v) => (v === null || v === undefined ? "N/A" : v + "%");
+  const fmtMoney = (v) => (v === null || v === undefined ? "N/A" : "$" + Math.round(v).toLocaleString());
+  let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+   '<div><div style="font-size:28px;font-weight:800;color:#e8ecf1;">' + esc(q.ticker) + "</div>" +
+   '<div style="font-size:12px;color:#8b949e;">' + esc(q.sector || "") + " · " + esc(q.industry || "") + "</div></div>" +
+   '<div style="margin-left:auto;text-align:center;"><div style="font-size:11px;color:#8b949e;letter-spacing:1px;">QUALITY SCORE</div>' +
+   '<div style="font-size:44px;font-weight:800;color:' + qc + ';">' + qs + '<span style="font-size:18px;color:#8b949e;">/100</span></div></div></div>';
+  h += '<div class="section-title" style="margin-top:16px;">Capital Returns</div>' +
+   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:8px 0;">' +
+   qualityCard("ROIC", fmtPct(cr.roic), "Return on invested capital", cr.roic !== null && cr.roic > 15) +
+   qualityCard("CROIC", fmtPct(cr.croic), "Cash return on IC" + (cr.croic !== null && cr.roic !== null && cr.croic > cr.roic ? " · cash converts" : ""), cr.croic !== null && cr.roic !== null && cr.croic > cr.roic) +
+   qualityCard("ROE", fmtPct(cr.roe), "Return on equity", cr.roe !== null && cr.roe > 15) +
+   qualityCard("ROA", fmtPct(cr.roa), "Return on assets", null) + "</div>";
+  h += '<div class="section-title" style="margin-top:16px;">Operating Efficiency</div>' +
+   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:8px 0;">' +
+   qualityCard("Rev / Employee", fmtMoney(ef.revPerEmployee), ef.employees ? ef.employees.toLocaleString() + " employees" : "", ef.revPerEmployee !== null && ef.revPerEmployee > 500000) +
+   qualityCard("Asset Turnover", ef.assetTurnover !== null ? ef.assetTurnover + "x" : "N/A", "Revenue / total assets", null) +
+   qualityCard("Operating Leverage", ef.operatingLeverage !== null ? (ef.operatingLeverage > 0 ? "+" : "") + ef.operatingLeverage + "%" : "N/A", "Rev growth minus opex growth", ef.operatingLeverage !== null && ef.operatingLeverage > 0) + "</div>";
+  h += '<div class="section-title" style="margin-top:16px;">Growth & Cash Engine</div>' +
+   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:8px 0;">' +
+   qualityCard("Rule of 40", ge.ruleOf40 !== null ? ge.ruleOf40 : "N/A", "Revenue growth + FCF margin", ge.ruleOf40 !== null && ge.ruleOf40 >= 40) +
+   qualityCard("Revenue Growth", fmtPct(ge.revGrowth), "Year over year", ge.revGrowth !== null && ge.revGrowth > 20) +
+   qualityCard("FCF Margin", fmtPct(ge.fcfMargin), "Free cash flow / revenue", ge.fcfMargin !== null && ge.fcfMargin > 20) + "</div>";
+  h += '<div class="card" style="margin-top:12px;"><div style="font-size:12px;color:#8b949e;line-height:1.6;">A simplified on-demand screen. For DCF-covered names, the full Investment Scorecard and valuation work remain the deeper read.</div></div>';
+  el.innerHTML = h;
+ }
+ async function runQualitySearch() {
+  const inp = document.getElementById("quality-ticker");
+  const el = document.getElementById("quality-result");
+  if (!inp || !el) return;
+  const tk = inp.value.toUpperCase().trim();
+  if (!tk) return;
+  el.innerHTML = '<div class="card"><p style="color:#8b949e;">Analyzing ' + esc(tk) + "...</p></div>";
+  const q = await fetchQuality(tk);
+  renderQualityResult(q);
+  if (window.history && window.history.replaceState) {
+   window.history.replaceState(null, "", "#/quality/" + encodeURIComponent(tk));
+  }
+ }
+ route("quality", async function (param) {
+  await ensureProData();
+  if (!isPro()) {
+   app.innerHTML = '<div class="crumb">QUALITY SNAPSHOT</div>' +
+    '<div class="hero"><div><h1 class="hero-h">Quality Snapshot.</h1>' +
+    "<p class='hero-sub'>On-demand ROIC, cash conversion, and Rule of 40 for any ticker.</p></div></div>" +
+    '<div class="section"><div class="section-title">Quality Snapshot <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Quality Snapshot, Pro", "Type any ticker and get an instant read on capital returns, operating efficiency, and the growth engine. ROIC, CROIC, revenue per employee, operating leverage, and Rule of 40, computed live.") + "</div>";
+   return;
+  }
+  const initial = (param || "").toUpperCase().trim();
+  app.innerHTML = '<div class="crumb">QUALITY SNAPSHOT</div>' +
+   '<div class="hero"><div><h1 class="hero-h">Quality Snapshot.</h1>' +
+   "<p class='hero-sub'>On-demand ROIC, cash conversion, and Rule of 40 for any ticker.</p></div></div>" +
+   '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
+   '<input id="quality-ticker" type="text" placeholder="TICKER (e.g. CRWD)" value="' + esc(initial) + '" ' +
+   'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
+   '<button onclick="runQualitySearch()" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
+   '<div id="quality-result"></div></div>';
+  const inp = document.getElementById("quality-ticker");
+  if (inp) {
+   inp.addEventListener("keydown", (e) => { if (e.key === "Enter") runQualitySearch(); });
+   if (initial) runQualitySearch();
+  }
+ });
+
  route("risk", async function () {
   await ensureProData();
   if (!isPro()) {
