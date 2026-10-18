@@ -7557,7 +7557,22 @@ function bindZoomHandlers() {
   const memo = allMemos.find((m) => m.id === memoId);
 
   if (memo) {
-   // Single memo view
+   // Single memo view - Pro gate if memo.pro
+   if (memo.pro && !isPro()) {
+    let h = '<div class="crumb"><a href="#/memos" style="color:#8b949e;">CASCADIA MEMOS</a></div>';
+    h += '<div class="hero"><div><h1 class="hero-h">' + esc(memo.title) + '</h1>';
+    h += '<p class="hero-sub">' + esc(memo.date) + ' &middot; <span style="color:#c9a961;">PRO</span></p></div></div>';
+    h += '<div class="section" style="max-width:800px;margin:0 auto;">';
+    h += '<div style="font-size:15px;color:#e8ecf1;line-height:1.8;margin-bottom:16px;">' + esc(memo.excerpt || "") + '</div>';
+    h += gated('<div style="background:#161b26;border:1px solid #c9a961;border-radius:12px;padding:32px;text-align:center;">' +
+      '<div style="font-size:16px;font-weight:700;color:#c9a961;margin-bottom:8px;">Pro members read the full Week Ahead</div>' +
+      '<div style="font-size:14px;color:#e8ecf1;margin-bottom:16px;">Company news, macro, Fed, positioning, and risk model readings for the coming week.</div>' +
+      '<button class="btn" onclick="openProModal()">See Pro Plans</button></div>');
+    h += '<div style="font-size:11px;color:#8b949e;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
+    h += '</div>';
+    app.innerHTML = h;
+    return;
+   }
    let h = '<div class="crumb"><a href="#/memos" style="color:#8b949e;">CASCADIA MEMOS</a></div>';
    h += '<div class="hero"><div><h1 class="hero-h">' + esc(memo.title) + '</h1>';
    h += '<p class="hero-sub">' + esc(memo.date) + '</p></div></div>';
@@ -7628,7 +7643,7 @@ function bindZoomHandlers() {
    allMemos.slice().reverse().forEach((m) => {
     h += '<a href="#/memos/' + esc(m.id) + '" style="text-decoration:none;">';
     h += '<div class="card" style="margin-bottom:16px;cursor:pointer;">';
-    h += '<div style="font-size:11px;color:#8b949e;">' + esc(m.date) + '</div>';
+    h += '<div style="font-size:11px;color:#8b949e;">' + esc(m.date) + (m.pro ? ' &nbsp;<span style="color:#c9a961;font-weight:700;">PRO</span>' : '') + '</div>';
     h += '<div style="font-size:20px;font-weight:700;color:#fff;margin:8px 0;">' + esc(m.title) + '</div>';
     h += '<div style="font-size:14px;color:#8b949e;line-height:1.6;">' + esc(m.excerpt) + '</div>';
     h += '<div style="font-size:13px;color:#c9a961;margin-top:8px;">Read memo →</div>';
