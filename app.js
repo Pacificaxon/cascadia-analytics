@@ -615,6 +615,46 @@ function bindZoomHandlers() {
        document.getElementById("zoom-close").addEventListener("click", close);
        return;
       }
+      // For agency flow (on-demand chart): show enlarged chart
+      if (kind && kind.indexOf("agency-flow-") === 0) {
+       const tk = kind.replace("agency-flow-", "");
+       const a = _agencyCache[tk];
+       if (!a || !a.flowHistory || !a.flowHistory.length) return;
+       let modal = document.getElementById("chart-zoom-modal");
+       if (modal) modal.remove();
+       modal = document.createElement("div");
+       modal.id = "chart-zoom-modal";
+       modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;overflow-y:auto;";
+       modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+        '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Agency Risk Flow, ' + esc(tk) + '</div>' +
+        '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+        '<div style="position:relative;height:400px;"><canvas id="agency-flow-zoom"></canvas></div></div>';
+       document.body.appendChild(modal);
+       const close = () => modal.remove();
+       modal.addEventListener("click", close);
+       document.getElementById("zoom-close").addEventListener("click", close);
+       const zc = document.getElementById("agency-flow-zoom");
+       new Chart(zc, {
+        type: "bar",
+        data: {
+         labels: a.flowHistory.map(function(x) { return x.month; }),
+         datasets: [
+          { label: "Buys ($)", data: a.flowHistory.map(function(x) { return x.buys; }), backgroundColor: "#3fb950" },
+          { label: "Sells ($)", data: a.flowHistory.map(function(x) { return x.sells; }), backgroundColor: "#f85149" }
+         ]
+        },
+        options: {
+         animation: false, responsive: true, maintainAspectRatio: false,
+         plugins: { legend: { labels: { color: "#8b949e", font: { size: 12 } } } },
+         scales: {
+          x: { ticks: { color: "#e8ecf1", font: { size: 12 } }, grid: { display: false } },
+          y: { ticks: { color: "#e8ecf1", font: { size: 12 } }, grid: { color: "rgba(42,46,57,0.4)" } }
+         }
+        }
+       });
+       return;
+      }
       // For skew ticker (HTML, not a Chart.js chart): show enlarged HTML
       if (kind === "skew-ticker") {
        const tk = el.dataset.ticker;
@@ -4504,6 +4544,11 @@ function bindZoomHandlers() {
   h += tickerInsiderHtml(tk);
   h += "</div>";
 
+  // Agency Risk (Pro) - Executive Alignment & Agency Risk Score
+  h += '<div class="section"><div class="section-title">Agency Risk</div>';
+  h += gated("Agency Risk, Pro", "Executive alignment score: insider ownership, open-market Form 4 flow, and pay-for-performance. Detects value traps and mercenary management.", '<div id="agency-risk-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading agency risk data...</div></div><script>loadAgencyRisk("' + tk + '")</script>');
+  h += "</div>";
+
   // Seasonality (Pro) - average monthly returns from price history
   h += '<div class="section"><div class="section-title">Seasonality</div>';
   h += gated("Seasonality, Pro", "Average monthly returns by calendar month, computed from price history.", seasonalityHtml(tk));
@@ -7314,6 +7359,127 @@ function bindZoomHandlers() {
   el.innerHTML = '<div class="card"><p style="color:#8b949e;">Analyzing ' + esc(tk) + "...</p></div>";
   const q = await fetchQuality(tk);
   renderQualityResult(q);
+ }
+ // Agency Risk: on-demand Executive Alignment & Agency Risk Score (PRO).
+ // Backend: /api/alignment edge function (Yahoo Finance, free).
+ let _agencyCache = {};
+ async function fetchAgencyRisk(ticker) {
+  const tk = (ticker || "").toUpperCase().trim();
+  if (!tk) return { error: "No ticker." };
+  if (_agencyCache[tk]) return _agencyCache[tk];
+  try {
+   const res = await fetch("/api/alignment?ticker=" + encodeURIComponent(tk));
+   const j = await res.json();
+   if (j.error) return { error: j.error };
+   _agencyCache[tk] = j;
+   return j;
+  } catch (e) {
+   return { error: "Could not load agency risk data. Try again shortly." };
+  }
+ }
+ function fmtMoney(v) {
+  if (v == null || v === 0) return "$0";
+  const abs = Math.abs(v), sign = v < 0 ? "-" : "";
+  if (abs >= 1e9) return sign + "$" + (abs / 1e9).toFixed(2) + "B";
+  if (abs >= 1e6) return sign + "$" + (abs / 1e6).toFixed(2) + "M";
+  if (abs >= 1e3) return sign + "$" + (abs / 1e3).toFixed(1) + "K";
+  return sign + "$" + abs.toLocaleString();
+ }
+ async function loadAgencyRisk(ticker) {
+  const el = document.getElementById("agency-risk-" + ticker);
+  if (!el) return;
+  const a = await fetchAgencyRisk(ticker);
+  if (a.error) {
+   el.innerHTML = '<div class="card"><p style="color:#8b949e;">' + esc(a.error) + '</p></div>';
+   return;
+  }
+  const s = a.scores;
+  const regimeColor = a.regimeColor === "rose" ? "#f85149" : a.regimeColor === "emerald" ? "#3fb950" : "#d29922";
+  let h = '<div class="card" style="border-left:4px solid ' + regimeColor + ';">';
+  h += '<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">';
+  h += '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">ALIGNMENT SCORE</div>';
+  h += '<div style="font-size:36px;font-weight:700;color:' + regimeColor + ';font-family:monospace;">' + a.alignmentScore + '<span style="font-size:18px;color:#8b949e;">/100</span></div></div>';
+  h += '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">REGIME</div>';
+  h += '<div style="font-size:16px;font-weight:700;color:' + regimeColor + ';">' + esc(a.regime) + '</div></div>';
+  h += '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">INSIDER OWNERSHIP</div>';
+  h += '<div style="font-size:20px;font-weight:700;color:#fff;font-family:monospace;">' + s.skinInTheGame.insiderPercent + '%</div></div>';
+  h += '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">6M NET FLOW</div>';
+  const flowCls = s.convictionFlow.netFlowDollars > 0 ? "#3fb950" : s.convictionFlow.netFlowDollars < 0 ? "#f85149" : "#8b949e";
+  h += '<div style="font-size:20px;font-weight:700;color:' + flowCls + ';font-family:monospace;">' + fmtMoney(s.convictionFlow.netFlowDollars) + '</div></div>';
+  h += '</div>';
+
+  // Three pillars
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;">';
+  h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:12px;">';
+  h += '<div style="font-size:11px;color:#c9a961;font-weight:700;">SKIN IN THE GAME ' + s.skinInTheGame.score + '/' + s.skinInTheGame.max + '</div>';
+  h += '<div style="font-size:13px;color:#e8ecf1;margin-top:4px;">' + s.skinInTheGame.insiderPercent + '% insider ownership</div></div>';
+  h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:12px;">';
+  h += '<div style="font-size:11px;color:#58a6ff;font-weight:700;">CONVICTION FLOW ' + s.convictionFlow.score + '/' + s.convictionFlow.max + '</div>';
+  h += '<div style="font-size:13px;color:#e8ecf1;margin-top:4px;">Buys ' + fmtMoney(s.convictionFlow.buyDollars) + ' / Sells ' + fmtMoney(s.convictionFlow.sellDollars) + '</div></div>';
+  h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:12px;">';
+  h += '<div style="font-size:11px;color:#3fb950;font-weight:700;">PAY-FOR-PERF ' + s.compensation.score + '/' + s.compensation.max + '</div>';
+  h += '<div style="font-size:13px;color:#e8ecf1;margin-top:4px;">' + esc(s.compensation.badge) + '</div>';
+  h += '<div style="font-size:11px;color:#8b949e;">1Y TSR ' + (s.compensation.tsr1y >= 0 ? '+' : '') + s.compensation.tsr1y + '% · ' + esc(s.compensation.ceoName) + '</div></div>';
+  h += '</div>';
+
+  // Flow chart
+  if (a.flowHistory && a.flowHistory.length) {
+   h += '<div class="zoomable-chart" data-chart="agency-flow-' + ticker + '" style="position:relative;height:220px;margin-bottom:12px;cursor:zoom-in;" title="Click to zoom"><canvas id="agency-flow-' + ticker + '"></canvas>';
+   h += '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  }
+
+  // Recent filings
+  if (a.recentFilings && a.recentFilings.length) {
+   h += '<div style="font-size:12px;font-weight:700;color:#fff;margin:12px 0 8px;">Recent Form 4 Filings</div>';
+   h += '<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;color:#e8ecf1;">';
+   h += '<tr style="color:#8b949e;text-align:left;"><th style="padding:6px;">Date</th><th style="padding:6px;">Filer</th><th style="padding:6px;">Type</th><th style="padding:6px;text-align:right;">Shares</th><th style="padding:6px;text-align:right;">Value</th></tr>';
+   a.recentFilings.forEach(function(tx) {
+    const tc = tx.type === "BUY" ? "#3fb950" : "#f85149";
+    h += '<tr style="border-top:1px solid #2a3448;"><td style="padding:6px;">' + esc(tx.date) + '</td><td style="padding:6px;">' + esc(tx.filer) + '</td><td style="padding:6px;color:' + tc + ';font-weight:700;">' + tx.type + '</td><td style="padding:6px;text-align:right;">' + tx.shares.toLocaleString() + '</td><td style="padding:6px;text-align:right;">' + fmtMoney(tx.value) + '</td></tr>';
+   });
+   h += '</table></div>';
+  }
+
+  // Explainer
+  h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;">';
+  h += '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">What this tells you</div>';
+  h += '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;">';
+  h += 'The <b>Agency Risk score</b> measures whether management\'s incentives align with shareholders. ';
+  h += 'High insider ownership means executives feel the same pain as investors. ';
+  h += 'Open-market buying (not option grants) signals genuine conviction. ';
+  h += 'When executives draw large pay packages while the stock drops, that is the classic agency problem: management gets paid regardless of performance.</div>';
+  h += '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Source: Yahoo Finance (SEC Form 4, insider holdings, executive compensation), updated on demand.</div></div>';
+  h += '</div>';
+
+  el.innerHTML = h;
+
+  // Render flow chart
+  const cid = "agency-flow-" + ticker;
+  const canvas = document.getElementById(cid);
+  if (canvas && a.flowHistory && a.flowHistory.length) {
+   try {
+    const existing = Chart.getChart(canvas);
+    if (existing) existing.destroy();
+    new Chart(canvas, {
+     type: "bar",
+     data: {
+      labels: a.flowHistory.map(function(x) { return x.month; }),
+      datasets: [
+       { label: "Buys ($)", data: a.flowHistory.map(function(x) { return x.buys; }), backgroundColor: "#3fb950" },
+       { label: "Sells ($)", data: a.flowHistory.map(function(x) { return x.sells; }), backgroundColor: "#f85149" }
+      ]
+     },
+     options: {
+      animation: false, responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: "#8b949e", font: { size: 10 } } } },
+      scales: {
+       x: { ticks: { color: "#6b7280", font: { size: 10 } }, grid: { display: false } },
+       y: { ticks: { color: "#6b7280", font: { size: 10 } }, grid: { color: "rgba(42,46,57,0.4)" } }
+      }
+     }
+    });
+   } catch (e) { console.error("Agency flow chart error:", e); }
+  }
  }
  route("quality", async function (param) {
   await ensureProData();
