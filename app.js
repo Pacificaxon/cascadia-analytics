@@ -5496,7 +5496,7 @@ function bindZoomHandlers() {
    '<div class="table-wrap"><table class="coverage ma-table" style="color:#e8ecf1;"><thead><tr>' +
    '<th style="color:#a8b0bc;">Period</th><th style="color:#a8b0bc;">Consensus EPS</th><th style="color:#a8b0bc;">Revenue Est.</th><th style="color:#a8b0bc;">7-day</th><th style="color:#a8b0bc;">30-day</th><th style="color:#a8b0bc;">90-day drift</th>' +
    "</tr></thead><tbody>" +
-   row("Upcoming quarter", r.quarter) + row("Full year", r.annual) +
+   row("Upcoming quarter", r && r.quarter) + row("Full year", r && r.annual) +
    '</tbody></table></div><div class="panel-asof" style="color:#a8b0bc;">As of ' + esc(asOf) + " · Source: Yahoo Finance</div></div>";
  }
 
