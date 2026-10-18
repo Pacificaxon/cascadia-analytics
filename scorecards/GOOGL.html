@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GOOGL Investment Scorecard</title>
+<style>
+:root { --accent: #2471a3; --ink: #1a1a1a; --muted: #666; --line: #ddd; --bg: #fff; --card: #f8f9fa; }
+:root[data-theme="dark"] { --ink: #e8e8e8; --muted: #aaa; --line: #444; --bg: #1a1a1a; --card: #2a2a2a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink: #e8e8e8; --muted: #aaa; --line: #444; --bg: #1a1a1a; --card: #2a2a2a; } }
+* { box-sizing: border-box; }
+body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); max-width: 900px; margin: 0 auto; padding: 24px; font-size: 14px; line-height: 1.5; }
+h1 { font-size: 28px; margin: 0; } h2 { font-size: 18px; margin: 24px 0 8px; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 16px; }
+.ticker { font-size: 32px; font-weight: 800; color: var(--accent); }
+.price { font-size: 24px; font-weight: 700; text-align: right; }
+.sub { color: var(--muted); font-size: 13px; }
+.tag { display: inline-block; font-size: 10px; background: #e8f0fe; color: #1a56db; border-radius: 3px; padding: 1px 5px; margin-left: 4px; vertical-align: middle; white-space: nowrap; }
+:root[data-theme="dark"] .tag { background: #1a3a5c; }
+.page1-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; margin: 16px 0; }
+.score-card { border: 1px solid var(--line); border-radius: 8px; padding: 16px; text-align: center; }
+.gauge { width: 100%; max-width: 240px; }
+.gauge-num { font-size: 42px; font-weight: 800; fill: var(--ink); }
+.gauge-band { font-size: 13px; font-weight: 700; fill: var(--muted); letter-spacing: 1px; }
+.conf { color: var(--muted); font-size: 13px; margin-top: 8px; }
+.pillar { margin: 12px 0; }
+.pillar-head { display: flex; align-items: center; gap: 10px; }
+.pillar-name { font-weight: 700; min-width: 150px; }
+.bar { flex: 1; height: 12px; background: #e0e0e0; border-radius: 6px; overflow: hidden; }
+.fill { height: 100%; border-radius: 6px; }
+.pillar-score { font-weight: 800; font-size: 16px; min-width: 30px; text-align: right; font-variant-numeric: tabular-nums; }
+.pillar-why { color: var(--muted); font-size: 13px; margin: 4px 0 0 160px; }
+.thesis { border: 1px solid var(--line); border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+.thesis li { margin: 8px 0; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+td.num, th.num { text-align: right; }
+.val-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.val-box { background: var(--card); border-radius: 8px; padding: 12px; }
+.val-box h3 { margin: 0 0 8px; font-size: 14px; color: var(--accent); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.catalyst { border-left: 3px solid var(--accent); padding: 6px 0 6px 12px; margin: 10px 0; }
+.cat-date { font-weight: 700; color: var(--accent); }
+.risk-head { color: #c0392b; }
+.scrollx { overflow-x: auto; }
+.disclaimer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); margin-top: 24px; padding-top: 12px; }
+.disclaimer-strong { font-weight: 700; text-align: center; margin-top: 8px; }
+.missing { font-size: 12px; color: var(--muted); }
+@media print {
+  @page { margin: 0.6in; }
+  body { padding: 0; }
+  .page-break { page-break-before: always; }
+  .disclaimer { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE ONE -->
+<div class="header">
+  <div><div class="ticker">GOOGL</div><div class="sub">Alphabet Inc. (NASDAQ)</div>
+  <div class="sub">As-of: 2026-10-18 | Latest Filing: Q2 2026 10-Q (filed July 2026) | Currency: USD</div></div>
+  <div><div class="price">$340.59 <span class="tag">[Yahoo Finance]</span></div><div class="sub">Market Cap: $4.19T <span class="tag">[Yahoo Finance]</span></div></div>
+</div>
+
+<div class="page1-grid">
+  <div class="score-card">
+    <h2 style="border:none;margin:0 0 8px">Attractiveness Score</h2>
+    
+    <svg viewBox="0 0 200 110" class="gauge">
+      <path d="M 20 95 A 80 80 0 0 1 180 95" fill="none" stroke="#e0e0e0" stroke-width="18" stroke-linecap="round"/>
+      <path d="M 20 95 A 80 80 0 0 1 134.1 22.6" fill="none" stroke="#f1c40f" stroke-width="18" stroke-linecap="round"/>
+      <text x="100" y="78" text-anchor="middle" class="gauge-num">64</text>
+      <text x="100" y="98" text-anchor="middle" class="gauge-band">FAIR</text>
+    </svg>
+    <div class="conf">Confidence: <strong>High</strong> (0 pillars excluded)</div>
+  </div>
+  <div>
+    <h2 style="border:none;margin:0 0 4px">Pillar Breakdown</h2>
+    
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">1. Operating Quality</span>
+        <div class="bar"><div class="fill" style="width:88%;background:#f39c12"></div></div>
+        <span class="pillar-score">88</span></div>
+      <div class="pillar-why">One of the highest-quality businesses in the market: 32-36% operating margins, $129B FY2025 operating income, and a fortress balance sheet (now levering deliberately for the AI build, $112.8B debt vs $242.5B cash plus securities). ROIC remains elite on the ad franchise.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">2. Recent Trend</span>
+        <div class="bar"><div class="fill" style="width:72%;background:#2471a3"></div></div>
+        <span class="pillar-score">72</span></div>
+      <div class="pillar-why">Revenue accelerating: Q1 2026 +21.8%, Q2 2026 +24.4% YoY; Google Cloud +82% YoY; operating margin expanded to 34-36%. Offset by Q2 free cash flow turning negative ($5.9B) as capex doubled, and the stock's 3.8% September selloff on AI-agent disruption fears.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">3. Forward Growth</span>
+        <div class="bar"><div class="fill" style="width:85%;background:#1e8449"></div></div>
+        <span class="pillar-score">85</span></div>
+      <div class="pillar-why">Google Cloud carries a $514B backlog (nearly doubled in twelve months) with tripled operating income; Gemini app at 950M MAU processing 22B tokens per minute; TPU system sales to external customers beginning; Waymo valued at $126B after a $16B round. Multiple compounding growth engines.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">4. Valuation</span>
+        <div class="bar"><div class="fill" style="width:25%;background:#e74c3c"></div></div>
+        <span class="pillar-score">25</span></div>
+      <div class="pillar-why">Our DCF base target is $130.54 vs $340.59 (-61.6%); even the Bull case ($243.03) sits 29% below the price. The reverse DCF shows the market pricing a ~63% five-year revenue CAGR. At 8.5x FY2026E revenue with FCF under acute capex pressure, the multiple discounts perfection.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">5. Catalysts & Risk</span>
+        <div class="bar"><div class="fill" style="width:55%;background:#2471a3"></div></div>
+        <span class="pillar-score">55</span></div>
+      <div class="pillar-why">Near-term catalysts: Q3 2026 earnings (~Oct 29), 2027 capex budget signal, Waymo expansion. But the risk ledger is heavy: a $200B+ annual capex supercycle with uncertain returns, Meta's Muse agent bypassing the search results page, ad-tech and search antitrust remedies, and YouTube share pressure.</div>
+    </div>
+  </div>
+</div>
+
+<div class="thesis">
+  <h2 style="border:none;margin:0 0 8px">Investment Thesis</h2>
+  <ul><li><strong>The business is exceptional but the price discounts perfection:</strong> Alphabet owns the two most durable franchises in technology, Search and YouTube, plus the fastest-scaling cloud business in the industry. Our framework rates the business Attractive on quality, growth, and trend, yet the DCF puts fair value far below the market price. This is a great company at a demanding price.</li><li><strong>The capex supercycle is the crux of the valuation debate:</strong> Management guided 2026 capex to $195-205B and signaled a significant increase again in 2027. Q2 free cash flow turned negative for the first time as $44.9B of quarterly capex exceeded $39.1B of operating cash flow. The bull case requires this spend to convert into durable Cloud and AI revenue at high incremental margins; the bear case is a multi-year ROI shortfall.</li><li><strong>Cloud is the growth engine, Search is the cash engine under watch:</strong> Google Cloud revenue grew 82% YoY to $24.8B with operating income tripling to $8.8B and a $514B contracted backlog. Search keeps compounding, but Meta's Muse agent (2.8M downloads in twelve days) and court-ordered data-sharing remedies are the first credible threats to the ad moat in two decades.</li><li><strong>Valuation verdict: Hold, Valuation Concerns:</strong> Our probability-blended DCF target is $141.22, implying -58.5% downside from $340.59. Per our rating rules, an overvalued but healthy business is a Hold on valuation concerns, not a Sell. We would turn constructive on a capex normalization signal, a Search monetization re-acceleration, or a materially lower entry price.</li></ul>
+</div>
+
+<h2>Key Operating Metrics</h2>
+<div class="scrollx"><table>
+<tr><th>Metric</th><th class="num">Latest</th><th class="num">YoY Change</th><th class="num">3Y Trend</th></tr>
+<tr><td>Q2 2026 Revenue</td><td class="num">$120.0B <span class="tag">[10-Q]</span></td><td class="num">+24.4% YoY <span class="tag">[10-Q]</span></td><td class="num">Accelerating</td></tr><tr><td>Q2 2026 Operating Margin</td><td class="num">34.0% <span class="tag">[10-Q]</span></td><td class="num">+1.9pp <span class="tag">[10-Q]</span></td><td class="num">Expanding</td></tr><tr><td>Google Cloud Q2 Revenue</td><td class="num">$24.8B <span class="tag">[Earnings call]</span></td><td class="num">+82% YoY <span class="tag">[Earnings call]</span></td><td class="num">Hypergrowth</td></tr><tr><td>Cloud Backlog</td><td class="num">$514B <span class="tag">[Earnings call]</span></td><td class="num">~2x <span class="tag">[Earnings call]</span></td><td class="num">Surging</td></tr><tr><td>2026 Capex Guidance</td><td class="num">$195-205B <span class="tag">[Earnings call]</span></td><td class="num">+119% vs 2025 <span class="tag">[10-K]</span></td><td class="num">Supercycle</td></tr><tr><td>Q2 2026 Free Cash Flow</td><td class="num">-$5.9B <span class="tag">[Earnings call]</span></td><td class="num">First negative <span class="tag">[Earnings call]</span></td><td class="num">Pressured</td></tr>
+</table></div>
+
+<!-- PAGE TWO -->
+<div class="page-break"></div>
+
+<h2>Historical Financial Trend</h2>
+<div class="scrollx"><table>
+<tr><th>Metric</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025</th><th class="num">H1 2026</th></tr>
+<tr><td>Revenue ($B)</td><td class="num">282.8 <span class="tag">[10-K]</span></td><td class="num">307.4 <span class="tag">[10-K]</span></td><td class="num">350.0 <span class="tag">[10-K]</span></td><td class="num">402.8 <span class="tag">[10-K]</span></td><td class="num">229.7 <span class="tag">[10-Q]</span></td></tr><tr><td>Operating income ($B)</td><td class="num">74.8 <span class="tag">[10-K]</span></td><td class="num">84.3 <span class="tag">[10-K]</span></td><td class="num">112.4 <span class="tag">[10-K]</span></td><td class="num">129.0 <span class="tag">[10-K]</span></td><td class="num">80.5 <span class="tag">[10-Q]</span></td></tr><tr><td>Operating margin</td><td class="num">26.5% <span class="tag">[10-K]</span></td><td class="num">27.4% <span class="tag">[10-K]</span></td><td class="num">32.1% <span class="tag">[10-K]</span></td><td class="num">32.0% <span class="tag">[10-K]</span></td><td class="num">35.0% <span class="tag">[10-Q]</span></td></tr><tr><td>Free cash flow ($B)</td><td class="num">60.0 <span class="tag">[10-K]</span></td><td class="num">69.5 <span class="tag">[10-K]</span></td><td class="num">72.8 <span class="tag">[10-K]</span></td><td class="num">73.3 <span class="tag">[10-K]</span></td><td class="num">N/A <span class="tag">[]</span></td></tr><tr><td>Capex ($B)</td><td class="num">31.5 <span class="tag">[10-K]</span></td><td class="num">32.3 <span class="tag">[10-K]</span></td><td class="num">52.5 <span class="tag">[10-K]</span></td><td class="num">91.4 <span class="tag">[10-K]</span></td><td class="num">80.6 <span class="tag">[10-Q]</span></td></tr>
+</table></div>
+
+<h2>Valuation</h2>
+<div class="val-grid">
+  <div class="val-box"><h3>Absolute (3/10)</h3><p>DCF base <strong>$130.54</strong> vs $340.59 (-61.6%). Blended (25/50/25) <strong>$141.22</strong>. Even the $243.03 Bull case is 29% below the price. 8.9% WACC (live CAPM), 2.5% terminal growth.</p></div>
+  <div class="val-box"><h3>Versus Peers (4/8)</h3><p>At ~8.5x FY2026E revenue and 22.8x forward earnings, GOOGL trades at a premium to slower-growing mega-caps but in line with AI-infrastructure peers. The premium is unsupported by near-term FCF, which is negative under the capex load.</p></div>
+  <div class="val-box"><h3>Versus History (3/7)</h3><p>Historically GOOGL traded at 18-25x earnings with 20%+ FCF margins. The current multiple embeds flawless AI-capex ROI; any guide-down in Cloud growth or capex discipline re-rates the multiple lower, as the September 3.8% selloff previewed.</p></div>
+</div>
+
+<div class="two-col">
+<div>
+<h2>Catalyst Timeline</h2>
+<div class="catalyst"><span class="cat-date">~Oct 29, 2026 <span class="tag">[Earnings calendar]</span></span><br>Q3 2026 earnings: watch Search and Cloud growth, capex run-rate, and FCF trajectory.</div><div class="catalyst"><span class="cat-date">Q4 2026 <span class="tag">[Management guidance]</span></span><br>2027 capex budget signal: a below-$200B guide with Cloud margins intact would be the single biggest positive re-rating event.</div><div class="catalyst"><span class="cat-date">2027 <span class="tag">[Earnings call]</span></span><br>TPU system sales ramp to external customers, a new hardware revenue stream.</div><div class="catalyst"><span class="cat-date">Ongoing <span class="tag">[Company disclosure]</span></span><br>Waymo city expansion and international launches following the $16B round at a $126B valuation.</div>
+<h2>What Would Change Our Score</h2>
+<p>A credible 2027 capex normalization (below $200B with Cloud margins holding), Search monetization re-accelerating past AI-agent fears, or a 10Y yield decline cutting our ~8.9% WACC would lift the DCF materially. Conversely, another capex guide raise, Cloud deceleration, or Search share loss would cut it further.</p>
+</div>
+<div>
+<h2>Top Risk Factors (Item 1A)</h2>
+<p><strong class="risk-head">1. AI capex ROI shortfall:</strong> $195-205B of 2026 capex (up ~119% YoY), rising again in 2027, with Q2 FCF already negative. If Cloud and AI revenue do not compound fast enough, shareholders fund a multi-year build with no return. <span class="tag">[Earnings call]</span></p><p><strong class="risk-head">2. Search disruption:</strong> Meta's Muse agent bypasses the search results page where Google's ad auction operates; 2.8M downloads in twelve days triggered a 3.8% selloff. Agentic AI is the first structural threat to Search monetization. <span class="tag">[Market coverage]</span></p><p><strong class="risk-head">3. Regulatory remedies:</strong> Ad-tech rulings require business changes and the search case forces data sharing with competitors plus limits on exclusive distribution deals, chipping at structural advantages. <span class="tag">[Court rulings]</span></p><p><strong class="risk-head">4. Valuation:</strong> The market prices a ~63% five-year revenue CAGR per our reverse DCF. Any growth disappointment against that bar implies sharp multiple compression. <span class="tag">[Cascadia DCF]</span></p><p><strong class="risk-head">5. YouTube competition:</strong> Q2 YouTube ad revenue missed estimates on competition and shifting marketing budgets, removing a cushion that usually offsets Cloud investment pressure. <span class="tag">[Earnings coverage]</span></p>
+<h2>Forward Growth Drivers</h2>
+<ul><li>Google Cloud hypergrowth: +82% YoY revenue, tripled operating income, $514B contracted backlog converting over 24 months. <span class="tag">[Earnings call]</span></li><li>Gemini scale: 950M MAU, 22B API tokens per minute, deepening enterprise AI adoption on Google infrastructure. <span class="tag">[Earnings call]</span></li><li>TPU monetization: first external sales of complete TPU systems, a new hardware revenue stream from 2027. <span class="tag">[Earnings call]</span></li><li>Capital return: Berkshire Hathaway's $10B endorsement; ongoing buybacks steadily reduce share count (12.9B to 12.3B diluted since the split). <span class="tag">[13F / 10-Q]</span></li></ul>
+</div>
+</div>
+
+<div class="missing">
+<h2>Missing / Modified Data Log</h2>
+<ul><li>FY2026E revenue ($490B) is an estimate: H1 2026 actual $229.7B plus H2 estimated at the +20% YoY pace of recent quarters; Q3 2026 reports ~Oct 29, 2026.</li><li>Marketable securities ($186.6B, incl. $87.1B equity investments) excluded from net debt; conservative treatment.</li><li>Whisper/consensus estimates not available from free sources; growth CAGRs are Cascadia scenario assumptions.</li></ul>
+</div>
+
+<div class="disclaimer">
+This scorecard is for educational and informational purposes only. It is not financial, investment, or tax advice, and nothing here is a recommendation to buy or sell any security. It is generated by an AI model and does not consider your individual circumstances. All figures are approximate, may be out of date, and are not guaranteed to be accurate. Verify independently and consult a licensed professional before investing. You are responsible for your own investment decisions.
+<div class="disclaimer-strong">Not financial advice. For educational purposes only. Do your own research.</div>
+</div>
+
+</body>
+</html>
