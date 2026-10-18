@@ -7127,6 +7127,35 @@ function bindZoomHandlers() {
   return h;
  }
 
+ // Composite risk banner for the free daily snapshot: overall assessment
+ // across all risk models. Computed in build.py; auto-picks up new models.
+ function compositeBanner() {
+  const rh = D.risk_headlines || {};
+  const comp = rh.composite || {};
+  if (comp.score == null) return "";
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+  const c = colorMap[comp.color] || "#e8ecf1";
+  const comps = comp.components || [];
+  // Top 3 risk contributors
+  const top = comps.slice().sort((a, b) => b.risk - a.risk).slice(0, 3);
+  const nameMap = { correction_risk: "Correction", liquidity_drain: "Liquidity", rv_shock: "RV Shock",
+   contagion: "Contagion", flow_divergence: "Flow Div.", concentration: "Concentration",
+   margin_leverage: "Margin Lev.", sector_rotation: "Rotation", fear_index: "Fear" };
+  let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+   '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8b949e;letter-spacing:1px;">OVERALL RISK</div>' +
+   '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8b949e;">/100</span></div>' +
+   '<div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(comp.regime || "") + "</div></div>" +
+   '<div style="flex:1;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models (equal-weighted)</div>' +
+   '<div style="display:flex;gap:12px;flex-wrap:wrap;">';
+  top.forEach((t) => {
+   const tc = t.risk >= 70 ? "#f85149" : t.risk >= 50 ? "#d29922" : "#8b949e";
+   h += '<div style="font-size:12px;"><span style="color:#8b949e;">' + esc(nameMap[t.model] || t.model) + '</span> ' +
+    '<span style="color:' + tc + ';font-weight:700;">' + t.risk + "</span></div>";
+  });
+  h += '</div><div style="font-size:11px;color:#8b949e;margin-top:8px;">Highest risk contributors right now</div></div></div>';
+  return h;
+ }
+
  route("risk", async function () {
   await ensureProData();
   if (!isPro()) {
@@ -7158,6 +7187,7 @@ function bindZoomHandlers() {
     '<div class="section"><div class="section-title">Daily Snapshot <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>' +
     ' <span style="font-size:11px;color:#8b949e;font-weight:400;">as of ' + esc((D.generated_at || "").slice(0, 10)) + '</span></div>' +
     '<div class="section-sub">Current scores, free. The full breakdown, charts, history, and in-depth analysis are Pro.</div>' +
+    compositeBanner() +
     '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">' +
     card("Correction Risk", cr.score, cr.regime, cr.color) +
     card("Liquidity Drain", ld.score, ld.regime, ld.color) +
@@ -7176,6 +7206,7 @@ function bindZoomHandlers() {
   let h = '<div class="crumb">RISK MODELS</div>' +
    '<div class="hero"><div><h1 class="hero-h">Risk Models</h1>' +
    "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>";
+  h += compositeBanner();
   h += correctionRiskHtml();
   h += liquidityDrainHtml();
   h += rvShockHtml();
