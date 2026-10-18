@@ -221,6 +221,7 @@
    if (sections.rv_shock) flat.rv_shock = sections.rv_shock;
    if (sections.contagion) flat.contagion = sections.contagion;
    if (sections.dynamic_concentration) flat.dynamic_concentration = sections.dynamic_concentration;
+   if (sections.margin_leverage) flat.margin_leverage = sections.margin_leverage;
    if (sections.trend_signals) flat.trend_signals = sections.trend_signals;
    if (sections.flow_divergence) flat.flow_divergence = sections.flow_divergence;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
@@ -582,6 +583,7 @@ function bindZoomHandlers() {
        "contagion": "Cross-Asset Contagion Tracker",
        "flow-divergence": "Institutional Flow Divergence",
        "concentration": "Dynamic Concentration Risk Gauge",
+       "margin-leverage": "Systemic Leverage, Margin YoY vs SPY YoY",
        cot: "Commitments of Traders",
        macro: "Macroeconomic Analysis",
        leadership: "Market Leadership, MLS by Component",
@@ -2208,7 +2210,7 @@ function bindZoomHandlers() {
   let h = '<div class="crumb">MACRO INTELLIGENCE · DCF COVERAGE</div>';
   h += '<div class="hero"><div>' +
    '<h1 class="hero-h" style="color:var(--gold);">The signals moving markets, in one research view.</h1>' +
-   "<p class='hero-sub' style=\"color:var(--gold);opacity:0.85;\">Track macro releases and central-bank commentary, gauge market risk across seven quantitative models, " +
+   "<p class='hero-sub' style=\"color:var(--gold);opacity:0.85;\">Track macro releases and central-bank commentary, gauge market risk across eight quantitative models, " +
    "screen 500+ stocks on quality and momentum factors, then move directly into company valuation work across " + ORDER.length + " DCF-covered names.</p></div>" +
    '<div class="hero-right">' +
    '<div class="statbox"><div class="mono-label">Coverage</div><div class="statbox-v">' + ORDER.length + " DCF models</div></div>" +
@@ -6799,8 +6801,65 @@ function bindZoomHandlers() {
   return h;
  }
 
- function flowDivergenceHtml() {
-  const F = D.flow_divergence || {};
+ function marginLeverageHtml() {
+  const M = D.margin_leverage || {};
+  if (M.score == null) {
+   return '<div class="section"><div class="section-title">Systemic Leverage Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="card"><p style="color:var(--muted)">Margin debt data unavailable. Check back after the next refresh.</p></div></div>';
+  }
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+  const c = colorMap[M.color] || "#e8ecf1";
+  const m = M.metrics || {};
+  const stale = M.metadata && M.metadata.stale;
+
+  let h = '<div class="section"><div class="section-title">Systemic Leverage Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section-sub">How much traders are borrowing to buy stocks. Leverage measures what investors are actually doing with their money, not just how they feel.</div>';
+
+  // Score banner
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(M.regime || "") + "</div>" +
+   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">Margin debt $' + (m.debtB != null ? m.debtB.toLocaleString() : "-") + "B" +
+   (m.marginYoY != null ? " · YoY " + (m.marginYoY >= 0 ? "+" : "") + m.marginYoY + "%" : "") +
+   (m.zScore != null ? " · Leverage z-score " + (m.zScore >= 0 ? "+" : "") + m.zScore : "") + "</div>";
+  if (M.capitulation) {
+   h += '<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(63,185,80,0.1);border:1px solid #3fb950;font-size:12px;color:#3fb950;font-weight:700;">CAPITULATION REACHED: forced liquidations exhausted. Historically a contrarian buy signal.</div>';
+  }
+  if (m.divergence) {
+   h += '<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(210,153,34,0.1);border:1px solid #d29922;font-size:12px;color:#d29922;font-weight:700;">LEVERAGE DIVERGENCE: market rising while borrowing falls. The rally is running on fumes.</div>';
+  }
+  h += "</div></div>";
+
+  // Score breakdown
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
+  (M.scoreBreakdown || []).forEach((b) => {
+   const bc = b.points >= 30 ? "#f85149" : b.points > 0 ? "#d29922" : "#3fb950";
+   h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
+    '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + esc(b.metric) + "</div>" +
+    '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + " (" + b.points + " pts)</div>" +
+    '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
+  });
+  h += "</div>";
+
+  // Chart: margin YoY vs SPY YoY
+  h += '<div class="zoomable-chart" data-chart="margin-leverage" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="margin-leverage-chart"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '<div class="panel-asof">As of ' + esc((M.metadata && M.metadata.latestDataMonth) || (M.as_of || "").slice(0, 7)) + " (FINRA monthly)" + (stale ? " · showing last available" : "") + "</div>";
+
+  // Explainer AFTER visuals (standing rule)
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+   '<b style="color:#e8ecf1;">The simple version:</b> This tracks how much money stock traders are borrowing to buy shares. When borrowing explodes, it means euphoria: everyone is maxing out to chase the rally. When borrowing collapses, it means forced selling is over and the weak hands are gone. Sentiment surveys tell you how people feel; this tells you what they are doing with real money.<br><br>' +
+   '<b style="color:#e8ecf1;">For long-term investors:</b> Ignore headlines about margin debt hitting "record highs": in dollar terms it almost always does during a bull market. What matters is the growth rate. When year-over-year growth passes 35%, the market has historically been close to a top. When it drops below negative 15%, forced liquidations are usually finished and that has marked major bottoms. This data updates monthly, so treat it as a slow background gauge, not a trading signal.<br><br>' +
+   '<b style="color:#e8ecf1;">For active traders:</b> Watch for the divergence: the S&P making new highs while margin debt shrinks. That means the rally is running on multiple expansion rather than fresh leveraged capital, and it has preceded major tops by months. A z-score above 2 on the debt-to-market ratio means the market is structurally over-levered and vulnerable to a sharp flush on any catalyst.' +
+   "</div></div>";
+
+  h += "</div>";
+  return h;
+ }
+
+ function flowDivergenceHtml() {  const F = D.flow_divergence || {};
   if (!F.current) {
    return '<div class="section"><div class="section-title">Institutional Flow Divergence <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     '<div class="card"><p style="color:var(--muted)">Flow divergence data unavailable. Check back after the next refresh.</p></div></div>';
@@ -6964,6 +7023,7 @@ function bindZoomHandlers() {
    const cg = rh.contagion || {};
    const fd = rh.flow_divergence || {};
    const dc = rh.concentration || {};
+   const ml = rh.margin_leverage || {};
    const fi = rh.fear_index || {};
    const fiColor = fi.score >= 75 ? "rose" : fi.score >= 55 ? "amber" : fi.score >= 45 ? "slate" : "emerald";
    const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
@@ -6988,9 +7048,10 @@ function bindZoomHandlers() {
     card("Contagion", cg.score, cg.regime, cg.color) +
     card("Flow Divergence", fd.score, fd.regime, fd.color) +
     card("Concentration", dc.score, dc.regime, dc.color) +
+    card("Margin Leverage", ml.score, ml.regime, ml.color) +
     card("Fear Index", fi.score, fi.regime, fiColor) +
     "</div>" +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;
    return;
   }
@@ -7003,6 +7064,7 @@ function bindZoomHandlers() {
   h += contagionHtml();
   h += flowDivergenceHtml();
   h += concentrationHtml();
+  h += marginLeverageHtml();
   h += fearIndexHtml();
   app.innerHTML = h;
   bindZoomHandlers();
@@ -7140,6 +7202,31 @@ function bindZoomHandlers() {
      }},
    });
   }
+  // Draw margin leverage chart (margin YoY vs SPY YoY)
+  const ML = D.margin_leverage || {};
+  const mlHist = ML.history || [];
+  const mlCv = document.getElementById("margin-leverage-chart");
+  if (mlCv && mlHist.length && window.Chart) {
+   const oldMl = Chart.getChart(mlCv);
+   if (oldMl) oldMl.destroy();
+   new Chart(mlCv, {
+    data: {
+     labels: mlHist.map((r) => r.date),
+     datasets: [
+      { type: "line", label: "Margin Debt YoY (%)", data: mlHist.map((r) => r.marginYoY),
+        borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+      { type: "line", label: "SPY YoY (%)", data: mlHist.map((r) => r.spyYoY),
+        borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2 },
+     ]},
+    options: { animation: false, responsive: true, maintainAspectRatio: false,
+     interaction: { mode: "index", intersect: false },
+     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     scales: {
+      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
+      y: {ticks: {color: "#8b949e", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+     }},
+   });
+  }
  });
 
  /* ================= PRICING ================= */
@@ -7190,7 +7277,7 @@ function bindZoomHandlers() {
    '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
-   '<li>✓ All 7 Risk Models in full: Correction Risk, Liquidity Drain, RV Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Fear Index, with charts, history, and plain-English explainers</li>' +
+   '<li>✓ All 8 Risk Models in full: Correction Risk, Liquidity Drain, RV Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Fear Index, with charts, history, and plain-English explainers</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
    '<li>✓ Full market internals suite: Volatility Divergence, Alligator Jaw, Credit Spreads vs VIX, Market Breadth, Theme Rotation, Small/Mid Cap Monitor, RSI Cyclicals vs Defensives, Macroeconomic Analysis</li>' +

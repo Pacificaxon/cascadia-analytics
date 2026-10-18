@@ -469,6 +469,7 @@ def main():
         "contagion": load(os.path.join(MR, "contagion.json")) if os.path.exists(os.path.join(MR, "contagion.json")) else {},
         "flow_divergence": load(os.path.join(MR, "flow_divergence.json")) if os.path.exists(os.path.join(MR, "flow_divergence.json")) else {},
         "dynamic_concentration": load(os.path.join(MR, "dynamic_concentration.json")) if os.path.exists(os.path.join(MR, "dynamic_concentration.json")) else {},
+        "margin_leverage": load(os.path.join(MR, "margin_leverage.json")) if os.path.exists(os.path.join(MR, "margin_leverage.json")) else {},
         "trend_signals": load(os.path.join(MR, "trend_signals.json")) if os.path.exists(os.path.join(MR, "trend_signals.json")) else {},
         "transcript_tone": load(os.path.join(MR, "transcript_tone.json")) if os.path.exists(os.path.join(MR, "transcript_tone.json")) else {},
     }
@@ -520,6 +521,9 @@ def main():
         "concentration": {"score": pro_sections.get("dynamic_concentration", {}).get("score"),
                           "regime": pro_sections.get("dynamic_concentration", {}).get("regime"),
                           "color": pro_sections.get("dynamic_concentration", {}).get("color")},
+        "margin_leverage": {"score": pro_sections.get("margin_leverage", {}).get("score"),
+                          "regime": pro_sections.get("margin_leverage", {}).get("regime"),
+                          "color": pro_sections.get("margin_leverage", {}).get("color")},
         "fear_index": {"score": pro_sections.get("fear_index", {}).get("fear_index"),
                        "regime": pro_sections.get("fear_index", {}).get("sentiment")},
     }
