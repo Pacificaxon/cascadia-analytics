@@ -2448,7 +2448,7 @@ function bindZoomHandlers() {
   const panels = D.panels || [];
   let h = '<div class="crumb">MARKET INTERNALS · VOLATILITY · MACRO</div>';
   h += '<div class="hero"><div>' +
-   '<h1 class="hero-h">Market Internals.</h1>' +
+   '<h1 class="hero-h">Market Internals</h1>' +
    "<p class='hero-sub'>Breadth, positioning, volatility, and macro, the market\u2019s internal risk signals in one view.</p></div>" +
    '</div>';
 
@@ -4082,7 +4082,7 @@ function bindZoomHandlers() {
   if (!isPro()) {
    app.innerHTML = '<div class="crumb">MORNING BRIEFING</div>' +
     '<div class="hero"><div>' +
-    '<h1 class="hero-h">Morning Briefing.</h1>' +
+    '<h1 class="hero-h">Morning Briefing</h1>' +
     "<p class='hero-sub'>Institutional-grade briefing synthesizing macro, internals, and derivatives positioning. Updated every trading morning.</p></div></div>" +
     '<div class="section"><div class="section-title">Morning Market Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     proTeaser("Morning Briefing, Pro", "Institutional-grade morning briefing: macro, internals, gamma positioning, and what to watch today.") + "</div>";
@@ -4091,7 +4091,7 @@ function bindZoomHandlers() {
   const r = D.market_analysis_report;
   let h = '<div class="crumb">MORNING BRIEFING</div>';
   h += '<div class="hero"><div>' +
-   '<h1 class="hero-h">Morning Briefing.</h1>' +
+   '<h1 class="hero-h">Morning Briefing</h1>' +
    "<p class='hero-sub'>Institutional-grade briefing synthesizing macro, internals, and derivatives positioning. Updated every trading morning.</p></div></div>";
   // Pre-market cross-asset snapshot (Pro)
   h += premarketHtml();
@@ -4169,7 +4169,7 @@ function bindZoomHandlers() {
 
   let h = '<div class="crumb">PRO · EMAIL ALERTS</div>';
   h += '<div class="hero"><div>' +
-   '<h1 class="hero-h">Market Alerts.</h1>' +
+   '<h1 class="hero-h">Market Alerts</h1>' +
    "<p class='hero-sub'>Get notified when the monitors you care about update. Toggle any tracker below.</p></div></div>";
   h += '<div class="section"><div class="section-title">Your Alert Subscriptions</div>' +
    '<div class="section-sub">We\'ll email you at ' + esc(authUser ? authUser.email : "") + ' when these update.</div>' +
@@ -6600,7 +6600,7 @@ function bindZoomHandlers() {
   await ensureProData();
   if (!isPro()) {
    app.innerHTML = '<div class="crumb">EARNINGS DASHBOARD</div>' +
-    '<div class="hero"><div><h1 class="hero-h">Earnings Dashboard.</h1>' +
+    '<div class="hero"><div><h1 class="hero-h">Earnings Dashboard</h1>' +
     "<p class='hero-sub'>8 quarters of earnings surprises and price reactions for every covered ticker.</p></div></div>" +
     '<div class="section"><div class="section-title">Earnings Dashboard <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     proTeaser("Earnings Dashboard, Pro", "Track earnings beats/misses and 1-day price reactions across 8 quarters for all covered tickers.") + "</div>";
@@ -6665,7 +6665,7 @@ function bindZoomHandlers() {
    return h;
   };
   let h = '<div class="crumb">PRO · EARNINGS DASHBOARD</div>' +
-   '<div class="hero"><div><h1 class="hero-h">Earnings Dashboard.</h1>' +
+   '<div class="hero"><div><h1 class="hero-h">Earnings Dashboard</h1>' +
    "<p class='hero-sub'>8 quarters of earnings surprises and 1-day price reactions for every covered ticker. Refreshed every trading morning.</p></div></div>";
   h += '<div class="section"><div class="section-title">Earnings Dashboard <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
   h += '<div class="card" style="margin-bottom:16px;"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;"><span style="font-size:12px;color:var(--muted);">Ticker:</span>';
@@ -6684,7 +6684,7 @@ function bindZoomHandlers() {
   await ensureProData();
   if (!isPro()) {
    app.innerHTML = '<div class="crumb">COMPS MATRIX</div>' +
-    '<div class="hero"><div><h1 class="hero-h">Relative Valuation.</h1>' +
+    '<div class="hero"><div><h1 class="hero-h">Relative Valuation</h1>' +
     "<p class='hero-sub'>Cross-reference DCF values with regression-modeled peer multiples.</p></div></div>" +
     '<div class="section"><div class="section-title">Comps Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     proTeaser("Comps Matrix, Pro", "OLS regression of EV/Revenue and P/E against NTM growth across all " + ORDER.length + " tickers. Find discounted growth and stretched multiples.") + "</div>";
@@ -6700,7 +6700,7 @@ function bindZoomHandlers() {
   const discounts = [...recs].sort((a, b) => a.evRevDiscountPct - b.evRevDiscountPct).slice(0, 3);
   const premiums = [...recs].sort((a, b) => b.evRevDiscountPct - a.evRevDiscountPct).slice(0, 3);
   let h = '<div class="crumb">COMPS MATRIX</div>' +
-   '<div class="hero"><div><h1 class="hero-h">Relative Valuation.</h1>' +
+   '<div class="hero"><div><h1 class="hero-h">Relative Valuation</h1>' +
    "<p class='hero-sub'>NTM growth vs trading multiples with OLS peer regression. Updated " + esc((meta.lastUpdated || "").slice(0, 10)) + ".</p></div></div>";
   // Anomaly cards
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px;">';
@@ -7521,7 +7521,7 @@ function bindZoomHandlers() {
   await ensureProData();
   if (!isPro()) {
    app.innerHTML = '<div class="crumb">QUALITY SNAPSHOT</div>' +
-    '<div class="hero"><div><h1 class="hero-h">Quality Snapshot.</h1>' +
+    '<div class="hero"><div><h1 class="hero-h">Quality Snapshot</h1>' +
     "<p class='hero-sub'>On-demand ROIC, cash conversion, and Rule of 40 for any ticker.</p></div></div>" +
     '<div class="section"><div class="section-title">Quality Snapshot <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     proTeaser("Quality Snapshot, Pro", "Type any ticker and get an instant read on capital returns, operating efficiency, and the growth engine. ROIC, CROIC, revenue per employee, operating leverage, and Rule of 40, computed live.") + "</div>";
@@ -7529,7 +7529,7 @@ function bindZoomHandlers() {
   }
   const initial = (param || "").toUpperCase().trim();
   app.innerHTML = '<div class="crumb">QUALITY SNAPSHOT</div>' +
-   '<div class="hero"><div><h1 class="hero-h">Quality Snapshot.</h1>' +
+   '<div class="hero"><div><h1 class="hero-h">Quality Snapshot</h1>' +
    "<p class='hero-sub'>On-demand ROIC, cash conversion, and Rule of 40 for any ticker.</p></div></div>" +
    '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
    '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
@@ -7573,7 +7573,7 @@ function bindZoomHandlers() {
 
   // Memos index
   let h = '<div class="crumb">CASCADIA MEMOS</div>';
-  h += '<div class="hero"><div><h1 class="hero-h">Cascadia Memos.</h1>';
+  h += '<div class="hero"><div><h1 class="hero-h">Cascadia Memos</h1>';
   h += '<p class="hero-sub">Market analysis and investment perspectives from Cascadia Analytics.</p></div></div>';
   h += '<div class="section" style="max-width:800px;margin:0 auto;">';
   if (!allMemos.length) {
