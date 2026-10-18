@@ -7145,7 +7145,8 @@ function bindZoomHandlers() {
   let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
    '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8b949e;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
    '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8b949e;">/100</span></div>' +
-   '<div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(comp.regime || "") + "</div></div>" +
+   '<div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(comp.regime || "") + "</div>" +
+   '<div style="font-size:11px;color:#8b949e;margin-top:6px;font-style:italic;">Algorithmic synthesis across ' + (comp.model_count || comps.length) + ' independent quantitative models, spanning Macro Liquidity, Cross-Asset Contagion, Vol-Control Exposure, and Structural Breadth.</div></div>' +
    '<div style="flex:1;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models (equal-weighted)' +
    (comp.primary_driver ? ' · Primary driver: <span style="color:#e8ecf1;font-weight:600;">' + esc(comp.primary_driver) + "</span>" : "") + "</div>";
   // Pillar bars
