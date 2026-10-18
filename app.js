@@ -7594,11 +7594,17 @@ function bindZoomHandlers() {
     if (s.heading) h += '<h2 style="font-size:20px;font-weight:700;color:#fff;margin:24px 0 12px;">' + esc(s.heading) + '</h2>';
     if (s.body) h += '<div style="font-size:15px;color:#e8ecf1;line-height:1.8;white-space:pre-line;">' + esc(s.body) + '</div>';
    });
-   // Pro CTA
-   h += '<div style="background:#161b26;border:1px solid #c9a961;border-radius:12px;padding:24px;margin-top:32px;text-align:center;">';
-   h += '<div style="font-size:16px;font-weight:700;color:#c9a961;margin-bottom:8px;">See the models behind this thesis</div>';
-   h += '<div style="font-size:14px;color:#e8ecf1;margin-bottom:16px;">Cascadia Pro gives you the DCF models, risk gauges, and positioning data behind every memo.</div>';
-   h += '<button class="btn" onclick="openProModal()">See Pro Plans</button></div>';
+   // Pro CTA (free users only) - links to covered ticker pages
+   if (!isPro()) {
+    h += '<div style="background:#161b26;border:1px solid #c9a961;border-radius:12px;padding:24px;margin-top:32px;text-align:center;">';
+    h += '<div style="font-size:16px;font-weight:700;color:#c9a961;margin-bottom:8px;">Explore the coverage</div>';
+    h += '<div style="font-size:14px;color:#e8ecf1;margin-bottom:16px;">Deep dive into the DCF models behind this thesis:</div>';
+    h += '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">';
+    ["DLR", "EQIX", "IRM", "MSFT", "AMZN", "GOOGL"].forEach((tk) => {
+     h += '<a href="#/ticker/' + tk + '" class="btn" style="text-decoration:none;">' + tk + '</a>';
+    });
+    h += '</div></div>';
+   }
    h += '<div style="font-size:11px;color:#8b949e;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
    h += '</div>';
    app.innerHTML = h;
