@@ -7545,7 +7545,7 @@ function bindZoomHandlers() {
   }
  });
 
- route("memos", async function (param) {
+ route("memos", function (param) {
   const allMemos = (D.memos && D.memos.memos) || [];
   const memoId = (param || "").trim();
   const memo = allMemos.find((m) => m.id === memoId);
@@ -7568,7 +7568,6 @@ function bindZoomHandlers() {
    h += '<div style="font-size:11px;color:#8b949e;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
    h += '</div>';
    app.innerHTML = h;
-   window.scrollTo(0, 0);
    return;
   }
 
@@ -7592,7 +7591,6 @@ function bindZoomHandlers() {
   }
   h += '</div>';
   app.innerHTML = h;
-  window.scrollTo(0, 0);
  });
 
  route("risk", async function () {
