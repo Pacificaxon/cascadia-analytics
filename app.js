@@ -222,6 +222,7 @@
    if (sections.contagion) flat.contagion = sections.contagion;
    if (sections.dynamic_concentration) flat.dynamic_concentration = sections.dynamic_concentration;
    if (sections.margin_leverage) flat.margin_leverage = sections.margin_leverage;
+   if (sections.sector_rotation) flat.sector_rotation = sections.sector_rotation;
    if (sections.trend_signals) flat.trend_signals = sections.trend_signals;
    if (sections.flow_divergence) flat.flow_divergence = sections.flow_divergence;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
@@ -584,6 +585,7 @@ function bindZoomHandlers() {
        "flow-divergence": "Institutional Flow Divergence",
        "concentration": "Dynamic Concentration Risk Gauge",
        "margin-leverage": "Systemic Leverage, Margin YoY vs SPY YoY",
+       "sector-rotation": "Offense vs Defense, RSPD/RSPS vs XLY/XLP",
        cot: "Commitments of Traders",
        macro: "Macroeconomic Analysis",
        leadership: "Market Leadership, MLS by Component",
@@ -1053,6 +1055,33 @@ function bindZoomHandlers() {
            }},
          });
         } catch (e) { console.error("Margin leverage chart error:", e); }
+       } else if (kind === "sector-rotation") {
+        const SR = D.sector_rotation || {};
+        const hist = SR.history || [];
+        if (!hist.length) return;
+        try {
+         const canvas = zc.tagName === "CANVAS" ? zc : (zc.querySelector("canvas") || document.getElementById("sector-rotation-chart"));
+         if (!canvas) return;
+         const old = Chart.getChart(canvas);
+         if (old) old.destroy();
+         new Chart(canvas, {
+          data: {
+           labels: hist.map((r) => r.date),
+           datasets: [
+            { type: "line", label: "RSPD/RSPS (equal-wt)", data: hist.map((r) => r.rspdRsps),
+              borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+            { type: "line", label: "XLY/XLP (cap-wt)", data: hist.map((r) => r.xlyXlp),
+              borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+           ]},
+          options: { animation: false, responsive: true, maintainAspectRatio: false,
+           interaction: { mode: "index", intersect: false },
+           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           scales: {
+            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
+            y: {ticks: {color: "#8b949e"}, grid: {color: "rgba(42,46,57,0.4)"}},
+           }},
+         });
+        } catch (e) { console.error("Sector rotation chart error:", e); }
        } else if (kind === "cot") {
         const hist = (D.cot_data.history || []);
         const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
@@ -2237,7 +2266,7 @@ function bindZoomHandlers() {
   let h = '<div class="crumb">MACRO INTELLIGENCE · DCF COVERAGE</div>';
   h += '<div class="hero"><div>' +
    '<h1 class="hero-h" style="color:var(--gold);">The signals moving markets, in one research view.</h1>' +
-   "<p class='hero-sub' style=\"color:var(--gold);opacity:0.85;\">Track macro releases and central-bank commentary, gauge market risk across eight quantitative models, " +
+   "<p class='hero-sub' style=\"color:var(--gold);opacity:0.85;\">Track macro releases and central-bank commentary, gauge market risk across nine quantitative models, " +
    "screen 500+ stocks on quality and momentum factors, then move directly into company valuation work across " + ORDER.length + " DCF-covered names.</p></div>" +
    '<div class="hero-right">' +
    '<div class="statbox"><div class="mono-label">Coverage</div><div class="statbox-v">' + ORDER.length + " DCF models</div></div>" +
@@ -6886,6 +6915,66 @@ function bindZoomHandlers() {
   return h;
  }
 
+ function sectorRotationHtml() {
+  const S = D.sector_rotation || {};
+  if (S.score == null) {
+   return '<div class="section"><div class="section-title">Offense vs Defense <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="card"><p style="color:var(--muted)">Sector rotation data unavailable. Check back after the next refresh.</p></div></div>';
+  }
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+  const c = colorMap[S.color] || "#e8ecf1";
+  const m = S.metrics || {};
+  const r = S.ratios || {};
+  const stale = S.metadata && S.metadata.stale;
+
+  let h = '<div class="section"><div class="section-title">Offense vs Defense <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section-sub">Consumer Discretionary vs Consumer Staples, cap-weighted and equal-weighted. When institutions hide in toothpaste and toilet paper, the rally is hollow.</div>';
+
+  // Score banner
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + S.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(S.regime || "") + "</div>" +
+   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">RSPD/RSPS ' + (m.rspdRsps != null ? m.rspdRsps : "-") +
+   " · XLY/XLP " + (m.xlyXlp != null ? m.xlyXlp : "-") + "</div>";
+  if (S.dualBreakdown) {
+   h += '<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(248,81,73,0.1);border:1px solid #f85149;font-size:12px;color:#f85149;font-weight:700;">DUAL BREAKDOWN: both ratios at 52-week lows. Institutions are sheltering across the entire consumer sector.</div>';
+  }
+  h += "</div></div>";
+
+  // Ratio cards
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
+  [["rspd_rsps", "RSPD / RSPS", "Equal-weighted"], ["xly_xlp", "XLY / XLP", "Cap-weighted"]].forEach(([key, pair, wt]) => {
+   const rr = r[key] || {};
+   const pct = rr.rangePercentile != null ? rr.rangePercentile : null;
+   const bc = pct == null ? "#8b949e" : pct <= 10 ? "#f85149" : pct <= 30 ? "#d29922" : pct >= 70 ? "#3fb950" : "#8b949e";
+   h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
+    '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + pair + ' <span style="color:#8b949e;font-weight:400;">(' + wt + ")</span></div>" +
+    '<div style="font-size:20px;font-weight:800;color:#e8ecf1;margin-top:4px;">' + (rr.current != null ? rr.current : "-") + "</div>" +
+    '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' +
+    (rr.isAt52wLow ? "52-WEEK LOW" : pct != null ? pct + "% of 52w range" : "") + "</div>" +
+    '<div style="font-size:11px;color:#8b949e;margin-top:2px;">52w ' + (rr.low52w != null ? rr.low52w : "-") + " – " + (rr.high52w != null ? rr.high52w : "-") +
+    (rr.aboveSma200 != null ? (rr.aboveSma200 ? " · above 200-day avg" : " · below 200-day avg") : "") + "</div></div>";
+  });
+  h += "</div>";
+
+  // Chart: both ratios
+  h += '<div class="zoomable-chart" data-chart="sector-rotation" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="sector-rotation-chart"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '<div class="panel-asof">As of ' + esc((S.as_of || "").slice(0, 10)) + (stale ? " · showing last available" : "") + "</div>";
+
+  // Explainer AFTER visuals (standing rule)
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+   '<b style="color:#e8ecf1;">The simple version:</b> This compares stocks people buy when they feel rich (restaurants, travel, cars) against stocks people buy no matter what (groceries, toothpaste). When money rotates into the boring stuff, big investors are bracing for trouble, even if the headline index still looks fine.<br><br>' +
+   '<b style="color:#e8ecf1;">For long-term investors:</b> The equal-weighted line is the honest one. The cap-weighted version is dominated by Amazon and Tesla, so two stocks can mask what the other 98 are doing. When both lines break to 52-week lows together, the entire consumer sector is weakening, not just a mega-cap wobble. That has historically lined up with late-cycle caution, not a buying opportunity.<br><br>' +
+   '<b style="color:#e8ecf1;">For active traders:</b> A low oscillator reading while the S&P makes new highs is the classic hollow rally: the index is carried by a narrowing set of winners while institutions de-risk underneath. Use it as a regime filter. When this gauge reads extreme defensive, tighten stops and reduce cyclical exposure rather than chasing breakouts.' +
+   "</div></div>";
+
+  h += "</div>";
+  return h;
+ }
+
  function flowDivergenceHtml() {  const F = D.flow_divergence || {};
   if (!F.current) {
    return '<div class="section"><div class="section-title">Institutional Flow Divergence <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
@@ -7051,6 +7140,7 @@ function bindZoomHandlers() {
    const fd = rh.flow_divergence || {};
    const dc = rh.concentration || {};
    const ml = rh.margin_leverage || {};
+   const sr = rh.sector_rotation || {};
    const fi = rh.fear_index || {};
    const fiColor = fi.score >= 75 ? "rose" : fi.score >= 55 ? "amber" : fi.score >= 45 ? "slate" : "emerald";
    const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
@@ -7076,9 +7166,10 @@ function bindZoomHandlers() {
     card("Flow Divergence", fd.score, fd.regime, fd.color) +
     card("Concentration", dc.score, dc.regime, dc.color) +
     card("Margin Leverage", ml.score, ml.regime, ml.color) +
+    card("Sector Rotation", sr.score, sr.regime, sr.color) +
     card("Fear Index", fi.score, fi.regime, fiColor) +
     "</div>" +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;
    return;
   }
@@ -7092,6 +7183,7 @@ function bindZoomHandlers() {
   h += flowDivergenceHtml();
   h += concentrationHtml();
   h += marginLeverageHtml();
+  h += sectorRotationHtml();
   h += fearIndexHtml();
   app.innerHTML = h;
   bindZoomHandlers();
@@ -7254,6 +7346,31 @@ function bindZoomHandlers() {
      }},
    });
   }
+  // Draw sector rotation chart (RSPD/RSPS vs XLY/XLP)
+  const SR = D.sector_rotation || {};
+  const srHist = SR.history || [];
+  const srCv = document.getElementById("sector-rotation-chart");
+  if (srCv && srHist.length && window.Chart) {
+   const oldSr = Chart.getChart(srCv);
+   if (oldSr) oldSr.destroy();
+   new Chart(srCv, {
+    data: {
+     labels: srHist.map((r) => r.date),
+     datasets: [
+      { type: "line", label: "RSPD/RSPS (equal-wt)", data: srHist.map((r) => r.rspdRsps),
+        borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+      { type: "line", label: "XLY/XLP (cap-wt)", data: srHist.map((r) => r.xlyXlp),
+        borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+     ]},
+    options: { animation: false, responsive: true, maintainAspectRatio: false,
+     interaction: { mode: "index", intersect: false },
+     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     scales: {
+      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
+      y: {ticks: {color: "#8b949e"}, grid: {color: "rgba(42,46,57,0.4)"}},
+     }},
+   });
+  }
  });
 
  /* ================= PRICING ================= */
@@ -7304,7 +7421,7 @@ function bindZoomHandlers() {
    '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
-   '<li>✓ All 8 Risk Models in full: Correction Risk, Liquidity Drain, RV Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Fear Index, with charts, history, and plain-English explainers</li>' +
+   '<li>✓ All 9 Risk Models in full: Correction Risk, Liquidity Drain, RV Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, with charts, history, and plain-English explainers</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
    '<li>✓ Full market internals suite: Volatility Divergence, Alligator Jaw, Credit Spreads vs VIX, Market Breadth, Theme Rotation, Small/Mid Cap Monitor, RSI Cyclicals vs Defensives, Macroeconomic Analysis</li>' +
