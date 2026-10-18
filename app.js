@@ -7557,8 +7557,42 @@ function bindZoomHandlers() {
    h += '<p class="hero-sub">' + esc(memo.date) + '</p></div></div>';
    h += '<div class="section" style="max-width:800px;margin:0 auto;">';
    (memo.sections || []).forEach((s) => {
-    h += '<h2 style="font-size:20px;font-weight:700;color:#fff;margin:24px 0 12px;">' + esc(s.heading) + '</h2>';
-    h += '<div style="font-size:15px;color:#e8ecf1;line-height:1.8;white-space:pre-line;">' + esc(s.body) + '</div>';
+    if (s.visual === "scarcity-premium") {
+     h += '<div style="background:#161b26;border:1px solid #2a3142;border-radius:12px;padding:24px;margin:24px 0;">';
+     h += '<div style="font-size:14px;font-weight:700;color:#c9a961;letter-spacing:1px;margin-bottom:16px;">THE SCARCITY PREMIUM</div>';
+     h += '<div style="display:flex;gap:16px;flex-wrap:wrap;">';
+     h += '<div style="flex:1;min-width:200px;background:#0f1420;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">MORATORIUMS</div><div style="font-size:28px;font-weight:800;color:#f87171;">Supply ↓</div><div style="font-size:13px;color:#e8ecf1;margin-top:8px;">New builds paused</div></div>';
+     h += '<div style="flex:1;min-width:200px;background:#0f1420;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">AI DEMAND</div><div style="font-size:28px;font-weight:800;color:#6a9a6a;">Demand ↑</div><div style="font-size:13px;color:#e8ecf1;margin-top:8px;">Inelastic compute needs</div></div>';
+     h += '<div style="flex:1;min-width:200px;background:#0f1420;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">RESULT</div><div style="font-size:28px;font-weight:800;color:#c9a961;">Pricing ↑</div><div style="font-size:13px;color:#e8ecf1;margin-top:8px;">Margin expansion</div></div>';
+     h += '</div>';
+     h += '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a3142;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">KEY BENEFICIARIES</div><div style="display:flex;gap:8px;flex-wrap:wrap;">';
+     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">DLR</span>';
+     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">EQIX</span>';
+     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">IRM</span>';
+     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">MSFT</span>';
+     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">AMZN</span>';
+     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">GOOGL</span>';
+     h += '</div></div></div>';
+     return;
+    }
+    if (s.visual === "axon-sotp") {
+     h += '<div style="background:#161b26;border:1px solid #2a3142;border-radius:12px;padding:24px;margin:24px 0;">';
+     h += '<div style="font-size:14px;font-weight:700;color:#c9a961;letter-spacing:1px;margin-bottom:16px;">AXON SUM-OF-THE-PARTS: 2036 REVENUE</div>';
+     const segs = [["Evidence.com", 18.5, "#c9a961"], ["TASER", 4.0, "#6a9a6a"], ["Dedrone", 3.47, "#5b8dd9"], ["Bodycams", 2.3, "#8b949e"], ["ALPR/RTCC", 1.28, "#f87171"]];
+     const total = 29.55;
+     segs.forEach((sg) => {
+      const pct = (sg[1] / total * 100).toFixed(1);
+      h += '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:#e8ecf1;">' + sg[0] + '</span><span style="color:#8b949e;">$' + sg[1] + 'B (' + pct + '%)</span></div>';
+      h += '<div style="background:#0f1420;border-radius:4px;height:24px;overflow:hidden;"><div style="width:' + pct + '%;height:100%;background:' + sg[2] + ';"></div></div></div>';
+     });
+     h += '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a3142;display:flex;justify-content:space-between;align-items:center;">';
+     h += '<div><div style="font-size:12px;color:#8b949e;">SOTP TOTAL</div><div style="font-size:24px;font-weight:800;color:#fff;">$29.55B</div></div>';
+     h += '<div style="text-align:right;"><div style="font-size:12px;color:#8b949e;">FLOCK BACKLASH HAIRCUT</div><div style="font-size:24px;font-weight:800;color:#f87171;">-$732M</div><div style="font-size:11px;color:#8b949e;">2.4% of terminal</div></div>';
+     h += '</div></div>';
+     return;
+    }
+    if (s.heading) h += '<h2 style="font-size:20px;font-weight:700;color:#fff;margin:24px 0 12px;">' + esc(s.heading) + '</h2>';
+    if (s.body) h += '<div style="font-size:15px;color:#e8ecf1;line-height:1.8;white-space:pre-line;">' + esc(s.body) + '</div>';
    });
    // Pro CTA
    h += '<div style="background:#161b26;border:1px solid #c9a961;border-radius:12px;padding:24px;margin-top:32px;text-align:center;">';
