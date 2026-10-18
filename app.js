@@ -7440,6 +7440,37 @@ function bindZoomHandlers() {
    h += '</table></div>';
   }
 
+  // SEC DEF 14A Proxy Audit (from ceo_compensation.json)
+  const proxy = (D.ceo_compensation && D.ceo_compensation.records && D.ceo_compensation.records[ticker]) || null;
+  if (proxy) {
+   const gradeColor = proxy.alignmentGrade === "A" ? "#3fb950" : proxy.alignmentGrade === "B" ? "#58a6ff" : proxy.alignmentGrade === "C" ? "#d29922" : "#f85149";
+   const chgCls = proxy.tookPayCut ? "#3fb950" : "#f85149";
+   const chgTxt = (proxy.compPercentageChange > 0 ? "+" : "") + proxy.compPercentageChange + "%";
+   h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;">';
+   h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
+   h += '<div style="font-size:13px;font-weight:700;color:#fff;">SEC Proxy Audit <span style="font-size:11px;color:#8b949e;font-weight:400;">DEF 14A ' + esc(proxy.filingDate || "") + '</span></div>';
+   h += '<div style="font-size:24px;font-weight:700;color:' + gradeColor + ';font-family:monospace;">' + esc(proxy.alignmentGrade || "") + '</div></div>';
+   h += '<div style="font-size:14px;font-weight:700;color:' + chgCls + ';margin-bottom:8px;">' + esc(proxy.verdictTitle || "") + '</div>';
+   h += '<div style="font-size:12px;color:#8b949e;margin-bottom:8px;">' + esc(proxy.ceoName || "") + ' · FY' + esc(proxy.fiscalYearAnalyzed || "") + ' vs FY' + esc(proxy.priorFiscalYear || "") + ' · YoY ' + chgTxt + '</div>';
+   if (proxy.payBreakdown) {
+    h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:8px;">';
+    h += '<div><div style="font-size:10px;color:#8b949e;">BASE SALARY</div><div style="font-size:12px;color:#e8ecf1;">' + esc(proxy.payBreakdown.baseSalary || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#8b949e;">STOCK AWARDS</div><div style="font-size:12px;color:#e8ecf1;">' + esc(proxy.payBreakdown.stockAwards || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#8b949e;">BONUS</div><div style="font-size:12px;color:#e8ecf1;">' + esc(proxy.payBreakdown.nonEquityIncentiveBonus || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#8b949e;">OTHER</div><div style="font-size:12px;color:#e8ecf1;">' + esc(proxy.payBreakdown.otherComp || "N/A") + '</div></div>';
+    h += '</div>';
+   }
+   if (proxy.founderModeFlag) {
+    h += '<div style="font-size:11px;color:#c9a961;background:rgba(201,169,97,0.1);border:1px solid #c9a961;padding:6px 10px;border-radius:4px;margin-bottom:8px;">FOUNDER MODE: symbolic salary, equity-aligned</div>';
+   }
+   if (proxy.lootingFlag) {
+    h += '<div style="font-size:11px;color:#f85149;background:rgba(248,81,73,0.1);border:1px solid #f85149;padding:6px 10px;border-radius:4px;margin-bottom:8px;">LOOTING FLAG: pay up sharply while shareholders lost money</div>';
+   }
+   h += '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;margin-bottom:8px;">' + esc(proxy.forensicTakeaway || "") + '</div>';
+   h += '<div style="font-size:11px;color:#8b949e;"><a href="' + esc(proxy.proxyUrl || "#") + '" target="_blank" style="color:#58a6ff;">View DEF 14A on SEC EDGAR</a> · Audited ' + esc((proxy.auditedAt || "").slice(0, 10)) + '</div>';
+   h += '</div>';
+  }
+
   // Explainer
   h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;">';
   h += '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">What this tells you</div>';

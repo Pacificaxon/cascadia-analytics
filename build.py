@@ -138,6 +138,10 @@ def main():
     except FileNotFoundError:
         implied_erp = {}
     try:
+        ceo_compensation = load(os.path.join(MR, "ceo_compensation.json"))
+    except FileNotFoundError:
+        ceo_compensation = {}
+    try:
         market_analysis_report = load(os.path.join(MR, "market_analysis_report.json"))
     except FileNotFoundError:
         market_analysis_report = {}
@@ -424,6 +428,7 @@ def main():
         "fed_funds": fed_funds,
         "breakeven_inflation": breakeven_inflation,
         "implied_erp": implied_erp,
+        "ceo_compensation": ceo_compensation,
         "market_analysis_report": market_analysis_report,
         "leadership": leadership,
         "ticker_gex": ticker_gex,
