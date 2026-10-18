@@ -1026,6 +1026,33 @@ function bindZoomHandlers() {
            }},
          });
         } catch (e) { console.error("Concentration chart error:", e); }
+       } else if (kind === "margin-leverage") {
+        const ML = D.margin_leverage || {};
+        const hist = ML.history || [];
+        if (!hist.length) return;
+        try {
+         const canvas = zc.tagName === "CANVAS" ? zc : (zc.querySelector("canvas") || document.getElementById("margin-leverage-chart"));
+         if (!canvas) return;
+         const old = Chart.getChart(canvas);
+         if (old) old.destroy();
+         new Chart(canvas, {
+          data: {
+           labels: hist.map((r) => r.date),
+           datasets: [
+            { type: "line", label: "Margin Debt YoY (%)", data: hist.map((r) => r.marginYoY),
+              borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+            { type: "line", label: "SPY YoY (%)", data: hist.map((r) => r.spyYoY),
+              borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2 },
+           ]},
+          options: { animation: false, responsive: true, maintainAspectRatio: false,
+           interaction: { mode: "index", intersect: false },
+           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           scales: {
+            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
+            y: {ticks: {color: "#8b949e", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+           }},
+         });
+        } catch (e) { console.error("Margin leverage chart error:", e); }
        } else if (kind === "cot") {
         const hist = (D.cot_data.history || []);
         const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
