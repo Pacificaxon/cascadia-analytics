@@ -40,7 +40,7 @@ export async function onRequestGet(context) {
     const { crumb, cookies } = await getCrumb();
     const url =
       `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${ticker}` +
-      `?modules=summaryProfile,financialData,defaultKeyStatistics,incomeStatementHistory,balanceSheetHistory` +
+      `?modules=summaryProfile,financialData,defaultKeyStatistics,incomeStatementHistory` +
       `&crumb=${encodeURIComponent(crumb)}`;
 
     const res = await fetch(url, { headers: { "User-Agent": UA, Cookie: cookies } });
@@ -51,23 +51,34 @@ export async function onRequestGet(context) {
 
     const fin = result.financialData || {};
     const prof = result.summaryProfile || {};
-    const bs = result.balanceSheetHistory?.balanceSheetStatements?.[0] || {};
+    const ks = result.defaultKeyStatistics || {};
     const inc = result.incomeStatementHistory?.incomeStatementHistory?.[0] || {};
     const prevInc = result.incomeStatementHistory?.incomeStatementHistory?.[1] || {};
 
     const num = (o) => (o && typeof o.raw === "number" ? o.raw : null);
     const revenue = num(fin.totalRevenue) || 1;
     const fcf = num(fin.freeCashflow) || 0;
-    const ebit = num(inc.ebit) ?? num(fin.operatingIncome) ?? 0;
-    const pretax = num(inc.incomeBeforeTax) ?? ebit;
-    const taxProvision = num(inc.incomeTaxExpense) || 0;
+
+    // EBIT: prefer operatingMargins * revenue (reliable) over spotty statement EBIT
+    const opMargin = num(fin.operatingMargins);
+    let ebit = num(inc.ebit);
+    if (!ebit && opMargin !== null) ebit = revenue * opMargin;
+    if (!ebit) ebit = 0;
+
+    const pretax = num(inc.incomeBeforeTax);
+    const taxProvision = num(inc.incomeTaxExpense);
     const employees = prof.fullTimeEmployees || null;
-    const totalAssets = num(bs.totalAssets) || 1;
     const totalDebt = num(fin.totalDebt) || 0;
     const totalCash = num(fin.totalCash) || 0;
-    const equity = num(bs.totalStockholderEquity) || 1;
 
-    const effectiveTaxRate = pretax > 0 ? taxProvision / pretax : 0.21;
+    // Equity: bookValue * shares (balance sheet API is often sparse)
+    const bookValue = num(ks.bookValue);
+    const shares = num(ks.sharesOutstanding);
+    const equity = bookValue && shares ? bookValue * shares : 1;
+
+    const totalAssets = equity + totalDebt; // approximation when BS missing
+
+    const effectiveTaxRate = pretax && pretax > 0 && taxProvision ? taxProvision / pretax : 0.21;
     const nopat = ebit * (1 - effectiveTaxRate);
     const investedCapital = totalDebt + equity - totalCash;
 
