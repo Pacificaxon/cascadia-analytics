@@ -46,6 +46,7 @@
   "MRVL": { domain: "marvell.com", industry: "Semiconductors" },
   "MSI": { domain: "motorolasolutions.com", industry: "Telecom Equipment" },
   "NSC": { domain: "nscorp.com", industry: "Railroads" },
+  "PANW": { domain: "paloaltonetworks.com", industry: "Cybersecurity" },
   "PLPC": { domain: "preformed.com", industry: "Industrials" },
   "POWW": { domain: "ammunitionstore.com", industry: "Ammunition" },
   "RBRK": { domain: "rubrik.com", industry: "Cybersecurity" },
