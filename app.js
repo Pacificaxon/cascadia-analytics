@@ -7539,6 +7539,56 @@ function bindZoomHandlers() {
   }
  });
 
+ route("memos", async function (param) {
+  const allMemos = (D.memos && D.memos.memos) || [];
+  const memoId = (param || "").trim();
+  const memo = allMemos.find((m) => m.id === memoId);
+
+  if (memo) {
+   // Single memo view
+   let h = '<div class="crumb"><a href="#/memos" style="color:#8b949e;">CASCADIA MEMOS</a></div>';
+   h += '<div class="hero"><div><h1 class="hero-h">' + esc(memo.title) + '</h1>';
+   h += '<p class="hero-sub">' + esc(memo.date) + '</p></div></div>';
+   h += '<div class="section" style="max-width:800px;margin:0 auto;">';
+   (memo.sections || []).forEach((s) => {
+    h += '<h2 style="font-size:20px;font-weight:700;color:#fff;margin:24px 0 12px;">' + esc(s.heading) + '</h2>';
+    h += '<div style="font-size:15px;color:#e8ecf1;line-height:1.8;white-space:pre-line;">' + esc(s.body) + '</div>';
+   });
+   // Pro CTA
+   h += '<div style="background:#161b26;border:1px solid #c9a961;border-radius:12px;padding:24px;margin-top:32px;text-align:center;">';
+   h += '<div style="font-size:16px;font-weight:700;color:#c9a961;margin-bottom:8px;">See the models behind this thesis</div>';
+   h += '<div style="font-size:14px;color:#e8ecf1;margin-bottom:16px;">Cascadia Pro gives you the DCF models, risk gauges, and positioning data behind every memo.</div>';
+   h += '<button class="btn" onclick="openProModal()">See Pro Plans</button></div>';
+   h += '<div style="font-size:11px;color:#8b949e;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
+   h += '</div>';
+   app.innerHTML = h;
+   window.scrollTo(0, 0);
+   return;
+  }
+
+  // Memos index
+  let h = '<div class="crumb">CASCADIA MEMOS</div>';
+  h += '<div class="hero"><div><h1 class="hero-h">Cascadia Memos.</h1>';
+  h += '<p class="hero-sub">Market analysis and investment perspectives from Cascadia Analytics.</p></div></div>';
+  h += '<div class="section" style="max-width:800px;margin:0 auto;">';
+  if (!allMemos.length) {
+   h += '<div class="card"><p style="color:#8b949e;">No memos yet.</p></div>';
+  } else {
+   allMemos.slice().reverse().forEach((m) => {
+    h += '<a href="#/memos/' + esc(m.id) + '" style="text-decoration:none;">';
+    h += '<div class="card" style="margin-bottom:16px;cursor:pointer;">';
+    h += '<div style="font-size:11px;color:#8b949e;">' + esc(m.date) + '</div>';
+    h += '<div style="font-size:20px;font-weight:700;color:#fff;margin:8px 0;">' + esc(m.title) + '</div>';
+    h += '<div style="font-size:14px;color:#8b949e;line-height:1.6;">' + esc(m.excerpt) + '</div>';
+    h += '<div style="font-size:13px;color:#c9a961;margin-top:8px;">Read memo →</div>';
+    h += '</div></a>';
+   });
+  }
+  h += '</div>';
+  app.innerHTML = h;
+  window.scrollTo(0, 0);
+ });
+
  route("risk", async function () {
   await ensureProData();
   if (!isPro()) {

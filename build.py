@@ -142,6 +142,10 @@ def main():
     except FileNotFoundError:
         ceo_compensation = {}
     try:
+        memos = load(os.path.join(HERE, "memos.json"))
+    except FileNotFoundError:
+        memos = {"memos": []}
+    try:
         market_analysis_report = load(os.path.join(MR, "market_analysis_report.json"))
     except FileNotFoundError:
         market_analysis_report = {}
@@ -429,6 +433,7 @@ def main():
         "breakeven_inflation": breakeven_inflation,
         "implied_erp": implied_erp,
         "ceo_compensation": ceo_compensation,
+        "memos": memos,
         "market_analysis_report": market_analysis_report,
         "leadership": leadership,
         "ticker_gex": ticker_gex,
