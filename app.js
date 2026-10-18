@@ -7239,9 +7239,6 @@ function bindZoomHandlers() {
   el.innerHTML = '<div class="card"><p style="color:#8b949e;">Analyzing ' + esc(tk) + "...</p></div>";
   const q = await fetchQuality(tk);
   renderQualityResult(q);
-  if (window.history && window.history.replaceState) {
-   window.history.replaceState(null, "", "#/quality/" + encodeURIComponent(tk));
-  }
  }
  route("quality", async function (param) {
   await ensureProData();
