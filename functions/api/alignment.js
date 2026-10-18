@@ -1,13 +1,33 @@
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+async function getCrumb() {
+  const cookieRes = await fetch("https://fc.yahoo.com", {
+    headers: { "User-Agent": UA },
+    redirect: "manual",
+  });
+  const setCookie = cookieRes.headers.get("set-cookie") || "";
+  const cookies = setCookie.split(",").map((c) => c.split(";")[0].trim()).filter(Boolean).join("; ");
+
+  const crumbRes = await fetch("https://query1.finance.yahoo.com/v1/test/getcrumb", {
+    headers: { "User-Agent": UA, Cookie: cookies },
+  });
+  if (!crumbRes.ok) throw new Error("crumb fetch failed: " + crumbRes.status);
+  const crumb = (await crumbRes.text()).trim();
+  return { crumb, cookies };
+}
+
 export async function onRequestGet(context) {
   const { searchParams } = new URL(context.request.url);
   const ticker = (searchParams.get("ticker") || "NVDA").toUpperCase().trim();
 
-  const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=summaryProfile,assetProfile,defaultKeyStatistics,majorHoldersBreakdown,insiderTransactions,price`;
-
   try {
+    const { crumb, cookies } = await getCrumb();
+    const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=summaryProfile,assetProfile,defaultKeyStatistics,majorHoldersBreakdown,insiderTransactions,price&crumb=${encodeURIComponent(crumb)}`;
+
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        "User-Agent": UA,
+        "Cookie": cookies
       }
     });
 
