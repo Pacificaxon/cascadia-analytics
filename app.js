@@ -7136,6 +7136,7 @@ function bindZoomHandlers() {
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
   const c = colorMap[comp.color] || "#e8ecf1";
   const comps = comp.components || [];
+  const pillars = comp.pillars || [];
   // Top 3 risk contributors
   const top = comps.slice().sort((a, b) => b.risk - a.risk).slice(0, 3);
   const nameMap = { correction_risk: "Correction", liquidity_drain: "Liquidity", rv_shock: "RV Shock",
@@ -7145,8 +7146,20 @@ function bindZoomHandlers() {
    '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8b949e;letter-spacing:1px;">OVERALL RISK</div>' +
    '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8b949e;">/100</span></div>' +
    '<div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(comp.regime || "") + "</div></div>" +
-   '<div style="flex:1;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models (equal-weighted)</div>' +
-   '<div style="display:flex;gap:12px;flex-wrap:wrap;">';
+   '<div style="flex:1;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models (equal-weighted)' +
+   (comp.primary_driver ? ' · Primary driver: <span style="color:#e8ecf1;font-weight:600;">' + esc(comp.primary_driver) + "</span>" : "") + "</div>";
+  // Pillar bars
+  if (pillars.length) {
+   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">';
+   pillars.forEach((p) => {
+    const pc = p.score >= 65 ? "#f85149" : p.score >= 45 ? "#d29922" : p.score >= 25 ? "#8b949e" : "#3fb950";
+    h += '<div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;">' +
+     '<span style="color:#8b949e;">' + esc(p.pillar) + '</span><span style="color:' + pc + ';font-weight:700;">' + p.score + "</span></div>" +
+     '<div style="height:4px;background:#1f2937;border-radius:2px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, p.score) + '%;background:' + pc + ';border-radius:2px;"></div></div></div>';
+   });
+   h += "</div>";
+  }
+  h += '<div style="display:flex;gap:12px;flex-wrap:wrap;">';
   top.forEach((t) => {
    const tc = t.risk >= 70 ? "#f85149" : t.risk >= 50 ? "#d29922" : "#8b949e";
    h += '<div style="font-size:12px;"><span style="color:#8b949e;">' + esc(nameMap[t.model] || t.model) + '</span> ' +

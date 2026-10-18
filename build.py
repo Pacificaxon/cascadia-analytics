@@ -536,19 +536,21 @@ def main():
     # Normalizes each model to 0-100 where HIGHER = MORE RISK, then averages.
     # direction +1: higher headline score = higher risk (default for new models)
     # direction -1: higher headline score = LOWER risk (inverted)
-    # To add a future model: add one line below with its direction.
+    # To add a future model: add one line below with (direction, pillar, display name).
+    # Pillars group models for attribution (Pro display shows where risk concentrates).
     _composite_cfg = {
-        "correction_risk": +1,
-        "liquidity_drain": -1,   # higher = more liquidity = less risk
-        "rv_shock": +1,          # VCF percentile: higher = more complacency
-        "contagion": +1,
-        "concentration": +1,
-        "margin_leverage": +1,
-        "sector_rotation": -1,   # higher = risk-on = less risk
-        "fear_index": +1,        # higher = more fear/stress
+        # key: (direction, pillar, display name)
+        "correction_risk": (+1, "Structural & Breadth", "Correction Risk"),
+        "liquidity_drain": (-1, "Macro & Liquidity", "Liquidity Drain"),
+        "rv_shock": (+1, "Systematic & Volatility", "RV Shock"),
+        "contagion": (+1, "Macro & Liquidity", "Contagion"),
+        "concentration": (+1, "Structural & Breadth", "Concentration"),
+        "margin_leverage": (+1, "Flow & Leverage", "Margin Leverage"),
+        "sector_rotation": (-1, "Structural & Breadth", "Sector Rotation"),
+        "fear_index": (+1, "Systematic & Volatility", "Fear Index"),
     }
-    _components = []
-    for _key, _direction in _composite_cfg.items():
+    _components = []  # (key, risk, pillar, display name)
+    for _key, (_direction, _pillar, _dname) in _composite_cfg.items():
         _s = (site["risk_headlines"].get(_key) or {}).get("score")
         if _s is None:
             continue
@@ -556,16 +558,17 @@ def main():
             _risk = float(_s) if _direction > 0 else 100.0 - float(_s)
         except (TypeError, ValueError):
             continue
-        _components.append((_key, max(0.0, min(100.0, _risk))))
+        _components.append((_key, max(0.0, min(100.0, _risk)), _pillar, _dname))
     # Flow divergence: oscillator (not 0-100), extreme either way = uncertainty
     _fd = (site["risk_headlines"].get("flow_divergence") or {}).get("score")
     if _fd is not None:
         try:
-            _components.append(("flow_divergence", max(0.0, min(100.0, abs(float(_fd)) * 12.0))))
+            _components.append(("flow_divergence", max(0.0, min(100.0, abs(float(_fd)) * 12.0)),
+                                "Flow & Leverage", "Flow Divergence"))
         except (TypeError, ValueError):
             pass
     if _components:
-        _avg = sum(_v for _, _v in _components) / len(_components)
+        _avg = sum(_v for _, _v, _, _ in _components) / len(_components)
         if _avg >= 70:
             _regime, _color = "HIGH RISK", "rose"
         elif _avg >= 50:
@@ -574,12 +577,28 @@ def main():
             _regime, _color = "MODERATE RISK", "slate"
         else:
             _regime, _color = "LOW RISK", "emerald"
+        # Pillar aggregation: average risk within each pillar
+        _pillars = {}
+        for _, _v, _p, _n in _components:
+            _pillars.setdefault(_p, []).append((_n, _v))
+        _pillar_list = []
+        for _p, _items in _pillars.items():
+            _pscore = sum(_v for _, _v in _items) / len(_items)
+            _pillar_list.append({
+                "pillar": _p,
+                "score": round(_pscore, 1),
+                "models": [{"name": _n, "risk": round(_v, 1)} for _n, _v in
+                           sorted(_items, key=lambda x: x[1], reverse=True)],
+            })
+        _pillar_list.sort(key=lambda x: x["score"], reverse=True)
         site["risk_headlines"]["composite"] = {
             "score": round(_avg, 1),
             "regime": _regime,
             "color": _color,
-            "components": [{"model": _k, "risk": round(_v, 1)} for _k, _v in _components],
+            "components": [{"model": _k, "risk": round(_v, 1)} for _k, _v, _, _ in _components],
             "model_count": len(_components),
+            "pillars": _pillar_list,
+            "primary_driver": _pillar_list[0]["pillar"] if _pillar_list else None,
         }
 
     pro_out = {"generated_at": site.get("generated_at"), "sections": pro_sections}
