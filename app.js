@@ -4436,6 +4436,7 @@ function bindZoomHandlers() {
  let fcfChart = null, priceChart = null, sandboxChart = null;
 
  route("ticker", function (tk) {
+  try {
   tk = (tk || "").toUpperCase();
   const t = TICKERS[tk];
   if (!t) { app.innerHTML = '<div class="card"><h3>Unknown ticker</h3><p><a href="#/">Back home</a></p></div>'; return; }
@@ -4717,6 +4718,10 @@ function bindZoomHandlers() {
    }
   };
   setTimeout(tryRenderSI, 100);
+  } catch (err) {
+   app.innerHTML = '<div class="card"><h3>Error loading ' + esc(tk) + '</h3><p style="color:#ff6b6b;">' + esc(err.message) + '</p><p><a href="#/">Back home</a></p></div>';
+   console.error("Ticker render error for " + tk + ":", err);
+  }
  });
 
  function reverseDcfHtml(t) {
