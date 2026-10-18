@@ -6980,7 +6980,7 @@ function bindZoomHandlers() {
     "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
     '<div class="section"><div class="section-title">Daily Snapshot <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>' +
     ' <span style="font-size:11px;color:#8b949e;font-weight:400;">as of ' + esc((D.generated_at || "").slice(0, 10)) + '</span></div>' +
-    '<div class="section-sub">Current scores, free. The full breakdown, charts, history, and what to do about it are Pro.</div>' +
+    '<div class="section-sub">Current scores, free. The full breakdown, charts, history, and in-depth analysis are Pro.</div>' +
     '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">' +
     card("Correction Risk", cr.score, cr.regime, cr.color) +
     card("Liquidity Drain", ld.score, ld.regime, ld.color) +
