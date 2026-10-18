@@ -59,11 +59,12 @@ export async function onRequestGet(context) {
     const revenue = num(fin.totalRevenue) || 1;
     const fcf = num(fin.freeCashflow) || 0;
 
-    // EBIT: prefer operatingMargins * revenue (reliable) over spotty statement EBIT
+    // EBIT: prefer operatingMargins * revenue (reliable) over spotty statement EBIT.
+    // If no margin data (some foreign tickers), leave null rather than fake a 0.
     const opMargin = num(fin.operatingMargins);
     let ebit = num(inc.ebit);
     if (!ebit && opMargin !== null) ebit = revenue * opMargin;
-    if (!ebit) ebit = 0;
+    if (!ebit) ebit = null;
 
     const pretax = num(inc.incomeBeforeTax);
     const taxProvision = num(inc.incomeTaxExpense);
@@ -79,11 +80,11 @@ export async function onRequestGet(context) {
     const totalAssets = equity + totalDebt; // approximation when BS missing
 
     const effectiveTaxRate = pretax && pretax > 0 && taxProvision ? taxProvision / pretax : 0.21;
-    const nopat = ebit * (1 - effectiveTaxRate);
+    const nopat = ebit !== null ? ebit * (1 - effectiveTaxRate) : null;
     const investedCapital = totalDebt + equity - totalCash;
 
-    const roic = investedCapital > 0 ? (nopat / investedCapital) * 100 : 0;
-    const croic = investedCapital > 0 ? (fcf / investedCapital) * 100 : 0;
+    const roic = nopat !== null && investedCapital > 0 ? (nopat / investedCapital) * 100 : null;
+    const croic = investedCapital > 0 ? (fcf / investedCapital) * 100 : null;
     const roa = (num(fin.returnOnAssets) || 0) * 100;
     const roe = (num(fin.returnOnEquity) || 0) * 100;
     const revPerEmployee = employees ? revenue / employees : 0;
@@ -106,12 +107,21 @@ export async function onRequestGet(context) {
 
     // Simplified quality heuristic (0-100). The full Investment Scorecard
     // remains the deeper read for DCF-covered names.
+    // Null metrics are skipped, not penalized.
     let score = 0;
-    if (roic > 15) score += 25; else if (roic > 8) score += 15;
-    if (croic > roic && roic > 0) score += 15;
+    let maxScore = 100;
+    if (roic !== null) {
+      if (roic > 15) score += 25; else if (roic > 8) score += 15;
+      if (croic !== null && croic > roic && roic > 0) score += 15;
+    } else {
+      maxScore -= 40; // ROIC + CROIC components unavailable
+    }
     if (ruleOf40 >= 40) score += 25; else if (ruleOf40 >= 20) score += 10;
     if (revPerEmployee > 500000) score += 20; else if (revPerEmployee > 250000) score += 10;
     if (roe > 15) score += 15; else if (roe > 8) score += 5;
+
+    // Normalize to 0-100 when components were skipped
+    const qualityScore = maxScore < 100 ? Math.round((score / maxScore) * 100) : Math.min(100, score);
 
     const f2 = (v) => (v === null || v === undefined || Number.isNaN(v) ? null : Math.round(v * 100) / 100);
 
@@ -120,7 +130,7 @@ export async function onRequestGet(context) {
         ticker,
         sector: prof.sector || "Unknown",
         industry: prof.industry || "Unknown",
-        qualityScore: Math.min(100, score),
+        qualityScore,
         capitalReturns: { roic: f2(roic), croic: f2(croic), roe: f2(roe), roa: f2(roa) },
         efficiency: {
           revPerEmployee: employees ? Math.round(revPerEmployee) : null,
