@@ -158,6 +158,10 @@ def main():
     except FileNotFoundError:
         ticker_gex = {}
     try:
+        opex_data = load(os.path.join(MR, "opex.json"))
+    except FileNotFoundError:
+        opex_data = {}
+    try:
         skew_data = load(os.path.join(MR, "skew_history.json"))
     except FileNotFoundError:
         skew_data = {}
@@ -437,6 +441,7 @@ def main():
         "market_analysis_report": market_analysis_report,
         "leadership": leadership,
         "ticker_gex": ticker_gex,
+        "opex": opex_data,
         "skew_data": skew_data,
         "ticker_skew": ticker_skew,
         "ticker_insider": ticker_insider,

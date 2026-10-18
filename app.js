@@ -2976,6 +2976,65 @@ function bindZoomHandlers() {
   }
 
   /* ---------- Volatility Skew HTML (Pro-gated) ---------- */
+  function opexTrackerHtml(opexData) {
+   // OPEX calendar strip
+   let h = '<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;margin-bottom:16px;">';
+   (opexData.opex_calendar || []).slice(0, 6).forEach((o) => {
+    const bg = o.triple_witching ? "border-color:#c9a961;" : "";
+    h += '<div style="min-width:140px;background:#161b26;border:1px solid #2a3142;border-radius:8px;padding:12px;' + bg + '">';
+    h += '<div style="font-size:11px;color:#8b949e;">' + (o.triple_witching ? '<span style="color:#c9a961;font-weight:700;">TRIPLE WITCHING</span>' : 'MONTHLY OPEX') + '</div>';
+    h += '<div style="font-size:14px;font-weight:700;color:#fff;margin:4px 0;">' + esc(o.label.split(",")[0] + "," + o.label.split(",")[1]) + '</div>';
+    h += '<div style="font-size:12px;color:#8b949e;">' + o.days_away + ' days away</div>';
+    h += '</div>';
+   });
+   h += '</div>';
+
+   // Per-ticker max pain cards
+   const tickers = Object.keys(opexData.tickers || {}).sort();
+   h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">';
+   tickers.forEach((tk) => {
+    const t = opexData.tickers[tk];
+    const pcr = t.put_call_ratio;
+    const pcrColor = pcr > 1.2 ? "#f85149" : (pcr < 0.8 ? "#3fb950" : "#e8ecf1");
+    const distColor = t.max_pain_distance_pct != null && Math.abs(t.max_pain_distance_pct) < 2 ? "#c9a961" : "#8b949e";
+    h += '<div style="background:#161b26;border:1px solid #2a3142;border-radius:8px;padding:16px;">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
+    h += '<span style="font-size:18px;font-weight:800;color:#fff;">' + esc(tk) + '</span>';
+    h += '<span style="font-size:12px;color:#8b949e;">$' + (t.spot != null ? t.spot.toFixed(2) : "-") + '</span>';
+    h += '</div>';
+    h += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
+    h += '<span style="font-size:12px;color:#8b949e;">Max Pain</span>';
+    h += '<span style="font-size:14px;font-weight:700;color:#c9a961;">$' + (t.max_pain != null ? t.max_pain.toFixed(0) : "-") + '</span>';
+    h += '</div>';
+    if (t.max_pain_distance_pct != null) {
+     h += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
+     h += '<span style="font-size:12px;color:#8b949e;">Distance to Max Pain</span>';
+     h += '<span style="font-size:13px;font-weight:600;color:' + distColor + ';">' + (t.max_pain_distance_pct > 0 ? "+" : "") + t.max_pain_distance_pct.toFixed(1) + '%</span>';
+     h += '</div>';
+    }
+    h += '<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin:8px 0;">';
+    const total = (t.call_oi || 0) + (t.put_oi || 0);
+    const callPct = total ? (t.call_oi / total * 100) : 50;
+    h += '<div style="width:' + callPct + '%;background:#3fb950;"></div>';
+    h += '<div style="width:' + (100 - callPct) + '%;background:#f85149;"></div>';
+    h += '</div>';
+    h += '<div style="display:flex;justify-content:space-between;font-size:12px;">';
+    h += '<span style="color:#8b949e;">P/C Ratio</span>';
+    h += '<span style="font-weight:700;color:' + pcrColor + ';">' + (pcr != null ? pcr.toFixed(2) : "-") + '</span>';
+    h += '</div>';
+    if (t.call_wall || t.put_wall) {
+     h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #2a3142;font-size:11px;color:#8b949e;">';
+     if (t.call_wall) h += 'Call wall: $' + t.call_wall.toFixed(0) + ' &nbsp; ';
+     if (t.put_wall) h += 'Put wall: $' + t.put_wall.toFixed(0);
+     h += '</div>';
+    }
+    h += '</div>';
+   });
+   h += '</div>';
+   h += '<div style="font-size:11px;color:#8b949e;margin-top:12px;">As of ' + esc(opexData.as_of || "") + ' &middot; CBOE delayed chains</div>';
+   return h;
+  }
+
   function skewTrackerHtml(skewData) {
    const indices = skewData.indices || {};
    const order = ["QQQ", "SPY", "SPX"];
@@ -3304,6 +3363,25 @@ function bindZoomHandlers() {
    h += '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     '<div class="section-sub">Put vs call implied volatility, what is smart money paying for? Updates daily.</div>' +
     gated("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.", skewHtml + skewExplainer) +
+    "</div>";
+  }
+
+  // OPEX Cycle Tracker, Pro-gated
+  if (D.opex && D.opex.tickers) {
+   const opexHtml = opexTrackerHtml(D.opex);
+   const opexExplainer =
+    '<div class="panel-about" style="text-align:left;max-width:none;margin:0 0 12px;">' +
+    '<p><b>What am I looking at?</b> Options expiration (OPEX) cycles drive mechanical, forced buying and selling ' +
+    'as dealers hedge their books. When massive gamma expires, the market unpins and volatility often expands the following week.</p>' +
+    '<p><b>How to read it.</b> <b style="color:#c9a961">Max pain</b> is the strike where option buyers lose the most, ' +
+    'dealers often pin price there into expiration. A high <b>put/call ratio</b> signals hedging demand. ' +
+    '<b>Triple witching</b> months (Mar/Jun/Sep/Dec) see the heaviest flows.</p>' +
+    '<p><b>For swing traders.</b> The week into OPEX is typically range-bound (dealers suppress volatility). ' +
+    'The week after is the "window of weakness" where trends emerge. Size positions around these structural shifts.</p>' +
+    '</div>';
+   h += '<div class="section" style="max-width:none;"><div class="section-title">OPEX Cycle Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="section-sub">Options expiration calendar, max pain strikes, and dealer positioning. Updates daily.</div>' +
+    gated("OPEX Cycle Tracker", "Max pain strikes, put/call OI, and expiration calendar. Front-run dealer hedging flows.", opexHtml + opexExplainer) +
     "</div>";
   }
   // render interactive vol divergence chart after DOM insert
@@ -3884,6 +3962,7 @@ function bindZoomHandlers() {
   { key: "rsi_cyclical_defensive", name: "RSI: Cyclicals vs Defensives", desc: "Risk-on/risk-off momentum, notified on overbought/oversold extremes." },
   { key: "gex", name: "Gamma Exposure (GEX)", desc: "Dealer positioning, notified on volatility regime shifts." },
   { key: "volatility_skew", name: "Volatility Skew", desc: "Put/call skew, notified on significant fear spikes." },
+  { key: "opex", name: "OPEX Cycle Tracker", desc: "Options expiration, notified ahead of triple witching." },
   { key: "macro_analysis", name: "Macroeconomic Analysis", desc: "CPI, PPI, retail sales, PMI, energy, notified when new reports are released." },
   { key: "fear_index", name: "Quantitative Fear Index", desc: "0-100 market fear gauge, notified when extreme tail risk is detected (score 75+)." },
  ];
