@@ -514,8 +514,9 @@ def main():
         dcf_targets[tk] = {}
         for k in ["bear", "base", "bull", "blended", "rating", "wacc", "upside_base", "shares_m"]:
             dcf_targets[tk][k] = t.get(k)
-        # Only pop the Pro-only fields from free data
-        for k in ["blended", "rating", "wacc", "shares_m"]:
+        # Ratings and blended targets are FREE (user decision 2026-10-18).
+        # Only pop the Pro-only fields from free data.
+        for k in ["wacc", "shares_m"]:
             t.pop(k, None)
         if "fcf" in t:
             fcf_projections[tk] = t.pop("fcf")
