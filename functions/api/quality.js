@@ -107,21 +107,16 @@ export async function onRequestGet(context) {
 
     // Simplified quality heuristic (0-100). The full Investment Scorecard
     // remains the deeper read for DCF-covered names.
-    // Null metrics are skipped, not penalized.
+    // If ROIC can't be computed (foreign tickers), ROE backs it up for scoring.
+    const scoringRoic = roic !== null ? roic : roe;
     let score = 0;
-    let maxScore = 100;
-    if (roic !== null) {
-      if (roic > 15) score += 25; else if (roic > 8) score += 15;
-      if (croic !== null && croic > roic && roic > 0) score += 15;
-    } else {
-      maxScore -= 40; // ROIC + CROIC components unavailable
-    }
+    if (scoringRoic > 15) score += 25; else if (scoringRoic > 8) score += 15;
+    if (roic !== null && croic !== null && croic > roic && roic > 0) score += 15;
     if (ruleOf40 >= 40) score += 25; else if (ruleOf40 >= 20) score += 10;
     if (revPerEmployee > 500000) score += 20; else if (revPerEmployee > 250000) score += 10;
     if (roe > 15) score += 15; else if (roe > 8) score += 5;
 
-    // Normalize to 0-100 when components were skipped
-    const qualityScore = maxScore < 100 ? Math.round((score / maxScore) * 100) : Math.min(100, score);
+    const qualityScore = Math.min(100, score);
 
     const f2 = (v) => (v === null || v === undefined || Number.isNaN(v) ? null : Math.round(v * 100) / 100);
 
