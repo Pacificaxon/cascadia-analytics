@@ -885,6 +885,34 @@ function bindZoomHandlers() {
            y: { position: "right", ticks: { color: "#6b7280", callback: (v) => v.toFixed(1) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
         });
         } catch (e) { console.error("Breakeven chart error:", e); }
+       } else if (kind === "erp") {
+        const edata = D.implied_erp || {};
+        const hist = (edata.history || []).slice(-365);
+        if (!hist.length) return;
+        try {
+        const canvas = zc.tagName === "CANVAS" ? zc : (zc.querySelector("canvas") || document.getElementById("erp-chart"));
+        if (!canvas) return;
+        const existingChart = Chart.getChart(canvas);
+        if (existingChart) existingChart.destroy();
+        const ctx0 = canvas.getContext("2d");
+        const grad = ctx0.createLinearGradient(0, 0, 0, 300);
+        grad.addColorStop(0, "rgba(201,169,97,0.35)");
+        grad.addColorStop(1, "rgba(201,169,97,0)");
+        new Chart(canvas, {
+         type: "line",
+         data: { labels: hist.map((r) => r.date), datasets: [
+          { label: "Implied ERP (%)", data: hist.map((r) => r.erp * 100), borderColor: "#c9a961", borderWidth: 1.5, backgroundColor: grad, fill: true, pointRadius: 0, pointHoverRadius: 4, tension: 0.1 },
+         ]},
+         options: { animation: false, responsive: true, maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: { legend: { display: false },
+           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+            callbacks: { label: (c) => " " + c.parsed.y.toFixed(2) + "%" } } },
+          scales: {
+           x: { ticks: { color: "#6b7280", maxTicksLimit: 6, maxRotation: 0 }, grid: { display: false } },
+           y: { position: "right", ticks: { color: "#6b7280", callback: (v) => v.toFixed(1) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
+        });
+        } catch (e) { console.error("ERP chart error:", e); }
        } else if (kind === "correction-risk") {
         const cr = D.correction_risk || {};
         const hist = cr.history || [];
@@ -2403,6 +2431,10 @@ function bindZoomHandlers() {
   if (D.breakeven_inflation && D.breakeven_inflation.latest != null) {
    h += breakevenHtml(D.breakeven_inflation);
   }
+  // Implied ERP, FREE data + chart, PRO analysis
+  if (D.implied_erp && D.implied_erp.erp != null) {
+   h += erpHtml(D.implied_erp, isPro);
+  }
   // Market Internals trackers - each individually Pro-locked with badge
   h += '<div class="section"><div class="section-title">Market Internals Trackers</div>' +
    '<div class="section-sub">Breadth, positioning, volatility, and rotation signals. Free users see previews below.</div></div>';
@@ -2742,6 +2774,48 @@ function bindZoomHandlers() {
     'a breakeven persistently above 2.5% argues against rate cuts, while one sliding toward 2% or below gives the Fed room to ease. ' +
     'For equity positioning, compare the trend here against CPI prints: when breakevens lead CPI higher, inflation trades have room to run.</div>' +
     '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Source: Federal Reserve Bank of St. Louis (FRED series T10YIE), updated every trading morning.</div></div>';
+   h += '</div></div>';
+   return h;
+  }
+  /* ---------- Implied ERP HTML (FREE data, PRO analysis) ---------- */
+  function erpHtml(d, isPro) {
+   const erp = d.erp, spx = d.spx, tenY = d.ten_y;
+   const erpPct = (erp * 100).toFixed(2);
+   // Reading: ERP vs history
+   const read = erp >= 0.045 ? "Elevated" : erp < 0.03 ? "Compressed" : "Normal";
+   const readCls = erp >= 0.045 ? "#f85149" : erp < 0.03 ? "#58a6ff" : "#3fb950";
+   const cid = "erp-chart";
+   let h = '<div class="section"><div class="section-title">Implied Equity Risk Premium <span style="font-size:11px;background:#3fb950;color:#0d1117;padding:2px 8px;border-radius:4px;vertical-align:middle;font-weight:700;">FREE</span></div>';
+   h += '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">' +
+    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">IMPLIED ERP</div>' +
+    '<div style="font-size:36px;font-weight:700;color:#fff;font-family:monospace;">' + erpPct + '%</div></div>' +
+    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">S&P 500</div>' +
+    '<div style="font-size:20px;font-weight:700;color:#fff;font-family:monospace;">' + spx.toLocaleString() + '</div></div>' +
+    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">10Y YIELD</div>' +
+    '<div style="font-size:20px;font-weight:700;color:#fff;font-family:monospace;">' + (tenY * 100).toFixed(2) + '%</div></div>' +
+    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">READING</div>' +
+    '<div style="font-size:20px;font-weight:700;color:' + readCls + ';">' + read + '</div></div>' +
+    '<div style="font-size:11px;color:#8b949e;">As of ' + esc(d.as_of || "") + ' · Live from DCF model</div></div>' +
+    '<div class="zoomable-chart" data-chart="erp" style="position:relative;height:300px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + cid + '"></canvas>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   if (isPro) {
+    h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;">' +
+     '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">What this tells you</div>' +
+     '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;">' +
+     'The <b>implied equity risk premium</b> is the extra return investors demand for holding stocks over risk-free Treasuries, solved live from market prices via a Damodaran-style dividend discount model. ' +
+     'It is the single most important input to every DCF on this site: a higher ERP means a higher discount rate and lower valuations across the board.</div>' +
+     '<div style="font-size:13px;font-weight:700;color:#fff;margin:12px 0 8px;">How to read it</div>' +
+     '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;">' +
+     'An <b>elevated ERP (above 4.5%)</b> means the market is pricing significant risk into equities. This is typically a contrarian bullish signal for long-term buyers, as long as earnings hold up. ' +
+     'A <b>compressed ERP (below 3.0%)</b> means investors are accepting thin compensation for equity risk, often late in a bull market when complacency runs high. ' +
+     'Watch the ERP against the 10Y: when the 10Y rises faster than the ERP, the equity discount rate climbs and growth multiples compress. ' +
+     'The current 10Y at ' + (tenY * 100).toFixed(2) + '% is doing most of the work in today\'s discount rates.</div>' +
+     '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Source: Live DCF model ERP tab (GOOGLEFINANCE + Damodaran DDM solver), updated daily.</div></div>';
+   } else {
+    h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;text-align:center;">' +
+     '<div style="font-size:13px;color:#e8ecf1;margin-bottom:8px;">The full analysis of what this ERP reading means for positioning is a Pro feature.</div>' +
+     '<button class="btn" onclick="openProModal()">See Pro Plans</button></div>';
+   }
    h += '</div></div>';
    return h;
   }
