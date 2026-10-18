@@ -532,7 +532,7 @@ def main():
                        "regime": pro_sections.get("fear_index", {}).get("sentiment")},
     }
 
-    # Composite risk score: overall assessment across all risk models.
+    # Cascadia Composite Risk Index (CCRI): overall assessment across all risk models.
     # Normalizes each model to 0-100 where HIGHER = MORE RISK, then averages.
     # direction +1: higher headline score = higher risk (default for new models)
     # direction -1: higher headline score = LOWER risk (inverted)
