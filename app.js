@@ -1395,6 +1395,7 @@ function bindZoomHandlers() {
   syncCoveragePick(r);
   updateProBtn();
   if (r.name === "ticker" && routes.ticker) routes.ticker(r.param);
+  else if (r.name === "memos" && routes.memos) routes.memos(r.param);
   else if (routes[r.name]) routes[r.name]();
   else routes.home();
   // Draw GEX strike charts after HTML is in the DOM
