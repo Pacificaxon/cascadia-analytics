@@ -1489,7 +1489,7 @@ function bindZoomHandlers() {
    '<div class="modal-back" id="mb"><div class="modal">' +
    '<div class="modal-logo"><img src="logo-icon.png" alt="Cascadia Analytics"></div>' +
    "<h3>Cascadia Analytics Pro</h3>" +
-   "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, seasonality, Cascadia Scores, screener, exports, earnings history, and client notes. $19/month.</p>" +
+   "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, seasonality, Cascadia Scores, screener, exports, earnings history, and Cascadia Research Reports. $19/month.</p>" +
    statusLine +
    (isPro()
     ? '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-bottom:8px;text-decoration:none;">Manage subscription</a>' +
@@ -4770,14 +4770,14 @@ function bindZoomHandlers() {
    h += "</div>";
   }
 
-  // Client note (Pro)
-  h += '<div class="section"><div class="section-title">Client Note</div>';
-  h += gated("Client Note, Pro", "Full research note with model detail.",
+  // Cascadia Research Report (Pro)
+  h += '<div class="section"><div class="section-title">Cascadia Research Report</div>';
+  h += gated("Cascadia Research Report, Pro", "Full institutional research report with model detail.",
    t.note && t.note.pdf_exists
     ? '<div class="card"><h3>' + esc(t.name) + ", Research Note</h3>" +
      '<div class="panel-summary">Published ' + esc(t.note.published_date || "") + "</div>" +
      '<div style="margin-top:12px;"><button class="btn" onclick="openPdfModal(\'' + esc(t.note.pdf).replace(/'/g, "\\'") + '\', \'' + esc(t.name + ", Research Note").replace(/'/g, "\\'") + '\')">Open PDF</button></div></div>'
-    : '<div class="card"><p style="color:var(--muted)">No client note published for this ticker yet.</p></div>');
+    : '<div class="card"><p style="color:var(--muted)">No research report published for this ticker yet.</p></div>');
   h += "</div>";
 
   // Investment Scorecard (Pro)
