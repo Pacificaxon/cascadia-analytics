@@ -623,43 +623,62 @@ def main():
     # direction -1: higher headline score = LOWER risk (inverted)
     # To add a future model: add one line below with (direction, pillar, display name).
     # Pillars group models for attribution (Pro display shows where risk concentrates).
-    _composite_cfg = {
-        # key: (direction, pillar, display name)
-        "correction_risk": (+1, "Structural & Breadth", "Correction Risk"),
-        "liquidity_drain": (-1, "Macro & Liquidity", "Liquidity Drain"),
-        "rv_shock": (+1, "Systematic & Volatility", "Realized Vol Shock"),
-        "contagion": (+1, "Macro & Liquidity", "Contagion"),
-        "concentration": (+1, "Structural & Breadth", "Concentration"),
-        "margin_leverage": (+1, "Flow & Leverage", "Margin Leverage"),
-        "sector_rotation": (-1, "Structural & Breadth", "Sector Rotation"),
-        "fear_index": (+1, "Systematic & Volatility", "Fear Index"),
-        "oas_distress": (+1, "Macro & Liquidity", "Credit Stress"),
-        "treasury_slr": (-1, "Macro & Liquidity", "Treasury Capacity"),
-        "real_yield_shock": (+1, "Macro & Liquidity", "Real Yield Shock"),
-        "gamma_flip": (+1, "Systematic & Volatility", "Gamma Regime"),
-        "pead_screener": (+1, "Structural & Breadth", "Earnings Drift"),
-        "squeeze_radar": (+1, "Flow & Leverage", "Squeeze Fragility"),
+    # CCRI weighting: two-level hierarchy. Pillar targets reflect drawdown attribution
+    # (liquidity dominates every major drawdown). Within each pillar, models split by
+    # signal tier: T1 primary factors 3x, T2 regime gauges 2x, T3 supplementary 1x.
+    # To add a future model: append one line with (direction, pillar, display name, tier).
+    # Weights renormalize automatically; pillar targets stay fixed.
+    _pillar_targets = {
+        "Macro & Liquidity": 0.35,
+        "Systematic & Volatility": 0.25,
+        "Structural & Breadth": 0.20,
+        "Flow & Leverage": 0.20,
     }
-    _components = []  # (key, risk, pillar, display name)
-    for _key, (_direction, _pillar, _dname) in _composite_cfg.items():
+    _tier_w = {1: 3.0, 2: 2.0, 3: 1.0}
+    _composite_cfg = {
+        # key: (direction, pillar, display name, tier)
+        "correction_risk": (+1, "Structural & Breadth", "Correction Risk", 1),
+        "liquidity_drain": (-1, "Macro & Liquidity", "Liquidity Drain", 1),
+        "rv_shock": (+1, "Systematic & Volatility", "Realized Vol Shock", 1),
+        "contagion": (+1, "Macro & Liquidity", "Contagion", 2),
+        "concentration": (+1, "Structural & Breadth", "Concentration", 2),
+        "margin_leverage": (+1, "Flow & Leverage", "Margin Leverage", 2),
+        "sector_rotation": (-1, "Structural & Breadth", "Sector Rotation", 2),
+        "fear_index": (+1, "Systematic & Volatility", "Fear Index", 1),
+        "oas_distress": (+1, "Macro & Liquidity", "Credit Stress", 1),
+        "treasury_slr": (-1, "Macro & Liquidity", "Treasury Capacity", 2),
+        "real_yield_shock": (+1, "Macro & Liquidity", "Real Yield Shock", 3),
+        "gamma_flip": (+1, "Systematic & Volatility", "Gamma Regime", 2),
+        "pead_screener": (+1, "Structural & Breadth", "Earnings Drift", 3),
+        "squeeze_radar": (+1, "Flow & Leverage", "Squeeze Fragility", 3),
+        "flow_divergence": (+1, "Flow & Leverage", "Flow Divergence", 2),
+    }
+    # Raw risk values first (direction-normalized to 0-100, higher = more risk)
+    _raw = {}  # key -> (risk, pillar, display name, tier)
+    for _key, (_direction, _pillar, _dname, _tier) in _composite_cfg.items():
         _s = (site["risk_headlines"].get(_key) or {}).get("score")
         if _s is None:
             continue
         try:
-            _risk = float(_s) if _direction > 0 else 100.0 - float(_s)
+            # Flow divergence is an oscillator; extreme either way = risk
+            if _key == "flow_divergence":
+                _risk = abs(float(_s)) * 12.0
+            else:
+                _risk = float(_s) if _direction > 0 else 100.0 - float(_s)
+            _raw[_key] = (max(0.0, min(100.0, _risk)), _pillar, _dname, _tier)
         except (TypeError, ValueError):
             continue
-        _components.append((_key, max(0.0, min(100.0, _risk)), _pillar, _dname))
-    # Flow divergence: oscillator (not 0-100), extreme either way = uncertainty
-    _fd = (site["risk_headlines"].get("flow_divergence") or {}).get("score")
-    if _fd is not None:
-        try:
-            _components.append(("flow_divergence", max(0.0, min(100.0, abs(float(_fd)) * 12.0)),
-                                "Flow & Leverage", "Flow Divergence"))
-        except (TypeError, ValueError):
-            pass
+    # Hierarchical weights: pillar target x (tier_w / pillar tier sum)
+    _pillar_tier_sums = {}
+    for _key, (_risk, _pillar, _dname, _tier) in _raw.items():
+        _pillar_tier_sums[_pillar] = _pillar_tier_sums.get(_pillar, 0.0) + _tier_w[_tier]
+    _components = []  # (key, risk, pillar, display name, weight)
+    for _key, (_risk, _pillar, _dname, _tier) in _raw.items():
+        _w = _pillar_targets.get(_pillar, 0) * (_tier_w[_tier] / _pillar_tier_sums[_pillar])
+        _components.append((_key, _risk, _pillar, _dname, _w))
     if _components:
-        _avg = sum(_v for _, _v, _, _ in _components) / len(_components)
+        _wsum = sum(_w for _, _, _, _, _w in _components)
+        _avg = sum(_v * _w for _, _v, _, _, _w in _components) / _wsum if _wsum else 0
         if _avg >= 70:
             _regime, _color = "HIGH RISK", "rose"
         elif _avg >= 50:
@@ -668,17 +687,20 @@ def main():
             _regime, _color = "MODERATE RISK", "slate"
         else:
             _regime, _color = "LOW RISK", "emerald"
-        # Pillar aggregation: average risk within each pillar
+        # Pillar aggregation: weighted average risk within each pillar
         _pillars = {}
-        for _, _v, _p, _n in _components:
-            _pillars.setdefault(_p, []).append((_n, _v))
+        for _, _v, _p, _n, _w in _components:
+            _pillars.setdefault(_p, []).append((_n, _v, _w))
         _pillar_list = []
         for _p, _items in _pillars.items():
-            _pscore = sum(_v for _, _v in _items) / len(_items)
+            _pw = sum(_w for _, _, _w in _items)
+            _pscore = sum(_v * _w for _, _v, _w in _items) / _pw if _pw else 0
             _pillar_list.append({
                 "pillar": _p,
                 "score": round(_pscore, 1),
-                "models": [{"name": _n, "risk": round(_v, 1)} for _n, _v in
+                "weight": round(_pillar_targets.get(_p, 0) * 100, 1),
+                "models": [{"name": _n, "risk": round(_v, 1),
+                            "weight": round(_w * 100, 2)} for _n, _v, _w in
                            sorted(_items, key=lambda x: x[1], reverse=True)],
             })
         _pillar_list.sort(key=lambda x: x["score"], reverse=True)
@@ -686,10 +708,12 @@ def main():
             "score": round(_avg, 1),
             "regime": _regime,
             "color": _color,
-            "components": [{"model": _k, "risk": round(_v, 1)} for _k, _v, _, _ in _components],
+            "components": [{"model": _k, "risk": round(_v, 1),
+                            "weight": round(_w * 100, 2)} for _k, _v, _, _, _w in _components],
             "model_count": len(_components),
             "pillars": _pillar_list,
             "primary_driver": _pillar_list[0]["pillar"] if _pillar_list else None,
+            "weighted": True,
         }
 
     pro_out = {"generated_at": site.get("generated_at"), "sections": pro_sections}

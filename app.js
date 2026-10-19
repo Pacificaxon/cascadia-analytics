@@ -9165,7 +9165,7 @@ function gammaFlipHtml() {
    '<div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(comp.regime || "") + "</div>" +
    '<div style="font-size:11px;color:#8b949e;margin-top:6px;font-style:italic;">Algorithmic synthesis across ' + (comp.model_count || comps.length) + ' independent quantitative models.</div></div>';
   if (typeof isPro === "function" && isPro()) {
-   h += '<div style="flex:1;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models (equal-weighted)' +
+   h += '<div style="flex:1;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models' + (comp.weighted ? ' (hierarchical weighting)' : ' (equal-weighted)') +
     (comp.primary_driver ? ' · Primary driver: <span style="color:#e8ecf1;font-weight:600;">' + esc(comp.primary_driver) + "</span>" : "") + "</div>";
    // Pillar bars
    if (pillars.length) {
@@ -9173,7 +9173,7 @@ function gammaFlipHtml() {
     pillars.forEach((p) => {
      const pc = p.score >= 65 ? "#f85149" : p.score >= 45 ? "#d29922" : p.score >= 25 ? "#8b949e" : "#3fb950";
      h += '<div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;">' +
-      '<span style="color:#8b949e;">' + esc(p.pillar) + '</span><span style="color:' + pc + ';font-weight:700;">' + p.score + "</span></div>" +
+      '<span style="color:#8b949e;">' + esc(p.pillar) + (p.weight != null ? ' <span style="opacity:0.6;">' + p.weight + '%</span>' : '') + '</span><span style="color:' + pc + ';font-weight:700;">' + p.score + "</span></div>" +
       '<div style="height:4px;background:#1f2937;border-radius:2px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, p.score) + '%;background:' + pc + ';border-radius:2px;"></div></div></div>';
     });
     h += "</div>";
@@ -9182,7 +9182,8 @@ function gammaFlipHtml() {
    top.forEach((t) => {
     const tc = t.risk >= 70 ? "#f85149" : t.risk >= 50 ? "#d29922" : "#8b949e";
     h += '<div style="font-size:12px;"><span style="color:#8b949e;">' + esc(nameMap[t.model] || t.model) + '</span> ' +
-     '<span style="color:' + tc + ';font-weight:700;">' + t.risk + "</span></div>";
+     '<span style="color:' + tc + ';font-weight:700;">' + t.risk + "</span>" +
+     (t.weight != null ? ' <span style="color:#8b949e;opacity:0.6;font-size:11px;">' + t.weight + '%</span>' : '') + "</div>";
    });
    h += '</div><div style="font-size:11px;color:#8b949e;margin-top:8px;">Highest risk contributors right now</div></div>';
   } else {
