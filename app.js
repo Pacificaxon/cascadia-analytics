@@ -7499,7 +7499,7 @@ function bindZoomHandlers() {
   if (!tk) return { error: "Enter a ticker." };
   if (_e360Cache[tk]) return _e360Cache[tk];
   try {
-   const res = await fetch("/api/earnings360?ticker=" + encodeURIComponent(tk));
+   const res = await fetch("/api/earnings360?ticker=" + encodeURIComponent(tk), { signal: AbortSignal.timeout(90000) });
    const j = await res.json();
    if (j.error) return { error: j.error };
    _e360Cache[tk] = j;
@@ -7558,11 +7558,12 @@ function bindZoomHandlers() {
   if (!inp || !el) return;
   const tk = inp.value.toUpperCase().trim();
   if (!tk) return;
+  const originalLabel = btn ? btn.textContent : "";
   if (btn) { btn.disabled = true; btn.textContent = "GENERATING..."; }
   el.innerHTML = '<div class="card"><p style="color:#8b949e;">Running quantitative models and AI synthesis for ' + esc(tk) + ". This usually takes 20-30 seconds.</p></div>";
   const d = await fetchEarnings360(tk);
   renderEarnings360(d, resultId);
-  if (btn) { btn.disabled = false; btn.textContent = "ANALYZE"; }
+  if (btn) { btn.disabled = false; btn.textContent = originalLabel || "ANALYZE"; }
  }
  function wireEarnings360Input(inputId, resultId, buttonId) {
   const inp = document.getElementById(inputId);
