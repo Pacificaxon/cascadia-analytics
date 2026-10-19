@@ -2569,9 +2569,9 @@ function bindZoomHandlers() {
     } else if (/theme rotation/i.test(p.name) && D.theme_rot_history && (D.theme_rot_history.history || []).length) {
      chartHtml = '<div class="zoomable-chart" data-chart="themerot" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="themerot-chart"></canvas>' +
       '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
-    } else if (/small.*mid|mid.*cap/i.test(p.name) && D.smcap_history && (D.smcap_history.history || []).length) {
-     chartHtml = '<div class="zoomable-chart" data-chart="smcap" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="smcap-chart"></canvas>' +
-      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+    } else if (/small.*mid|mid.*cap/i.test(p.name) && p.chart) {
+     // Detailed Discord visual: distance-from-200d bars + XLY/XLP rotation chart
+     chartHtml = '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy" style="width:100%;border-radius:8px;margin-bottom:12px;">';
     } else if (/credit spread/i.test(p.name) && D.credit_vol_history && (D.credit_vol_history.history || []).length) {
      chartHtml = '<div class="zoomable-chart" data-chart="creditvol" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="creditvol-chart"></canvas>' +
       '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
@@ -2608,9 +2608,11 @@ function bindZoomHandlers() {
     // Explainer: visual first, then plain-English explanation of what the user is seeing
     const explainerHtml = trackerExplainer(p);
     const proBadge = ' <span style="font-size:10px;background:#7d4fc9;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">PRO</span>';
+    const isSmallMid = /small.*mid|mid.*cap/i.test(p.name);
+    const bodyText = (isSmallMid && p.full_text) ? p.full_text : (p.summary || "");
     const panelHtml = '<div class="card"><h3>' + title + proBadge + "</h3>" + chartHtml + explainerHtml +
     (p.about ? '<div class="panel-about">' + esc(p.about) + "</div>" : "") +
-    '<div class="panel-summary">' + esc(p.summary || "") + "</div>" +
+    '<div class="panel-summary" style="white-space:pre-wrap;">' + esc(bodyText) + "</div>" +
     '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.frequency ? " · updated " + esc(p.frequency) : "") + (p.stale ? " · stale" : "") + "</div></div>";
     // Each tracker individually Pro-locked. Free users get a generic teaser, never real data.
     const teaserDesc = {
