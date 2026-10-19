@@ -293,6 +293,7 @@
  async function refreshAuth() {
   if (!supa) { proVerified = false; render(); return; }
   const prevProState = isPro();
+  const prevProData = PRO_DATA;
   try {
    const { data: { session } } = await supa.auth.getSession();
    authUser = session ? session.user : null;
@@ -335,6 +336,8 @@
   updateAuthBtn();
   // Debounce renders to prevent flashing: only re-render once if Pro state changed
   // (fixes iOS race condition where initial render happens before auth completes)
+  // Skip the render entirely when nothing changed, so routine refreshes (e.g., tab
+  // wake) don't wipe in-progress UI like an Event Matrix generation.
   if (prevProState !== isPro()) {
    // Clear any pending render to avoid multiple flashes
    if (window._proRenderTimeout) clearTimeout(window._proRenderTimeout);
@@ -342,8 +345,8 @@
     render();
     window._proRenderTimeout = null;
    }, 300);
-  } else {
-   render();
+  } else if (!prevProData && PRO_DATA) {
+   render(); // Pro data newly arrived, re-render to reveal Pro content
   }
   // Re-run visual embedding after auth completes (for analysis route)
   // This ensures visuals load even if PRO_DATA wasn't ready on first render
@@ -7874,7 +7877,15 @@ function bindZoomHandlers() {
     runEarnings360Search("e360-ticker", "e360-result", "e360-btn");
    });
   }
-  if (initial) runEarnings360Search("e360-ticker", "e360-result", "e360-btn");
+  // Restore a previously generated matrix after route re-renders (in-memory cache).
+  // Skip the auto-regenerate below when serving from cache.
+  const _e360Initial = (initial || "").toUpperCase().trim();
+  const _e360Cached = (typeof _e360Cache !== "undefined" && _e360Initial && _e360Cache[_e360Initial] && !_e360Cache[_e360Initial].error) ? _e360Cache[_e360Initial] : null;
+  if (_e360Cached) {
+   renderEarnings360(_e360Cached, "e360-result");
+  } else if (initial) {
+   runEarnings360Search("e360-ticker", "e360-result", "e360-btn");
+  }
  });
 
  route("memos", function (param) {
