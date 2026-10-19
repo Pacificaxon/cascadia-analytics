@@ -2679,8 +2679,7 @@ function bindZoomHandlers() {
     '<div style="font-size:13px;color:#e8ecf1;opacity:0.85;line-height:1.6;">' + s.body + "</div></div>"
    ).join("");
    const reportHtml =
-    '<div style="background:#161b26;border-radius:12px;padding:20px;display:flex;flex-direction:column;max-height:640px;">' +
-    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
+    '<div style="background:#161b26;border-radius:12px;padding:20px;display:flex;flex-direction:column;max-height:640px;">' +    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
     '<span style="font-size:14px;">📊</span>' +
     '<span style="font-size:15px;font-weight:700;color:#fff;">Macro Analyst Report</span></div>' +
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
@@ -2691,8 +2690,8 @@ function bindZoomHandlers() {
     '<div id="macro-report-date-label" style="font-size:11px;color:#e8ecf1;opacity:0.6;margin-bottom:12px;">' +
     esc(latestReport.date || "") + (latestReport.data_through ? ", " + esc(latestReport.data_through) : "") + "</div>" +
     '<div id="macro-report-sections">' + reportSectionsHtml + "</div>" +
-    "</div></div>" +
-    '<script>window.__macroReportHistory = ' + JSON.stringify(reportHistory) + ';</script>';
+    "</div></div>";
+   window.__macroReportHistory = reportHistory;
    return '<div style="margin-bottom:12px;">' +
     '<h2 style="color:#fff;font-size:20px;margin:0 0 4px;">Economic Trends & Macro Indicators</h2>' +
     '<p style="color:#e8ecf1;opacity:0.6;font-size:13px;margin:0 0 16px;">Compare trends across CPI, PPI, Retail Sales & PMI to detect leading vs. lagging signals.</p>' +
@@ -4151,19 +4150,13 @@ function bindZoomHandlers() {
    h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">30-DAY HISTORY</div>';
    h += '<div class="card" style="padding:16px;"><div style="height:180px;"><canvas id="' + canvasId + '"></canvas></div></div>';
    const histData = fi.history.map((p) => ({ x: p.date, y: p.score }));
-   const histLabel = JSON.stringify(histData.map((p) => {
+   const histLabel = histData.map((p) => {
     const s = p.y;
     const lab = s >= 75 ? "Extreme Fear" : (s >= 55 ? "Elevated Fear" : (s >= 45 ? "Neutral" : (s >= 25 ? "Complacency" : "Extreme Complacency")));
     return p.x.slice(5) + " | " + s + " (" + lab + ")";
-   }));
-   h += '<script>if(window.Chart){new Chart(document.getElementById("' + canvasId + '"),{type:"line",data:{labels:' +
-    JSON.stringify(histData.map((p) => p.x.slice(5))) + ',datasets:[{data:' + JSON.stringify(histData.map((p) => p.y)) +
-    ',borderColor:"#2979FF",borderWidth:2,tension:0.3,fill:false,pointRadius:3,pointHoverRadius:5}]},' +
-    'options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},' +
-    'plugins:{legend:{display:false},tooltip:{callbacks:{title:function(items){return ' + histLabel + '[items[0].dataIndex];}}},' +
-    'zoom:{zoom:{wheel:{enabled:true},pinch:{enabled:true},mode:"x"},pan:{enabled:true,mode:"x"}}},' +
-    'scales:{x:{grid:{display:false},ticks:{color:"#525252",font:{size:9}}},' +
-    'y:{min:0,max:100,grid:{color:"#1a1a1a"},ticks:{color:"#525252",font:{size:9},stepSize:25}}}}});}</script>';
+   });
+   // Chart is drawn after render (inline scripts via innerHTML never execute)
+   window.__fearHistChart = { canvasId, labels: histData.map((p) => p.x.slice(5)), data: histData.map((p) => p.y), tooltips: histLabel };
   }
   h += '</div>';
   return h;
@@ -4212,8 +4205,8 @@ function bindZoomHandlers() {
      '<div id="briefing-body">' +
      '<div id="briefing-content">' + r.html + "</div>" +
      "</div>" +
-     '<script>window.__briefingHistory = ' + JSON.stringify([{ date: r.as_of, headline: r.headline, html: r.html }].concat(r.previous)) + ';</script>' +
      "</div>";
+    window.__briefingHistory = [{ date: r.as_of, headline: r.headline, html: r.html }].concat(r.previous);
    }
   } else {
    h += '<div class="card"><p style="color:#e8ecf1;">The morning briefing has not been generated yet. Check back after the morning refresh.</p></div>';
@@ -8078,6 +8071,27 @@ function bindZoomHandlers() {
   h += fearIndexHtml();
   app.innerHTML = h;
   bindZoomHandlers();
+  // Draw Fear Index 30-day history chart (data stashed by fearIndexHtml)
+  const fh = window.__fearHistChart;
+  window.__fearHistChart = null;
+  if (fh && window.Chart) {
+   const fcv = document.getElementById(fh.canvasId);
+   if (fcv) {
+    const oldF = Chart.getChart(fcv);
+    if (oldF) oldF.destroy();
+    new Chart(fcv, {
+     type: "line",
+     data: { labels: fh.labels, datasets: [{ data: fh.data, borderColor: "#2979FF", borderWidth: 2, tension: 0.3, fill: false, pointRadius: 3, pointHoverRadius: 5 }] },
+     options: {
+      responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (items) { return fh.tooltips[items[0].dataIndex]; } } },
+       zoom: { zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: "x" }, pan: { enabled: true, mode: "x" } } },
+      scales: { x: { grid: { display: false }, ticks: { color: "#525252", font: { size: 9 } } },
+       y: { min: 0, max: 100, grid: { color: "#1a1a1a" }, ticks: { color: "#525252", font: { size: 9 }, stepSize: 25 } } }
+     }
+    });
+   }
+  }
   // Draw correction risk chart
   const cr = D.correction_risk || {};
   const hist = cr.history || [];
