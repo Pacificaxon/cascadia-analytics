@@ -87,26 +87,34 @@ a:hover { text-decoration: underline; }
 .modal h3 { font-weight: 600; letter-spacing: 0.03em; }
 .card h3 { font-weight: 600; }
 .pro-btn {
-  border: 1px solid var(--gold) !important; color: var(--gold) !important;
-  border-radius: 6px !important; padding: 7px 14px !important;
+  background: linear-gradient(135deg, #d8b76e 0%, var(--gold) 45%, var(--gold-deep) 100%) !important;
+  color: #1c2534 !important; border: none !important;
+  border-radius: 999px !important; padding: 9px 22px !important;
+  font-family: var(--sans) !important; font-weight: 700 !important; font-size: 13.5px !important;
+  letter-spacing: 0.04em !important; cursor: pointer;
+  box-shadow: 0 2px 12px rgba(201, 169, 97, 0.35) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease !important;
   -webkit-touch-callout: none !important; -webkit-user-select: none !important; user-select: none !important;
 }
-.pro-btn.unlocked { background: var(--gold-dim) !important; }
+.pro-btn:hover { transform: translateY(-1px); filter: brightness(1.08); box-shadow: 0 4px 20px rgba(201, 169, 97, 0.5) !important; }
+.pro-btn:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(201, 169, 97, 0.3) !important; }
+.pro-btn.unlocked { background: var(--gold-dim) !important; color: var(--gold) !important; box-shadow: none !important; border: 1px solid rgba(201, 169, 97, 0.4) !important; }
 .auth-btn {
-  max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  background: linear-gradient(135deg, #2f6fed 0%, #1e4fd8 100%);
-  color: #fff !important; border: none !important; border-radius: 10px !important;
-  padding: 8px 18px !important; font-weight: 600 !important; font-size: 14px !important;
-  cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-  box-shadow: 0 2px 8px rgba(47, 111, 237, 0.3) !important;
+  max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  background: transparent !important;
+  color: var(--text) !important; border: 1px solid var(--border) !important;
+  border-radius: 999px !important; padding: 9px 22px !important;
+  font-family: var(--sans) !important; font-weight: 600 !important; font-size: 13.5px !important;
+  letter-spacing: 0.04em !important; cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease !important;
   -webkit-touch-callout: none !important; -webkit-user-select: none !important; user-select: none !important;
 }
-.auth-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(47, 111, 237, 0.45) !important; }
+.auth-btn:hover { background: var(--card2) !important; border-color: var(--gold) !important; color: var(--gold) !important; transform: translateY(-1px); }
 .auth-btn:active { transform: translateY(0); }
 .auth-btn.logged-in {
-  background: linear-gradient(135deg, #1a2f4a 0%, #0f1e33 100%) !important;
-  color: var(--green) !important; box-shadow: none !important;
-  border: 1px solid rgba(63, 185, 80, 0.3) !important;
+  background: var(--gold-dim) !important;
+  color: var(--gold) !important; box-shadow: none !important;
+  border: 1px solid rgba(201, 169, 97, 0.4) !important;
 }
 
 /* ---------- shell ---------- */
