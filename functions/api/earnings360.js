@@ -84,7 +84,10 @@ async function callGemini(prompt, apiKey) {
     e.code = 429;
     throw e;
   }
-  if (!gRes.ok) throw new Error(`Gemini returned HTTP ${gRes.status}`);
+  if (!gRes.ok) {
+    const b = await gRes.text().catch(() => "");
+    throw new Error(`Gemini HTTP ${gRes.status}: ${b.slice(0, 160)}`);
+  }
   const gJson = await gRes.json();
   const rawText = gJson?.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!rawText) throw new Error("Empty response from Gemini.");
@@ -108,7 +111,10 @@ async function callGroq(prompt, apiKey) {
     e.code = 429;
     throw e;
   }
-  if (!r.ok) throw new Error(`Groq returned HTTP ${r.status}`);
+  if (!r.ok) {
+    const b = await r.text().catch(() => "");
+    throw new Error(`Groq HTTP ${r.status}: ${b.slice(0, 160)}`);
+  }
   const j = await r.json();
   const text = j?.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty response from Groq.");
@@ -132,7 +138,10 @@ async function callOpenRouter(prompt, apiKey) {
     e.code = 429;
     throw e;
   }
-  if (!r.ok) throw new Error(`OpenRouter returned HTTP ${r.status}`);
+  if (!r.ok) {
+    const b = await r.text().catch(() => "");
+    throw new Error(`OpenRouter HTTP ${r.status}: ${b.slice(0, 160)}`);
+  }
   const j = await r.json();
   const text = j?.choices?.[0]?.message?.content;
   if (!text) throw new Error("Empty response from OpenRouter.");
