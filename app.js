@@ -4551,7 +4551,7 @@ function bindZoomHandlers() {
   if (isPro()) {
     h += '<div style="display:flex;gap:16px;align-items:center;margin-left:8px;">';
     if (score != null) {
-      h += '<div style="text-align:center;"><span class="score-badge ' + scoreClass(score) + '" title="' + esc(scoreTooltip(t)) + '">' + score + '</span><div style="font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:0.5px;">CASCADIA</div></div>';
+      h += '<div style="text-align:center;"><span class="score-badge" style="border:2px solid #c9a961;color:#c9a961;" title="' + esc(scoreTooltip(t)) + '">' + score + '</span><div style="font-size:10px;color:#c9a961;margin-top:4px;letter-spacing:0.5px;font-weight:600;">CASCADIA</div></div>';
     }
     if (attrScore != null) {
       h += '<div style="text-align:center;"><span class="score-badge ' + scoreClass(attrScore) + '" style="border:2px solid #c9a961;" title="Investment Scorecard: ' + attrBand + ' (Pro)">' + attrScore + '</span><div style="font-size:10px;color:#c9a961;margin-top:4px;letter-spacing:0.5px;font-weight:600;">GROWTH &amp; VALUE INDEX</div></div>';
