@@ -4042,6 +4042,12 @@ function bindZoomHandlers() {
   { key: "opex", name: "OPEX Cycle Tracker", desc: "Options expiration, notified ahead of triple witching." },
   { key: "macro_analysis", name: "Macroeconomic Analysis", desc: "CPI, PPI, retail sales, PMI, energy, notified when new reports are released." },
   { key: "fear_index", name: "Quantitative Fear Index", desc: "0-100 market fear gauge, notified when extreme tail risk is detected (score 75+)." },
+  { key: "oas_distress", name: "Credit Stress (HY OAS)", desc: "High-yield credit spreads, notified when stress enters critical territory." },
+  { key: "treasury_slr", name: "Treasury Capacity (SLR)", desc: "Dealer balance sheet capacity, notified when reserves bind." },
+  { key: "real_yield_shock", name: "Real Yield Shock", desc: "10Y TIPS vs equity multiples, notified on severe duration drag." },
+  { key: "gamma_flip", name: "Gamma Flip Barometer", desc: "SPY dealer gamma regime, notified when it flips long/short." },
+  { key: "pead_drift", name: "Earnings Drift (PEAD)", desc: "Post-earnings drift, notified when distribution dominates." },
+  { key: "squeeze_fragility", name: "Squeeze Fragility Radar", desc: "Short squeeze risk, notified when fragility spikes." },
  ];
 
  function premarketHtml() {
