@@ -9222,7 +9222,7 @@ route("alerts", function () {
    '<li>✓ Valuation multiples, market cap, EV, TTM and forward multiples</li>' +
    '<li>✓ Interactive price charts with moving averages (10/20/50/100/200-day)</li>' +
    '<li>✓ 5 years of financial statements, income, balance sheet, cash flow</li>' +
-   '<li>✓ Daily Snapshot risk scores, all 7 models, score plus regime</li>' +
+   '<li>✓ Daily Snapshot risk scores, all 9 models, score plus regime</li>' +
    '<li>✓ AAII Investor Sentiment tracker (weekly)</li>' +
    '<li>✓ COT Positioning tracker, commercial, large spec, small spec (weekly)</li>' +
    '<li>✓ Fed funds futures tracker with meeting probabilities</li>' +
@@ -9234,6 +9234,9 @@ route("alerts", function () {
    '<li>✓ Macro news wire</li>' +
    '<li>✓ Earnings calendar</li>' +
    '<li>✓ Coverage table with ratings and upside</li>' +
+'<li>✓ Implied ERP tracker, market-implied equity risk premium with chart</li>' +
+'<li>✓ Cascadia Memos, weekly market research notes</li>' +
+'<li>✓ Cascadia Primer, 14-module investing education course</li>' +
    "</ul></div>";
 
   // PRO column
@@ -9258,7 +9261,12 @@ route("alerts", function () {
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ Earnings call transcript tone analysis, executive confidence scoring via AI</li>' +
    '<li>✓ Catalyst Compass, probabilistic Bull/Base/Bear scenario matrix on options-implied bounds for any ticker</li>' +
-   '<li>✓ ' + ORDER.length + ' client research notes (PDF, full institutional format)</li>' +
+'<li>✓ Fundamentals Tracker, 56 institutional-grade metrics for any ticker</li>' +
+'<li>✓ Quality Snapshot, on-demand ROIC, cash conversion, and Rule of 40 scoring</li>' +
+'<li>✓ Agency Risk tracker, executive alignment scoring with SEC proxy audits</li>' +
+'<li>✓ Week Ahead memos, Pro-only weekly market outlook</li>' +
+'<li>✓ OPEX Cycle Tracker, options expiration calendar with max-pain levels</li>' +
+   '<li>✓ ' + ORDER.length + ' Cascadia research reports (PDF, full institutional format)</li>' +
    '<li>✓ Investment scorecard PDFs, one-glance 0-100 attractiveness rating</li>' +
    '<li>✓ Morning Briefing, institutional-grade daily synthesis of macro, internals, and positioning</li>' +
    '<li>✓ All future DCF models and ticker coverage, the coverage universe is constantly expanding and Pro members get every new name automatically</li>' +
