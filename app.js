@@ -570,6 +570,53 @@
   const parts = h.split("/");
   return { name: parts[0] || "home", param: decodeURIComponent(parts[1] || "") };
  }
+/* Theme rotation chart plugins (module scope: used by inline + zoom renders) */
+const quadBg = {
+ id: "quadBg",
+ beforeDraw(chart) {
+  const { ctx, chartArea, scales } = chart;
+  const x0 = scales.x.getPixelForValue(0), y0 = scales.y.getPixelForValue(0);
+  const { left, right, top, bottom } = chartArea;
+  ctx.save();
+  ctx.fillStyle = "rgba(63,185,80,0.06)"; ctx.fillRect(x0, top, right - x0, y0 - top);
+  ctx.fillStyle = "rgba(198,120,221,0.06)"; ctx.fillRect(left, top, x0 - left, y0 - top);
+  ctx.fillStyle = "rgba(210,153,34,0.06)"; ctx.fillRect(x0, y0, right - x0, bottom - y0);
+  ctx.fillStyle = "rgba(248,81,73,0.06)"; ctx.fillRect(left, y0, x0 - left, bottom - y0);
+  ctx.strokeStyle = "rgba(200,208,220,0.5)"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(x0, top); ctx.lineTo(x0, bottom); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(left, y0); ctx.lineTo(right, y0); ctx.stroke();
+  ctx.fillStyle = "rgba(200,208,220,0.55)"; ctx.font = "11px sans-serif"; ctx.textAlign = "center";
+  ctx.fillText("LEADING", (x0 + right) / 2, top + 16);
+  ctx.fillText("IMPROVING", (left + x0) / 2, top + 16);
+  ctx.fillText("WEAKENING", (x0 + right) / 2, bottom - 8);
+  ctx.fillText("LAGGING", (left + x0) / 2, bottom - 8);
+  ctx.restore();
+ }
+};
+const themeLabels = {
+ id: "themeLabels",
+ afterDatasetsDraw(chart) {
+  const { ctx } = chart;
+  ctx.save();
+  ctx.font = "600 11px sans-serif";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  chart.data.datasets.forEach((ds, i) => {
+   const meta = chart.getDatasetMeta(i);
+   const pt = meta && meta.data && meta.data[0];
+   if (!pt) return;
+   const lx = pt.x + 9;
+   const ly = pt.y + (i % 2 === 0 ? -9 : 9);
+   const w = ctx.measureText(ds.label).width;
+   ctx.fillStyle = "rgba(10,15,26,0.78)";
+   ctx.fillRect(lx - 3, ly - 9, w + 6, 18);
+   ctx.fillStyle = "#d5dbe5";
+   ctx.fillText(ds.label, lx, ly + 1);
+  });
+  ctx.restore();
+ }
+};
+
 function bindZoomHandlers() {
     // Click/tap to zoom: open modal with larger chart
     document.querySelectorAll(".zoomable-chart").forEach((el) => {
@@ -817,7 +864,7 @@ function bindZoomHandlers() {
           scales: {
            x: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#e8ecf1" } },
            y: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "20d momentum (%) →", color: "#e8ecf1" } } } },
-         plugins: [quadBg]
+         plugins: [quadBg, themeLabels]
         });
        } else if (kind === "smcap") {
         const hist = D.smcap_history.history;
@@ -3481,30 +3528,6 @@ function bindZoomHandlers() {
    // Theme Rotation interactive chart: scatter of themes (x = vs 70d avg, y = 20d momentum)
    // Quadrant backgrounds: green=leading (top-right), blue=improving (top-left),
    // amber=weakening (bottom-right), red=lagging (bottom-left)
-   const quadBg = {
-    id: "quadBg",
-    beforeDraw(chart) {
-     const { ctx, chartArea, scales } = chart;
-     const x0 = scales.x.getPixelForValue(0), y0 = scales.y.getPixelForValue(0);
-     const { left, right, top, bottom } = chartArea;
-     ctx.save();
-     ctx.fillStyle = "rgba(63,185,80,0.06)"; ctx.fillRect(x0, top, right - x0, y0 - top);   // leading
-     ctx.fillStyle = "rgba(198,120,221,0.06)"; ctx.fillRect(left, top, x0 - left, y0 - top);   // improving
-     ctx.fillStyle = "rgba(210,153,34,0.06)"; ctx.fillRect(x0, y0, right - x0, bottom - y0);   // weakening
-     ctx.fillStyle = "rgba(248,81,73,0.06)"; ctx.fillRect(left, y0, x0 - left, bottom - y0);  // lagging
-     // zero axes
-     ctx.strokeStyle = "rgba(200,208,220,0.5)"; ctx.lineWidth = 1;
-     ctx.beginPath(); ctx.moveTo(x0, top); ctx.lineTo(x0, bottom); ctx.stroke();
-     ctx.beginPath(); ctx.moveTo(left, y0); ctx.lineTo(right, y0); ctx.stroke();
-     // quadrant labels
-     ctx.fillStyle = "rgba(200,208,220,0.55)"; ctx.font = "11px sans-serif"; ctx.textAlign = "center";
-     ctx.fillText("LEADING", (x0 + right) / 2, top + 16);
-     ctx.fillText("IMPROVING", (left + x0) / 2, top + 16);
-     ctx.fillText("WEAKENING", (x0 + right) / 2, bottom - 8);
-     ctx.fillText("LAGGING", (left + x0) / 2, bottom - 8);
-     ctx.restore();
-    }
-   };
    const trc = document.getElementById("themerot-chart");
    const trh = D.theme_rot_history;
    if (trc && trh && (trh.history || []).length) {
@@ -3542,7 +3565,7 @@ function bindZoomHandlers() {
         y: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
          title: { display: true, text: "20d momentum (%) →", color: "#e8ecf1", font: { size: 11 } } }
        } },
-      plugins: [quadBg]
+      plugins: [quadBg, themeLabels]
      });
     } catch (e) { console.error("ThemeRot chart error", e); }
    }
