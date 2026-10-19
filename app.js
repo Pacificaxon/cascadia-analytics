@@ -4652,6 +4652,14 @@ function bindZoomHandlers() {
   h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
   h += "</div>";
 
+  // 360 Earnings & Price Reaction (Pro) - click to generate, AI quota friendly
+  h += '<div class="section"><div class="section-title">360 Earnings Reaction <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("360 Earnings Reaction, Pro", "AI-synthesized earnings preview for " + tk + ": macro, micro, management tone history, live options-implied move, and a definitive lean.",
+   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" onclick="runEarnings360Search(\'e360-input-' + tk + '\',\'e360-' + tk + '\',\'e360-btn-' + tk + '\')" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate 360 Preview</button></div>' +
+   '<input id="e360-input-' + tk + '" type="hidden" value="' + esc(tk) + '" />' +
+   '<div id="e360-' + tk + '"><p style="color:var(--muted);font-size:13px;">Live front-month straddle math plus AI synthesis across macro, fundamentals, management tone, and options positioning.</p></div>');
+  h += "</div>";
+
   // Dark Pool & Off-Exchange Flow (FREE), FINRA Reg SHO daily
   h += '<div class="section"><div class="section-title">Dark Pool Flow</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Institutional off-exchange sentiment for ' + esc(tk) + ' from FINRA Reg SHO daily files. High dark short ratio means dealers are shorting to fill institutional buy orders (accumulation).</div>';
@@ -7475,6 +7483,84 @@ function bindZoomHandlers() {
   const q = await fetchQuality(tk);
   renderQualityResult(q);
  }
+ // 360 Earnings & Price Reaction (PRO).
+ // Backend: /api/earnings360 edge function (live Yahoo options math + Gemini Flash narrative, 1h cache).
+ let _e360Cache = {};
+ async function fetchEarnings360(ticker) {
+  const tk = (ticker || "").toUpperCase().trim();
+  if (!tk) return { error: "Enter a ticker." };
+  if (_e360Cache[tk]) return _e360Cache[tk];
+  try {
+   const res = await fetch("/api/earnings360?ticker=" + encodeURIComponent(tk));
+   const j = await res.json();
+   if (j.error) return { error: j.error };
+   _e360Cache[tk] = j;
+   return j;
+  } catch (e) {
+   return { error: "Could not load the earnings preview. Try again shortly." };
+  }
+ }
+ function e360Pillar(n, title, body, accent) {
+  return '<div style="background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:20px;">' +
+   '<div style="display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(42,52,72,0.6);padding-bottom:10px;margin-bottom:10px;">' +
+   '<span style="font-family:monospace;font-size:12px;font-weight:700;color:' + accent + ';">' + n + '</span>' +
+   '<span style="font-size:12px;font-weight:700;letter-spacing:1px;color:' + accent + ';">' + esc(title).toUpperCase() + '</span></div>' +
+   '<p style="font-size:14px;color:#c9d1d9;line-height:1.7;margin:0;">' + esc(body) + "</p></div>";
+ }
+ function renderEarnings360(d, elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (d.error) {
+   el.innerHTML = '<div class="card"><p style="color:#f85149;">' + esc(d.error) + "</p></div>";
+   return;
+  }
+  const a = d.analysis || {};
+  const im = d.impliedMove !== null && d.impliedMove !== undefined ? "±" + d.impliedMove + "%" : "N/A";
+  const pcr = d.putCallRatio !== null && d.putCallRatio !== undefined ? d.putCallRatio : "N/A";
+  let h = '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;margin:12px 0;">' +
+   '<div style="flex:1;min-width:220px;background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:18px;">' +
+   '<div style="font-size:24px;font-weight:800;color:#fff;">' + esc(d.ticker) + '</div>' +
+   '<div style="font-size:12px;color:#8b949e;margin-top:2px;">' + esc(d.companyName || "") + " · " + esc(d.sector || "") + "</div>" +
+   '<div style="font-size:13px;color:#8b949e;margin-top:8px;">Spot <span style="color:#fff;font-weight:700;">$' + esc(String(d.price)) + "</span>" +
+   ' · Earnings <span style="color:#fff;font-weight:700;">' + esc(d.earningsDate || "TBD") + "</span></div></div>" +
+   '<div style="background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:18px;text-align:right;min-width:150px;">' +
+   '<div style="font-size:10px;color:#8b949e;letter-spacing:1px;">IMPLIED MOVE</div>' +
+   '<div style="font-size:26px;font-weight:800;color:#58a6ff;margin-top:4px;">' + esc(im) + "</div>" +
+   '<div style="font-size:10px;color:#8b949e;margin-top:4px;">front-month straddle</div></div>' +
+   '<div style="background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:18px;text-align:right;min-width:150px;">' +
+   '<div style="font-size:10px;color:#8b949e;letter-spacing:1px;">PUT/CALL OI</div>' +
+   '<div style="font-size:26px;font-weight:800;color:#c9a961;margin-top:4px;">' + esc(String(pcr)) + "</div>" +
+   '<div style="font-size:10px;color:#8b949e;margin-top:4px;">open interest ratio</div></div></div>';
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">' +
+   e360Pillar("01", "Macro Dynamics", a.macroDynamics || "N/A", "#c9a961") +
+   e360Pillar("02", "Micro Fundamentals", a.microFundamentals || "N/A", "#58a6ff") + "</div>";
+  h += '<div style="margin:12px 0;">' + e360Pillar("03", "Management Tone, Last Four Quarters", a.historicalCommentary || "N/A", "#3fb950") + "</div>";
+  h += '<div style="margin:12px 0;">' + e360Pillar("04", "Options Mechanics", a.optionsMechanics || "N/A", "#a371f7") + "</div>";
+  h += '<div style="background:linear-gradient(to right,#161b26,#141a26);border:1px solid #2a3448;border-radius:12px;padding:24px;margin:12px 0;position:relative;overflow:hidden;">' +
+   '<div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#c9a961;"></div>' +
+   '<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#fff;margin-bottom:10px;">05 · THE VERDICT</div>' +
+   '<p style="font-size:15px;color:#e8ecf1;line-height:1.7;margin:0;font-weight:500;">' + esc(a.verdict || "N/A") + "</p></div>";
+  h += '<div style="font-size:11px;color:#8b949e;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div>';
+  el.innerHTML = h;
+ }
+ async function runEarnings360Search(inputId, resultId, buttonId) {
+  const inp = document.getElementById(inputId);
+  const el = document.getElementById(resultId);
+  const btn = buttonId ? document.getElementById(buttonId) : null;
+  if (!inp || !el) return;
+  const tk = inp.value.toUpperCase().trim();
+  if (!tk) return;
+  if (btn) { btn.disabled = true; btn.textContent = "GENERATING..."; }
+  el.innerHTML = '<div class="card"><p style="color:#8b949e;">Running quantitative models and AI synthesis for ' + esc(tk) + "...</p></div>";
+  const d = await fetchEarnings360(tk);
+  renderEarnings360(d, resultId);
+  if (btn) { btn.disabled = false; btn.textContent = "ANALYZE"; }
+ }
+ function wireEarnings360Input(inputId, resultId, buttonId) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") runEarnings360Search(inputId, resultId, buttonId); });
+ }
  // 56-Metric Institutional Fundamentals Tracker (PRO).
  // Backend: /api/metrics edge function (Yahoo Finance, free, 1h cache).
  let _metricsCache = {};
@@ -7731,6 +7817,31 @@ function bindZoomHandlers() {
    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") runQualitySearch(); });
    if (initial) runQualitySearch();
   }
+ });
+
+ route("earnings-360", async function (param) {
+  await ensureProData();
+  if (!isPro()) {
+   app.innerHTML = '<div class="crumb">360 EARNINGS REACTION</div>' +
+    '<div class="hero"><div><h1 class="hero-h">360 Earnings Reaction</h1>' +
+    "<p class='hero-sub'>AI-synthesized earnings previews for any ticker, grounded in live options math.</p></div></div>" +
+    '<div class="section"><div class="section-title">360 Earnings Reaction <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("360 Earnings Reaction, Pro", "Type any ticker for a five-pillar earnings preview: macro dynamics, micro fundamentals, four quarters of management tone, live options-implied move and put/call positioning, and a definitive Beat/Meet/Miss lean.") + "</div>";
+   return;
+  }
+  const initial = (param || "").toUpperCase().trim();
+  app.innerHTML = '<div class="crumb">360 EARNINGS REACTION</div>' +
+   '<div class="hero"><div><h1 class="hero-h">360 Earnings Reaction</h1>' +
+   "<p class='hero-sub'>Five-pillar earnings previews for any ticker. Live straddle math, AI synthesis.</p></div></div>" +
+   '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
+   '<input id="e360-ticker" type="text" placeholder="TICKER (e.g. NVDA)" value="' + esc(initial) + '" ' +
+   'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
+   '<button id="e360-btn" onclick="runEarnings360Search(\'e360-ticker\',\'e360-result\',\'e360-btn\')" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
+   '<div id="e360-result"></div>' +
+   '<div style="font-size:11px;color:#8b949e;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div></div>';
+  wireEarnings360Input("e360-ticker", "e360-result", "e360-btn");
+  if (initial) runEarnings360Search("e360-ticker", "e360-result", "e360-btn");
  });
 
  route("memos", function (param) {
