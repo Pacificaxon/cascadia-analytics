@@ -8983,10 +8983,17 @@ function gammaFlipHtml() {
  // One index panel (SPY or QQQ). Handles the N/A fallback gracefully.
  const legPanel = (name, leg) => {
   const L = leg || {};
-  const isNA = L.regime === "N/A" || L.flip_strike == null;
+  const isNA = L.regime === "N/A" || L.regime == null;
+  const noFlip = L.flip_strike == null && !isNA;
   let body;
   if (isNA) {
    body = '<p style="color:var(--muted);font-size:13px;margin:12px 0;">Options data unavailable.</p>';
+  } else if (noFlip) {
+   const c = colorMap[L.color] || "#e8ecf1";
+   body = '<div style="margin:12px 0;padding:16px;border:1px solid #2a3448;border-radius:8px;">' +
+    '<div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(L.regime || "") + "</div>" +
+    '<div style="font-size:12px;color:#8b949e;margin-top:4px;">' + esc(L.regime_detail || "") + "</div>" +
+    '<div style="font-size:11px;color:#8b949e;margin-top:8px;font-style:italic;">No clean gamma flip within observable strikes. ' + esc(L.note || "") + "</div></div>";
   } else {
    const c = colorMap[L.color] || "#e8ecf1";
    const spot = Number(L.spot), flip = Number(L.flip_strike), dist = Number(L.distance_pct);

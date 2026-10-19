@@ -558,8 +558,10 @@ def main():
         if not isinstance(g, dict):
             return None
         regime = (g.get("regime") or "").upper()
+        # When flip is None (no zero crossing), use regime only, no distance boost
         try:
-            dist = abs(float(g.get("distance_pct") or 0))
+            _dist = g.get("distance_pct")
+            dist = abs(float(_dist)) if _dist is not None else 0
         except (TypeError, ValueError):
             dist = 0
         if "SHORT" in regime:
