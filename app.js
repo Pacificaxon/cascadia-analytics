@@ -5086,7 +5086,7 @@ route("primer", function () {
  const filtered = ACADEMY_MODULES.filter((m) => !q || m.title.toLowerCase().includes(q) || m.category.toLowerCase().includes(q) || m.summary.toLowerCase().includes(q));
  let h = '<div class="crumb">FREE · EDUCATION</div>' +
   '<div class="hero"><div><h1 class="hero-h">Cascadia Primer</h1>' +
-  '<p class="hero-sub">Institutional trading and research concepts, taught plainly. Six modules across macro, fundamentals, derivatives, volatility, and execution.</p></div></div>' +
+  '<p class="hero-sub">Institutional trading and research concepts, taught plainly. ' + ACADEMY_MODULES.length + ' modules across ' + (function(){var c=[],seen={};ACADEMY_MODULES.forEach(function(m){var k=(m.category||'').toLowerCase();if(k&&!seen[k]){seen[k]=1;c.push(k);}});return c.length>1?c.slice(0,-1).join(', ')+', and '+c[c.length-1]:c.join('');})() + '.</p></div></div>' +
   '<div class="card" style="border-left:3px solid #c9a961;margin-bottom:20px;"><div style="font-size:12px;color:#c9a961;font-weight:700;letter-spacing:1px;margin-bottom:6px;">PLEASE READ</div>' +
   '<div style="font-size:13px;color:#c3ccd8;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div></div>" +
   '<div style="display:flex;gap:20px;align-items:flex-start;">' +
@@ -9236,7 +9236,7 @@ route("alerts", function () {
    '<li>✓ Coverage table with ratings and upside</li>' +
 '<li>✓ Implied ERP tracker, market-implied equity risk premium with chart</li>' +
 '<li>✓ Cascadia Memos, weekly market research notes</li>' +
-'<li>✓ Cascadia Primer, 14-module investing education course</li>' +
+'<li>✓ Cascadia Primer, ' + ACADEMY_MODULES.length + '-module investing education course</li>' +
    "</ul></div>";
 
   // PRO column
