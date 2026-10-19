@@ -2553,6 +2553,12 @@ function bindZoomHandlers() {
    '<div class="section-sub">Breadth, positioning, volatility, and rotation signals. Free users see previews below.</div></div>';
   h += '<div style="display:flex;flex-direction:column;gap:16px;">' + panels.map((p) => {
    try {
+    // Market Breadth: dedicated institutional UI (bars, stat cards, sectors, summary)
+    if (/market breadth/i.test(p.name)) {
+     const teaserDesc = "Advance/decline trends, new highs vs lows, and what participation says about rally health.";
+     const inner = '<div class="card">' + breadthPanelHtml(p) + "</div>";
+     return gated(p.name, teaserDesc, inner);
+    }
     let title = esc(p.name);
     if (/alligator/i.test(p.name)) {
      const isOpen = /jaw\s*open/i.test(p.summary || "");
@@ -3040,6 +3046,144 @@ function bindZoomHandlers() {
      "Sentiment is near historical norms.") + "</p>" +
     "</div>" +
     '<div class="panel-asof">Week ending ' + esc(d.week_ending || "") + " · Source: AAII Sentiment Survey</div></div>";
+  }
+
+  /* ---------- Market Breadth panel: new institutional UI ---------- */
+  function breadthPanelHtml(p) {
+   const bh = D.breadth_history || {};
+   const cur = bh.current || {};
+   const hist = bh.history || [];
+   const prev = hist.length >= 2 ? hist[hist.length - 2] : null;
+
+   // Prefer panel-computed values, fall back to breadth_history.current
+   const pct50 = p.pct_above_50d != null ? p.pct_above_50d : cur.pct_above_50d;
+   const pct200 = p.pct_above_200d != null ? p.pct_above_200d : cur.pct_above_200d;
+   const spread = p.spread != null ? p.spread : cur.breadth_spread;
+   const medDist = p.med_dist;
+   const adv = p.advancers != null ? p.advancers : cur.advancers;
+   const dec = p.decliners != null ? p.decliners : cur.decliners;
+   const adRatio = p.ad_ratio != null ? p.ad_ratio : cur.ad_ratio;
+   const nh = cur.new_highs, nl = cur.new_lows;
+
+   const fmtDelta = (d) => {
+    if (d == null || isNaN(d)) return '<span style="color:#5c6b7d;">N/A</span>';
+    const cls = d >= 0 ? "#3fb950" : "#f85149";
+    return '<span style="color:' + cls + ';">' + (d >= 0 ? "+" : "") + d.toFixed(1) + " pts</span>";
+   };
+   const d50 = (pct50 != null && prev && prev.pct_above_50d != null) ? pct50 - prev.pct_above_50d : null;
+   const d200 = (pct200 != null && prev && prev.pct_above_200d != null) ? pct200 - prev.pct_above_200d : null;
+   const dSpread = (spread != null && prev && prev.breadth_spread != null) ? spread - prev.breadth_spread : null;
+
+   const bar = (label, val, delta, isSpread) => {
+    const v = val != null ? val : 0;
+    let fillColor = "#c9a961", valColor = "#e8ecf1", valText;
+    if (isSpread) {
+     fillColor = v < -1 ? "#f85149" : (v > 1 ? "#3fb950" : "#c9a961");
+     valColor = fillColor;
+     valText = (v >= 0 ? "+" : "") + v.toFixed(1) + "pp";
+    } else {
+     valText = v.toFixed(0) + "%";
+    }
+    // spread bar: map -25..+25pp onto 0..100% width, marker at 50%
+    const w = isSpread ? Math.min(100, Math.max(0, 50 + v * 2)) : Math.min(100, Math.max(0, v));
+    return '<div style="margin-bottom:18px;">' +
+     '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">' +
+     '<span style="font-size:14px;color:#c8d0da;">' + label + "</span>" +
+     '<span style="display:flex;gap:16px;align-items:baseline;">' +
+     '<span style="font-weight:700;font-size:15px;color:' + valColor + ';font-family:monospace;">' + valText + "</span>" +
+     '<span style="font-size:13px;font-family:monospace;">' + fmtDelta(delta) + "</span></span></div>" +
+     '<div style="height:10px;background:#141d2b;border-radius:6px;position:relative;overflow:hidden;">' +
+     '<div style="height:100%;border-radius:6px;background:' + fillColor + ';width:' + w.toFixed(1) + '%;"></div>' +
+     '<div style="position:absolute;top:-2px;bottom:-2px;width:2px;background:#3d4f66;left:50%;"></div>' +
+     "</div></div>";
+   };
+
+   const asOf = (p.as_of || "").slice(0, 10);
+   let h = '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">' +
+    '<div style="display:flex;align-items:center;gap:14px;">' +
+    '<div style="width:40px;height:40px;background:#c9a961;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#080d14;font-family:monospace;">01</div>' +
+    '<h3 style="font-size:28px;font-weight:700;letter-spacing:-0.5px;margin:0;">Market Breadth</h3></div>' +
+    '<div style="font-size:12px;color:#8b949e;border:1px solid #1c2b3e;padding:6px 14px;border-radius:20px;white-space:nowrap;font-family:monospace;">Snapshot &middot; ' + esc(asOf) + "</div></div>";
+   h += '<p style="color:#8b949e;font-size:15px;margin:4px 0 0 54px;line-height:1.5;">Breadth measures the degree of participation behind an index move. Broad advancer dominance with a high percentage of constituents above their moving averages confirms a healthy advance. When the index rises on narrow leadership while the median stock lags its 52-week high, the move lacks confirmation and corrective risk increases.</p>';
+   h += '<p style="color:#5c6b7d;font-size:13px;margin:20px 0 24px 0;">503 S&amp;P 500 constituents &middot; change vs the prior close</p>';
+
+   h += bar("Above 50-day", pct50, d50, false);
+   h += bar("Above 200-day", pct200, d200, false);
+   h += bar("Breadth spread (median vs index, distance from 52wk high)", spread, dSpread, true);
+
+   // stat cards
+   const cardVal = (v) => v != null ? v : "N/A";
+   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:28px 0;">';
+   h += '<div style="background:#0d1522;border:1px solid #1c2b3e;border-radius:14px;padding:18px;">' +
+    '<div style="font-size:11px;letter-spacing:1.5px;color:#5c6b7d;margin-bottom:10px;font-weight:600;">NEW HIGHS / LOWS</div>' +
+    '<div style="font-size:22px;font-weight:700;font-family:monospace;"><span style="color:#3fb950;">' + cardVal(nh) + '</span> <span style="color:#5c6b7d;font-size:16px;">/</span> <span style="color:#f85149;">' + cardVal(nl) + "</span></div>" +
+    '<div style="font-size:13px;color:#8b949e;margin-top:4px;">52-week extremes</div></div>';
+   h += '<div style="background:#0d1522;border:1px solid #1c2b3e;border-radius:14px;padding:18px;">' +
+    '<div style="font-size:11px;letter-spacing:1.5px;color:#5c6b7d;margin-bottom:10px;font-weight:600;">MEDIAN VS 52WK HIGH</div>' +
+    '<div style="font-size:22px;font-weight:700;font-family:monospace;color:' + (medDist != null && medDist < -5 ? "#f85149" : "#e8ecf1") + ';">' + (medDist != null ? medDist.toFixed(1) + "%" : "N/A") + "</div>" +
+    '<div style="font-size:13px;color:#8b949e;margin-top:4px;">median stock drawdown</div></div>';
+   h += '<div style="background:#0d1522;border:1px solid #1c2b3e;border-radius:14px;padding:18px;">' +
+    '<div style="font-size:11px;letter-spacing:1.5px;color:#5c6b7d;margin-bottom:10px;font-weight:600;">ADVANCERS / DECLINERS</div>' +
+    '<div style="font-size:22px;font-weight:700;font-family:monospace;"><span style="color:#3fb950;">' + cardVal(adv) + '</span> <span style="color:#5c6b7d;font-size:16px;">/</span> <span style="color:#f85149;">' + cardVal(dec) + "</span></div>" +
+    '<div style="font-size:13px;color:#8b949e;margin-top:4px;">A/D ratio ' + (adRatio != null ? adRatio.toFixed(2) : "N/A") + "</div></div>";
+   h += "</div>";
+
+   // sector section
+   const sectors = (p.sectors || []).filter((s) => s.count >= 8);
+   if (sectors.length >= 8) {
+    const strong = sectors.slice(0, 4), weak = sectors.slice(-4).reverse();
+    h += '<div style="font-size:15px;font-weight:600;margin:8px 0 4px 0;">% above 50-day by sector</div>';
+    h += '<div style="font-size:12px;color:#5c6b7d;margin-bottom:18px;">sectors with 8+ names &middot; strongest 4 and weakest 4</div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 32px;margin-bottom:28px;">';
+    const srow = (s) => {
+     const col = s.pct_above_50d >= 50 ? "#3fb950" : "#f85149";
+     return '<div style="display:grid;grid-template-columns:1fr 120px 48px;align-items:center;gap:12px;font-size:13px;padding:5px 0;">' +
+      '<span style="color:#c8d0da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(s.name) + '<span style="color:#5c6b7d;font-size:11px;margin-left:4px;">' + s.count + "</span></span>" +
+      '<div style="height:6px;background:#141d2b;border-radius:4px;overflow:hidden;"><div style="height:100%;border-radius:4px;background:' + col + ";width:" + s.pct_above_50d.toFixed(0) + '%;"></div></div>' +
+      '<span style="text-align:right;font-family:monospace;font-weight:600;">' + s.pct_above_50d.toFixed(0) + "%</span></div>";
+    };
+    strong.forEach((s) => { h += srow(s); });
+    weak.forEach((s) => { h += srow(s); });
+    h += "</div>";
+   }
+
+   // summary box
+   const sumParts = [];
+   if (spread != null) {
+    if (spread <= -3) sumParts.push("the index is holding up far better than the average stock, a narrow tape");
+    else if (spread >= 1) sumParts.push("participation is running wider than the index move");
+    else sumParts.push("breadth is roughly neutral");
+   }
+   if (medDist != null) sumParts.push("the median stock sits " + Math.abs(medDist).toFixed(1) + "pp below its 52-week high");
+   if (adv != null && dec != null) {
+    if (adv > dec * 1.5) sumParts.push("advancers beat decliners " + adv + " to " + dec);
+    else if (dec > adv * 1.5) sumParts.push("decliners beat advancers " + dec + " to " + adv);
+    else sumParts.push("advancers and decliners were roughly even at " + adv + " to " + dec);
+   }
+   if (pct50 != null) {
+    if (pct50 >= 65) sumParts.push("most stocks are still in uptrends with " + pct50.toFixed(0) + "% above their 50-day");
+    else if (pct50 <= 35) sumParts.push("most stocks are already below their 50-day at " + pct50.toFixed(0) + "%");
+    else sumParts.push("only " + pct50.toFixed(0) + "% of stocks hold above their 50-day");
+   }
+   if (pct200 != null) sumParts.push("the 200-day picture reads " + pct200.toFixed(0) + "%");
+   if (nh != null && nl != null) {
+    if (nh >= nl * 3 && nh > 0) sumParts.push("new highs outnumbered new lows " + nh + " to " + nl);
+    else if (nl >= nh * 3 && nl > 0) sumParts.push("new lows outnumbered new highs " + nl + " to " + nh);
+   }
+   let summaryText = sumParts.length
+    ? sumParts[0].charAt(0).toUpperCase() + sumParts[0].slice(1) + ". " + sumParts.slice(1).join(". ") + "."
+    : (p.summary || "");
+   h += '<div style="background:#0e1a2b;border:1px solid #1e3a5f;border-radius:14px;padding:20px 22px;display:flex;gap:14px;">' +
+    '<div style="color:#c9a961;font-size:12px;font-weight:700;letter-spacing:1.5px;white-space:nowrap;padding-top:2px;">SUMMARY</div>' +
+    '<div style="font-size:14px;line-height:1.65;color:#c8d0da;">' + esc(summaryText) + "</div></div>";
+
+   // history chart (keep the existing interactive chart below the new UI)
+   h += '<div class="zoomable-chart" data-chart="breadth" style="position:relative;height:280px;margin-top:16px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="breadth-chart"></canvas>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
+
+   if (p.about) h += '<div class="panel-about">' + esc(p.about) + "</div>";
+   h += '<div class="panel-asof">As of ' + esc(asOf) + (p.frequency ? " · updated " + esc(p.frequency) : "") + (p.stale ? " · stale" : "") + "</div>";
+   return h;
   }
 
   /* ---------- Volatility Skew HTML (Pro-gated) ---------- */

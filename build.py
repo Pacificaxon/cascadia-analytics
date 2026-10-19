@@ -387,6 +387,15 @@ def main():
             "as_of": p.get("tracker_as_of"),
             "stale": p.get("stale", False) and not _freq,
             "frequency": _freq,
+            "sectors": p.get("sectors", []),
+            "med_dist": p.get("med_dist"),
+            "spx_dist": p.get("spx_dist"),
+            "pct_above_50d": p.get("pct_above_50d"),
+            "pct_above_200d": p.get("pct_above_200d"),
+            "advancers": p.get("advancers"),
+            "decliners": p.get("decliners"),
+            "ad_ratio": p.get("ad_ratio"),
+            "spread": p.get("spread"),
         })
 
     # --- Trim feeds to reasonable sizes ---
