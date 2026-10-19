@@ -16,6 +16,7 @@
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 const GEMINI_MODEL = "gemini-3.8-flash";
+const GROQ_MODEL = "openai/gpt-oss-20b";
 
 async function getCrumb() {
   const cookieRes = await fetch("https://fc.yahoo.com", {
@@ -60,6 +61,51 @@ function buildPrompt(tk, g) {
   );
 }
 
+async function callGemini(prompt, apiKey) {
+  const gUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const gRes = await fetch(gUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.2, responseMimeType: "application/json" },
+    }),
+  });
+  if (gRes.status === 429) {
+    const e = new Error("Gemini rate-limited");
+    e.code = 429;
+    throw e;
+  }
+  if (!gRes.ok) throw new Error(`Gemini returned HTTP ${gRes.status}`);
+  const gJson = await gRes.json();
+  const rawText = gJson?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!rawText) throw new Error("Empty response from Gemini.");
+  return rawText;
+}
+
+async function callGroq(prompt, apiKey) {
+  const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.2,
+      response_format: { type: "json_object" },
+    }),
+  });
+  if (r.status === 429) {
+    const e = new Error("Groq rate-limited");
+    e.code = 429;
+    throw e;
+  }
+  if (!r.ok) throw new Error(`Groq returned HTTP ${r.status}`);
+  const j = await r.json();
+  const text = j?.choices?.[0]?.message?.content;
+  if (!text) throw new Error("Empty response from Groq.");
+  return text;
+}
+
 export async function onRequestGet(context) {
   const { searchParams } = new URL(context.request.url);
   const ticker = (searchParams.get("ticker") || "").toUpperCase().trim().replace(/[^A-Z0-9.\-=]/g, "");
@@ -68,7 +114,8 @@ export async function onRequestGet(context) {
   }
 
   const GEMINI_API_KEY = context.env && context.env.GEMINI_API_KEY;
-  if (!GEMINI_API_KEY) {
+  const GROQ_API_KEY = context.env && context.env.GROQ_API_KEY;
+  if (!GEMINI_API_KEY && !GROQ_API_KEY) {
     return Response.json(
       { error: "AI analysis is not configured yet (missing API key).", ticker },
       { status: 503 }
@@ -151,26 +198,39 @@ export async function onRequestGet(context) {
       putCallRatio,
     };
 
-    // Gemini Flash synthesis (free tier).
-    const gUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
-    const gRes = await fetch(gUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: buildPrompt(ticker, grounded) }] }],
-        generationConfig: { temperature: 0.2, responseMimeType: "application/json" },
-      }),
-    });
-    if (gRes.status === 429) {
+    // AI synthesis: Gemini first, Groq fallback on rate limits or errors.
+    const prompt = buildPrompt(ticker, grounded);
+    let rawText = null;
+    let provider = null;
+    let lastErr = null;
+    if (GEMINI_API_KEY) {
+      try {
+        rawText = await callGemini(prompt, GEMINI_API_KEY);
+        provider = "gemini";
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    if (!rawText && GROQ_API_KEY) {
+      try {
+        rawText = await callGroq(prompt, GROQ_API_KEY);
+        provider = "groq";
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    if (!rawText) {
+      const limited = lastErr && lastErr.code === 429;
       return Response.json(
-        { error: "AI analysis is rate-limited right now. Try again in a minute.", ticker },
-        { status: 429 }
+        {
+          error: limited
+            ? "AI analysis is rate-limited right now. Try again in a minute."
+            : `AI analysis failed: ${lastErr ? lastErr.message : "unknown error"}`,
+          ticker,
+        },
+        { status: limited ? 429 : 502 }
       );
     }
-    if (!gRes.ok) throw new Error(`AI model returned HTTP ${gRes.status}`);
-    const gJson = await gRes.json();
-    const rawText = gJson?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!rawText) throw new Error("Empty response from AI model.");
 
     let analysis;
     try {
@@ -186,7 +246,7 @@ export async function onRequestGet(context) {
     }
 
     return Response.json(
-      { ...grounded, analysis },
+      { ...grounded, provider, analysis },
       { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=3600" } }
     );
   } catch (err) {
