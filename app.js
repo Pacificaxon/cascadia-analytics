@@ -21,6 +21,9 @@
  };
  const fmtPct = (n, d) => (n == null || isNaN(n)) ? " - " : (n >= 0 ? "+" : "") + Number(n).toFixed(d != null ? d : 1) + "%";
  const cls = (n) => (n == null || isNaN(n)) ? "" : (n >= 0 ? "pos" : "neg");
+ // Modern FREE/PRO badges (gold = Pro, green outline = Free)
+ const PRO_BADGE = '<span style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:#080d14;background:linear-gradient(135deg,#dfb76c,#c9a961 55%,#a8823d);padding:3px 11px;border-radius:20px;vertical-align:middle;box-shadow:0 1px 8px rgba(201,169,97,0.35);white-space:nowrap;">Pro</span>';
+ const FREE_BADGE = '<span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#7ab88a;background:#0d1522;border:1px solid #457854;padding:2px 10px;border-radius:20px;vertical-align:middle;white-space:nowrap;">Free</span>';
  // Company logos (Clearbit) and industries for ticker headers
  const TICKER_META = {
   "ALAB": { domain: "asteralabs.com", industry: "Semiconductors" },
@@ -419,7 +422,7 @@
    '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#161b26;">' +
    '<div style="font-size:13px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">' + esc(title || "Research Note") + "</div>" +
    '<a href="' + esc(pdfUrl) + '" target="_blank" rel="noopener" style="background:transparent;color:#c9a961;border:1px solid #c9a961;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;white-space:nowrap;text-decoration:none;">Open in new tab</a>' +
-   '<button id="pdf-close" style="background:#7d4fc9;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0;">Close</button>' +
+   '<button id="pdf-close" style="background:#c9a961;color:#080d14;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0;">Close</button>' +
    "</div>" +
    '<iframe src="' + esc(pdfUrl) + '" style="flex:1;width:100%;border:none;background:#fff;" title="PDF Viewer"></iframe>' +
    '<div style="padding:8px 12px;background:#161b26;font-size:11px;color:#8b949e;text-align:center;">For the best reading experience on mobile, use "Open in new tab" for full-page zoom and page controls.</div>' +
@@ -2475,7 +2478,7 @@ function bindZoomHandlers() {
   if (!d || !d.available || !(d.leaders || []).length) {
    return '<div class="card"><p style="color:var(--muted)">No leadership data available.</p></div>';
   }
-  let h = '<div class="card"><h3>Market Leadership <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></h3>';
+  let h = '<div class="card"><h3>Market Leadership ' + PRO_BADGE + '</h3>';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Top ' + d.leaders.length + ' leaders from ' + (d.universe_size || "S&P 500") + ' stocks · As of ' + esc((d.as_of || "").slice(0, 10)) + '</div>';
   h += '<div class="table-wrap"><table class="coverage"><thead><tr>' +
    '<th>Ticker</th><th>Name</th><th>Sector</th><th>MLS</th><th title="Relative Strength percentile vs S&P 500 (0-100)">RS Pctl</th><th>Trend</th><th>Price</th><th>vs 50-day</th>' +
@@ -2613,7 +2616,7 @@ function bindZoomHandlers() {
     }
     // Explainer: visual first, then plain-English explanation of what the user is seeing
     const explainerHtml = trackerExplainer(p);
-    const proBadge = ' <span style="font-size:10px;background:#7d4fc9;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">PRO</span>';
+    const proBadge = ' ' + PRO_BADGE + '';
     const isSmallMid = /small.*mid|mid.*cap/i.test(p.name);
     const bodyText = (isSmallMid && p.full_text) ? p.full_text : (p.summary || "");
     const panelHtml = '<div class="card"><h3>' + title + proBadge + "</h3>" + chartHtml + explainerHtml +
@@ -2842,7 +2845,7 @@ function bindZoomHandlers() {
       "Commercials" + extBadge(c) + " · Large Specs" + extBadge(l) + " · Small Specs" + extBadge(s) + "</div>" +
       '<div class="panel-asof">CFTC data as of ' + esc(d.report_date || "") + " (published Friday, 3-day lag)</div></div>";
     }).join("");
-   return '<div class="card" style="margin-bottom:16px;"><h3>Commitments of Traders (COT) <span style="font-size:10px;background:#3fb950;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">FREE</span></h3>' +
+   return '<div class="card" style="margin-bottom:16px;"><h3>Commitments of Traders (COT) ' + FREE_BADGE + '</h3>' +
     '<div class="section-sub">Where is institutional capital positioned? Weekly CFTC futures data.</div>' +
     '<div class="zoomable-chart" data-chart="cot" style="position:relative;height:240px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="cot-chart"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
@@ -2869,7 +2872,7 @@ function bindZoomHandlers() {
    // Reading: above 2.5% = elevated expectations, below 2% = disinflation fears
    const read = latest >= 2.5 ? "Elevated" : latest < 2.0 ? "Subdued" : "Anchored";
    const readCls = latest >= 2.5 ? "#f85149" : latest < 2.0 ? "#58a6ff" : "#3fb950";
-   let h = '<div class="section"><div class="section-title">10Y Breakeven Inflation <span style="font-size:11px;background:#3fb950;color:#0d1117;padding:2px 8px;border-radius:4px;vertical-align:middle;font-weight:700;">FREE</span></div>';
+   let h = '<div class="section"><div class="section-title">10Y Breakeven Inflation ' + FREE_BADGE + '</div>';
    h += '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">' +
     '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">LATEST READING</div>' +
     '<div style="font-size:36px;font-weight:700;color:#fff;font-family:monospace;">' + latest.toFixed(2) + '%</div></div>' +
@@ -2905,7 +2908,7 @@ function bindZoomHandlers() {
    const read = erp >= 0.045 ? "Elevated" : erp < 0.03 ? "Compressed" : "Normal";
    const readCls = erp >= 0.045 ? "#f85149" : erp < 0.03 ? "#58a6ff" : "#3fb950";
    const cid = "erp-chart";
-   let h = '<div class="section"><div class="section-title">Implied Equity Risk Premium <span style="font-size:11px;background:#3fb950;color:#0d1117;padding:2px 8px;border-radius:4px;vertical-align:middle;font-weight:700;">FREE</span></div>';
+   let h = '<div class="section"><div class="section-title">Implied Equity Risk Premium ' + FREE_BADGE + '</div>';
    h += '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">' +
     '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">IMPLIED ERP</div>' +
     '<div style="font-size:36px;font-weight:700;color:#fff;font-family:monospace;">' + erpPct + '%</div></div>' +
@@ -2975,7 +2978,7 @@ function bindZoomHandlers() {
    // Sort ranges numerically
    allRanges.sort((a, b) => parseFloat(a) - parseFloat(b));
 
-   return '<div class="section" style="max-width:none;"><div class="section-title">FOMC Fed Funds Futures <span style="font-size:11px;background:#3fb950;color:#0a0f0a;padding:2px 8px;border-radius:4px;vertical-align:middle;">FREE</span></div>' +
+   return '<div class="section" style="max-width:none;"><div class="section-title">FOMC Fed Funds Futures ' + FREE_BADGE + '</div>' +
     '<div class="section-sub">What the futures market is pricing for upcoming FOMC meetings. Updates every morning.</div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
     '<div class="card" style="padding:16px;"><div style="font-size:11px;color:#e8ecf1;margin-bottom:4px;">EFFECTIVE FED FUNDS RATE</div>' +
@@ -3017,7 +3020,7 @@ function bindZoomHandlers() {
     contrarian = "Bears outnumber bulls, mild contrarian optimism.";
    }
    const chg = (v) => v != null ? ' <span style="font-size:11px;color:' + (v >= 0 ? "#3fb950" : "#f85149") + ';">(' + (v >= 0 ? "+" : "") + v.toFixed(1) + "pt)</span>" : "";
-   return '<div class="card" style="margin-bottom:16px;"><h3>AAII Investor Sentiment <span style="font-size:10px;background:#3fb950;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">FREE</span></h3>' +
+   return '<div class="card" style="margin-bottom:16px;"><h3>AAII Investor Sentiment ' + FREE_BADGE + '</h3>' +
     '<div class="section-sub">Weekly survey of individual investors, are they bullish or bearish on stocks over the next 6 months?</div>' +
     '<div class="zoomable-chart" data-chart="aaii" style="position:relative;height:220px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="aaii-chart"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
@@ -3102,7 +3105,7 @@ function bindZoomHandlers() {
    let h = '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">' +
     '<div style="display:flex;align-items:center;gap:14px;">' +
     '<div style="width:40px;height:40px;background:#c9a961;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#080d14;font-family:monospace;">01</div>' +
-    '<h3 style="font-size:28px;font-weight:700;letter-spacing:-0.5px;margin:0;">Market Breadth</h3></div>' +
+    '<h3 style="font-size:28px;font-weight:700;letter-spacing:-0.5px;margin:0;">Market Breadth</h3> ' + PRO_BADGE + '</div>' +
     '<div style="font-size:12px;color:#8b949e;border:1px solid #1c2b3e;padding:6px 14px;border-radius:20px;white-space:nowrap;font-family:monospace;">Snapshot &middot; ' + esc(asOf) + "</div></div>";
    h += '<p style="color:#8b949e;font-size:15px;margin:4px 0 0 54px;line-height:1.5;">Breadth measures the degree of participation behind an index move. Broad advancer dominance with a high percentage of constituents above their moving averages confirms a healthy advance. When the index rises on narrow leadership while the median stock lags its 52-week high, the move lacks confirmation and corrective risk increases.</p>';
    h += '<p style="color:#5c6b7d;font-size:13px;margin:20px 0 24px 0;">503 S&amp;P 500 constituents &middot; change vs the prior close</p>';
@@ -3523,7 +3526,7 @@ function bindZoomHandlers() {
     ' (' + rsiSignal + '). Ratio ' + ratioVal +
     ' vs 50-day MA ' + maVal + '.</div>' +
     '<div class="panel-asof">As of ' + esc((D.rsi_cd_history.as_of || "").slice(0, 10)) + "</div>";
-   h += '<div class="section" style="max-width:none;"><div class="section-title">RSI: Cyclicals vs Defensives <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   h += '<div class="section" style="max-width:none;"><div class="section-title">RSI: Cyclicals vs Defensives ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Risk-on / risk-off momentum, 14-period RSI on the XLY÷XLP ratio. Above 70 = cyclicals overbought, below 30 = oversold.</div>' +
     gated("RSI: Cyclicals vs Defensives", "14-period RSI on the XLY÷XLP ratio, spot sector rotation extremes before they reverse.", rsiHtml + explainer) +
     "</div>";
@@ -3549,7 +3552,7 @@ function bindZoomHandlers() {
     're-simulating every option\u2019s gamma via Black-Scholes across hypothetical price levels and finding where total GEX crosses zero. ' +
     'Data: CBOE delayed options chains, refreshed daily at 7:00 AM PT on trading days.</p>' +
     "</div>";
-   h += '<div class="section" style="max-width:none;"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   h += '<div class="section" style="max-width:none;"><div class="section-title">Gamma Exposure (GEX) ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Options dealer positioning, will market makers dampen or amplify the next move? Updates daily at 7:00 AM PT.</div>' +
     gated("Gamma Exposure (GEX)", "Daily dealer gamma positioning for QQQ and SPY, spot the volatility regime before it shifts.", gexHtml + gexExplainer) +
     "</div>";
@@ -3571,7 +3574,7 @@ function bindZoomHandlers() {
     'Watch the trend: <i>steepening</i> skew into a selloff often marks capitulation bottoms.</p>' +
     '<p><b>Data:</b> CBOE delayed options chains, refreshed daily. SPY used as SPX proxy (SPX chain often blocked).</p>' +
     "</div>";
-   h += '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   h += '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Put vs call implied volatility, what is smart money paying for? Updates daily.</div>' +
     gated("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.", skewHtml + skewExplainer) +
     "</div>";
@@ -3590,7 +3593,7 @@ function bindZoomHandlers() {
     '<p><b>For swing traders.</b> The week into OPEX is typically range-bound (dealers suppress volatility). ' +
     'The week after is the "window of weakness" where trends emerge. Size positions around these structural shifts.</p>' +
     '</div>';
-   h += '<div class="section" style="max-width:none;"><div class="section-title">OPEX Cycle Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   h += '<div class="section" style="max-width:none;"><div class="section-title">OPEX Cycle Tracker ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Options expiration calendar, max pain strikes, and dealer positioning. Updates daily.</div>' +
     gated("OPEX Cycle Tracker", "Max pain strikes, put/call OI, and expiration calendar. Front-run dealer hedging flows.", opexHtml + opexExplainer) +
     "</div>";
@@ -4151,7 +4154,7 @@ function bindZoomHandlers() {
   h += "</div>";
 
   // Macroeconomic Analysis, Pro-gated (always show section; gatedSafe shows teaser for free users)
-  h += '<div class="section" id="macro-sec" style="max-width:none;"><div class="section-title">Macroeconomic Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  h += '<div class="section" id="macro-sec" style="max-width:none;"><div class="section-title">Macroeconomic Analysis ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">CPI, PPI, retail sales, and PMI, the macro backdrop driving Fed policy and market regimes. Updates as reports are released.</div>' +
    gatedSafe("Macroeconomic Analysis", "CPI, PPI, retail sales, consumer health, and PMI, the macro forces moving markets.",
     () => macroAnalysisHtml(D.macro_indicators || { history: [] })) +
@@ -4240,7 +4243,7 @@ function bindZoomHandlers() {
  function rotationHtml() {
   const ro = D.rotation_analysis;
   if (!ro || !ro.pairs_trading_book) {
-   return '<div class="section"><div class="section-title">Rotation & Pairs Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Rotation & Pairs Matrix ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Rotation analysis has not been computed yet. Check back after the morning refresh.</p></div></div>';
   }
   const intel = ro.desk_intel || {};
@@ -4248,7 +4251,7 @@ function bindZoomHandlers() {
    const col = v > 0 ? "#3fb950" : (v < 0 ? "#f85149" : "#8b8fa3");
    return '<span style="color:' + col + ';font-weight:700;">' + (v > 0 ? "+" : "") + v.toFixed(2) + "%</span>";
   };
-  let h = '<div class="section" style="max-width:none;"><div class="section-title">Rotation & Pairs Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  let h = '<div class="section" style="max-width:none;"><div class="section-title">Rotation & Pairs Matrix ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Cross-asset rotation, factor regimes, and systematic long/short pairs with 20-day rolling Z-scores. As of ' + esc(ro.timestamp || "") + '.</div>';
 
   // Regime cards
@@ -4273,7 +4276,7 @@ function bindZoomHandlers() {
   }
 
   // Pairs book
-  h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:0 0 8px;letter-spacing:0.5px;">SYSTEMATIC LONG/SHORT PAIRS BOOK <span style="font-size:10px;background:#7d4fc9;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:0 0 8px;letter-spacing:0.5px;">SYSTEMATIC LONG/SHORT PAIRS BOOK ' + PRO_BADGE + '</div>';
   h += '<div style="overflow-x:auto;margin-bottom:16px;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
   h += '<thead><tr style="border-bottom:1px solid #2a3242;color:var(--muted);font-size:10px;letter-spacing:0.5px;">' +
    '<th style="text-align:left;padding:8px;">PAIR</th><th style="text-align:left;padding:8px;">THESIS</th>' +
@@ -4330,14 +4333,14 @@ function bindZoomHandlers() {
  function fearIndexHtml() {
   const fi = D.fear_index;
   if (!fi || fi.fear_index === undefined) {
-   return '<div class="section"><div class="section-title">Quantitative Fear Index <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Quantitative Fear Index ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">The Fear Index has not been computed yet. Check back after the morning refresh.</p></div></div>';
   }
   const score = fi.fear_index;
   const label = fi.sentiment || "";
   const color = score >= 75 ? "#f85149" : (score >= 55 ? "#ff7b1c" : (score >= 45 ? "#d4a017" : "#3fb950"));
   const canvasId = "fear-hist-" + Math.random().toString(36).slice(2, 8);
-  let h = '<div class="section" style="max-width:none;"><div class="section-title">Quantitative Fear Index <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  let h = '<div class="section" style="max-width:none;"><div class="section-title">Quantitative Fear Index ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">A quantitative Fear Index combines fixed-strike downside option skew, volatility term structure backwardation, credit spread stress, safe-haven capital rotation, and market momentum into a single daily 0-100 gauge (0 = Extreme Complacency, 100 = Extreme Panic). Computed every trading morning. As of ' + esc(fi.timestamp || "") + '.</div>';
   // Gauge card
   h += '<div class="card" style="padding:24px;text-align:center;">';
@@ -4395,7 +4398,7 @@ function bindZoomHandlers() {
     '<div class="hero"><div>' +
     '<h1 class="hero-h">Morning Briefing</h1>' +
     "<p class='hero-sub'>Institutional-grade briefing synthesizing macro, internals, and derivatives positioning. Updated every trading morning.</p></div></div>" +
-    '<div class="section"><div class="section-title">Morning Market Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="section"><div class="section-title">Morning Market Analysis ' + PRO_BADGE + '</div>' +
     proTeaser("Morning Briefing, Pro", "Institutional-grade morning briefing: macro, internals, gamma positioning, and what to watch today.") + "</div>";
    return;
   }
@@ -6317,51 +6320,51 @@ route("alerts", function () {
 
   // Financial statements (free for all)
   if (t.financials) {
-   h += '<div class="section"><div class="section-title">Financials</div>';
+   h += '<div class="section"><div class="section-title">Financials ' + FREE_BADGE + '</div>';
    h += financialsHtml(t);
    h += "</div>";
   }
 
   // Moving averages (Pro)
-  h += '<div class="section"><div class="section-title">Moving Averages</div>';
+  h += '<div class="section"><div class="section-title">Moving Averages ' + FREE_BADGE + '</div>';
   h += gated("Moving Averages, Pro", "Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.", '<div class="section-head"><h2>Moving Averages</h2><p>Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.</p></div>' + maHtml(tk));
   h += "</div>";
 
   // Trading Trends (FREE), quarterly hedge fund + insider flows with price
-  h += '<div class="section"><div class="section-title">Trading Trends</div>';
+  h += '<div class="section"><div class="section-title">Trading Trends ' + FREE_BADGE + '</div>';
   h += '<div class="section-sub">Quarterly institutional and insider buy/sell flows with the price trend. Hedge fund data from 13F filings, insider data from SEC Form 4.</div>';
   h += tickerTrendsHtml(tk);
   h += "</div>";
 
   // Insider Transactions (FREE), SEC Form 4
-  h += '<div class="section"><div class="section-title">Insider Transactions</div>';
+  h += '<div class="section"><div class="section-title">Insider Transactions ' + FREE_BADGE + '</div>';
   h += '<div class="section-sub">Recent insider buys and sells from SEC Form 4 filings. Open-market transactions signal conviction and are highlighted.</div>';
   h += tickerInsiderHtml(tk);
   h += "</div>";
 
   // Agency Risk (Pro) - Executive Alignment & Agency Risk Score
-  h += '<div class="section"><div class="section-title">Agency Risk</div>';
+  h += '<div class="section"><div class="section-title">Agency Risk ' + PRO_BADGE + '</div>';
   h += gated("Agency Risk, Pro", "Executive alignment score: insider ownership, open-market Form 4 flow, and pay-for-performance. Detects value traps and mercenary management.", '<div id="agency-risk-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading agency risk data...</div></div>');
   h += "</div>";
 
   // 56-Metric Fundamentals Tracker (Pro)
-  h += '<div class="section"><div class="section-title">Fundamentals Tracker</div>';
+  h += '<div class="section"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>';
   h += gated("Fundamentals Tracker, Pro", "56 institutional metrics: valuation multiples, ROIC, growth rates, margins, and balance sheet health, computed live from financial statements.",
    '<div id="metrics-tracker-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading 56 fundamentals metrics...</div></div>');
   h += "</div>";
 
   // Seasonality (Pro) - average monthly returns from price history
-  h += '<div class="section"><div class="section-title">Seasonality</div>';
+  h += '<div class="section"><div class="section-title">Seasonality ' + PRO_BADGE + '</div>';
   h += gated("Seasonality, Pro", "Average monthly returns by calendar month, computed from price history.", seasonalityHtml(tk));
   h += "</div>";
 
   // Options flow (Pro)
-  h += '<div class="section"><div class="section-title">Unusual Options Flow</div>';
+  h += '<div class="section"><div class="section-title">Unusual Options Flow ' + PRO_BADGE + '</div>';
   h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
   h += "</div>";
 
   // Catalyst Compass (Pro) - click to generate, AI quota friendly
-  h += '<div class="section"><div class="section-title">Catalyst Compass <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += '<div class="section"><div class="section-title">Catalyst Compass ' + PRO_BADGE + '</div>';
   h += gated("Catalyst Compass, Pro", "Probabilistic scenario matrix for " + tk + ": Bull/Base/Bear outcomes with assigned probabilities on options-implied bounds.",
    '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Catalyst Compass</button></div>' +
    '<input id="e360-input-' + tk + '" type="hidden" value="' + esc(tk) + '" />' +
@@ -6369,14 +6372,14 @@ route("alerts", function () {
   h += "</div>";
 
   // Dark Pool & Off-Exchange Flow (FREE), FINRA Reg SHO daily
-  h += '<div class="section"><div class="section-title">Dark Pool Flow</div>';
+  h += '<div class="section"><div class="section-title">Dark Pool Flow ' + FREE_BADGE + '</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Institutional off-exchange sentiment for ' + esc(tk) + ' from FINRA Reg SHO daily files. High dark short ratio means dealers are shorting to fill institutional buy orders (accumulation).</div>';
   h += darkPoolHtml(tk);
   h += "</div>";
 
   // Gamma Exposure (Pro), per-ticker dealer positioning
   const tg = (D.ticker_gex || {})[tk];
-  h += '<div class="section"><div class="section-title">Gamma Exposure (GEX) <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += '<div class="section"><div class="section-title">Gamma Exposure (GEX) ' + PRO_BADGE + '</div>';
   h += gated("Gamma Exposure, Pro",
    "Live dealer gamma positioning for " + tk + ", see whether market makers will dampen or amplify the next move.",
    (tg && tg.available) ? tickerGexHtml(tk, tg) +
@@ -6386,21 +6389,21 @@ route("alerts", function () {
 
   // Volatility Skew (Pro), per-ticker put/call IV skew
   const ts = (D.ticker_skew || {})[tk];
-  h += '<div class="section"><div class="section-title">Volatility Skew <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += '<div class="section"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>';
   h += gated("Volatility Skew, Pro",
    "Put vs call implied volatility for " + tk + ", what is smart money paying for?",
    (ts && ts.available) ? tickerSkewHtml(tk, ts) : '<div class="card"><p style="color:var(--muted)">No skew data available for this ticker.</p></div>');
   h += "</div>";
 
   // Short Interest (Pro), FINRA biweekly data
-  h += '<div class="section"><div class="section-title">Short Interest <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += '<div class="section"><div class="section-title">Short Interest ' + PRO_BADGE + '</div>';
   h += gated("Short Interest, Pro",
    "Biweekly short interest for " + tk + " from FINRA, red bars show shares short, white line shows days to cover.",
    '<div id="short-interest-' + esc(tk) + '"></div>');
   h += "</div>";
 
   // Technical Analysis (Pro), multi-timeframe
-  h += '<div class="section"><div class="section-title">Technical Analysis <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += '<div class="section"><div class="section-title">Technical Analysis ' + PRO_BADGE + '</div>';
   h += gatedSafe("Technical Analysis, Pro",
    "Multi-timeframe technical analysis (daily, weekly, monthly) with RSI, MACD, moving averages, and key levels for " + tk + ".",
    () => technicalAnalysisHtml(tk));
@@ -6462,22 +6465,22 @@ route("alerts", function () {
   h += '<div class="section"><div class="section-title">Earnings Date & Whisper</div>' + earningsDateHtml(tk) + "</div>";
 
   // Earnings revisions (free) - Zacks-style 90-day revision trends
-  h += '<div class="section"><div class="section-title">Earnings Revisions</div>' + revisionsHtml(tk) + "</div>";
+  h += '<div class="section"><div class="section-title">Earnings Revisions ' + FREE_BADGE + '</div>' + revisionsHtml(tk) + "</div>";
 
-  h += '<div class="section"><div class="section-title">Earnings History</div>';
+  h += '<div class="section"><div class="section-title">Earnings History ' + FREE_BADGE + '</div>';
   h += gated("Earnings History, Pro", "Four-quarter rolling earnings reviews: verdict, bull/bear cases, KPIs, guidance.", earningsHtml(tk));
   h += "</div>";
 
   // Earnings Call Tone (Pro) - AI NLP analysis of executive tone
   const toneData = (D.transcript_tone || {})[tk];
   if (toneData) {
-   h += '<div class="section"><div class="section-title">Earnings Call Tone <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+   h += '<div class="section"><div class="section-title">Earnings Call Tone ' + PRO_BADGE + '</div>';
    h += gated("Earnings Tone, Pro", "AI-powered NLP analysis of the latest earnings call: executive confidence, tone classification, pillar breakdown, and Q&A deconstruction.", toneHtml(tk, toneData));
    h += "</div>";
   }
 
   // Cascadia Research Report (Pro)
-  h += '<div class="section"><div class="section-title">Cascadia Research Report</div>';
+  h += '<div class="section"><div class="section-title">Cascadia Research Report ' + PRO_BADGE + '</div>';
   h += gated("Cascadia Research Report, Pro", "Full institutional research report with model detail.",
    t.note && t.note.pdf_exists
     ? '<div class="card"><h3>' + esc(t.name) + ", Research Note</h3>" +
@@ -6487,7 +6490,7 @@ route("alerts", function () {
   h += "</div>";
 
   // Investment Scorecard (Pro)
-  h += '<div class="section"><div class="section-title">Investment Scorecard</div>';
+  h += '<div class="section"><div class="section-title">Investment Scorecard ' + PRO_BADGE + '</div>';
   h += gated("Investment Scorecard, Pro", "One-glance 0-100 Growth & Value Index with five pillar breakdowns.",
    t.scorecard && t.scorecard.pdf_exists
     ? '<div class="card"><h3>' + esc(t.name) + ", Investment Scorecard</h3>" +
@@ -8006,7 +8009,7 @@ route("alerts", function () {
  function quantScreenerHtml() {
   const sd = D.screener_data;
   const meta = (sd && sd.metadata) || {};
-  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Institutional alpha factors across the full S&P 500. Refreshed twice per quarter to capture earnings-season changes. Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC.</div>';
   h += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;">';
   h += '<div style="flex:1;min-width:220px;"><label style="font-size:11px;color:var(--muted);letter-spacing:1px;">SEARCH</label><br>' +
@@ -8155,7 +8158,7 @@ route("alerts", function () {
  function trendScreenerHtml() {
   const tk = ((D.trend_signals || {}).tickers) || {};
   const keys = Object.keys(tk).sort();
-  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Trend Conviction (is this a real trend?) vs Exhaustion Risk (is momentum diverging?) for every coverage ticker. ' +
    'High conviction + low exhaustion = healthy trend. High conviction + high exhaustion = crowded trade, tighten up. Updated ' +
    esc((((D.trend_signals || {}).timestampUTC) || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning.</div>';
@@ -8223,7 +8226,7 @@ route("alerts", function () {
  function minerviniHtml() {
   const md = D.minervini_data;
   const meta = (md && md.metadata) || {};
-  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across the full S&P 500. ' +
    (meta.fullStage2Count != null ? '<b style="color:#3fb950;">' + meta.fullStage2Count + ' names pass all 8</b>. ' : '') +
    'Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning. Click a row to inspect its criteria card.</div>';
@@ -8348,7 +8351,7 @@ route("alerts", function () {
  route("screener", function () {
   const pro = isPro();
   // Coverage screener is FREE; factor screeners below are Pro
-  let h = '<div class="section"><div class="section-title">Premium Screener</div>' +
+  let h = '<div class="section"><div class="section-title">Premium Screener ' + FREE_BADGE + '</div>' +
    '<div class="section-sub">Filter the coverage universe. Methodology: the Cascadia Score is a multi-factor composite of valuation (base-case upside), price momentum (MA signals), earnings momentum (latest verdict), and options flow sentiment. Scored 1–100.</div>';
   h += '<div class="card"><div class="filter-bar">' +
    '<select id="f-rating"><option value="">Any rating</option><option>Buy</option><option>Hold</option><option>Sell</option></select>' +
@@ -8408,7 +8411,7 @@ route("alerts", function () {
    initTrendScreener();
    // 56-Metric Fundamentals Tracker (Pro), below trend screener
    const metDiv = document.createElement("div");
-   metDiv.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   metDiv.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">56 fundamental metrics for any ticker: valuation, returns, growth, margins, and financial health, computed live from financial statements.</div>' +
     metricsTrackerInputHtml("metrics-ticker-scr", "metrics-result-scr", "") + "</div>";
    app.appendChild(metDiv);
@@ -8418,19 +8421,19 @@ route("alerts", function () {
       app.appendChild(sqDiv);
   } else {
    const t1 = document.createElement("div");
-   t1.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   t1.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener ' + PRO_BADGE + '</div>' +
     proTeaser("Quantitative Factor Screener, Pro", "Screen the full S&P 500 on institutional alpha factors: ROIC, PEG, FCF yield, EV/EBITDA, Piotroski F-Score, operating leverage, golden trend. Sliders, sortable columns, CSV export.") + "</div>";
    app.appendChild(t1);
    const t2 = document.createElement("div");
-   t2.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   t2.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener ' + PRO_BADGE + '</div>' +
     proTeaser("Technical Factor Screener, Pro", "Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across the full S&P 500. Click any ticker to inspect its full criteria card.") + "</div>";
    app.appendChild(t2);
    const t3 = document.createElement("div");
-   t3.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   t3.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener ' + PRO_BADGE + '</div>' +
     proTeaser("Trend & Reversal Screener, Pro", "Trend Conviction vs Exhaustion Risk for every coverage ticker. Spot healthy trends, crowded trades, and MACD divergences before reversals.") + "</div>";
    app.appendChild(t3);
    const t4 = document.createElement("div");
-   t4.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   t4.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>' +
     proTeaser("Fundamentals Tracker, Pro", "56 fundamental metrics for any ticker in the world: valuation multiples, ROIC, growth rates, margins, and balance sheet health, computed live.") + "</div>";
    app.appendChild(t4);
   }
@@ -8445,14 +8448,14 @@ route("alerts", function () {
    app.innerHTML = '<div class="crumb">EARNINGS DASHBOARD</div>' +
     '<div class="hero"><div><h1 class="hero-h">Earnings Dashboard</h1>' +
     "<p class='hero-sub'>8 quarters of earnings surprises and price reactions for every covered ticker.</p></div></div>" +
-    '<div class="section"><div class="section-title">Earnings Dashboard <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="section"><div class="section-title">Earnings Dashboard ' + PRO_BADGE + '</div>' +
     proTeaser("Earnings Dashboard, Pro", "Track earnings beats/misses and 1-day price reactions across 8 quarters for all covered tickers.") + "</div>";
    return;
   }
   const dash = (D.earnings_dashboard || {});
   const tickers = Object.keys(dash).sort();
   if (!tickers.length) {
-   app.innerHTML = '<div class="section"><div class="section-title">Earnings Dashboard <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div><div class="card"><p style="color:var(--muted)">No earnings dashboard data yet. Check back after the morning refresh.</p></div></div>';
+   app.innerHTML = '<div class="section"><div class="section-title">Earnings Dashboard ' + PRO_BADGE + '</div><div class="card"><p style="color:var(--muted)">No earnings dashboard data yet. Check back after the morning refresh.</p></div></div>';
    return;
   }
   const fmt$ = (v, isB) => {
@@ -8510,7 +8513,7 @@ route("alerts", function () {
   let h = '<div class="crumb">PRO · EARNINGS DASHBOARD</div>' +
    '<div class="hero"><div><h1 class="hero-h">Earnings Dashboard</h1>' +
    "<p class='hero-sub'>8 quarters of earnings surprises and 1-day price reactions for every covered ticker. Refreshed every trading morning.</p></div></div>";
-  h += '<div class="section"><div class="section-title">Earnings Dashboard <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += '<div class="section"><div class="section-title">Earnings Dashboard ' + PRO_BADGE + '</div>';
   h += '<div class="card" style="margin-bottom:16px;"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;"><span style="font-size:12px;color:var(--muted);">Ticker:</span>';
   h += '<select id="ed-ticker" style="padding:8px 12px;border-radius:6px;background:var(--bg);border:1px solid var(--border);color:#fff;font-size:14px;">' +
    tickers.map((t) => '<option value="' + esc(t) + '"' + (t === sel ? " selected" : "") + '>' + esc(t) + '</option>').join("") + '</select>';
@@ -8532,7 +8535,7 @@ route("alerts", function () {
    app.innerHTML = '<div class="crumb">COMPS MATRIX</div>' +
     '<div class="hero"><div><h1 class="hero-h">Relative Valuation</h1>' +
     "<p class='hero-sub'>Cross-reference DCF values with regression-modeled peer multiples.</p></div></div>" +
-    '<div class="section"><div class="section-title">Comps Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="section"><div class="section-title">Comps Matrix ' + PRO_BADGE + '</div>' +
     proTeaser("Comps Matrix, Pro", "OLS regression of EV/Revenue and P/E against NTM growth across all " + ORDER.length + " tickers. Find discounted growth and stretched multiples.") + "</div>" + realYieldShockHtml();
    return;
   }
@@ -8565,13 +8568,13 @@ route("alerts", function () {
   });
   h += '</div></div>';
   // Scatter chart
-  h += '<div class="section"><div class="section-title">Growth vs Multiple <span style="font-size:11px;color:#8b949e;">(bubble size = market cap)</span></div>';
+  h += '<div class="section"><div class="section-title">Growth vs Multiple ' + PRO_BADGE + ' <span style="font-size:11px;color:#8b949e;">(bubble size = market cap)</span></div>';
   h += '<div style="margin-bottom:8px;"><button class="btn" id="comps-toggle" style="font-size:12px;">Switch to Forward P/E</button></div>';
   h += '<div class="zoomable-chart" data-chart="comps" style="position:relative;height:420px;cursor:zoom-in;" title="Click to zoom"><canvas id="comps-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div style="font-size:11px;color:#8b949e;margin-top:6px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market.</div></div>';
   // Table
-  h += '<div class="section"><div class="section-title">Comps Table</div><div class="card" style="overflow-x:auto;">';
+  h += '<div class="section"><div class="section-title">Comps Table ' + PRO_BADGE + '</div><div class="card" style="overflow-x:auto;">';
   h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid #2a3448;color:#8b949e;text-align:right;">' +
    '<th style="text-align:left;padding:8px;">Ticker</th><th style="text-align:left;padding:8px;">Sector</th>' +
    '<th style="padding:8px;">NTM Growth</th><th style="padding:8px;">EV/Rev</th><th style="padding:8px;">vs Peer</th>' +
@@ -8645,13 +8648,13 @@ route("alerts", function () {
  function liquidityDrainHtml() {
   const L = D.liquidity_drain || {};
   if (L.totalScore == null) {
-   return '<div class="section"><div class="section-title">Liquidity Drain Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Liquidity Drain Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Liquidity data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
   const c = colorMap[L.color] || "#e8ecf1";
   const m = L.currentMetrics || {};
-  let h = '<div class="section"><div class="section-title">Liquidity Drain Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  let h = '<div class="section"><div class="section-title">Liquidity Drain Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Net US liquidity, USD strength, and yield curve dynamics. Markets rarely crash when liquidity expands; they become vulnerable when it drains.</div>';
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
@@ -8679,7 +8682,7 @@ route("alerts", function () {
  function rvShockHtml() {
   const R = D.rv_shock || {};
   if (!R.countdown) {
-   return '<div class="section"><div class="section-title">Realized Vol Shock Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Realized Vol Shock Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Realized Vol Shock data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const cd = R.countdown, rv = R.rvCurrent || {};
@@ -8688,7 +8691,7 @@ route("alerts", function () {
   const vcf = rv.vcfExposurePercentile || 0;
   const vcfColor = vcf >= 80 ? "#f85149" : vcf >= 50 ? "#d29922" : "#3fb950";
 
-  let h = '<div class="section"><div class="section-title">Realized Vol Shock Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  let h = '<div class="section"><div class="section-title">Realized Vol Shock Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Realized volatility shocks and systematic fund positioning. When volatility has been quiet too long, mechanical sellers are fully loaded.</div>';
 
   // What this means (for everyone)
@@ -8775,14 +8778,14 @@ route("alerts", function () {
  function concentrationHtml() {
   const K = D.dynamic_concentration || {};
   if (K.score == null) {
-   return '<div class="section"><div class="section-title">Dynamic Concentration Risk Gauge <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Dynamic Concentration Risk Gauge ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Concentration data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
   const c = colorMap[K.color] || "#e8ecf1";
   const leader = K.leader || {};
 
-  let h = '<div class="section"><div class="section-title">Dynamic Concentration Risk Gauge <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  let h = '<div class="section"><div class="section-title">Dynamic Concentration Risk Gauge ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Which sector is leading, how stretched it is, and whether the index can survive without it.</div>';
 
   const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
@@ -8832,7 +8835,7 @@ route("alerts", function () {
  function marginLeverageHtml() {
   const M = D.margin_leverage || {};
   if (M.score == null) {
-   return '<div class="section"><div class="section-title">Systemic Leverage Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Systemic Leverage Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Margin debt data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
@@ -8840,7 +8843,7 @@ route("alerts", function () {
   const m = M.metrics || {};
   const stale = M.metadata && M.metadata.stale;
 
-  let h = '<div class="section"><div class="section-title">Systemic Leverage Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  let h = '<div class="section"><div class="section-title">Systemic Leverage Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">How much traders are borrowing to buy stocks. Leverage measures what investors are actually doing with their money, not just how they feel.</div>';
 
   // Score banner
@@ -8890,7 +8893,7 @@ route("alerts", function () {
  function sectorRotationHtml() {
   const S = D.sector_rotation || {};
   if (S.score == null) {
-   return '<div class="section"><div class="section-title">Offense vs Defense <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Offense vs Defense ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Sector rotation data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
@@ -8899,7 +8902,7 @@ route("alerts", function () {
   const r = S.ratios || {};
   const stale = S.metadata && S.metadata.stale;
 
-  let h = '<div class="section"><div class="section-title">Offense vs Defense <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  let h = '<div class="section"><div class="section-title">Offense vs Defense ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Consumer Discretionary vs Consumer Staples, cap-weighted and equal-weighted. When institutions hide in toothpaste and toilet paper, the rally is hollow.</div>';
 
   // Score banner
@@ -8949,14 +8952,14 @@ route("alerts", function () {
 
  function flowDivergenceHtml() {  const F = D.flow_divergence || {};
   if (!F.current) {
-   return '<div class="section"><div class="section-title">Institutional Flow Divergence <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Institutional Flow Divergence ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Flow divergence data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const cur = F.current;
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
   const c = colorMap[cur.color] || "#e8ecf1";
 
-  let h = '<div class="section"><div class="section-title">Institutional Flow Divergence <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  let h = '<div class="section"><div class="section-title">Institutional Flow Divergence ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Retail sentiment vs institutional positioning, as a contrarian risk gauge.</div>';
 
   // Plain-English explainer
@@ -9004,13 +9007,13 @@ route("alerts", function () {
 function oasDistressHtml() {
   const O = D.oas_distress || {};
   if (O.score == null) {
-   return '<div class="section"><div class="section-title">Credit Stress Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Credit Stress Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Credit Stress data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
   const c = colorMap[O.color] || "#e8ecf1";
   const bps = (v) => v != null ? Number(v).toLocaleString() + " bps" : "N/A";
-  let h = '<div class="section"><div class="section-title">Credit Stress Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  let h = '<div class="section"><div class="section-title">Credit Stress Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Option-adjusted spreads across high-yield and investment-grade bonds. Widening spreads mean credit markets are pricing distress, and the HY minus IG quality spread isolates true default fear.</div>';
   // Score banner
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
@@ -9096,7 +9099,7 @@ function realYieldShockHtml() {
   const c = colorMap[R.color] || "#e8ecf1";
   const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
   const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
-  let h = '<div class="section"><div class="section-title">Real Yield Shock Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  let h = '<div class="section"><div class="section-title">Real Yield Shock Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">The 10-year TIPS yield is the market\u2019s real cost of capital. When real yields rise, equity multiples tend to compress, and this gauge tracks that pressure.</div>';
   // Gauge banner (free): regime badge, 10Y real yield, fair P/E vs benchmark P/E
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
@@ -9131,7 +9134,6 @@ function realYieldShockHtml() {
 
 // === pead_screener.js ===
 function peadScreenerHtml() {
- const PRO_BADGE = '<span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>';
  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
 
  const fmtP = (v) => {
@@ -9191,7 +9193,6 @@ function peadScreenerHtml() {
 
 // === squeeze_radar.js ===
 function squeezeRadarHtml() {
- const PRO_BADGE = '<span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>';
  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
 
  const fmtLvl = (v) => {
@@ -9258,7 +9259,7 @@ function treasurySlrFreeCard(d) {
  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
  const c = colorMap[S.color] || "#e8ecf1";
  return '<div class="card" style="margin-bottom:16px;"><h3>Treasury Absorption &amp; SLR Gauge ' +
-  '<span style="font-size:10px;background:#3fb950;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">FREE</span></h3>' +
+  '' + FREE_BADGE + '</h3>' +
   '<div style="display:flex;align-items:center;gap:16px;margin:8px 0;">' +
   '<div style="font-size:32px;font-weight:800;color:' + c + ';">' + S.score +
   '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
@@ -9269,7 +9270,6 @@ function treasurySlrFreeCard(d) {
 
 function treasurySlrHtml() {
  const S = D.treasury_slr || {};
- const PRO_BADGE = '<span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>';
  if (S.score == null) {
   return '<div class="section"><div class="section-title">Treasury Absorption &amp; SLR Gauge ' + PRO_BADGE + "</div>" +
    '<div class="card"><p style="color:var(--muted)">Treasury absorption data unavailable. Check back after the next refresh.</p></div></div>';
@@ -9316,7 +9316,6 @@ function treasurySlrHtml() {
 // === gamma_flip.js ===
 function gammaFlipHtml() {
  const G = D.gamma_flip || {};
- const PRO_BADGE = '<span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>';
  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
 
  // One index panel (SPY or QQQ). Handles the N/A fallback gracefully.
@@ -9390,14 +9389,14 @@ function gammaFlipHtml() {
 }
  function contagionHtml() {  const C = D.contagion || {};
   if (!C.composite) {
-   return '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Contagion data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const comp = C.composite, pillars = C.pillars || {};
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
   const c = colorMap[comp.threatColor] || "#e8ecf1";
 
-  let h = '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  let h = '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Currency, rates, and commodity stress as early warnings before shocks reach stocks.</div>';
 
   // Plain-English explainer
@@ -9453,14 +9452,14 @@ function gammaFlipHtml() {
  function correctionRiskHtml() {
   const cr = D.correction_risk || {};
   if (!cr.totalRiskScore && cr.totalRiskScore !== 0) {
-   return '<div class="section"><div class="section-title">Correction Risk Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   return '<div class="section"><div class="section-title">Correction Risk Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">The Correction Risk Model has not been computed yet. Check back after the next refresh.</p></div></div>';
   }
   const score = cr.totalRiskScore;
   const regime = cr.regime || "";
   const colorMap = {emerald: "#10b981", amber: "#f59e0b", rose: "#f43f5e", slate: "#94a3b8"};
   const rc = colorMap[cr.color] || "#94a3b8";
-  let h = '<div class="section" style="max-width:none;"><div class="section-title">Correction Risk Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  let h = '<div class="section" style="max-width:none;"><div class="section-title">Correction Risk Model ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Multi-factor risk score combining price extension, volatility trend, credit stress, and market breadth. Signals when a market top is forming. Updated ' + esc((cr.as_of || "").slice(0, 10)) + '.</div>';
   // Regime banner
   h += '<div class="card" style="border:1px solid ' + rc + '55;padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">';
@@ -9982,7 +9981,7 @@ function gammaFlipHtml() {
    app.innerHTML = '<div class="crumb">QUALITY SNAPSHOT</div>' +
     '<div class="hero"><div><h1 class="hero-h">Quality Snapshot</h1>' +
     "<p class='hero-sub'>On-demand ROIC, cash conversion, and Rule of 40 for any ticker.</p></div></div>" +
-    '<div class="section"><div class="section-title">Quality Snapshot <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="section"><div class="section-title">Quality Snapshot ' + PRO_BADGE + '</div>' +
     proTeaser("Quality Snapshot, Pro", "Type any ticker and get an instant read on capital returns, operating efficiency, and the growth engine. ROIC, CROIC, revenue per employee, operating leverage, and Rule of 40, computed live.") + "</div>";
    return;
   }
@@ -9990,7 +9989,7 @@ function gammaFlipHtml() {
   app.innerHTML = '<div class="crumb">QUALITY SNAPSHOT</div>' +
    '<div class="hero"><div><h1 class="hero-h">Quality Snapshot</h1>' +
    "<p class='hero-sub'>On-demand ROIC, cash conversion, and Rule of 40 for any ticker.</p></div></div>" +
-   '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section"><div class="section-title">Ticker Lookup ' + PRO_BADGE + '</div>' +
    '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
    '<input id="quality-ticker" type="text" placeholder="TICKER (e.g. CRWD)" value="' + esc(initial) + '" ' +
    'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
@@ -10011,7 +10010,7 @@ function gammaFlipHtml() {
    app.innerHTML = '<div class="crumb">CATALYST COMPASS</div>' +
     '<div class="hero"><div><h1 class="hero-h">Cascadia Catalyst Compass</h1>' +
     "<p class='hero-sub'>AI-synthesized earnings previews for any ticker, grounded in live options math.</p></div></div>" +
-    '<div class="section"><div class="section-title">Cascadia Catalyst Compass <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="section"><div class="section-title">Cascadia Catalyst Compass ' + PRO_BADGE + '</div>' +
     proTeaser("Catalyst Compass, Pro", "Type any ticker for a probabilistic scenario matrix: Bull/Base/Bear outcomes with assigned probabilities, mapped to options-implied price bounds, plus macro, fundamental, tone, and positioning context.") + "</div>";
    return;
   }
@@ -10019,7 +10018,7 @@ function gammaFlipHtml() {
   app.innerHTML = '<div class="crumb">CATALYST COMPASS</div>' +
    '<div class="hero"><div><h1 class="hero-h">Cascadia Catalyst Compass</h1>' +
    "<p class='hero-sub'>Probabilistic Bull/Base/Bear scenarios for any ticker, mapped to options-implied bounds. Each generation takes about 20-30 seconds.</p></div></div>" +
-   '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section"><div class="section-title">Ticker Lookup ' + PRO_BADGE + '</div>' +
    '<form id="e360-form" style="display:flex;gap:8px;margin:12px 0;max-width:420px;" autocomplete="off">' +
    '<input id="e360-ticker" type="text" placeholder="TICKER (e.g. NVDA)" value="' + esc(initial) + '" autocomplete="off" autocapitalize="characters" spellcheck="false" ' +
    'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
@@ -10182,7 +10181,7 @@ function gammaFlipHtml() {
    let freeH = '<div class="crumb">RISK MODELS</div>' +
     '<div class="hero"><div><h1 class="hero-h">Risk Models</h1>' +
     "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
-    '<div class="section"><div class="section-title">Daily Snapshot <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>' +
+    '<div class="section"><div class="section-title">Daily Snapshot ' + PRO_BADGE + '' +
     ' <span style="font-size:11px;color:#8b949e;font-weight:400;">as of ' + esc((D.generated_at || "").slice(0, 10)) + '</span></div>' +
     '<div class="section-sub">Current scores, free. The full breakdown, charts, history, and in-depth analysis are Pro.</div>' +
     compositeBanner() +
