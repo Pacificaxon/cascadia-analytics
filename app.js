@@ -4412,7 +4412,48 @@ const ACADEMY_MODULES = [
   ]
  },
  {
-  id: "options1", number: "03", title: "Options Mechanics and First-Order Greeks",
+  id: "singleleg", number: "03", title: "Single-Leg Options Foundations",
+  category: "Derivatives", readTime: "25 min read",
+  summary: "Contract anatomy, the rights and obligations of buyers and sellers, intrinsic versus extrinsic value, moneyness, and single-leg payoff mathematics.",
+  sections: [
+   {
+    heading: "Anatomy of an Option Contract",
+    body: "An option is a standardized contract that gives the buyer the right, but not the obligation, to buy or sell 100 shares of an underlying asset at a fixed strike price on or before an expiration date. The buyer pays an upfront premium for this asymmetric payoff profile. The seller collects that premium and accepts the obligation to perform if assigned. Most U.S. equity options are American-style, which means they can be exercised on any trading day before expiration. Index options such as SPX are European-style and can only be exercised at expiration, which also removes pin risk from the settlement process.",
+    formula: "\\text{Option Premium} = \\text{Intrinsic Value} + \\text{Extrinsic Value}",
+    takeaways: [
+     "A long call buys the right to purchase 100 shares at the strike. Maximum profit is theoretically unlimited while maximum loss is capped at the premium paid, and the position carries positive delta.",
+     "A short call obligates the writer to deliver 100 shares at the strike if assigned. Maximum profit is the premium collected while maximum loss is uncapped on a naked position, and the position carries negative delta.",
+     "A long put buys the right to sell 100 shares at the strike. Maximum profit is bounded by the strike less the premium paid while maximum loss is the premium, and the position carries negative delta.",
+     "A short put obligates the writer to buy 100 shares at the strike if assigned. Maximum profit is the premium collected, and the position carries positive delta.",
+     "Short calls written over a dividend-paying stock face early assignment risk the evening before the ex-dividend date whenever the remaining extrinsic value is worth less than the dividend.",
+     "Stock options settle into 100 physical shares on assignment, so writers need sufficient margin to absorb delivery without forced liquidation."
+    ]
+   },
+   {
+    heading: "Moneyness Deconstructed",
+    body: "Every option premium splits into two economic components. Intrinsic value is the immediate cash equity if the contract were exercised right now. Extrinsic value is everything else, which is the market price of remaining time and volatility. Moneyness describes where the spot price sits relative to the strike. In-the-money options carry positive intrinsic value and delta magnitude above 0.50. At-the-money options have zero intrinsic value and consist entirely of extrinsic value, and they carry peak gamma and peak theta burn. Out-of-the-money options are pure extrinsic hope value with delta magnitude below 0.50. Time decay is non-linear, burning gradually from six months out but accelerating hard inside the final thirty days.",
+    formula: "\\text{Call Intrinsic} = \\max(0, S - K), \\quad \\text{Put Intrinsic} = \\max(0, K - S)",
+    takeaways: [
+     "At-the-money contracts are 100 percent extrinsic value, which is why they define the market's purest read on expected volatility.",
+     "Theta burn concentrates in the final thirty days, so long premium positions bleed fastest exactly when gamma is most violent.",
+     "Deep in-the-money options behave like stock, with delta approaching 1.0 for calls and -1.0 for puts."
+    ],
+    interactive: "singleleg"
+   },
+   {
+    heading: "Single-Leg Payoff Profiles and Break-Even Mathematics",
+    body: "At expiration all extrinsic value collapses to zero and the profit or loss becomes a simple function of the terminal stock price against the strike, less the premium paid or plus the premium collected. A long call buyer needs the stock above the strike plus the premium just to break even, which means being right on direction is not enough. A short seller can be wrong on magnitude or even slightly wrong on direction and still keep the full premium, which is the structural edge that funds the entire options market-making business.",
+    formula: "\\Pi_{\\text{Long Call}} = \\max(0, S_T - K) - C, \\quad S_{\\text{BE}} = K + C \\\\ \\Pi_{\\text{Long Put}} = \\max(0, K - S_T) - P, \\quad S_{\\text{BE}} = K - P",
+    takeaways: [
+     "The buyer's hurdle is the break-even, not the strike. Premium paid must be recovered before a single dollar of profit appears.",
+     "Sellers win when the underlying drifts mildly against them or sits still, since the premium still decays to zero.",
+     "Systematically buying out-of-the-money single-leg options carries negative expected value from the compounding drag of theta and bid-ask spreads."
+    ]
+   }
+  ]
+ },
+ {
+  id: "options1", number: "04", title: "Options Mechanics and First-Order Greeks",
   category: "Derivatives", readTime: "25 min read",
   summary: "Put-call parity, synthetic positions, and the working intuition behind delta, gamma, theta, vega, and rho.",
   sections: [
@@ -4440,7 +4481,7 @@ const ACADEMY_MODULES = [
   ]
  },
  {
-  id: "options2", number: "04", title: "Higher-Order Greeks and Dealer Hedging",
+  id: "options2", number: "05", title: "Higher-Order Greeks and Dealer Hedging",
   category: "Derivatives", readTime: "30 min read",
   summary: "Vanna, charm, and volga, and how dealer rebalancing turns derivatives positioning into equity price drift.",
   sections: [
@@ -4478,7 +4519,7 @@ const ACADEMY_MODULES = [
   ]
  },
  {
-  id: "vol", number: "05", title: "Volatility Surface, Skew and Term Structure",
+  id: "vol", number: "06", title: "Volatility Surface, Skew and Term Structure",
   category: "Volatility", readTime: "30 min read",
   summary: "Downside put skew, sticky-strike versus sticky-delta regimes, and reading contango against backwardation.",
   sections: [
@@ -4507,7 +4548,46 @@ const ACADEMY_MODULES = [
   ]
  },
  {
-  id: "micro", number: "06", title: "Market Microstructure and Order Flow",
+  id: "multileg", number: "07", title: "Advanced Multi-Leg Strategies",
+  category: "Derivatives", readTime: "32 min read",
+  summary: "Vertical debit and credit spreads, iron condors and butterflies, straddles and calendar spreads, with net spread Greeks and risk-reward mathematics.",
+  sections: [
+   {
+    heading: "Vertical Spreads",
+    body: "A vertical spread pairs a long option with a short option of the same class and expiration at a different strike. The short leg finances part of the long leg, which cuts the cash outlay on debit spreads and caps the tail risk on credit spreads. Spreads also dampen net vega, so the position is less hostage to implied volatility crush, and they neutralize much of the theta decay that punishes outright directional bets.",
+    formula: "\\text{Max Loss}_{\\text{debit}} = \\text{Net Debit}, \\quad \\text{Max Profit}_{\\text{debit}} = \\text{Width} - \\text{Net Debit} \\\\ \\text{Max Profit}_{\\text{credit}} = \\text{Net Credit}, \\quad \\text{Max Loss}_{\\text{credit}} = \\text{Width} - \\text{Net Credit}",
+    takeaways: [
+     "A bull call debit spread buys a lower-strike call and sells a higher-strike call. It caps the upside in exchange for a cheaper entry and a higher probability of profit.",
+     "A bear put debit spread buys a higher-strike put and sells a lower-strike put. It expresses a directional downside view with bounded loss and muted vega.",
+     "A bull put credit spread sells a higher-strike put and buys a lower-strike put. The net credit is collected upfront and the position profits from drift higher, sideways chop, or falling volatility.",
+     "A bear call credit spread sells a lower-strike call and buys a higher-strike call. It is a bounded bearish structure built to harvest time decay at high probability."
+    ]
+   },
+   {
+    heading: "The Iron Condor and the Iron Butterfly",
+    body: "When models point to range-bound consolidation or elevated implied volatility, desks deploy four-legged delta-neutral structures to harvest time decay. An iron condor combines an out-of-the-money bull put credit spread with an out-of-the-money bear call credit spread on the same expiration. Maximum profit lands when the stock closes anywhere between the two short strikes, and that maximum equals the net credit collected. The long outer wings put a hard ceiling on losses, which separates the condor from a naked short strangle. An iron butterfly pulls both short strikes to the same at-the-money level, collecting a much larger credit in exchange for a narrower profitable band.",
+    formula: "\\text{Iron Condor} = \\text{Long Put}(K_1) + \\text{Short Put}(K_2) + \\text{Short Call}(K_3) + \\text{Long Call}(K_4)",
+    takeaways: [
+     "Maximum loss on an iron condor equals the wing width minus the net credit, which is known before the trade is placed.",
+     "Professional desks avoid one-dollar-wide wings because bid-ask slippage and commissions erase the edge. Five to ten points is the working standard on liquid indices.",
+     "An iron butterfly concentrates both short strikes at the money, maximizing collected credit while narrowing the break-even band."
+    ],
+    interactive: "multileg"
+   },
+   {
+    heading: "Straddles, Strangles and Calendar Spreads",
+    body: "Desks often isolate volatility from direction. A long straddle buys an at-the-money call and an at-the-money put together, creating a long-gamma and long-vega position that needs a violent move in either direction to overcome the premium paid. A short straddle does the reverse, collecting maximum extrinsic value while wearing uncapped tail risk. A calendar spread buys a longer-dated option and sells a shorter-dated option at the same strike, exploiting the fact that front-month contracts decay far faster than back-month contracts. The structure is net long vega, so a volatility spike lifts the back-month leg more than it hurts the front-month leg.",
+    formula: "\\text{Calendar} = \\text{Short Front-Month}(T_1) + \\text{Long Back-Month}(T_2), \\quad T_1 < T_2",
+    takeaways: [
+     "Long straddles need realized movement beyond the straddle cost. Without it, theta decay and vega collapse do the damage.",
+     "Calendar spreads harvest the term-structure slope of time decay, with the short front leg bleeding value daily into the book.",
+     "Pin risk peaks when the stock settles exactly on the short strike at expiration, which is the maximum-profit outcome for a calendar."
+    ]
+   }
+  ]
+ },
+ {
+  id: "micro", number: "08", title: "Market Microstructure and Order Flow",
   category: "Execution", readTime: "24 min read",
   summary: "Dealer gamma regimes, dark pool prints, and why reported short volume often means the opposite of what it seems.",
   sections: [
@@ -4538,7 +4618,7 @@ const ACADEMY_MODULES = [
 
 ACADEMY_MODULES.push(
  {
-  id: "fed-plumbing", number: "07", title: "Fed Plumbing, Bank Balance Sheets and the SLR",
+  id: "fed-plumbing", number: "09", title: "Fed Plumbing, Bank Balance Sheets and the SLR",
   category: "Macro", readTime: "30 min read",
   summary: "How G-SIB balance sheet constraints, the Supplementary Leverage Ratio, and repo market plumbing dictate Treasury market depth.",
   sections: [
@@ -4576,7 +4656,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "dcf-modeling", number: "08", title: "DCF Modeling and Valuation Architecture",
+  id: "dcf-modeling", number: "10", title: "DCF Modeling and Valuation Architecture",
   category: "Valuation", readTime: "30 min read",
   summary: "Unlevered free cash flow, terminal value methods, and how the pieces of an institutional DCF fit together.",
   sections: [
@@ -4603,7 +4683,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "wacc-mechanics", number: "09", title: "WACC and the Cost of Capital",
+  id: "wacc-mechanics", number: "11", title: "WACC and the Cost of Capital",
   category: "Valuation", readTime: "25 min read",
   summary: "Building the discount rate from capital structure weights, the CAPM cost of equity, and Hamada's beta adjustments.",
   sections: [
@@ -4631,7 +4711,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "sotp-valuation", number: "10", title: "Sum-of-the-Parts Valuation",
+  id: "sotp-valuation", number: "12", title: "Sum-of-the-Parts Valuation",
   category: "Valuation", readTime: "25 min read",
   summary: "Breaking conglomerates into segments, assigning pure-play multiples, and pricing the holding company discount.",
   sections: [
@@ -4658,7 +4738,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "peer-relative", number: "11", title: "Peer Multiples and Relative Valuation",
+  id: "peer-relative", number: "13", title: "Peer Multiples and Relative Valuation",
   category: "Valuation", readTime: "22 min read",
   summary: "EV versus equity multiples, the PEG ratio, and normalizing growth so multiples compare cleanly.",
   sections: [
@@ -4685,7 +4765,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "t10yie-mechanics", number: "12", title: "Breakeven Inflation and the Fisher Equation",
+  id: "t10yie-mechanics", number: "14", title: "Breakeven Inflation and the Fisher Equation",
   category: "Rates", readTime: "24 min read",
   summary: "How the TIPS market reveals expected inflation, and what contaminates the signal.",
   sections: [
@@ -4713,7 +4793,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "forward-5y5y", number: "13", title: "The 5Y5Y Forward Inflation Expectation",
+  id: "forward-5y5y", number: "15", title: "The 5Y5Y Forward Inflation Expectation",
   category: "Rates", readTime: "20 min read",
   summary: "Why policymakers watch the five-year, five-year forward instead of spot breakevens.",
   sections: [
@@ -4740,7 +4820,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "real-rates-equities", number: "14", title: "Real Yields and Equity Multiples",
+  id: "real-rates-equities", number: "16", title: "Real Yields and Equity Multiples",
   category: "Rates", readTime: "22 min read",
   summary: "The transmission from TIPS yields to P/E ratios, and why duration decides who suffers.",
   sections: [
@@ -4770,7 +4850,7 @@ ACADEMY_MODULES.push(
 
 ACADEMY_MODULES.push(
  {
-  id: "credit-oas", number: "15", title: "Credit Spreads, Default Probabilities and OAS",
+  id: "credit-oas", number: "17", title: "Credit Spreads, Default Probabilities and OAS",
   category: "Credit", readTime: "26 min read",
   summary: "How corporate bond spreads, Merton's structural model of default, and option-adjusted spreads front-run equity drawdowns.",
   sections: [
@@ -4798,7 +4878,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "vol-targeting", number: "16", title: "Systematic De-leveraging and Vol-Controlled Funds",
+  id: "vol-targeting", number: "18", title: "Systematic De-leveraging and Vol-Controlled Funds",
   category: "Systematic Flows", readTime: "24 min read",
   summary: "How commodity trading advisors, risk parity, and mechanical volatility targeting force equity liquidation.",
   sections: [
@@ -4825,7 +4905,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "cot-positioning", number: "17", title: "Positioning Forensics and the CFTC COT Report",
+  id: "cot-positioning", number: "19", title: "Positioning Forensics and the CFTC COT Report",
   category: "Positioning", readTime: "22 min read",
   summary: "Reading institutional signal from the Commitment of Traders report, from commercial hedgers to speculative Z-scores.",
   sections: [
@@ -4853,7 +4933,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "breadth-dispersion", number: "18", title: "Market Breadth, Dispersion and Sector Rotation",
+  id: "breadth-dispersion", number: "20", title: "Market Breadth, Dispersion and Sector Rotation",
   category: "Breadth", readTime: "25 min read",
   summary: "Diagnosing internal market health through cap-weighted versus equal-weighted divergence and cyclical rotation.",
   sections: [
@@ -4881,7 +4961,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "fx-carry", number: "19", title: "The FX Carry Trade and Cross-Asset Contagion",
+  id: "fx-carry", number: "21", title: "The FX Carry Trade and Cross-Asset Contagion",
   category: "Global Macro", readTime: "28 min read",
   summary: "How currency volatility and carry trade unwinds cascade through rates into equities.",
   sections: [
@@ -4909,7 +4989,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "short-squeeze", number: "20", title: "Securities Lending, Short Interest and Squeeze Dynamics",
+  id: "short-squeeze", number: "22", title: "Securities Lending, Short Interest and Squeeze Dynamics",
   category: "Microstructure", readTime: "25 min read",
   summary: "Prime brokerage mechanics, borrow fee drag, and the anatomy of short and gamma squeezes.",
   sections: [
@@ -4937,7 +5017,7 @@ ACADEMY_MODULES.push(
   ]
  },
  {
-  id: "earnings-drift", number: "21", title: "Catalyst Mechanics and Post-Earnings Drift",
+  id: "earnings-drift", number: "23", title: "Catalyst Mechanics and Post-Earnings Drift",
   category: "Event-Driven", readTime: "27 min read",
   summary: "Options-implied earnings moves, post-print volatility crush, and the 60-day post-earnings drift anomaly.",
   sections: [
@@ -5132,6 +5212,35 @@ function academyInteractiveHtml(kind) {
     '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="bd-out"></div>');
+ }
+ if (kind === "singleleg") {
+  return wrap(
+   '<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">' +
+   '<button class="btn secondary acad-sl" data-m="long_call" style="border-color:#c9a961;color:#c9a961;">Long Call</button>' +
+   '<button class="btn secondary acad-sl" data-m="short_call">Short Call</button>' +
+   '<button class="btn secondary acad-sl" data-m="long_put">Long Put</button>' +
+   '<button class="btn secondary acad-sl" data-m="short_put">Short Put</button></div>' +
+   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Strike: <b id="sl-k-v" style="color:#e8ecf1;">100</b></div>' +
+   '<input type="range" id="sl-k" min="70" max="130" step="1" value="100" style="width:100%;" class="acad-slider"></div>' +
+   '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Premium: <b id="sl-p-v" style="color:#e8ecf1;">$4.50</b></div>' +
+   '<input type="range" id="sl-p" min="0.5" max="15" step="0.25" value="4.5" style="width:100%;" class="acad-slider"></div></div>' +
+   '<div id="sl-out"></div><div id="sl-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+ }
+ if (kind === "multileg") {
+  return wrap(
+   '<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">' +
+   '<button class="btn secondary acad-ml" data-m="iron_condor" style="border-color:#c9a961;color:#c9a961;">Iron Condor</button>' +
+   '<button class="btn secondary acad-ml" data-m="bull_call">Bull Call Spread</button>' +
+   '<button class="btn secondary acad-ml" data-m="straddle">Long Straddle</button></div>' +
+   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Spot: <b id="ml-s-v" style="color:#e8ecf1;">100</b></div>' +
+   '<input type="range" id="ml-s" min="70" max="130" step="1" value="100" style="width:100%;" class="acad-slider"></div>' +
+   '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Wing width: <b id="ml-w-v" style="color:#e8ecf1;">10</b></div>' +
+   '<input type="range" id="ml-w" min="5" max="25" step="1" value="10" style="width:100%;" class="acad-slider"></div>' +
+   '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Net credit / cost: <b id="ml-c-v" style="color:#e8ecf1;">$3.20</b></div>' +
+   '<input type="range" id="ml-c" min="0.5" max="8" step="0.1" value="3.2" style="width:100%;" class="acad-slider"></div></div>' +
+   '<div id="ml-out"></div><div id="ml-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
  }
  if (kind === "straddle") {
   return wrap(
@@ -5517,6 +5626,84 @@ function wireAcademyInteractive(kind) {
     '<text x="' + pad + '" y="96" fill="#8b949e" font-size="10">Borrow cost bleeds the short thesis daily, even when the call is right (fictional)</text></svg>';
   };
   ["bd-fee", "bd-days", "bd-move"].forEach((id) => on(id, "input", draw)); draw();
+ }
+ if (kind === "singleleg") {
+  let mode = "long_call";
+  const names = { long_call: "Long Call", short_call: "Short Call", long_put: "Long Put", short_put: "Short Put" };
+  const draw = () => {
+   const k = +$("sl-k").value, prem = +$("sl-p").value;
+   $("sl-k-v").textContent = k; $("sl-p-v").textContent = "$" + prem.toFixed(2);
+   const w = 560, h = 220, pad = 40;
+   const lo = k - 40, hi = k + 40;
+   const x = (s) => pad + ((s - lo) / (hi - lo)) * (w - pad - 16);
+   const payoff = (s) => {
+    if (mode === "long_call") return Math.max(0, s - k) - prem;
+    if (mode === "short_call") return prem - Math.max(0, s - k);
+    if (mode === "long_put") return Math.max(0, k - s) - prem;
+    return prem - Math.max(0, k - s);
+   };
+   const be = (mode === "long_call" || mode === "short_call") ? k + prem : k - prem;
+   const yMax = 40, yMin = -20;
+   const y = (v) => h - pad - ((v - yMin) / (yMax - yMin)) * (h - pad - 24);
+   const pts = [];
+   for (let s = lo; s <= hi; s += 1) pts.push([x(s), y(Math.max(yMin, Math.min(yMax, payoff(s))))]);
+   const col = mode.indexOf("long") === 0 ? "#3fb950" : "#f85149";
+   const maxRisk = mode.indexOf("long") === 0 ? "$" + (prem * 100).toFixed(0) : (mode === "short_call" ? "uncapped" : "$" + ((k - prem) * 100).toFixed(0));
+   $("sl-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) +
+    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#2d435e" stroke-dasharray="4"/>' +
+    acadPath(pts, col, 2.5) +
+    '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#c9a961" stroke-dasharray="4"/>' +
+    '<text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#c9a961" font-size="11" text-anchor="middle">Strike ' + k + '</text>' +
+    '<line x1="' + x(be) + '" y1="8" x2="' + x(be) + '" y2="' + (h - pad) + '" stroke="#38bdf8" stroke-dasharray="4"/>' +
+    '<text x="' + x(be) + '" y="22" fill="#38bdf8" font-size="11" text-anchor="middle">Breakeven ' + be.toFixed(2) + '</text>' +
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="end">Spot at expiry →</text>' +
+    '<text x="8" y="16" fill="#8b949e" font-size="11">' + names[mode] + ' P&L at expiry (fictional)</text></svg>';
+   $("sl-note").innerHTML = 'Max risk: <b style="color:#e8ecf1;">' + maxRisk + '</b> <span style="color:#5b6b82;">per contract</span>';
+   document.querySelectorAll(".acad-sl").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+  };
+  document.querySelectorAll(".acad-sl").forEach((b) => b.addEventListener("click", () => { mode = b.dataset.m; draw(); }));
+  on("sl-k", "input", draw); on("sl-p", "input", draw); draw();
+ }
+ if (kind === "multileg") {
+  let mode = "iron_condor";
+  const names = { iron_condor: "Iron Condor", bull_call: "Bull Call Spread", straddle: "Long Straddle" };
+  const draw = () => {
+   const s0 = +$("ml-s").value, wdt = +$("ml-w").value, cr = +$("ml-c").value;
+   $("ml-s-v").textContent = s0; $("ml-w-v").textContent = wdt; $("ml-c-v").textContent = "$" + cr.toFixed(2);
+   const w = 560, h = 220, pad = 40;
+   const lo = s0 - 35, hi = s0 + 35;
+   const x = (s) => pad + ((s - lo) / (hi - lo)) * (w - pad - 16);
+   const k1 = s0 - wdt, k2 = s0 - wdt / 2, k3 = s0 + wdt / 2, k4 = s0 + wdt;
+   const payoff = (s) => {
+    if (mode === "iron_condor") {
+     const putSpread = Math.max(0, k1 - s) - Math.max(0, k2 - s);
+     const callSpread = Math.max(0, s - k4) - Math.max(0, s - k3);
+     return cr + putSpread + callSpread;
+    }
+    if (mode === "bull_call") return (Math.max(0, s - s0) - Math.max(0, s - (s0 + wdt))) - cr;
+    return (Math.max(0, s - s0) + Math.max(0, s0 - s)) - cr;
+   };
+   let yMax, yMin, maxGain, maxLoss, vega;
+   if (mode === "iron_condor") { yMax = cr + 2; yMin = -(wdt - cr) - 2; maxGain = "$" + (cr * 100).toFixed(0); maxLoss = "$" + ((wdt - cr) * 100).toFixed(0); vega = "short vega"; }
+   else if (mode === "bull_call") { yMax = (wdt - cr) + 2; yMin = -cr - 2; maxGain = "$" + ((wdt - cr) * 100).toFixed(0); maxLoss = "$" + (cr * 100).toFixed(0); vega = "near zero vega"; }
+   else { yMax = 30; yMin = -cr - 2; maxGain = "uncapped"; maxLoss = "$" + (cr * 100).toFixed(0); vega = "long vega"; }
+   const y = (v) => h - pad - ((v - yMin) / (yMax - yMin)) * (h - pad - 24);
+   const pts = [];
+   for (let s = lo; s <= hi; s += 0.5) pts.push([x(s), y(Math.max(yMin, Math.min(yMax, payoff(s))))]);
+   let strikeMarks = "";
+   if (mode === "iron_condor") {
+    strikeMarks = [k2, k3].map((k) => '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#3fb950" stroke-dasharray="4"/><text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#3fb950" font-size="10" text-anchor="middle">short ' + k.toFixed(0) + '</text>').join("");
+   }
+   $("ml-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) +
+    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#2d435e" stroke-dasharray="4"/>' +
+    acadPath(pts, "#c9a961", 2.5) + strikeMarks +
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="end">Spot at expiry →</text>' +
+    '<text x="8" y="16" fill="#8b949e" font-size="11">' + names[mode] + ' P&L at expiry (fictional)</text></svg>';
+   $("ml-note").innerHTML = 'Max gain: <b style="color:#3fb950;">' + maxGain + '</b> · Max loss: <b style="color:#f85149;">' + maxLoss + '</b> · <span style="color:#8b949e;">' + vega + '</span>';
+   document.querySelectorAll(".acad-ml").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+  };
+  document.querySelectorAll(".acad-ml").forEach((b) => b.addEventListener("click", () => { mode = b.dataset.m; draw(); }));
+  ["ml-s", "ml-w", "ml-c"].forEach((id) => on(id, "input", draw)); draw();
  }
  if (kind === "straddle") {
   const draw = () => {
