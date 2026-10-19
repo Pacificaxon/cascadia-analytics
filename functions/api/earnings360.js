@@ -236,12 +236,16 @@ export async function onRequestGet(context) {
         const expDates = (chain?.expirationDates || []).filter((t) => typeof t === "number" && t > 0);
         const fmtExp = (ts) => new Date(ts * 1000).toISOString().slice(0, 10);
         expirations = expDates.slice(0, 12).map((ts) => ({ ts, date: fmtExp(ts) }));
-        // Default expiry: first one capturing earnings, else front-month.
+        // Default expiry: first one capturing earnings, else first expiry at
+        // least 7 days out (a 0DTE/near-term straddle is noise for this purpose).
         let defExpiry = expDates[0] || null;
         let earningsExpiry = null;
         if (earningsTs) {
           earningsExpiry = expDates.find((t) => t >= earningsTs) || null;
           if (earningsExpiry) defExpiry = earningsExpiry;
+        } else {
+          const weekOut = Math.floor(Date.now() / 1000) + 7 * 86400;
+          defExpiry = expDates.find((t) => t >= weekOut) || defExpiry;
         }
         selectedExpiry = expiryParam && expDates.includes(expiryParam) ? expiryParam : defExpiry;
         earningsExpiryTs = earningsExpiry;
