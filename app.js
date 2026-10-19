@@ -410,11 +410,13 @@
   const root = document.getElementById("modal-root");
   root.innerHTML =
    '<div class="modal-back" id="pdf-mb" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;flex-direction:column;">' +
-   '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#161b26;">' +
-   '<div style="font-size:14px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(title || "Research Note") + "</div>" +
-   '<button id="pdf-close" style="background:#7d4fc9;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;min-width:80px;">Close</button>' +
+   '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#161b26;">' +
+   '<div style="font-size:13px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">' + esc(title || "Research Note") + "</div>" +
+   '<a href="' + esc(pdfUrl) + '" target="_blank" rel="noopener" style="background:transparent;color:#c9a961;border:1px solid #c9a961;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;white-space:nowrap;text-decoration:none;">Open in new tab</a>' +
+   '<button id="pdf-close" style="background:#7d4fc9;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0;">Close</button>' +
    "</div>" +
-   '<iframe src="' + esc(pdfUrl) + '" style="flex:1;border:none;background:#fff;" title="PDF Viewer"></iframe>' +
+   '<iframe src="' + esc(pdfUrl) + '" style="flex:1;width:100%;border:none;background:#fff;" title="PDF Viewer"></iframe>' +
+   '<div style="padding:8px 12px;background:#161b26;font-size:11px;color:#8b949e;text-align:center;">For the best reading experience on mobile, use "Open in new tab" for full-page zoom and page controls.</div>' +
    "</div>";
   document.getElementById("pdf-close").addEventListener("click", () => { root.innerHTML = ""; });
   document.getElementById("pdf-mb").addEventListener("click", (e) => {
