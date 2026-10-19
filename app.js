@@ -525,12 +525,12 @@
   const s = cascadiaScore(t);
   if (s == null) return "Cascadia Score: not available.";
   const parts = [];
-  if (t.upside_base != null) parts.push("valuation " + (t.upside_base >= 0 ? "+" : "") + t.upside_base.toFixed(1) + "% upside (40%)");
+  if (t.upside_base != null) parts.push("valuation " + (t.upside_base >= 0 ? "+" : "") + t.upside_base.toFixed(1) + "% upside");
   const ma = (D.ticker_ma || {})[t.ticker];
-  if (ma && ma.daily && ma.daily.signal) parts.push("momentum: " + ma.daily.signal + " (30%)");
+  if (ma && ma.daily && ma.daily.signal) parts.push("momentum: " + ma.daily.signal);
   const eh = (D.earnings_history || {})[t.ticker];
-  if (eh && eh.length && eh[0].verdict) parts.push("earnings: " + eh[0].verdict.label + " (20%)");
-  return "Cascadia Score: " + s + "/100. Weighted: " + parts.join(", ") + ".";
+  if (eh && eh.length && eh[0].verdict) parts.push("earnings: " + eh[0].verdict.label);
+  return "Cascadia Score: " + s + "/100. Components: " + parts.join(", ") + ".";
  }
 
  /* ---------- paywall ---------- */
@@ -6643,7 +6643,7 @@ function bindZoomHandlers() {
   const pro = isPro();
   // Coverage screener is FREE; factor screeners below are Pro
   let h = '<div class="section"><div class="section-title">Premium Screener</div>' +
-   '<div class="section-sub">Filter the coverage universe. Methodology: Cascadia Score = weighted multi-factor: valuation (base-case upside, 40%), price momentum (MA signals, 30%), earnings momentum (latest verdict, 20%), options flow sentiment (10%). Scored 1–100.</div>';
+   '<div class="section-sub">Filter the coverage universe. Methodology: the Cascadia Score is a multi-factor composite of valuation (base-case upside), price momentum (MA signals), earnings momentum (latest verdict), and options flow sentiment. Scored 1–100.</div>';
   h += '<div class="card"><div class="filter-bar">' +
    '<select id="f-rating"><option value="">Any rating</option><option>Buy</option><option>Hold</option><option>Sell</option></select>' +
    '<select id="f-score"><option value="">Any score</option><option value="65">Score 65+</option><option value="50">Score 50+</option><option value="40">Score 40+</option></select>' +
@@ -6651,7 +6651,7 @@ function bindZoomHandlers() {
    '<button class="btn secondary" id="f-export">Export CSV</button>' +
    "</div>" +
    '<div class="table-wrap"><table class="coverage"><thead><tr>' +
-   "<th>Ticker</th><th>Score</th><th>Growth &amp; Value Index</th><th>Price</th><th>Base</th><th>Upside</th><th>Rating</th>" +
+   "<th>Ticker</th><th>Cascadia Score</th><th>Growth &amp; Value Index</th><th>Price</th><th>Base</th><th>Upside</th><th>Rating</th>" +
    "</tr></thead><tbody id='scr-body'></tbody></table></div></div></div>";
   app.innerHTML = h;
   const body = document.getElementById("scr-body");
