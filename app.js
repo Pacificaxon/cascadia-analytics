@@ -4642,11 +4642,11 @@ function bindZoomHandlers() {
 
   // Agency Risk (Pro) - Executive Alignment & Agency Risk Score
   h += '<div class="section"><div class="section-title">Agency Risk</div>';
-  h += gated("Agency Risk, Pro", "Executive alignment score: insider ownership, open-market Form 4 flow, and pay-for-performance. Detects value traps and mercenary management.", '<div id="agency-risk-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading agency risk data...</div></div><script>loadAgencyRisk("' + tk + '")</script>');
+  h += gated("Agency Risk, Pro", "Executive alignment score: insider ownership, open-market Form 4 flow, and pay-for-performance. Detects value traps and mercenary management.", '<div id="agency-risk-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading agency risk data...</div></div>');
   h += "</div>";
 
-  // 56-Metric Institutional Fundamentals Tracker (Pro)
-  h += '<div class="section"><div class="section-title">Institutional Fundamentals Tracker</div>';
+  // 56-Metric Fundamentals Tracker (Pro)
+  h += '<div class="section"><div class="section-title">Fundamentals Tracker</div>';
   h += gated("Fundamentals Tracker, Pro", "56 institutional metrics: valuation multiples, ROIC, growth rates, margins, and balance sheet health, computed live from financial statements.",
    '<div id="metrics-tracker-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading 56 fundamentals metrics...</div></div>');
   h += "</div>";
@@ -4805,7 +4805,7 @@ function bindZoomHandlers() {
   app.innerHTML = h;
   drawPriceChart(t);
   drawFcfChart(t);
-  if (isPro()) initSandbox(tk, t);
+  if (isPro()) { initSandbox(tk, t); loadAgencyRisk(tk); }
   wireEarningsTabs(tk);
   wireFinTabs(tk);
   wireIncomeChart(tk);
@@ -6707,10 +6707,10 @@ function bindZoomHandlers() {
    trendDiv.innerHTML = trendScreenerHtml();
    app.appendChild(trendDiv);
    initTrendScreener();
-   // 56-Metric Institutional Fundamentals Tracker (Pro), below trend screener
+   // 56-Metric Fundamentals Tracker (Pro), below trend screener
    const metDiv = document.createElement("div");
-   metDiv.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Institutional Fundamentals Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    '<div class="section-sub">56 institutional metrics for any ticker: valuation, returns, growth, margins, and financial health, computed live from financial statements.</div>' +
+   metDiv.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="section-sub">56 fundamental metrics for any ticker: valuation, returns, growth, margins, and financial health, computed live from financial statements.</div>' +
     metricsTrackerInputHtml("metrics-ticker-scr", "metrics-result-scr", "") + "</div>";
    app.appendChild(metDiv);
    wireMetricsInput("metrics-ticker-scr", "metrics-result-scr", false);
@@ -6728,8 +6728,8 @@ function bindZoomHandlers() {
     proTeaser("Trend & Reversal Screener, Pro", "Trend Conviction vs Exhaustion Risk for every coverage ticker. Spot healthy trends, crowded trades, and MACD divergences before reversals.") + "</div>";
    app.appendChild(t3);
    const t4 = document.createElement("div");
-   t4.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Institutional Fundamentals Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("Institutional Fundamentals Tracker, Pro", "56 institutional metrics for any ticker in the world: valuation multiples, ROIC, growth rates, margins, and balance sheet health, computed live.") + "</div>";
+   t4.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Fundamentals Tracker, Pro", "56 fundamental metrics for any ticker in the world: valuation multiples, ROIC, growth rates, margins, and balance sheet health, computed live.") + "</div>";
    app.appendChild(t4);
   }
  });
@@ -7610,7 +7610,7 @@ function bindZoomHandlers() {
   if (!inp) return;
   inp.addEventListener("keydown", (e) => { if (e.key === "Enter") runEarnings360Search(inputId, resultId, buttonId); });
  }
- // 56-Metric Institutional Fundamentals Tracker (PRO).
+ // 56-Metric Fundamentals Tracker (PRO).
  // Backend: /api/metrics edge function (Yahoo Finance, free, 1h cache).
  let _metricsCache = {};
  async function fetchMetrics(ticker) {
