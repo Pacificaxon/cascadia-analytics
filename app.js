@@ -4742,6 +4742,204 @@ ACADEMY_MODULES.push(
  }
 );
 
+ACADEMY_MODULES.push(
+ {
+  id: "credit-oas", number: "15", title: "Credit Spreads, Default Probabilities and OAS",
+  category: "Credit", readTime: "26 min read",
+  summary: "How corporate bond spreads, Merton's structural model of default, and option-adjusted spreads front-run equity drawdowns.",
+  sections: [
+   {
+    heading: "The Capital Structure and Option-Adjusted Spread",
+    body: "Equity holders sit at the bottom of the capital structure. When a company's cash flow deteriorates, debt service consumes operating earnings long before the common stock price adjusts. Credit markets therefore price refinancing and liquidity risk weeks before equity implied volatility registers alarm. The option-adjusted spread measures the yield difference between a corporate bond and the Treasury benchmark after stripping out the value of embedded options, such as call provisions that let issuers refinance early.",
+    formula: "\\text{OAS} = Y_{\\text{Corporate Bond}} - Y_{\\text{Benchmark Treasury}} - \\text{Option Value (bps)}",
+    takeaways: [
+     "High asset volatility or rising debt loads drag distance to default downward, which widens bond yields exponentially.",
+     "When the high yield OAS widens past 400 basis points, corporate borrowing capacity freezes and equity earnings multiples typically compress soon after.",
+     "If equities print higher highs while the high yield to investment grade ratio breaks to new lows, capital is rotating out of junior credit and the equity breakout is likely a false move."
+    ],
+    interactive: "oas"
+   },
+   {
+    heading: "Merton's Structural Model of Default",
+    body: "Robert Merton framed equity as a European call option on the firm's total assets, with a strike price equal to the face value of aggregate debt maturing at time T. If asset value exceeds total debt, equity retains residual value. If asset value falls below debt, equity expires at zero and bondholders take the keys. Distance to default shrinks as asset volatility rises or as debt loads grow, and the model converts that distance into an implied default probability.",
+    formula: "E = V_A \\cdot N(d_1) - D e^{-rT} \\cdot N(d_2), \\quad \\text{where } d_1 = \\frac{\\ln(V_A/D) + (r + \\frac{1}{2}\\sigma_A^2)T}{\\sigma_A \\sqrt{T}}",
+    takeaways: [
+     "Equity behaves like a call option on firm assets, so rising asset volatility transfers value from equity holders to debt holders.",
+     "The hazard rate implied by the spread, divided by one minus the recovery rate, gives the market's annualized default intensity.",
+     "Credit stress regimes above 450 basis points of OAS have historically preceded the sharpest equity multiple compressions."
+    ]
+   }
+  ]
+ },
+ {
+  id: "vol-targeting", number: "16", title: "Systematic De-leveraging and Vol-Controlled Funds",
+  category: "Systematic Flows", readTime: "24 min read",
+  summary: "How commodity trading advisors, risk parity, and mechanical volatility targeting force equity liquidation.",
+  sections: [
+   {
+    heading: "The Vol-Targeting Allocation Equation",
+    body: "Modern selloffs are driven mostly by automated rules-based strategies rather than discretionary managers. Volatility-control funds, risk parity allocations, and CTA trend followers size positions inversely to rolling realized volatility. When realized volatility runs low, these funds lever up to hit their risk target. When volatility spikes, they sell equities mechanically, with no regard for valuations or fundamentals.",
+    formula: "w_t = \\min \\left( \\frac{\\sigma_{\\text{target}}}{\\sigma_{\\text{realized}}(t)}, \\; \\text{Leverage}_{\\max} \\right)",
+    takeaways: [
+     "A doubling of 20-day realized volatility roughly halves systematic equity allocations, unlocking tens of billions in mechanical sell orders.",
+     "These algorithms execute price-insensitive program sales into illiquid markets purely to restore target portfolio variance.",
+     "Low-volatility regimes let systematic funds reach maximum leverage, which turns the market into a tightly wound spring."
+    ],
+    interactive: "voltarget"
+   },
+   {
+    heading: "The Coiled Spring and Forced Liquidation Cascades",
+    body: "During extended low-volatility regimes, systematic funds can sit at the 95th percentile of equity exposure. When an exogenous shock produces an outsized daily drop, realized volatility jumps and the algorithms sell to restore target variance. Realized volatility shocks trigger forced deleveraging over a 3 to 7 day settlement horizon, which explains the multi-day grinding selloffs that follow an initial drop. Once systematic equity exposure clears to minimum bands, forced liquidation pressure ends and sharp mean-reversion rallies become possible.",
+    takeaways: [
+     "Front-running the deleveraging window means respecting the 3 to 7 day mechanical selling horizon after a volatility shock.",
+     "Volatility-control fund exposure at minimum bands marks the exhaustion of forced sellers, not the all-clear on fundamentals.",
+     "Non-linear selling is the key property. Small volatility increases near the top of the exposure range produce outsized liquidation."
+    ]
+   }
+  ]
+ },
+ {
+  id: "cot-positioning", number: "17", title: "Positioning Forensics and the CFTC COT Report",
+  category: "Positioning", readTime: "22 min read",
+  summary: "Reading institutional signal from the Commitment of Traders report, from commercial hedgers to speculative Z-scores.",
+  sections: [
+   {
+    heading: "Participant Classification",
+    body: "The Commodity Futures Trading Commission publishes weekly open interest breakdowns across futures markets. Commercial hedgers include producers, swap dealers, and institutions hedging operational risk. They tend to buy into declines and distribute into rallies, behaving like deep-pocketed value investors. Non-commercials are leveraged funds and CTAs trading momentum. They typically hold peak long positions at market tops and peak net shorts at bottoms.",
+    formula: "\\text{Net Speculative Positioning} = \\text{Leveraged Funds Long} - \\text{Leveraged Funds Short}",
+    takeaways: [
+     "Commercials accumulate when speculators panic and distribute when speculators chase, which makes their positioning a contrarian anchor.",
+     "Raw contract counts drift over multi-year horizons as markets grow, so desks normalize positioning before judging extremes.",
+     "COT data reflects positions through Tuesday's close but is released Friday evening, so desks reconcile the print against price action in between."
+    ],
+    interactive: "cotz"
+   },
+   {
+    heading: "Normalized Z-Scores and Crowded Positioning Flushes",
+    body: "Institutional desks convert net speculative positioning into rolling 3-year Z-scores to judge extremes relative to recent history. When speculative positioning sits two standard deviations above its average, long positioning is saturated and a minor earnings disappointment can trigger an aggressive unwind. Conversely, when commercials swing net long on equity index or Treasury futures, patient capital is absorbing contracts from forced sellers.",
+    formula: "Z_{\\text{COT}} = \\frac{\\text{Net Position}_t - \\mu_{\\text{3Y}}}{\\sigma_{\\text{3Y}}}",
+    takeaways: [
+     "Extreme speculative longs above +2.0 standard deviations mark fragile tops where crowded positioning itself becomes the risk.",
+     "Deep speculative shorts below -1.5 standard deviations mark capitulation zones where squeeze dynamics can accelerate rallies.",
+     "Between those bands, positioning flow is balanced and price action is driven more by fundamentals than by forced flows."
+    ]
+   }
+  ]
+ },
+ {
+  id: "breadth-dispersion", number: "18", title: "Market Breadth, Dispersion and Sector Rotation",
+  category: "Breadth", readTime: "25 min read",
+  summary: "Diagnosing internal market health through cap-weighted versus equal-weighted divergence and cyclical rotation.",
+  sections: [
+   {
+    heading: "Cap-Weighted versus Equal-Weighted Divergence",
+    body: "The S&P 500 is capitalization weighted, so a handful of mega-caps can dictate the index's direction. In late-cycle bull markets, an advancing index often masks broad deterioration underneath. When the SPY to RSP ratio expands aggressively while the equal-weighted index stagnates or declines, market breadth is deteriorating even as the headline index rises.",
+    formula: "\\text{Breadth Dispersion Ratio} = \\frac{\\text{SPY (Market-Cap Weighted)}}{\\text{RSP (Equal-Weighted)}}",
+    takeaways: [
+     "A hollow advance with wide cap to equal dispersion is fragile because leadership is concentrated in a few names.",
+     "Reliable bull runs need breadth confirmation, such as a Zweig Breadth Thrust where the 10-day average of NYSE advances surges from below 0.40 to above 0.615.",
+     "Narrow leadership late in a cycle often precedes the rotation or the drawdown, not the next leg higher."
+    ],
+    interactive: "breadth"
+   },
+   {
+    heading: "Cyclicals versus Defensives",
+    body: "Portfolio managers signal risk-off rotation before it registers on the headline index. Tracking consumer discretionary against consumer staples reveals whether institutions are seeking defensive shelter. The equal-weighted versions remove the distortions of mega-cap constituents and isolate broad cyclical demand. If the S&P 500 trades near highs while the cyclical to defensive ratio breaks to fresh 52-week lows, capital is pricing in an economic contraction beneath the surface.",
+    formula: "\\text{Cyclical Appetite Ratio} = \\frac{\\text{RSPD (Equal Discretionary)}}{\\text{RSPS (Equal Staples)}}",
+    takeaways: [
+     "Equal-weighted cyclical to defensive ratios strip out single-stock noise and give a cleaner read on institutional risk appetite.",
+     "Defensive rotation that precedes the index top is a positioning signal, while defensive rotation after the break is just confirmation.",
+     "Combine breadth dispersion with the cyclical ratio. Both deteriorating together is a stronger warning than either alone."
+    ]
+   }
+  ]
+ },
+ {
+  id: "fx-carry", number: "19", title: "The FX Carry Trade and Cross-Asset Contagion",
+  category: "Global Macro", readTime: "28 min read",
+  summary: "How currency volatility and carry trade unwinds cascade through rates into equities.",
+  sections: [
+   {
+    heading: "Mechanics of the Global Currency Carry Trade",
+    body: "The currency carry trade is one of the largest sources of leveraged balance sheet capacity in global finance. Investors borrow in low-yielding currencies such as the Japanese yen and convert the proceeds into higher-yielding assets, from sovereign debt to US technology equities. Under uncovered interest rate parity, exchange rates should adjust to neutralize rate differentials. In practice, carry trades suppress currency volatility for long stretches until a policy divergence breaks the trade.",
+    formula: "\\mathbb{E}\\left[\\frac{S_{t+1}}{S_t}\\right] = \\frac{1 + i_{\\text{USD}}}{1 + i_{\\text{JPY}}}} \\quad \\Longleftrightarrow \\quad \\text{Carry Return} = (i_{\\text{target}} - i_{\\text{funding}}) + \\Delta S",
+    takeaways: [
+     "Carry returns have two engines, the rate differential and the currency move, and the currency leg dominates during unwinds.",
+     "Long tranquil periods build the largest carry positions, which is why the unwinds are violent rather than gradual.",
+     "Policy divergence between the funding and target central banks is the usual trigger."
+    ],
+    interactive: "fxcarry"
+   },
+   {
+    heading: "The Cross-Asset Volatility Transmission Channel",
+    body: "When the funding currency strengthens rapidly, through unexpected rate hikes or safe-haven repatriation, the carry trade's margin math inverts. Losses on the borrowed currency exceed the yield spread and trigger margin calls. Because the borrowed yen sits in high-beta equities and corporate credit, funds must sell liquid equity winners to repay bank debt. Currency volatility spikes first, transmits into rates volatility measured by the MOVE index, and culminates in equity liquidation measured by the VIX.",
+    formula: "\\Delta \\sigma_{\\text{FX}} \\longrightarrow \\Delta \\sigma_{\\text{Rates (MOVE)}} \\longrightarrow \\Delta \\sigma_{\\text{Equities (VIX)}}",
+    takeaways: [
+     "A rapid USD/JPY drop of more than 3 percent over five sessions signals an aggressive carry liquidation underway.",
+     "If the Cascadia Contagion Tracker flashes red while the VIX stays subdued below 16, equities may be trading on borrowed time before the FX spillover arrives.",
+     "Carry unwinds are mechanical rather than fundamental, so they can reverse quickly once positioning clears."
+    ]
+   }
+  ]
+ },
+ {
+  id: "short-squeeze", number: "20", title: "Securities Lending, Short Interest and Squeeze Dynamics",
+  category: "Microstructure", readTime: "25 min read",
+  summary: "Prime brokerage mechanics, borrow fee drag, and the anatomy of short and gamma squeezes.",
+  sections: [
+   {
+    heading: "Securities Lending Mechanics and the Cost of Carry",
+    body: "Short selling requires borrowing shares from institutional custodial accounts through prime brokers. Maintaining a short position costs hard borrow fees plus dividend liabilities on the borrowed shares. The borrow rate reflects the equilibrium between the supply of loanable inventory and demand from short sellers. High fees bleed the short thesis every single day the position stays open, which is why crowded shorts face a ticking clock even when the fundamental call is right.",
+    formula: "\\text{Annual Borrow Cost (\\$)} = \\text{Short Position Value} \\times \\left(\\frac{\\text{Borrow Fee Rate (\\%)}}{360}\\right) \\times \\text{Days Held}",
+    takeaways: [
+     "Borrow cost compounds against the short seller daily, so time decay works in favor of the longs in crowded names.",
+     "Dividend payments on borrowed shares add to the carry cost and cluster around ex-dates.",
+     "A correct fundamental thesis can still lose money if borrow fees exceed the eventual price decline."
+    ],
+    interactive: "borrowdrag"
+   },
+   {
+    heading: "Utilization, Days to Cover, and Gamma Squeeze Interaction",
+    body: "Retail traders focus on short interest as a percent of float, while institutional desks watch utilization, the share of lendable inventory currently on loan. At 100 percent utilization, borrow inventory is exhausted and any new short demand pays escalating hard-to-borrow fees. Days to cover, computed as short interest divided by average daily volume, flags squeeze vulnerability when it exceeds 5 days. A short squeeze feeds on buy-to-cover orders, while a gamma squeeze feeds on dealer delta hedging from call buying, and the two can reinforce each other in a rapid upward spiral.",
+    formula: "\\text{Days to Cover} = \\frac{\\text{Short Interest}}{\\text{Average Daily Volume}}",
+    takeaways: [
+     "Short squeezes are driven by shorts buying shares to close losing positions, while gamma squeezes are driven by market makers buying stock to stay delta neutral on call flow.",
+     "Hard-to-borrow names with high utilization turn borrow cost itself into a catalyst, since recalls force mandatory buy-ins.",
+     "When a short squeeze triggers out-of-the-money call buying, short covering and dealer hedging reinforce one another."
+    ]
+   }
+  ]
+ },
+ {
+  id: "earnings-drift", number: "21", title: "Catalyst Mechanics and Post-Earnings Drift",
+  category: "Event-Driven", readTime: "27 min read",
+  summary: "Options-implied earnings moves, post-print volatility crush, and the 60-day post-earnings drift anomaly.",
+  sections: [
+   {
+    heading: "Pricing the Implied Move via the Front-Month Straddle",
+    body: "Heading into earnings, implied volatility expands as traders pay up for directional protection. The market's expected one-day move comes straight from the cost of the at-the-money straddle. Over multi-year samples, these straddles have priced an implied move larger than the realized move roughly two-thirds of the time, which is why systematically buying premium into events tends to lose money.",
+    formula: "\\text{Implied Move (\\%)} \\approx \\frac{\\text{ATM Call Price} + \\text{ATM Put Price}}{\\text{Spot Price}} \\times 100 \\approx 0.8 \\times \\text{ATM Straddle (\\$)}",
+    takeaways: [
+     "The straddle price is the market's consensus forecast of the absolute move, not a directional call.",
+     "Persistent overpricing of earnings straddles reflects the premium buyers pay for lottery-like upside.",
+     "Comparing the implied move to the stock's own history of earnings moves separates rich premium from cheap premium."
+    ],
+    interactive: "straddle"
+   },
+   {
+    heading: "Volatility Crush and Post-Earnings Announcement Drift",
+    body: "The moment earnings print, event uncertainty vanishes and implied volatility collapses, draining extrinsic value from every option contract. Even a correct directional call can lose money through this crush. Academic research documents the offsetting anomaly called post-earnings announcement drift. Companies delivering large standardized unexpected earnings keep drifting in the surprise's direction for 30 to 60 trading days, because institutional managers cannot accumulate full positions in a single session without moving the price.",
+    formula: "\\text{SUE}_t = \\frac{\\text{Actual EPS}_t - \\mathbb{E}[\\text{EPS}_t]}{\\sigma_{\\text{Historical Surprise}}}",
+    takeaways: [
+     "Long options into earnings suffer negative vomma, since implied volatility collapse accelerates delta and vega decay against the holder.",
+     "Large fundamental beats spark multi-week institutional accumulation, which creates structural drift continuation.",
+     "Fading the straddle rather than buying it has historically harvested the overpricing, though tail risk remains real."
+    ]
+   }
+  ]
+ }
+);
+
 function ensureKaTeX(cb) {
  if (window.katex) { cb(); return; }
  if (document.getElementById("katex-css")) { const t = setInterval(() => { if (window.katex) { clearInterval(t); cb(); } }, 300); setTimeout(() => { clearInterval(t); cb(); }, 8000); return; }
@@ -4864,6 +5062,58 @@ function academyInteractiveHtml(kind) {
     '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="be-out"></div><div id="be-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+ }
+ if (kind === "oas") {
+  return wrap(
+   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   [["oas-ty", "10Y Treasury Yield (%)", 4.25, 2, 7, 0.05], ["oas-oas", "Corporate OAS (bps)", 380, 100, 900, 10], ["oas-rr", "Recovery Rate (%)", 40, 10, 70, 5]].map((s) =>
+    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="oas-out"></div>');
+ }
+ if (kind === "voltarget") {
+  return wrap(
+   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   [["vt-tv", "Target Vol (%)", 10, 8, 15, 1], ["vt-rv", "Realized Vol (%)", 18, 6, 30, 1], ["vt-aum", "Fund AUM ($B)", 50, 10, 200, 5]].map((s) =>
+    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="vt-out"></div>');
+ }
+ if (kind === "cotz") {
+  return wrap(
+   '<div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Speculative Net Positioning Z-Score: <b id="cot-z-v" style="color:#e8ecf1;">2.2</b></div>' +
+   '<input type="range" id="cot-z" min="-3" max="3" step="0.1" value="2.2" style="width:100%;max-width:420px;" class="acad-slider">' +
+   '<div id="cot-out" style="margin-top:8px;"></div>');
+ }
+ if (kind === "breadth") {
+  return wrap(
+   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   [["br-spy", "SPY 60-Day Return (%)", 6.5, -10, 15, 0.5], ["br-rsp", "RSP 60-Day Return (%)", -1.2, -10, 15, 0.5]].map((s) =>
+    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="br-out"></div>');
+ }
+ if (kind === "fxcarry") {
+  return wrap(
+   '<div style="font-size:12px;color:#8b949e;margin-bottom:4px;">USD/JPY 5-Day Move (%): <b id="fx-jpy-v" style="color:#e8ecf1;">-3.5</b></div>' +
+   '<input type="range" id="fx-jpy" min="-6" max="3" step="0.1" value="-3.5" style="width:100%;max-width:420px;" class="acad-slider">' +
+   '<div id="fx-out" style="margin-top:8px;"></div>');
+ }
+ if (kind === "borrowdrag") {
+  return wrap(
+   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   [["bd-fee", "Annual Borrow Fee (%)", 18, 1, 100, 1], ["bd-days", "Holding Days", 45, 7, 180, 1], ["bd-move", "Stock Move (%)", -12, -40, 40, 1]].map((s) =>
+    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="bd-out"></div>');
+ }
+ if (kind === "straddle") {
+  return wrap(
+   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   [["st-px", "Stock Price ($)", 200, 50, 500, 5], ["st-cost", "Straddle Cost ($)", 16, 5, 40, 1], ["st-move", "Realized 1-Day Move (%)", 5, -15, 15, 0.5]].map((s) =>
+    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="st-out"></div>');
  }
  return "";
 }
@@ -5110,6 +5360,167 @@ function wireAcademyInteractive(kind) {
   ids.forEach((id) => on(id, "input", draw)); draw();
  }
 
+ if (kind === "oas") {
+  const draw = () => {
+   const ty = +$("oas-ty").value, oas = +$("oas-oas").value, rr = +$("oas-rr").value;
+   $("oas-ty-v").textContent = ty.toFixed(2); $("oas-oas-v").textContent = oas; $("oas-rr-v").textContent = rr;
+   const hazard = (oas / 10000) / (1 - rr / 100);
+   const defProb = (1 - Math.exp(-hazard * 5)) * 100;
+   const totalY = ty + oas / 100;
+   const stress = oas > 450 ? "CRITICAL STRESS" : oas > 300 ? "ELEVATED" : "NORMAL";
+   const sCol = oas > 450 ? "#f85149" : oas > 300 ? "#f0a35e" : "#3fb950";
+   const w = 560, h = 150, pad = 40;
+   const lo = 100, hi = 900;
+   const x = (v) => pad + ((v - lo) / (hi - lo)) * (w - pad - 16);
+   const zone = (a, b, c) => '<rect x="' + x(a) + '" y="34" width="' + (x(b) - x(a)) + '" height="18" rx="4" fill="' + c + '" opacity="0.25"/>';
+   $("oas-out").innerHTML = acadSvgOpen(w, h) +
+    zone(100, 300, "#3fb950") + zone(300, 450, "#f0a35e") + zone(450, 900, "#f85149") +
+    '<line x1="' + x(oas) + '" y1="26" x2="' + x(oas) + '" y2="60" stroke="#c9a961" stroke-width="3"/>' +
+    '<text x="' + x(oas) + '" y="20" fill="#c9a961" font-size="12" font-weight="700" text-anchor="middle">' + oas + ' bps</text>' +
+    '<text x="' + pad + '" y="72" fill="#8b949e" font-size="11">Normal</text>' +
+    '<text x="' + x(375) + '" y="72" fill="#8b949e" font-size="11" text-anchor="middle">Elevated</text>' +
+    '<text x="' + (w - 16) + '" y="72" fill="#8b949e" font-size="11" text-anchor="end">Critical</text>' +
+    '<text x="' + pad + '" y="100" fill="#e8ecf1" font-size="13" font-weight="700">Corporate yield ' + totalY.toFixed(2) + '%</text>' +
+    '<text x="' + pad + '" y="122" fill="#e8ecf1" font-size="13">Implied 5Y default prob <tspan font-weight="700" fill="' + (defProb > 25 ? "#f85149" : "#3fb950") + '">' + defProb.toFixed(1) + '%</tspan> <tspan fill="' + sCol + '" font-weight="700">· ' + stress + '</tspan></text>' +
+    '<text x="' + pad + '" y="142" fill="#8b949e" font-size="10">Merton hazard rate from OAS and recovery rate (fictional inputs)</text></svg>';
+  };
+  ["oas-ty", "oas-oas", "oas-rr"].forEach((id) => on(id, "input", draw)); draw();
+ }
+ if (kind === "voltarget") {
+  const draw = () => {
+   const tv = +$("vt-tv").value, rv = +$("vt-rv").value, aum = +$("vt-aum").value;
+   $("vt-tv-v").textContent = tv; $("vt-rv-v").textContent = rv; $("vt-aum-v").textContent = aum;
+   const alloc = Math.min(1.5, tv / Math.max(1, rv));
+   const exposure = aum * alloc;
+   const baseline = aum * (tv / 10);
+   const forced = Math.max(0, baseline - exposure);
+   const w = 560, h = 150, pad = 40;
+   const pct = alloc * 100;
+   const barW = Math.min(100, pct / 150 * 100);
+   const col = pct < 70 ? "#f85149" : "#3fb950";
+   $("vt-out").innerHTML = acadSvgOpen(w, h) +
+    '<rect x="' + pad + '" y="30" width="' + (w - pad - 16) + '" height="20" rx="5" fill="#1a2433"/>' +
+    '<rect x="' + pad + '" y="30" width="' + ((w - pad - 16) * barW / 100) + '" height="20" rx="5" fill="' + col + '" opacity="0.9"/>' +
+    '<text x="' + pad + '" y="20" fill="#e8ecf1" font-size="13" font-weight="700">Systematic allocation: ' + pct.toFixed(0) + '% of capital</text>' +
+    '<text x="' + pad + '" y="72" fill="#8b949e" font-size="12">Equity exposure: <tspan fill="#e8ecf1" font-weight="700">$' + exposure.toFixed(1) + 'B</tspan></text>' +
+    '<text x="' + pad + '" y="94" fill="#8b949e" font-size="12">Mechanical selling: <tspan fill="' + (forced > 0.05 ? "#f85149" : "#3fb950") + '" font-weight="700">$' + forced.toFixed(1) + 'B liquidation</tspan></text>' +
+    '<text x="' + pad + '" y="124" fill="#8b949e" font-size="10">Doubling realized vol roughly halves the allocation (fictional inputs)</text></svg>';
+  };
+  ["vt-tv", "vt-rv", "vt-aum"].forEach((id) => on(id, "input", draw)); draw();
+ }
+ if (kind === "cotz") {
+  const draw = () => {
+   const z = +$("cot-z").value;
+   $("cot-z-v").textContent = (z > 0 ? "+" : "") + z.toFixed(1);
+   const label = z >= 2.0 ? "MAX CROWDED LONG · EXTREME FLUSH RISK" : z <= -1.5 ? "SHORT CLIMAX · SQUEEZE TAILWIND" : "BALANCED POSITIONING FLOW";
+   const lCol = z >= 2.0 ? "#f85149" : z <= -1.5 ? "#3fb950" : "#e8ecf1";
+   const w = 560, h = 140, pad = 40;
+   const x = (v) => pad + ((v + 3) / 6) * (w - pad - 16);
+   $("cot-out").innerHTML = acadSvgOpen(w, h) +
+    '<rect x="' + x(-3) + '" y="40" width="' + (x(-1.5) - x(-3)) + '" height="16" rx="4" fill="#3fb950" opacity="0.25"/>' +
+    '<rect x="' + x(-1.5) + '" y="40" width="' + (x(2) - x(-1.5)) + '" height="16" rx="4" fill="#2d435e" opacity="0.5"/>' +
+    '<rect x="' + x(2) + '" y="40" width="' + (x(3) - x(2)) + '" height="16" rx="4" fill="#f85149" opacity="0.25"/>' +
+    '<line x1="' + x(0) + '" y1="34" x2="' + x(0) + '" y2="62" stroke="#2d435e"/>' +
+    '<line x1="' + x(z) + '" y1="28" x2="' + x(z) + '" y2="68" stroke="#c9a961" stroke-width="3"/>' +
+    '<text x="' + x(z) + '" y="20" fill="#c9a961" font-size="12" font-weight="700" text-anchor="middle">' + (z > 0 ? "+" : "") + z.toFixed(1) + 'σ</text>' +
+    [[-3, "-3"], [-1.5, "-1.5"], [0, "0"], [2, "+2"], [3, "+3"]].map((t) => '<text x="' + x(t[0]) + '" y="80" fill="#8b949e" font-size="11" text-anchor="middle">' + t[1] + '</text>').join("") +
+    '<text x="' + pad + '" y="106" fill="' + lCol + '" font-size="13" font-weight="700">' + label + '</text>' +
+    '<text x="' + pad + '" y="126" fill="#8b949e" font-size="10">3-year rolling Z-score of speculative net positioning (fictional)</text></svg>';
+  };
+  on("cot-z", "input", draw); draw();
+ }
+ if (kind === "breadth") {
+  const draw = () => {
+   const spy = +$("br-spy").value, rsp = +$("br-rsp").value;
+   $("br-spy-v").textContent = (spy > 0 ? "+" : "") + spy.toFixed(1);
+   $("br-rsp-v").textContent = (rsp > 0 ? "+" : "") + rsp.toFixed(1);
+   const spread = spy - rsp;
+   const healthy = spread <= 5.0;
+   const label = healthy ? "HEALTHY BREADTH" : "DANGEROUS HOLLOW ADVANCE";
+   const lCol = healthy ? "#3fb950" : "#f85149";
+   const w = 560, h = 150, pad = 40;
+   const lo = -10, hi = 15;
+   const bx = (v) => pad + ((v - lo) / (hi - lo)) * (w - pad - 16);
+   const bar = (v, y, c, name) =>
+    '<text x="4" y="' + (y + 5) + '" fill="#8b949e" font-size="11">' + name + '</text>' +
+    '<rect x="' + Math.min(bx(0), bx(v)) + '" y="' + (y - 8) + '" width="' + Math.abs(bx(v) - bx(0)) + '" height="14" rx="3" fill="' + c + '" opacity="0.85"/>' +
+    '<text x="' + (Math.max(bx(0), bx(v)) + 6) + '" y="' + (y + 5) + '" fill="#e8ecf1" font-size="11">' + (v > 0 ? "+" : "") + v.toFixed(1) + '%</text>';
+   $("br-out").innerHTML = acadSvgOpen(w, h) +
+    acadAxes(w, h, pad) +
+    bar(spy, 34, "#38bdf8", "SPY") + bar(rsp, 64, "#c9a961", "RSP") +
+    '<text x="' + pad + '" y="100" fill="#e8ecf1" font-size="13">Dispersion spread: <tspan font-weight="700" fill="' + lCol + '">' + (spread > 0 ? "+" : "") + spread.toFixed(1) + '% · ' + label + '</tspan></text>' +
+    '<text x="' + pad + '" y="122" fill="#8b949e" font-size="10">Cap-weighted minus equal-weighted 60-day returns (fictional inputs)</text></svg>';
+  };
+  ["br-spy", "br-rsp"].forEach((id) => on(id, "input", draw)); draw();
+ }
+ if (kind === "fxcarry") {
+  const draw = () => {
+   const jpy = +$("fx-jpy").value;
+   $("fx-jpy-v").textContent = jpy.toFixed(1);
+   const label = jpy < -3.0 ? "CRITICAL CARRY LIQUIDATION · HIGH SPILLOVER" : jpy < -1.5 ? "ELEVATED FX VOLATILITY" : "STABLE TRANQUIL FLOWS";
+   const lCol = jpy < -3.0 ? "#f85149" : jpy < -1.5 ? "#f0a35e" : "#3fb950";
+   const w = 560, h = 140, pad = 40;
+   const x = (v) => pad + ((v + 6) / 9) * (w - pad - 16);
+   $("fx-out").innerHTML = acadSvgOpen(w, h) +
+    '<rect x="' + x(-6) + '" y="40" width="' + (x(-3) - x(-6)) + '" height="16" rx="4" fill="#f85149" opacity="0.25"/>' +
+    '<rect x="' + x(-3) + '" y="40" width="' + (x(-1.5) - x(-3)) + '" height="16" rx="4" fill="#f0a35e" opacity="0.25"/>' +
+    '<rect x="' + x(-1.5) + '" y="40" width="' + (x(3) - x(-1.5)) + '" height="16" rx="4" fill="#3fb950" opacity="0.2"/>' +
+    '<line x1="' + x(0) + '" y1="34" x2="' + x(0) + '" y2="62" stroke="#2d435e"/>' +
+    '<line x1="' + x(jpy) + '" y1="28" x2="' + x(jpy) + '" y2="68" stroke="#c9a961" stroke-width="3"/>' +
+    '<text x="' + x(jpy) + '" y="20" fill="#c9a961" font-size="12" font-weight="700" text-anchor="middle">' + jpy.toFixed(1) + '%</text>' +
+    [[-6, "-6%"], [-3, "-3%"], [0, "0"], [3, "+3%"]].map((t) => '<text x="' + x(t[0]) + '" y="80" fill="#8b949e" font-size="11" text-anchor="middle">' + t[1] + '</text>').join("") +
+    '<text x="' + pad + '" y="106" fill="' + lCol + '" font-size="13" font-weight="700">' + label + '</text>' +
+    '<text x="' + pad + '" y="126" fill="#8b949e" font-size="10">FX vol transmits to rates (MOVE), then equities (VIX) (fictional)</text></svg>';
+  };
+  on("fx-jpy", "input", draw); draw();
+ }
+ if (kind === "borrowdrag") {
+  const draw = () => {
+   const fee = +$("bd-fee").value, days = +$("bd-days").value, move = +$("bd-move").value;
+   $("bd-fee-v").textContent = fee; $("bd-days-v").textContent = days; $("bd-move-v").textContent = move;
+   const drag = fee * (days / 360);
+   const netShort = -move - drag;
+   const w = 560, h = 150, pad = 40;
+   const maxD = 50;
+   const bx = (v) => pad + (Math.min(v, maxD) / maxD) * (w - pad - 16);
+   $("bd-out").innerHTML = acadSvgOpen(w, h) +
+    '<text x="4" y="39" fill="#8b949e" font-size="11">Drag</text>' +
+    '<rect x="' + pad + '" y="26" width="' + Math.max(2, bx(drag) - pad) + '" height="14" rx="3" fill="#f85149" opacity="0.85"/>' +
+    '<text x="' + (bx(drag) + 6) + '" y="39" fill="#e8ecf1" font-size="11">-' + drag.toFixed(2) + '%</text>' +
+    '<text x="' + pad + '" y="70" fill="#8b949e" font-size="12">Net short P&amp;L: <tspan fill="' + (netShort >= 0 ? "#3fb950" : "#f85149") + '" font-weight="700">' + (netShort >= 0 ? "+" : "") + netShort.toFixed(2) + '%</tspan> <tspan fill="#8b949e">(price move ' + (move > 0 ? "+" : "") + move + '% minus borrow drag)</tspan></text>' +
+    '<text x="' + pad + '" y="96" fill="#8b949e" font-size="10">Borrow cost bleeds the short thesis daily, even when the call is right (fictional)</text></svg>';
+  };
+  ["bd-fee", "bd-days", "bd-move"].forEach((id) => on(id, "input", draw)); draw();
+ }
+ if (kind === "straddle") {
+  const draw = () => {
+   const px = +$("st-px").value, cost = +$("st-cost").value, mv = +$("st-move").value;
+   $("st-px-v").textContent = px; $("st-cost-v").textContent = cost; $("st-move-v").textContent = mv;
+   const implPct = cost / px * 100;
+   const dollarMove = px * Math.abs(mv) / 100;
+   const postVal = Math.max(0, dollarMove);
+   const pnl = postVal - cost;
+   const pnlPct = pnl / cost * 100;
+   const w = 560, h = 220, pad = 40;
+   const lo = -20, hi = 20;
+   const x = (m) => pad + ((m - lo) / (hi - lo)) * (w - pad - 16);
+   const yMax = cost * 1.6, yMin = -cost * 1.2;
+   const y = (v) => h - pad - ((v - yMin) / (yMax - yMin)) * (h - pad - 24);
+   const pts = [];
+   for (let m = lo; m <= hi; m += 0.5) pts.push([x(m), y(Math.abs(px * m / 100) - cost)]);
+   $("st-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) +
+    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#2d435e" stroke-dasharray="4"/>' +
+    acadPath(pts, "#c9a961", 2.5) +
+    '<line x1="' + x(mv) + '" y1="8" x2="' + x(mv) + '" y2="' + (h - pad) + '" stroke="#38bdf8" stroke-dasharray="4"/>' +
+    '<text x="' + x(mv) + '" y="14" fill="#38bdf8" font-size="11" text-anchor="middle">realized ' + (mv > 0 ? "+" : "") + mv + '%</text>' +
+    '<line x1="' + x(-implPct) + '" y1="8" x2="' + x(-implPct) + '" y2="' + (h - pad) + '" stroke="#2d435e" stroke-dasharray="3"/>' +
+    '<line x1="' + x(implPct) + '" y1="8" x2="' + x(implPct) + '" y2="' + (h - pad) + '" stroke="#2d435e" stroke-dasharray="3"/>' +
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="end">1-day move % →</text>' +
+    '<text x="8" y="16" fill="#8b949e" font-size="11">Straddle P&amp;L at expiry (fictional $' + cost + ' premium)</text>' +
+    '<text x="' + pad + '" y="' + (h - 6) + '" fill="#e8ecf1" font-size="12">Implied ±' + implPct.toFixed(1) + '% · P&amp;L <tspan font-weight="700" fill="' + (pnl >= 0 ? "#3fb950" : "#f85149") + '">' + (pnl >= 0 ? "+$" : "-$") + Math.abs(pnl).toFixed(2) + ' (' + (pnlPct >= 0 ? "+" : "") + pnlPct.toFixed(0) + '%)</tspan></text></svg>';
+  };
+  ["st-px", "st-cost", "st-move"].forEach((id) => on(id, "input", draw)); draw();
+ }
 }
 
 function academySectionHtml(sec, idx) {
