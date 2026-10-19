@@ -45,27 +45,37 @@ const num = (o) => (o && typeof o.raw === "number" ? o.raw : null);
 
 function buildPrompt(tk, g) {
   const opts = g.impliedMove !== null
-    ? `Front-month at-the-money straddle implies a move of plus or minus ${g.impliedMove}% into the near term. The put/call open-interest ratio is ${g.putCallRatio}.`
+    ? `Front-month at-the-money straddle implies a move of plus or minus ${g.impliedMove}% (±$${g.impliedMoveDollars}) into the near term. The put/call open-interest ratio is ${g.putCallRatio}.`
     : "No liquid front-month options chain was found for this ticker, so no implied move could be computed. Say so plainly instead of inventing one.";
+  const bounds = g.bullTarget !== null
+    ? `- Mathematical +1 standard deviation (Bull) target: $${g.bullTarget}\n- Mathematical -1 standard deviation (Bear) target: $${g.bearTarget}`
+    : "- No options-implied bounds available; estimate reasonable scenario targets from fundamentals and say the bounds are estimated, not options-implied.";
   return (
-    `Act as an institutional quantitative analyst and macro strategist. Write a multi-tiered earnings preview and price-reaction analysis for ${tk}.\n\n` +
+    `Act as an institutional quantitative analyst and macro strategist. Write a probabilistic earnings preview and price-reaction analysis for ${tk}. Think in distributions, not binaries: assign explicit probabilities to Bull, Base, and Bear scenarios.\n\n` +
     `GROUNDED DATA (treat these as facts, never contradict them):\n` +
     `- Ticker: ${tk} (${g.companyName}), ${g.sector} / ${g.industry}\n` +
     `- Current price: $${g.price}\n` +
     `- Next earnings date: ${g.earningsDate}\n` +
     `- Gross margin: ${g.grossMargin}, revenue growth YoY: ${g.revGrowth}\n` +
-    `- Options market: ${opts}\n\n` +
+    `- Options market: ${opts}\n` +
+    `${bounds}\n\n` +
     `HOUSE STYLE (mandatory): never use em dashes. Never use the "label: explanation" pattern; write flowing sentences instead. ` +
     `Never ask rhetorical questions; use transitions like however, while, and furthermore. Be precise and quantitative, ` +
     `confident without arrogance, and concede uncertainty where the data is thin. No markdown, no bullet lists, plain paragraphs.\n\n` +
-    `Return ONLY a strict JSON object with exactly these five string fields, no markdown fences, no commentary outside the json:\n` +
+    `Return ONLY a strict JSON object with exactly these fields, no markdown fences, no commentary outside the json:\n` +
     `{\n` +
     `  "macroDynamics": "How the current yield curve, Fed policy, liquidity conditions, and any tariff or supply-chain forces bear on this specific sector and company.",\n` +
     `  "microFundamentals": "Operating metrics, margin trajectory, and the top two narrative drivers institutional investors are focused on for ${tk}.",\n` +
     `  "historicalCommentary": "How management tone and execution against guidance have evolved over the last four quarters, from your knowledge base.",\n` +
     `  "optionsMechanics": "What the options market is pricing. Reference the grounded implied move and put/call ratio above. Discuss IV crush dynamics and dealer positioning effects on the post-earnings move.",\n` +
-    `  "verdict": "A definitive lean (Beat, Meet, or Miss) with the most probable day-after price reaction and the one variable that would flip the call."\n` +
-    `}`
+    `  "scenarios": {\n` +
+    `    "bull": { "probability": <integer 0-100>, "priceTarget": "${g.bullTarget !== null ? "$" + g.bullTarget : "your estimated bull target as $X.XX"}", "trigger": "The specific fundamental beat that drives this outcome.", "reaction": "How algorithmic and dealer flow reacts post-print in this scenario." },\n` +
+    `    "base": { "probability": <integer 0-100, must be the highest of the three>, "priceTarget": "Your estimated base-case settlement price as $X.XX, near current spot.", "trigger": "The most likely fundamental outcome.", "reaction": "The most likely post-earnings market flow." },\n` +
+    `    "bear": { "probability": <integer 0-100>, "priceTarget": "${g.bearTarget !== null ? "$" + g.bearTarget : "your estimated bear target as $X.XX"}", "trigger": "The specific miss or guidance cut that drives this outcome.", "reaction": "How dealer hedging accelerates the move in this scenario." }\n` +
+    `  }\n` +
+    `}\n` +
+    `CRITICAL: bull.probability + base.probability + bear.probability MUST sum to exactly 100, and base.probability MUST be the highest of the three. ` +
+    `Use the grounded $${g.bullTarget !== null ? g.bullTarget + " / $" + g.bearTarget : "bounds"} for the bull and bear price targets exactly as given; never invent different ones.`
   );
 }
 
@@ -205,6 +215,7 @@ export async function onRequestGet(context) {
       return 0;
     };
     let impliedMove = null;
+    let impliedMoveDollars = null;
     let putCallRatio = null;
     try {
       const oUrl = `https://query2.finance.yahoo.com/v7/finance/options/${ticker}?${cb.slice(1)}`;
@@ -224,6 +235,7 @@ export async function onRequestGet(context) {
           const putPx = numOf(p.lastPrice) || numOf(p.bid);
           if (callPx > 0 && putPx > 0) {
             impliedMove = Math.round(((callPx + putPx) / price) * 10000) / 100;
+            impliedMoveDollars = Math.round((callPx + putPx) * 100) / 100;
           }
           const callOI = calls.reduce((s, x) => s + numOf(x.openInterest), 0);
           const putOI = puts.reduce((s, x) => s + numOf(x.openInterest), 0);
@@ -244,14 +256,19 @@ export async function onRequestGet(context) {
       grossMargin,
       revGrowth,
       impliedMove,
+      impliedMoveDollars,
       putCallRatio,
+      // Mathematical +/-1 sigma bounds from the live straddle. The AI maps its
+      // fundamental scenarios to these exact dollar levels, never inventing targets.
+      bullTarget: impliedMoveDollars !== null ? Math.round((price + impliedMoveDollars) * 100) / 100 : null,
+      bearTarget: impliedMoveDollars !== null ? Math.round((price - impliedMoveDollars) * 100) / 100 : null,
     };
 
     // AI synthesis: Gemini first, then Groq, then OpenRouter. Each provider is
     // tried with parse; any failure (timeout, HTTP error, malformed JSON)
     // falls through to the next provider.
     const prompt = buildPrompt(ticker, grounded);
-    const required = ["macroDynamics", "microFundamentals", "historicalCommentary", "optionsMechanics", "verdict"];
+    const required = ["macroDynamics", "microFundamentals", "historicalCommentary", "optionsMechanics"];
     const providerErrors = [];
     const errTag = (e) => (e && e.name === "TimeoutError" ? "timeout" : (e && e.code === 429 ? "429" : String((e && e.message) || e)));
     const parseStrict = (rawText) => {
@@ -262,6 +279,20 @@ export async function onRequestGet(context) {
       for (const k of required) {
         if (typeof analysis[k] !== "string" || !analysis[k].trim()) throw new Error("incomplete analysis");
       }
+      // Probabilistic Scenario Matrix validation: bull/base/bear with probabilities summing to 100, base highest.
+      const sc = analysis.scenarios;
+      if (!sc || typeof sc !== "object") throw new Error("missing scenarios");
+      for (const name of ["bull", "base", "bear"]) {
+        const s = sc[name];
+        if (!s || typeof s !== "object") throw new Error("missing scenario " + name);
+        if (!Number.isInteger(s.probability) || s.probability < 0 || s.probability > 100) throw new Error("bad probability in " + name);
+        for (const k of ["priceTarget", "trigger", "reaction"]) {
+          if (typeof s[k] !== "string" || !s[k].trim()) throw new Error("missing " + k + " in " + name);
+        }
+      }
+      const total = sc.bull.probability + sc.base.probability + sc.bear.probability;
+      if (total !== 100) throw new Error("probabilities sum to " + total + ", not 100");
+      if (sc.base.probability < sc.bull.probability || sc.base.probability < sc.bear.probability) throw new Error("base is not the highest probability");
       return analysis;
     };
     const tryProvider = async (name, apiKey, fn) => {

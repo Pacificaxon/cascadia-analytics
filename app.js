@@ -337,7 +337,7 @@
   // Debounce renders to prevent flashing: only re-render once if Pro state changed
   // (fixes iOS race condition where initial render happens before auth completes)
   // Skip the render entirely when nothing changed, so routine refreshes (e.g., tab
-  // wake) don't wipe in-progress UI like an Earnings Event Matrix generation.
+  // wake) don't wipe in-progress UI like an Catalyst 360 generation.
   if (prevProState !== isPro()) {
    // Clear any pending render to avoid multiple flashes
    if (window._proRenderTimeout) clearTimeout(window._proRenderTimeout);
@@ -4661,12 +4661,12 @@ function bindZoomHandlers() {
   h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
   h += "</div>";
 
-  // Earnings Event Matrix (Pro) - click to generate, AI quota friendly
-  h += '<div class="section"><div class="section-title">Earnings Event Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
-  h += gated("Earnings Event Matrix, Pro", "AI-synthesized earnings preview for " + tk + ": macro, micro, management tone history, live options-implied move, and a definitive lean.",
-   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Earnings Event Matrix</button></div>' +
+  // Catalyst 360 (Pro) - click to generate, AI quota friendly
+  h += '<div class="section"><div class="section-title">Catalyst 360 <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("Catalyst 360, Pro", "Probabilistic scenario matrix for " + tk + ": Bull/Base/Bear outcomes with assigned probabilities on options-implied bounds.",
+   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Catalyst 360</button></div>' +
    '<input id="e360-input-' + tk + '" type="hidden" value="' + esc(tk) + '" />' +
-   '<div id="e360-' + tk + '"><p style="color:var(--muted);font-size:13px;">Live front-month straddle math plus AI synthesis across macro, fundamentals, management tone, and options positioning. Each generation takes about 20-30 seconds.</p></div>');
+   '<div id="e360-' + tk + '"><p style="color:var(--muted);font-size:13px;">Options-implied Bull/Base/Bear scenario matrix with assigned probabilities, plus macro, fundamental, tone, and positioning context. Each generation takes about 20-30 seconds.</p></div>');
   h += "</div>";
 
   // Dark Pool & Off-Exchange Flow (FREE), FINRA Reg SHO daily
@@ -4834,7 +4834,7 @@ function bindZoomHandlers() {
     renderMetricsTable(m, "metrics-tracker-" + tk);
    })();
   }
-  // Earnings Event Matrix (Pro): wire the Generate button via listener (reliable across renders)
+  // Catalyst 360 (Pro): wire the Generate button via listener (reliable across renders)
   if (isPro()) {
    const e360Btn = document.getElementById("e360-btn-" + tk);
    if (e360Btn) {
@@ -7508,7 +7508,7 @@ function bindZoomHandlers() {
   const q = await fetchQuality(tk);
   renderQualityResult(q);
  }
- // Earnings Event Matrix (PRO).
+ // Catalyst 360 (PRO).
  // Backend: /api/earnings360 edge function (live Yahoo options math + Gemini Flash narrative, 1h cache).
  let _e360Cache = {};
  async function fetchEarnings360(ticker) {
@@ -7532,6 +7532,25 @@ function bindZoomHandlers() {
    '<span style="font-size:12px;font-weight:700;letter-spacing:1px;color:' + accent + ';">' + esc(title).toUpperCase() + '</span></div>' +
    '<p style="font-size:14px;color:#c9d1d9;line-height:1.7;margin:0;">' + esc(body) + "</p></div>";
  }
+ function e360ScenarioCard(name, label, s, accent, elevated) {
+  const prob = typeof s.probability === "number" ? s.probability + "%" : "N/A";
+  const cardStyle = elevated
+   ? 'background:#161b26;border:1px solid #c9a961;border-radius:12px;padding:24px;position:relative;box-shadow:0 8px 32px rgba(201,169,97,0.12);'
+   : 'background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:20px;opacity:0.92;';
+  const badge = elevated
+   ? '<div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#c9a961;color:#0a0f1a;font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 12px;border-radius:20px;white-space:nowrap;">HIGHEST PROBABILITY</div>'
+   : '';
+  return '<div style="' + cardStyle + '">' + badge +
+   '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(42,52,72,0.6);padding-bottom:10px;margin-bottom:12px;">' +
+   '<span style="font-size:11px;font-weight:700;letter-spacing:1px;color:' + accent + ';">' + esc(label).toUpperCase() + '</span>' +
+   '<span style="font-size:' + (elevated ? "28px" : "20px") + ';font-weight:800;color:' + accent + ';">' + esc(prob) + "</span></div>" +
+   '<div style="font-size:10px;color:#8b949e;letter-spacing:1px;margin-bottom:4px;">TARGET PRICE</div>' +
+   '<div style="font-size:' + (elevated ? "32px" : "24px") + ';font-weight:800;color:#fff;margin-bottom:14px;">' + esc(s.priceTarget || "N/A") + "</div>" +
+   '<div style="font-size:10px;font-weight:700;letter-spacing:1px;color:' + accent + ';margin-bottom:4px;">FUNDAMENTAL TRIGGER</div>' +
+   '<p style="font-size:13px;color:#c9d1d9;line-height:1.6;margin:0 0 12px;">' + esc(s.trigger || "N/A") + "</p>" +
+   '<div style="font-size:10px;font-weight:700;letter-spacing:1px;color:' + accent + ';margin-bottom:4px;">FLOW REACTION</div>' +
+   '<p style="font-size:13px;color:#c9d1d9;line-height:1.6;margin:0;">' + esc(s.reaction || "N/A") + "</p></div>";
+ }
  function renderEarnings360(d, elId) {
   const el = document.getElementById(elId);
   if (!el) return;
@@ -7540,6 +7559,7 @@ function bindZoomHandlers() {
    return;
   }
   const a = d.analysis || {};
+  const sc = a.scenarios || {};
   const im = d.impliedMove !== null && d.impliedMove !== undefined ? "±" + d.impliedMove + "%" : "N/A";
   const pcr = d.putCallRatio !== null && d.putCallRatio !== undefined ? d.putCallRatio : "N/A";
   let h = '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;margin:12px 0;">' +
@@ -7556,15 +7576,18 @@ function bindZoomHandlers() {
    '<div style="font-size:10px;color:#8b949e;letter-spacing:1px;">PUT/CALL OI</div>' +
    '<div style="font-size:26px;font-weight:800;color:#c9a961;margin-top:4px;">' + esc(String(pcr)) + "</div>" +
    '<div style="font-size:10px;color:#8b949e;margin-top:4px;">open interest ratio</div></div></div>';
+  // Probabilistic Scenario Matrix: Bear | Base (elevated) | Bull
+  h += '<div style="margin:20px 0 8px;"><div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#fff;">PROBABILISTIC SCENARIO MATRIX</div>' +
+   '<div style="font-size:11px;color:#8b949e;margin-top:2px;">Targets are options-implied ±1σ bounds; probabilities reflect the fundamental setup.</div></div>';
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:12px 0;align-items:start;">' +
+   e360ScenarioCard("bear", "Bear Scenario (-1σ)", sc.bear || {}, "#f85149", false) +
+   e360ScenarioCard("base", "Base Scenario", sc.base || {}, "#c9a961", true) +
+   e360ScenarioCard("bull", "Bull Scenario (+1σ)", sc.bull || {}, "#3fb950", false) + "</div>";
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">' +
    e360Pillar("01", "Macro Dynamics", a.macroDynamics || "N/A", "#c9a961") +
    e360Pillar("02", "Micro Fundamentals", a.microFundamentals || "N/A", "#58a6ff") + "</div>";
   h += '<div style="margin:12px 0;">' + e360Pillar("03", "Management Tone, Last Four Quarters", a.historicalCommentary || "N/A", "#3fb950") + "</div>";
   h += '<div style="margin:12px 0;">' + e360Pillar("04", "Options Mechanics", a.optionsMechanics || "N/A", "#a371f7") + "</div>";
-  h += '<div style="background:linear-gradient(to right,#161b26,#141a26);border:1px solid #2a3448;border-radius:12px;padding:24px;margin:12px 0;position:relative;overflow:hidden;">' +
-   '<div style="position:absolute;top:0;left:0;width:4px;height:100%;background:#c9a961;"></div>' +
-   '<div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#fff;margin-bottom:10px;">05 · THE VERDICT</div>' +
-   '<p style="font-size:15px;color:#e8ecf1;line-height:1.7;margin:0;font-weight:500;">' + esc(a.verdict || "N/A") + "</p></div>";
   h += '<div style="font-size:11px;color:#8b949e;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div>';
   el.innerHTML = h;
  }
@@ -7847,22 +7870,22 @@ function bindZoomHandlers() {
   }
  });
 
- route("earnings-event-matrix", async function (param) {
+ route("catalyst-360", async function (param) {
   const mySeq = window._renderSeq || 0;
   await ensureProData();
   if (mySeq !== (window._renderSeq || 0)) return; // superseded by a newer render, abort
   if (!isPro()) {
-   app.innerHTML = '<div class="crumb">EARNINGS EVENT MATRIX</div>' +
-    '<div class="hero"><div><h1 class="hero-h">Cascadia Earnings Earnings Event Matrix</h1>' +
+   app.innerHTML = '<div class="crumb">CATALYST 360</div>' +
+    '<div class="hero"><div><h1 class="hero-h">Cascadia Earnings Catalyst 360</h1>' +
     "<p class='hero-sub'>AI-synthesized earnings previews for any ticker, grounded in live options math.</p></div></div>" +
-    '<div class="section"><div class="section-title">Cascadia Earnings Earnings Event Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("Earnings Event Matrix, Pro", "Type any ticker for a five-pillar earnings preview: macro dynamics, micro fundamentals, four quarters of management tone, live options-implied move and put/call positioning, and a definitive Beat/Meet/Miss lean.") + "</div>";
+    '<div class="section"><div class="section-title">Cascadia Earnings Catalyst 360 <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Catalyst 360, Pro", "Type any ticker for a probabilistic scenario matrix: Bull/Base/Bear outcomes with assigned probabilities, mapped to options-implied price bounds, plus macro, fundamental, tone, and positioning context.") + "</div>";
    return;
   }
   const initial = (param || "").toUpperCase().trim();
-  app.innerHTML = '<div class="crumb">EARNINGS EVENT MATRIX</div>' +
-   '<div class="hero"><div><h1 class="hero-h">Cascadia Earnings Earnings Event Matrix</h1>' +
-   "<p class='hero-sub'>Five-pillar earnings previews for any ticker. Live straddle math, AI synthesis. Each generation takes about 20-30 seconds.</p></div></div>" +
+  app.innerHTML = '<div class="crumb">CATALYST 360</div>' +
+   '<div class="hero"><div><h1 class="hero-h">Cascadia Earnings Catalyst 360</h1>' +
+   "<p class='hero-sub'>Probabilistic Bull/Base/Bear scenarios for any ticker, mapped to options-implied bounds. Each generation takes about 20-30 seconds.</p></div></div>" +
    '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
    '<form id="e360-form" style="display:flex;gap:8px;margin:12px 0;max-width:420px;" autocomplete="off">' +
    '<input id="e360-ticker" type="text" placeholder="TICKER (e.g. NVDA)" value="' + esc(initial) + '" autocomplete="off" autocapitalize="characters" spellcheck="false" ' +
@@ -8302,7 +8325,7 @@ function bindZoomHandlers() {
    '<li>✓ Interactive FCF simulation sandbox</li>' +
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ Earnings call transcript tone analysis, executive confidence scoring via AI</li>' +
-   '<li>✓ Earnings Event Matrix, AI-synthesized five-pillar earnings previews with live options-implied moves for any ticker</li>' +
+   '<li>✓ Catalyst 360, probabilistic Bull/Base/Bear scenario matrix on options-implied bounds for any ticker</li>' +
    '<li>✓ ' + ORDER.length + ' client research notes (PDF, full institutional format)</li>' +
    '<li>✓ Investment scorecard PDFs, one-glance 0-100 attractiveness rating</li>' +
    '<li>✓ Morning Briefing, institutional-grade daily synthesis of macro, internals, and positioning</li>' +
