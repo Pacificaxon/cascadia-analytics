@@ -4655,7 +4655,7 @@ function bindZoomHandlers() {
   // Event Matrix (Pro) - click to generate, AI quota friendly
   h += '<div class="section"><div class="section-title">Event Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
   h += gated("Event Matrix, Pro", "AI-synthesized earnings preview for " + tk + ": macro, micro, management tone history, live options-implied move, and a definitive lean.",
-   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" onclick="runEarnings360Search(\'e360-input-' + tk + '\',\'e360-' + tk + '\',\'e360-btn-' + tk + '\')" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate 360 Preview</button></div>' +
+   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Event Matrix</button></div>' +
    '<input id="e360-input-' + tk + '" type="hidden" value="' + esc(tk) + '" />' +
    '<div id="e360-' + tk + '"><p style="color:var(--muted);font-size:13px;">Live front-month straddle math plus AI synthesis across macro, fundamentals, management tone, and options positioning.</p></div>');
   h += "</div>";
@@ -4824,6 +4824,14 @@ function bindZoomHandlers() {
     const m = await fetchMetrics(tk);
     renderMetricsTable(m, "metrics-tracker-" + tk);
    })();
+  }
+  // Event Matrix (Pro): wire the Generate button via listener (reliable across renders)
+  if (isPro()) {
+   const e360Btn = document.getElementById("e360-btn-" + tk);
+   if (e360Btn) {
+    e360Btn.addEventListener("click", () =>
+     runEarnings360Search("e360-input-" + tk, "e360-" + tk, "e360-btn-" + tk));
+   }
   }
   } catch (err) {
    app.innerHTML = '<div class="card"><h3>Error loading ' + esc(tk) + '</h3><p style="color:#ff6b6b;">' + esc(err.message) + '</p><p><a href="#/">Back home</a></p></div>';
