@@ -242,38 +242,45 @@ export async function onRequestGet(context) {
     const prompt = buildPrompt(ticker, grounded);
     let rawText = null;
     let provider = null;
-    let lastErr = null;
+    const providerErrors = [];
+    const errTag = (e) => (e && e.name === "TimeoutError" ? "timeout" : (e && e.code === 429 ? "429" : String((e && e.message) || e)));
     if (GEMINI_API_KEY) {
       try {
         rawText = await callGemini(prompt, GEMINI_API_KEY);
         provider = "gemini";
       } catch (e) {
-        lastErr = e;
+        providerErrors.push("gemini: " + errTag(e));
       }
+    } else {
+      providerErrors.push("gemini: no key");
     }
     if (!rawText && GROQ_API_KEY) {
       try {
         rawText = await callGroq(prompt, GROQ_API_KEY);
         provider = "groq";
       } catch (e) {
-        lastErr = e;
+        providerErrors.push("groq: " + errTag(e));
       }
+    } else if (!rawText) {
+      providerErrors.push("groq: no key");
     }
     if (!rawText && OPENROUTER_API_KEY) {
       try {
         rawText = await callOpenRouter(prompt, OPENROUTER_API_KEY);
         provider = "openrouter";
       } catch (e) {
-        lastErr = e;
+        providerErrors.push("openrouter: " + errTag(e));
       }
+    } else if (!rawText) {
+      providerErrors.push("openrouter: no key");
     }
     if (!rawText) {
-      const limited = lastErr && lastErr.code === 429;
+      const limited = providerErrors.some((m) => m.includes("429"));
       return Response.json(
         {
           error: limited
             ? "AI analysis is rate-limited right now. Try again in a minute."
-            : `AI analysis failed: ${lastErr ? lastErr.message : "unknown error"}`,
+            : `AI analysis failed [${providerErrors.join("; ")}]`,
           ticker,
         },
         { status: limited ? 429 : 502 }
