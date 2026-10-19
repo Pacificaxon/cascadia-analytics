@@ -7861,18 +7861,19 @@ function bindZoomHandlers() {
    '<div class="hero"><div><h1 class="hero-h">Cascadia Event Matrix</h1>' +
    "<p class='hero-sub'>Five-pillar earnings previews for any ticker. Live straddle math, AI synthesis. Each generation takes about 20-30 seconds.</p></div></div>" +
    '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-   '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
-   '<input id="e360-ticker" type="text" placeholder="TICKER (e.g. NVDA)" value="' + esc(initial) + '" ' +
+   '<form id="e360-form" style="display:flex;gap:8px;margin:12px 0;max-width:420px;" autocomplete="off">' +
+   '<input id="e360-ticker" type="text" placeholder="TICKER (e.g. NVDA)" value="' + esc(initial) + '" autocomplete="off" autocapitalize="characters" spellcheck="false" ' +
    'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
-   '<button id="e360-btn" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
+   '<button id="e360-btn" type="submit" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></form>' +
    '<div id="e360-result"></div>' +
    '<div style="font-size:11px;color:#8b949e;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div></div>';
-  const e360Btn = document.getElementById("e360-btn");
-  if (e360Btn) {
-   e360Btn.addEventListener("click", () =>
-    runEarnings360Search("e360-ticker", "e360-result", "e360-btn"));
+  const e360Form = document.getElementById("e360-form");
+  if (e360Form) {
+   e360Form.addEventListener("submit", (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    runEarnings360Search("e360-ticker", "e360-result", "e360-btn");
+   });
   }
-  wireEarnings360Input("e360-ticker", "e360-result", "e360-btn");
   if (initial) runEarnings360Search("e360-ticker", "e360-result", "e360-btn");
  });
 
