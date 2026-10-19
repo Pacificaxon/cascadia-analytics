@@ -7504,15 +7504,18 @@ function bindZoomHandlers() {
  // Catalyst Compass (PRO).
  // Backend: /api/earnings360 edge function (live Yahoo options math + Gemini Flash narrative, 1h cache).
  let _e360Cache = {};
- async function fetchEarnings360(ticker) {
+ async function fetchEarnings360(ticker, expiry) {
   const tk = (ticker || "").toUpperCase().trim();
   if (!tk) return { error: "Enter a ticker." };
-  if (_e360Cache[tk]) return _e360Cache[tk];
+  const cacheKey = expiry ? tk + "@" + expiry : tk;
+  if (_e360Cache[cacheKey]) return _e360Cache[cacheKey];
   try {
-   const res = await fetch("/api/earnings360?ticker=" + encodeURIComponent(tk), { signal: AbortSignal.timeout(90000) });
+   let url = "/api/earnings360?ticker=" + encodeURIComponent(tk);
+   if (expiry) url += "&expiry=" + encodeURIComponent(expiry);
+   const res = await fetch(url, { signal: AbortSignal.timeout(90000) });
    const j = await res.json();
    if (j.error) return { error: j.error };
-   _e360Cache[tk] = j;
+   _e360Cache[cacheKey] = j;
    return j;
   } catch (e) {
    return { error: "Could not load the earnings preview. Try again shortly." };
@@ -7555,16 +7558,34 @@ function bindZoomHandlers() {
   const sc = a.scenarios || {};
   const im = d.impliedMove !== null && d.impliedMove !== undefined ? "±" + d.impliedMove + "%" : "N/A";
   const pcr = d.putCallRatio !== null && d.putCallRatio !== undefined ? d.putCallRatio : "N/A";
+  // Expiry selector: the user picks which expiry's straddle defines the implied move.
+  const exps = Array.isArray(d.expirations) ? d.expirations : [];
+  const selExp = d.selectedExpiry;
+  const earnExp = d.earningsExpiryTs;
+  const expLabel = (e) => {
+   const lbl = new Date(e.ts * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+   return e.ts === earnExp ? lbl + " \u2605 earnings" : lbl;
+  };
+  const expOpts = exps.map((e) =>
+   '<option value="' + e.ts + '"' + (e.ts === selExp ? " selected" : "") + ">" + esc(expLabel(e)) + "</option>"
+  ).join("");
+  const expSelHtml = exps.length > 1
+   ? '<div style="margin-top:10px;"><span style="font-size:10px;color:#8b949e;letter-spacing:1px;">IMPLIED MOVE EXPIRY</span>' +
+     '<select id="' + elId + '-expiry" style="background:#0f1420;color:#e8ecf1;border:1px solid #2a3448;border-radius:6px;padding:5px 8px;font-size:12px;cursor:pointer;margin-left:8px;max-width:200px;">' +
+     expOpts + "</select></div>"
+   : "";
+  const expTag = d.expiryDate ? " \u2192 " + d.expiryDate.slice(5).replace("-", "/") : "";
+  const expSub = d.isEarningsExpiry ? "earnings-expiry straddle" : "straddle to expiry";
   let h = '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;margin:12px 0;">' +
    '<div style="flex:1;min-width:220px;background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:18px;">' +
    '<div style="font-size:24px;font-weight:800;color:#fff;">' + esc(d.ticker) + '</div>' +
    '<div style="font-size:12px;color:#8b949e;margin-top:2px;">' + esc(d.companyName || "") + " · " + esc(d.sector || "") + "</div>" +
    '<div style="font-size:13px;color:#8b949e;margin-top:8px;">Spot <span style="color:#fff;font-weight:700;">$' + esc(String(d.price)) + "</span>" +
-   ' · Earnings <span style="color:#fff;font-weight:700;">' + esc(d.earningsDate || "TBD") + "</span></div></div>" +
+   ' · Earnings <span style="color:#fff;font-weight:700;">' + esc(d.earningsDate || "TBD") + "</span></div>" + expSelHtml + "</div>" +
    '<div style="background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:18px;text-align:right;min-width:150px;">' +
-   '<div style="font-size:10px;color:#8b949e;letter-spacing:1px;">IMPLIED MOVE</div>' +
+   '<div style="font-size:10px;color:#8b949e;letter-spacing:1px;">IMPLIED MOVE' + esc(expTag) + "</div>" +
    '<div style="font-size:26px;font-weight:800;color:#58a6ff;margin-top:4px;">' + esc(im) + "</div>" +
-   '<div style="font-size:10px;color:#8b949e;margin-top:4px;">front-month straddle</div></div>' +
+   '<div style="font-size:10px;color:#8b949e;margin-top:4px;">' + expSub + "</div></div>" +
    '<div style="background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:18px;text-align:right;min-width:150px;">' +
    '<div style="font-size:10px;color:#8b949e;letter-spacing:1px;">PUT/CALL OI</div>' +
    '<div style="font-size:26px;font-weight:800;color:#c9a961;margin-top:4px;">' + esc(String(pcr)) + "</div>" +
@@ -7583,6 +7604,16 @@ function bindZoomHandlers() {
   h += '<div style="margin:12px 0;">' + e360Pillar("04", "Options Mechanics", a.optionsMechanics || "N/A", "#a371f7") + "</div>";
   h += '<div style="font-size:11px;color:#8b949e;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div>';
   el.innerHTML = h;
+  // Wire the expiry selector: re-fetch the matrix for the chosen expiry.
+  const expSel = document.getElementById(elId + "-expiry");
+  if (expSel) {
+   expSel.addEventListener("change", async () => {
+    const tk = d.ticker;
+    el.innerHTML = '<div class="card"><p style="color:#8b949e;">Recomputing for the selected expiry...</p></div>';
+    const nd = await fetchEarnings360(tk, expSel.value);
+    renderEarnings360(nd, elId);
+   });
+  }
  }
  async function runEarnings360Search(inputId, resultId, buttonId) {
   const inp = document.getElementById(inputId);

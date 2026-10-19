@@ -45,8 +45,8 @@ const num = (o) => (o && typeof o.raw === "number" ? o.raw : null);
 
 function buildPrompt(tk, g) {
   const opts = g.impliedMove !== null
-    ? `Front-month at-the-money straddle implies a move of plus or minus ${g.impliedMove}% (±$${g.impliedMoveDollars}) into the near term. The put/call open-interest ratio is ${g.putCallRatio}.`
-    : "No liquid front-month options chain was found for this ticker, so no implied move could be computed. Say so plainly instead of inventing one.";
+    ? `The ${g.expiryDate} expiry at-the-money straddle implies a move of plus or minus ${g.impliedMove}% (±$${g.impliedMoveDollars}) into that expiry${g.isEarningsExpiry ? ", which is the first expiry capturing the next earnings date" : ""}. The put/call open-interest ratio on that expiry is ${g.putCallRatio}.`
+    : "No liquid options chain was found for the selected expiry, so no implied move could be computed. Say so plainly instead of inventing one.";
   const bounds = g.bullTarget !== null
     ? `- Mathematical +1 standard deviation (Bull) target: $${g.bullTarget}\n- Mathematical -1 standard deviation (Bear) target: $${g.bearTarget}`
     : "- No options-implied bounds available; estimate reasonable scenario targets from fundamentals and say the bounds are estimated, not options-implied.";
@@ -199,15 +199,20 @@ export async function onRequestGet(context) {
     const revGrowth = fin.revenueGrowth?.fmt || "N/A";
 
     let earningsDate = "not published";
+    let earningsTs = null;
     const ed = q.calendarEvents?.earningsDate;
     if (ed && ed.raw) {
+      earningsTs = ed.raw;
       const d = new Date(ed.raw * 1000);
       earningsDate = d.toISOString().slice(0, 10);
     } else if (q.calendarEvents?.earningsDate?.fmt) {
       earningsDate = q.calendarEvents.earningsDate.fmt;
     }
 
-    // Front-month options chain: ATM straddle implied move + put/call OI ratio.
+    // Options-implied move: the user can pick which expiry's straddle to use.
+    // Default is the first expiry on/after the earnings date (the "earnings move"),
+    // falling back to front-month when no earnings date is published.
+    const expiryParam = parseInt(searchParams.get("expiry") || "", 10) || null;
     // numOf: Yahoo sometimes returns numbers flat, sometimes as {raw, fmt} objects.
     const numOf = (v) => {
       if (typeof v === "number") return v;
@@ -217,13 +222,41 @@ export async function onRequestGet(context) {
     let impliedMove = null;
     let impliedMoveDollars = null;
     let putCallRatio = null;
+    let expirations = [];
+    let selectedExpiry = null;
+    let expiryDate = null;
+    let isEarningsExpiry = false;
+    let earningsExpiryTs = null;
     try {
       const oUrl = `https://query2.finance.yahoo.com/v7/finance/options/${ticker}?${cb.slice(1)}`;
       const oRes = await fetch(oUrl, { headers: H, ...tmo(YAHOO_TIMEOUT_MS) });
       if (oRes.ok) {
         const oJson = await oRes.json();
         const chain = oJson?.optionChain?.result?.[0];
-        const exp = chain?.options?.[0];
+        const expDates = (chain?.expirationDates || []).filter((t) => typeof t === "number" && t > 0);
+        const fmtExp = (ts) => new Date(ts * 1000).toISOString().slice(0, 10);
+        expirations = expDates.slice(0, 12).map((ts) => ({ ts, date: fmtExp(ts) }));
+        // Default expiry: first one capturing earnings, else front-month.
+        let defExpiry = expDates[0] || null;
+        let earningsExpiry = null;
+        if (earningsTs) {
+          earningsExpiry = expDates.find((t) => t >= earningsTs) || null;
+          if (earningsExpiry) defExpiry = earningsExpiry;
+        }
+        selectedExpiry = expiryParam && expDates.includes(expiryParam) ? expiryParam : defExpiry;
+        earningsExpiryTs = earningsExpiry;
+        isEarningsExpiry = !!(earningsExpiry && selectedExpiry === earningsExpiry);
+        // Fetch the chain for the selected expiry (base call already returns front-month).
+        let exp = chain?.options?.[0];
+        if (selectedExpiry && exp && exp.expirationDate !== selectedExpiry) {
+          const eUrl = `https://query2.finance.yahoo.com/v7/finance/options/${ticker}?date=${selectedExpiry}&${cb.slice(1)}`;
+          const eRes = await fetch(eUrl, { headers: H, ...tmo(YAHOO_TIMEOUT_MS) });
+          if (eRes.ok) {
+            const eJson = await eRes.json();
+            exp = eJson?.optionChain?.result?.[0]?.options?.[0] || exp;
+          }
+        }
+        if (selectedExpiry) expiryDate = fmtExp(selectedExpiry);
         const calls = (exp && exp.calls) || [];
         const puts = (exp && exp.puts) || [];
         if (calls.length && puts.length && price > 0) {
@@ -258,6 +291,8 @@ export async function onRequestGet(context) {
       impliedMove,
       impliedMoveDollars,
       putCallRatio,
+      expiryDate,
+      isEarningsExpiry,
       // Mathematical +/-1 sigma bounds from the live straddle. The AI maps its
       // fundamental scenarios to these exact dollar levels, never inventing targets.
       bullTarget: impliedMoveDollars !== null ? Math.round((price + impliedMoveDollars) * 100) / 100 : null,
@@ -327,7 +362,7 @@ export async function onRequestGet(context) {
     const { analysis, provider } = result;
 
     return Response.json(
-      { ...grounded, provider, analysis },
+      { ...grounded, provider, analysis, expirations, selectedExpiry, earningsExpiryTs },
       { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=3600" } }
     );
   } catch (err) {
