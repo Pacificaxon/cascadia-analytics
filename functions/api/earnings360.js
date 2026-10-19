@@ -247,43 +247,41 @@ export async function onRequestGet(context) {
       putCallRatio,
     };
 
-    // AI synthesis: Gemini first, then Groq, then OpenRouter on rate limits or errors.
+    // AI synthesis: Gemini first, then Groq, then OpenRouter. Each provider is
+    // tried with parse; any failure (timeout, HTTP error, malformed JSON)
+    // falls through to the next provider.
     const prompt = buildPrompt(ticker, grounded);
-    let rawText = null;
-    let provider = null;
+    const required = ["macroDynamics", "microFundamentals", "historicalCommentary", "optionsMechanics", "verdict"];
     const providerErrors = [];
     const errTag = (e) => (e && e.name === "TimeoutError" ? "timeout" : (e && e.code === 429 ? "429" : String((e && e.message) || e)));
-    if (GEMINI_API_KEY) {
-      try {
-        rawText = await callGemini(prompt, GEMINI_API_KEY);
-        provider = "gemini";
-      } catch (e) {
-        providerErrors.push("gemini: " + errTag(e));
+    const parseStrict = (rawText) => {
+      const start = rawText.indexOf("{");
+      const end = rawText.lastIndexOf("}");
+      if (start < 0 || end <= start) throw new Error("no JSON object found");
+      const analysis = JSON.parse(rawText.slice(start, end + 1));
+      for (const k of required) {
+        if (typeof analysis[k] !== "string" || !analysis[k].trim()) throw new Error("incomplete analysis");
       }
-    } else {
-      providerErrors.push("gemini: no key");
-    }
-    if (!rawText && GROQ_API_KEY) {
-      try {
-        rawText = await callGroq(prompt, GROQ_API_KEY);
-        provider = "groq";
-      } catch (e) {
-        providerErrors.push("groq: " + errTag(e));
+      return analysis;
+    };
+    const tryProvider = async (name, apiKey, fn) => {
+      if (!apiKey) {
+        providerErrors.push(name + ": no key");
+        return null;
       }
-    } else if (!rawText) {
-      providerErrors.push("groq: no key");
-    }
-    if (!rawText && OPENROUTER_API_KEY) {
       try {
-        rawText = await callOpenRouter(prompt, OPENROUTER_API_KEY);
-        provider = "openrouter";
+        const rawText = await fn(prompt, apiKey);
+        const analysis = parseStrict(rawText);
+        return { analysis, provider: name };
       } catch (e) {
-        providerErrors.push("openrouter: " + errTag(e));
+        providerErrors.push(name + ": " + errTag(e));
+        return null;
       }
-    } else if (!rawText) {
-      providerErrors.push("openrouter: no key");
-    }
-    if (!rawText) {
+    };
+    let result = await tryProvider("gemini", GEMINI_API_KEY, callGemini);
+    if (!result) result = await tryProvider("groq", GROQ_API_KEY, callGroq);
+    if (!result) result = await tryProvider("openrouter", OPENROUTER_API_KEY, callOpenRouter);
+    if (!result) {
       const limited = providerErrors.some((m) => m.includes("429"));
       return Response.json(
         {
@@ -295,19 +293,7 @@ export async function onRequestGet(context) {
         { status: limited ? 429 : 502 }
       );
     }
-
-    let analysis;
-    try {
-      analysis = JSON.parse(rawText);
-    } catch (e) {
-      throw new Error("AI model returned malformed analysis.");
-    }
-    const required = ["macroDynamics", "microFundamentals", "historicalCommentary", "optionsMechanics", "verdict"];
-    for (const k of required) {
-      if (typeof analysis[k] !== "string" || !analysis[k].trim()) {
-        throw new Error("AI model returned an incomplete analysis.");
-      }
-    }
+    const { analysis, provider } = result;
 
     return Response.json(
       { ...grounded, provider, analysis },
