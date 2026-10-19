@@ -2404,7 +2404,7 @@ function bindZoomHandlers() {
   let h = '<div class="crumb">MACRO INTELLIGENCE · DCF COVERAGE</div>';
   h += '<div class="hero"><div>' +
    '<h1 class="hero-h" style="color:var(--gold);">The signals moving markets, in one research view.</h1>' +
-   "<p class='hero-sub' style=\"color:var(--gold);opacity:0.85;\">Track macro releases and central-bank commentary, gauge market risk across ten quantitative models, " +
+   "<p class='hero-sub' style=\"color:var(--gold);opacity:0.85;\">Track macro releases and central-bank commentary, gauge market risk across fifteen quantitative models, " +
    "screen 500+ stocks on quality and momentum factors, then move directly into company valuation work across " + ORDER.length + " DCF-covered names.</p></div>" +
    '<div class="hero-right">' +
    '<div class="statbox"><div class="mono-label">Coverage</div><div class="statbox-v">' + ORDER.length + " DCF models</div></div>" +
@@ -9156,7 +9156,9 @@ function gammaFlipHtml() {
   const top = comps.slice().sort((a, b) => b.risk - a.risk).slice(0, 3);
   const nameMap = { correction_risk: "Correction", liquidity_drain: "Liquidity", rv_shock: "Realized Vol",
    contagion: "Contagion", flow_divergence: "Flow Div.", concentration: "Concentration",
-   margin_leverage: "Margin Lev.", sector_rotation: "Rotation", fear_index: "Fear" };
+   margin_leverage: "Margin Lev.", sector_rotation: "Rotation", fear_index: "Fear",
+   oas_distress: "Credit", treasury_slr: "Treasury Cap.", real_yield_shock: "Real Yield",
+   gamma_flip: "Gamma", pead_screener: "Earn Drift", squeeze_radar: "Squeeze" };
   let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
    '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8b949e;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
    '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8b949e;">/100</span></div>' +
@@ -9816,6 +9818,11 @@ function gammaFlipHtml() {
    const sr = rh.sector_rotation || {};
    const fi = rh.fear_index || {};
    const fiColor = fi.score >= 75 ? "rose" : fi.score >= 55 ? "amber" : fi.score >= 45 ? "slate" : "emerald";
+   const tslr = rh.treasury_slr || {};
+   const rys = rh.real_yield_shock || {};
+   const pead = rh.pead_screener || {};
+   const sqz = rh.squeeze_radar || {};
+   const gfl = rh.gamma_flip || {};
    const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
    const card = (name, score, regime, color) => {
     if (score == null) return "";
@@ -9843,8 +9850,13 @@ function gammaFlipHtml() {
     card("Sector Rotation", sr.score, sr.regime, sr.color) +
     card("Fear Index", fi.score, fi.regime, fiColor) +
     oasDistressFreeCard() +
+    card("Treasury Capacity", tslr.score, tslr.regime, tslr.color) +
+    card("Real Yield Shock", rys.score, rys.regime, rys.color) +
+    card("Gamma Regime", gfl.score, gfl.regime, gfl.color) +
+    card("Earnings Drift", pead.score, pead.regime, pead.color) +
+    card("Squeeze Fragility", sqz.score, sqz.regime, sqz.color) +
     "</div>" +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;
    return;
   }
@@ -10098,7 +10110,7 @@ function gammaFlipHtml() {
    '<li>✓ Valuation multiples, market cap, EV, TTM and forward multiples</li>' +
    '<li>✓ Interactive price charts with moving averages (10/20/50/100/200-day)</li>' +
    '<li>✓ 5 years of financial statements, income, balance sheet, cash flow</li>' +
-   '<li>✓ Daily Snapshot risk scores, all 10 models, score plus regime</li>' +
+   '<li>✓ Daily Snapshot risk scores, all 15 models, score plus regime</li>' +
    '<li>✓ AAII Investor Sentiment tracker (weekly)</li>' +
    '<li>✓ COT Positioning tracker, commercial, large spec, small spec (weekly)</li>' +
    '<li>✓ Fed funds futures tracker with meeting probabilities</li>' +
@@ -10123,7 +10135,7 @@ function gammaFlipHtml() {
    '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
-   '<li>✓ All 10 Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, with charts, history, and plain-English explainers</li>' +
+   '<li>✓ All 15 Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, with charts, history, and plain-English explainers</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
    '<li>✓ Full market internals suite: Volatility Divergence, Alligator Jaw, Credit Spreads vs VIX, Market Breadth, Theme Rotation, Small/Mid Cap Monitor, RSI Cyclicals vs Defensives, Macroeconomic Analysis</li>' +

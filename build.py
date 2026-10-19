@@ -536,6 +536,39 @@ def main():
     except (TypeError, ValueError):
         _ry_score = None
 
+    # PEAD market-wide risk: % of candidates with negative post-earnings drift (distribution signal)
+    _pead_cands = pro_sections.get("pead_screener", {}).get("candidates", []) or []
+    try:
+        _pead_neg = sum(1 for c in _pead_cands if isinstance(c, dict) and (c.get("drift_pct") or 0) < -2)
+        _pead_score = round(100.0 * _pead_neg / len(_pead_cands), 1) if _pead_cands else None
+    except (TypeError, ValueError):
+        _pead_score = None
+
+    # Squeeze radar market-wide risk: % of universe on squeeze alert (fragility signal)
+    _sq_recs = pro_sections.get("squeeze_radar", {}).get("records", []) or []
+    try:
+        _sq_alert = sum(1 for r in _sq_recs if isinstance(r, dict) and (r.get("squeeze_score") or 0) >= 60)
+        _sq_score = round(100.0 * _sq_alert / len(_sq_recs), 1) if _sq_recs else None
+    except (TypeError, ValueError):
+        _sq_score = None
+
+    # Gamma flip market-wide risk: average of SPY/QQQ dealer regime
+    # Short gamma (below flip) = high risk, long gamma (above flip) = low risk
+    def _gamma_risk(g):
+        if not isinstance(g, dict):
+            return None
+        regime = (g.get("regime") or "").upper()
+        try:
+            dist = abs(float(g.get("distance_pct") or 0))
+        except (TypeError, ValueError):
+            dist = 0
+        if "SHORT" in regime:
+            return max(0.0, min(100.0, 60.0 + dist * 5.0))
+        return max(0.0, min(100.0, 40.0 - dist * 3.0))
+    _gf = pro_sections.get("gamma_flip", {}) or {}
+    _gf_risks = [r for r in (_gamma_risk(_gf.get("spy")), _gamma_risk(_gf.get("qqq"))) if r is not None]
+    _gf_score = round(sum(_gf_risks) / len(_gf_risks), 1) if _gf_risks else None
+
     # Free risk headlines (score + regime only, no analysis) for the #/risk teaser
     site["risk_headlines"] = {
         "correction_risk": {"score": pro_sections.get("correction_risk", {}).get("totalRiskScore"),
@@ -573,6 +606,15 @@ def main():
         "real_yield_shock": {"score": _ry_score,
                              "regime": pro_sections.get("real_yield_shock", {}).get("regime"),
                              "color": pro_sections.get("real_yield_shock", {}).get("color")},
+        "pead_screener": {"score": _pead_score,
+                         "regime": f"{_pead_neg}/{len(_pead_cands)} fading" if _pead_score is not None else None,
+                         "color": "rose" if (_pead_score or 0) >= 50 else "amber" if (_pead_score or 0) >= 25 else "emerald"},
+        "squeeze_radar": {"score": _sq_score,
+                         "regime": f"{_sq_alert}/{len(_sq_recs)} on alert" if _sq_score is not None else None,
+                         "color": "rose" if (_sq_score or 0) >= 20 else "amber" if (_sq_score or 0) >= 10 else "emerald"},
+        "gamma_flip": {"score": _gf_score,
+                      "regime": "Dealer regime blend (SPY/QQQ)",
+                      "color": "rose" if (_gf_score or 0) >= 60 else "amber" if (_gf_score or 0) >= 45 else "emerald"},
     }
 
     # Cascadia Composite Risk Index (CCRI): overall assessment across all risk models.
@@ -592,6 +634,11 @@ def main():
         "sector_rotation": (-1, "Structural & Breadth", "Sector Rotation"),
         "fear_index": (+1, "Systematic & Volatility", "Fear Index"),
         "oas_distress": (+1, "Macro & Liquidity", "Credit Stress"),
+        "treasury_slr": (-1, "Macro & Liquidity", "Treasury Capacity"),
+        "real_yield_shock": (+1, "Macro & Liquidity", "Real Yield Shock"),
+        "gamma_flip": (+1, "Systematic & Volatility", "Gamma Regime"),
+        "pead_screener": (+1, "Structural & Breadth", "Earnings Drift"),
+        "squeeze_radar": (+1, "Flow & Leverage", "Squeeze Fragility"),
     }
     _components = []  # (key, risk, pillar, display name)
     for _key, (_direction, _pillar, _dname) in _composite_cfg.items():
