@@ -381,6 +381,8 @@ def main():
         panels.append({
             "name": p.get("name"),
             "summary": p.get("summary"),
+            "full_text": p.get("full_text", ""),
+            "about": p.get("about", ""),
             "chart": chart_file,
             "as_of": p.get("tracker_as_of"),
             "stale": p.get("stale", False) and not _freq,
