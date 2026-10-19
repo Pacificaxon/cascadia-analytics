@@ -337,7 +337,7 @@
   // Debounce renders to prevent flashing: only re-render once if Pro state changed
   // (fixes iOS race condition where initial render happens before auth completes)
   // Skip the render entirely when nothing changed, so routine refreshes (e.g., tab
-  // wake) don't wipe in-progress UI like an Catalyst 360 generation.
+  // wake) don't wipe in-progress UI like an Catalyst Compass generation.
   if (prevProState !== isPro()) {
    // Clear any pending render to avoid multiple flashes
    if (window._proRenderTimeout) clearTimeout(window._proRenderTimeout);
@@ -4661,10 +4661,10 @@ function bindZoomHandlers() {
   h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
   h += "</div>";
 
-  // Catalyst 360 (Pro) - click to generate, AI quota friendly
-  h += '<div class="section"><div class="section-title">Catalyst 360 <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
-  h += gated("Catalyst 360, Pro", "Probabilistic scenario matrix for " + tk + ": Bull/Base/Bear outcomes with assigned probabilities on options-implied bounds.",
-   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Catalyst 360</button></div>' +
+  // Catalyst Compass (Pro) - click to generate, AI quota friendly
+  h += '<div class="section"><div class="section-title">Catalyst Compass <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("Catalyst Compass, Pro", "Probabilistic scenario matrix for " + tk + ": Bull/Base/Bear outcomes with assigned probabilities on options-implied bounds.",
+   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Catalyst Compass</button></div>' +
    '<input id="e360-input-' + tk + '" type="hidden" value="' + esc(tk) + '" />' +
    '<div id="e360-' + tk + '"><p style="color:var(--muted);font-size:13px;">Options-implied Bull/Base/Bear scenario matrix with assigned probabilities, plus macro, fundamental, tone, and positioning context. Each generation takes about 20-30 seconds.</p></div>');
   h += "</div>";
@@ -4834,7 +4834,7 @@ function bindZoomHandlers() {
     renderMetricsTable(m, "metrics-tracker-" + tk);
    })();
   }
-  // Catalyst 360 (Pro): wire the Generate button via listener (reliable across renders)
+  // Catalyst Compass (Pro): wire the Generate button via listener (reliable across renders)
   if (isPro()) {
    const e360Btn = document.getElementById("e360-btn-" + tk);
    if (e360Btn) {
@@ -7508,7 +7508,7 @@ function bindZoomHandlers() {
   const q = await fetchQuality(tk);
   renderQualityResult(q);
  }
- // Catalyst 360 (PRO).
+ // Catalyst Compass (PRO).
  // Backend: /api/earnings360 edge function (live Yahoo options math + Gemini Flash narrative, 1h cache).
  let _e360Cache = {};
  async function fetchEarnings360(ticker) {
@@ -7870,21 +7870,21 @@ function bindZoomHandlers() {
   }
  });
 
- route("catalyst-360", async function (param) {
+ route("catalyst-compass", async function (param) {
   const mySeq = window._renderSeq || 0;
   await ensureProData();
   if (mySeq !== (window._renderSeq || 0)) return; // superseded by a newer render, abort
   if (!isPro()) {
-   app.innerHTML = '<div class="crumb">CATALYST 360</div>' +
-    '<div class="hero"><div><h1 class="hero-h">Cascadia Earnings Catalyst 360</h1>' +
+   app.innerHTML = '<div class="crumb">CATALYST COMPASS</div>' +
+    '<div class="hero"><div><h1 class="hero-h">Cascadia Earnings Catalyst Compass</h1>' +
     "<p class='hero-sub'>AI-synthesized earnings previews for any ticker, grounded in live options math.</p></div></div>" +
-    '<div class="section"><div class="section-title">Cascadia Earnings Catalyst 360 <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("Catalyst 360, Pro", "Type any ticker for a probabilistic scenario matrix: Bull/Base/Bear outcomes with assigned probabilities, mapped to options-implied price bounds, plus macro, fundamental, tone, and positioning context.") + "</div>";
+    '<div class="section"><div class="section-title">Cascadia Earnings Catalyst Compass <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Catalyst Compass, Pro", "Type any ticker for a probabilistic scenario matrix: Bull/Base/Bear outcomes with assigned probabilities, mapped to options-implied price bounds, plus macro, fundamental, tone, and positioning context.") + "</div>";
    return;
   }
   const initial = (param || "").toUpperCase().trim();
-  app.innerHTML = '<div class="crumb">CATALYST 360</div>' +
-   '<div class="hero"><div><h1 class="hero-h">Cascadia Earnings Catalyst 360</h1>' +
+  app.innerHTML = '<div class="crumb">CATALYST COMPASS</div>' +
+   '<div class="hero"><div><h1 class="hero-h">Cascadia Earnings Catalyst Compass</h1>' +
    "<p class='hero-sub'>Probabilistic Bull/Base/Bear scenarios for any ticker, mapped to options-implied bounds. Each generation takes about 20-30 seconds.</p></div></div>" +
    '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
    '<form id="e360-form" style="display:flex;gap:8px;margin:12px 0;max-width:420px;" autocomplete="off">' +
@@ -8325,7 +8325,7 @@ function bindZoomHandlers() {
    '<li>✓ Interactive FCF simulation sandbox</li>' +
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ Earnings call transcript tone analysis, executive confidence scoring via AI</li>' +
-   '<li>✓ Catalyst 360, probabilistic Bull/Base/Bear scenario matrix on options-implied bounds for any ticker</li>' +
+   '<li>✓ Catalyst Compass, probabilistic Bull/Base/Bear scenario matrix on options-implied bounds for any ticker</li>' +
    '<li>✓ ' + ORDER.length + ' client research notes (PDF, full institutional format)</li>' +
    '<li>✓ Investment scorecard PDFs, one-glance 0-100 attractiveness rating</li>' +
    '<li>✓ Morning Briefing, institutional-grade daily synthesis of macro, internals, and positioning</li>' +
