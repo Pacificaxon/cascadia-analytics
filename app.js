@@ -4652,9 +4652,9 @@ function bindZoomHandlers() {
   h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
   h += "</div>";
 
-  // 360 Earnings & Price Reaction (Pro) - click to generate, AI quota friendly
-  h += '<div class="section"><div class="section-title">360 Earnings Reaction <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
-  h += gated("360 Earnings Reaction, Pro", "AI-synthesized earnings preview for " + tk + ": macro, micro, management tone history, live options-implied move, and a definitive lean.",
+  // Upcoming Earnings Verdict (Pro) - click to generate, AI quota friendly
+  h += '<div class="section"><div class="section-title">Upcoming Earnings Verdict <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>';
+  h += gated("Upcoming Earnings Verdict, Pro", "AI-synthesized earnings preview for " + tk + ": macro, micro, management tone history, live options-implied move, and a definitive lean.",
    '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" onclick="runEarnings360Search(\'e360-input-' + tk + '\',\'e360-' + tk + '\',\'e360-btn-' + tk + '\')" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate 360 Preview</button></div>' +
    '<input id="e360-input-' + tk + '" type="hidden" value="' + esc(tk) + '" />' +
    '<div id="e360-' + tk + '"><p style="color:var(--muted);font-size:13px;">Live front-month straddle math plus AI synthesis across macro, fundamentals, management tone, and options positioning.</p></div>');
@@ -7483,7 +7483,7 @@ function bindZoomHandlers() {
   const q = await fetchQuality(tk);
   renderQualityResult(q);
  }
- // 360 Earnings & Price Reaction (PRO).
+ // Upcoming Earnings Verdict (PRO).
  // Backend: /api/earnings360 edge function (live Yahoo options math + Gemini Flash narrative, 1h cache).
  let _e360Cache = {};
  async function fetchEarnings360(ticker) {
@@ -7819,19 +7819,19 @@ function bindZoomHandlers() {
   }
  });
 
- route("earnings-360", async function (param) {
+ route("earnings-verdict", async function (param) {
   await ensureProData();
   if (!isPro()) {
-   app.innerHTML = '<div class="crumb">360 EARNINGS REACTION</div>' +
-    '<div class="hero"><div><h1 class="hero-h">360 Earnings Reaction</h1>' +
+   app.innerHTML = '<div class="crumb">UPCOMING EARNINGS VERDICT</div>' +
+    '<div class="hero"><div><h1 class="hero-h">Cascadia Upcoming Earnings Verdict</h1>' +
     "<p class='hero-sub'>AI-synthesized earnings previews for any ticker, grounded in live options math.</p></div></div>" +
-    '<div class="section"><div class="section-title">360 Earnings Reaction <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("360 Earnings Reaction, Pro", "Type any ticker for a five-pillar earnings preview: macro dynamics, micro fundamentals, four quarters of management tone, live options-implied move and put/call positioning, and a definitive Beat/Meet/Miss lean.") + "</div>";
+    '<div class="section"><div class="section-title">Cascadia Upcoming Earnings Verdict <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Upcoming Earnings Verdict, Pro", "Type any ticker for a five-pillar earnings preview: macro dynamics, micro fundamentals, four quarters of management tone, live options-implied move and put/call positioning, and a definitive Beat/Meet/Miss lean.") + "</div>";
    return;
   }
   const initial = (param || "").toUpperCase().trim();
-  app.innerHTML = '<div class="crumb">360 EARNINGS REACTION</div>' +
-   '<div class="hero"><div><h1 class="hero-h">360 Earnings Reaction</h1>' +
+  app.innerHTML = '<div class="crumb">UPCOMING EARNINGS VERDICT</div>' +
+   '<div class="hero"><div><h1 class="hero-h">Cascadia Upcoming Earnings Verdict</h1>' +
    "<p class='hero-sub'>Five-pillar earnings previews for any ticker. Live straddle math, AI synthesis.</p></div></div>" +
    '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
    '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
@@ -8256,6 +8256,7 @@ function bindZoomHandlers() {
    '<li>✓ Interactive FCF simulation sandbox</li>' +
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ Earnings call transcript tone analysis, executive confidence scoring via AI</li>' +
+   '<li>✓ Upcoming Earnings Verdict, AI-synthesized five-pillar earnings previews with live options-implied moves for any ticker</li>' +
    '<li>✓ ' + ORDER.length + ' client research notes (PDF, full institutional format)</li>' +
    '<li>✓ Investment scorecard PDFs, one-glance 0-100 attractiveness rating</li>' +
    '<li>✓ Morning Briefing, institutional-grade daily synthesis of macro, internals, and positioning</li>' +
