@@ -2539,10 +2539,10 @@ function bindZoomHandlers() {
   // 10Y Breakeven Inflation, FREE, updates every morning
   if (D.breakeven_inflation && D.breakeven_inflation.latest != null) {
    h += breakevenHtml(D.breakeven_inflation);
-   // Treasury Absorption & SLR Gauge, FREE headline (Pro users see the full section below)
-   if (D.treasury_slr && D.treasury_slr.score != null) {
-    h += treasurySlrFreeCard(D.treasury_slr);
-   }
+  }
+  // Treasury Absorption & SLR Gauge, FREE headline (Pro users see the full section below)
+  if (D.treasury_slr && D.treasury_slr.score != null) {
+   h += treasurySlrFreeCard(D.treasury_slr);
   }
   // Implied ERP, FREE data + chart, PRO analysis
   if (D.implied_erp && D.implied_erp.erp != null) {
@@ -3449,16 +3449,14 @@ function bindZoomHandlers() {
     gated("OPEX Cycle Tracker", "Max pain strikes, put/call OI, and expiration calendar. Front-run dealer hedging flows.", opexHtml + opexExplainer) +
     "</div>";
   }
-  // Treasury Absorption & SLR Gauge, Pro details
-  if (D.treasury_slr && D.treasury_slr.score != null) {
-   h += treasurySlrHtml();
-  }
-  // Dealer Gamma Flip Barometer, Pro-gated
-  if (D.gamma_flip && (D.gamma_flip.spy || D.gamma_flip.qqq)) {
-   h += gatedSafe("Dealer Gamma Flip Barometer",
-    "SPY and QQQ gamma flip levels, dealer hedging regimes, and distance to the flip.",
-    gammaFlipHtml);
-  }
+  // Treasury Absorption & SLR Gauge, Pro details (free users see the headline card above)
+  h += gatedSafe("Treasury Absorption & SLR Gauge",
+   "Bank reserve levels, TGA and RRP drains, and dealer balance sheet capacity.",
+   treasurySlrHtml);
+  // Dealer Gamma Flip Barometer, Pro-gated (teaser for free users)
+  h += gatedSafe("Dealer Gamma Flip Barometer",
+   "SPY and QQQ gamma flip levels, dealer hedging regimes, and distance to the flip.",
+   gammaFlipHtml);
   // render interactive vol divergence chart after DOM insert
   setTimeout(() => {
    const cv = document.getElementById("voldiv-chart");
@@ -8712,7 +8710,7 @@ function oasDistressHtml() {
 
  // Free-tier headline card for the #/risk daily snapshot (score + regime only).
  function oasDistressFreeCard() {
-  const O = D.oas_distress || {};
+  const O = (D.risk_headlines || {}).oas_distress || {};
   if (O.score == null) return "";
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
   const c = colorMap[O.color] || "#e8ecf1";
