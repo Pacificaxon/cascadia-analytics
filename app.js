@@ -1374,6 +1374,10 @@ function bindZoomHandlers() {
 
  function render() {
   const r = currentRoute();
+  // Guard against overlapping async route renders (e.g., auth completing mid-render
+  // re-fires render and wipes inputs). Each render gets a sequence number; async
+  // routes abort if a newer render started while they were awaiting.
+  window._renderSeq = (window._renderSeq || 0) + 1;
   // Destroy existing Chart.js instances before re-rendering (prevents "canvas already in use")
   // Uses Chart.getChart() official API to find charts by canvas element
   try {
@@ -1402,7 +1406,7 @@ function bindZoomHandlers() {
   updateProBtn();
   if (r.name === "ticker" && routes.ticker) routes.ticker(r.param);
   else if (r.name === "memos" && routes.memos) routes.memos(r.param);
-  else if (routes[r.name]) routes[r.name]();
+  else if (routes[r.name]) routes[r.name](r.param);
   else routes.home();
   // Draw GEX strike charts after HTML is in the DOM
   drawGexStrikeCharts();
@@ -4163,8 +4167,10 @@ function bindZoomHandlers() {
  }
 
  route("analysis", async function () {
+  const mySeq = window._renderSeq || 0;
   // Ensure Pro data is loaded before rendering (fixes race condition)
   await ensureProData();
+  if (mySeq !== (window._renderSeq || 0)) return; // superseded render, abort
   if (!isPro()) {
    app.innerHTML = '<div class="crumb">MORNING BRIEFING</div>' +
     '<div class="hero"><div>' +
@@ -6727,7 +6733,9 @@ function bindZoomHandlers() {
 
  /* ================= EARNINGS DASHBOARD (Pro) ================= */
  route("earnings", async function () {
+  const mySeq = window._renderSeq || 0;
   await ensureProData();
+  if (mySeq !== (window._renderSeq || 0)) return; // superseded render, abort
   if (!isPro()) {
    app.innerHTML = '<div class="crumb">EARNINGS DASHBOARD</div>' +
     '<div class="hero"><div><h1 class="hero-h">Earnings Dashboard</h1>' +
@@ -6811,7 +6819,9 @@ function bindZoomHandlers() {
 
  /* ================= COMPS MATRIX (PRO) ================= */
  route("comps", async function () {
+  const mySeq = window._renderSeq || 0;
   await ensureProData();
+  if (mySeq !== (window._renderSeq || 0)) return; // superseded render, abort
   if (!isPro()) {
    app.innerHTML = '<div class="crumb">COMPS MATRIX</div>' +
     '<div class="hero"><div><h1 class="hero-h">Relative Valuation</h1>' +
@@ -7806,7 +7816,9 @@ function bindZoomHandlers() {
   }
  }
  route("quality", async function (param) {
+  const mySeq = window._renderSeq || 0;
   await ensureProData();
+  if (mySeq !== (window._renderSeq || 0)) return; // superseded render, abort
   if (!isPro()) {
    app.innerHTML = '<div class="crumb">QUALITY SNAPSHOT</div>' +
     '<div class="hero"><div><h1 class="hero-h">Quality Snapshot</h1>' +
@@ -7833,7 +7845,9 @@ function bindZoomHandlers() {
  });
 
  route("event-matrix", async function (param) {
+  const mySeq = window._renderSeq || 0;
   await ensureProData();
+  if (mySeq !== (window._renderSeq || 0)) return; // superseded by a newer render, abort
   if (!isPro()) {
    app.innerHTML = '<div class="crumb">EVENT MATRIX</div>' +
     '<div class="hero"><div><h1 class="hero-h">Cascadia Event Matrix</h1>' +
@@ -7850,9 +7864,14 @@ function bindZoomHandlers() {
    '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
    '<input id="e360-ticker" type="text" placeholder="TICKER (e.g. NVDA)" value="' + esc(initial) + '" ' +
    'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
-   '<button id="e360-btn" onclick="runEarnings360Search(\'e360-ticker\',\'e360-result\',\'e360-btn\')" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
+   '<button id="e360-btn" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
    '<div id="e360-result"></div>' +
    '<div style="font-size:11px;color:#8b949e;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div></div>';
+  const e360Btn = document.getElementById("e360-btn");
+  if (e360Btn) {
+   e360Btn.addEventListener("click", () =>
+    runEarnings360Search("e360-ticker", "e360-result", "e360-btn"));
+  }
   wireEarnings360Input("e360-ticker", "e360-result", "e360-btn");
   if (initial) runEarnings360Search("e360-ticker", "e360-result", "e360-btn");
  });
@@ -7961,7 +7980,9 @@ function bindZoomHandlers() {
  });
 
  route("risk", async function () {
+  const mySeq = window._renderSeq || 0;
   await ensureProData();
+  if (mySeq !== (window._renderSeq || 0)) return; // superseded render, abort
   if (!isPro()) {
    // Free users see headline scores as a teaser (score + regime only, no analysis)
    // Data comes from the free risk_headlines bundle, not Pro data
