@@ -7900,15 +7900,15 @@ function bindZoomHandlers() {
   if (mySeq !== (window._renderSeq || 0)) return; // superseded by a newer render, abort
   if (!isPro()) {
    app.innerHTML = '<div class="crumb">CATALYST COMPASS</div>' +
-    '<div class="hero"><div><h1 class="hero-h">Cascadia Earnings Catalyst Compass</h1>' +
+    '<div class="hero"><div><h1 class="hero-h">Cascadia Catalyst Compass</h1>' +
     "<p class='hero-sub'>AI-synthesized earnings previews for any ticker, grounded in live options math.</p></div></div>" +
-    '<div class="section"><div class="section-title">Cascadia Earnings Catalyst Compass <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="section"><div class="section-title">Cascadia Catalyst Compass <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     proTeaser("Catalyst Compass, Pro", "Type any ticker for a probabilistic scenario matrix: Bull/Base/Bear outcomes with assigned probabilities, mapped to options-implied price bounds, plus macro, fundamental, tone, and positioning context.") + "</div>";
    return;
   }
   const initial = (param || "").toUpperCase().trim();
   app.innerHTML = '<div class="crumb">CATALYST COMPASS</div>' +
-   '<div class="hero"><div><h1 class="hero-h">Cascadia Earnings Catalyst Compass</h1>' +
+   '<div class="hero"><div><h1 class="hero-h">Cascadia Catalyst Compass</h1>' +
    "<p class='hero-sub'>Probabilistic Bull/Base/Bear scenarios for any ticker, mapped to options-implied bounds. Each generation takes about 20-30 seconds.</p></div></div>" +
    '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
    '<form id="e360-form" style="display:flex;gap:8px;margin:12px 0;max-width:420px;" autocomplete="off">' +
