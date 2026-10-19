@@ -369,12 +369,22 @@ def main():
         if chart_src and os.path.isfile(chart_src):
             chart_file = "charts/" + os.path.basename(chart_src)
             shutil.copy2(chart_src, os.path.join(HERE, chart_file))
+        # Weekly/monthly series carry a frequency label so users know the cadence;
+        # they are never marked stale for being on their normal schedule.
+        _freq_map = {
+            "Liquidity Drain": "weekly", "Treasury": "weekly", "SLR": "weekly",
+            "COT": "weekly", "Commitments": "weekly", "AAII": "weekly",
+            "Margin": "monthly", "Leverage": "monthly",
+        }
+        _pname = p.get("name", "")
+        _freq = next((v for k, v in _freq_map.items() if k.lower() in _pname.lower()), None)
         panels.append({
             "name": p.get("name"),
             "summary": p.get("summary"),
             "chart": chart_file,
             "as_of": p.get("tracker_as_of"),
-            "stale": p.get("stale", False),
+            "stale": p.get("stale", False) and not _freq,
+            "frequency": _freq,
         })
 
     # --- Trim feeds to reasonable sizes ---

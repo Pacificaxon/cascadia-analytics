@@ -2611,7 +2611,7 @@ function bindZoomHandlers() {
     const panelHtml = '<div class="card"><h3>' + title + proBadge + "</h3>" + chartHtml + explainerHtml +
     (p.about ? '<div class="panel-about">' + esc(p.about) + "</div>" : "") +
     '<div class="panel-summary">' + esc(p.summary || "") + "</div>" +
-    '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.stale ? " · stale" : "") + "</div></div>";
+    '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + (p.frequency ? " · updated " + esc(p.frequency) : "") + (p.stale ? " · stale" : "") + "</div></div>";
     // Each tracker individually Pro-locked. Free users get a generic teaser, never real data.
     const teaserDesc = {
      "Market Breadth": "Advance/decline trends, new highs vs lows, and what participation says about rally health.",
@@ -8534,7 +8534,7 @@ route("alerts", function () {
   // Chart: margin YoY vs SPY YoY
   h += '<div class="zoomable-chart" data-chart="margin-leverage" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="margin-leverage-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
-  h += '<div class="panel-asof">As of ' + esc((M.metadata && M.metadata.latestDataMonth) || (M.as_of || "").slice(0, 7)) + " (FINRA monthly)" + (stale ? " · showing last available" : "") + "</div>";
+  h += '<div class="panel-asof">As of ' + esc((M.metadata && M.metadata.latestDataMonth) || (M.as_of || "").slice(0, 7)) + " (FINRA monthly)" + "</div>";
 
   // Explainer AFTER visuals (standing rule)
   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
