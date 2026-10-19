@@ -4459,6 +4459,238 @@ const ACADEMY_MODULES = [
  }
 ];
 
+ACADEMY_MODULES.push(
+ {
+  id: "fed-plumbing", number: "07", title: "Fed Plumbing, Bank Balance Sheets and the SLR",
+  category: "Macro", readTime: "30 min read",
+  summary: "How G-SIB balance sheet constraints, the Supplementary Leverage Ratio, and repo market plumbing dictate Treasury market depth.",
+  sections: [
+   {
+    heading: "The Supplementary Leverage Ratio",
+    body: "On an institutional trading desk, sovereign bond yields and repo spreads are constrained by regulatory balance sheet math as much as by policy rates. Under Basel III, US global systemically important banks must satisfy the Supplementary Leverage Ratio, a non-risk-weighted backstop. Unlike risk-weighted ratios where Treasuries and reserves carry a zero percent weight, the SLR counts every dollar of exposure equally.",
+    formula: "\\text{SLR} = \\frac{\\text{Tier 1 Capital}}{\\text{Total Leverage Exposure}} \\ge 5.0\\%",
+    takeaways: [
+     "Total leverage exposure includes on-balance-sheet assets plus off-balance-sheet commitments, repo financing, and derivative exposures.",
+     "Because the SLR treats a 10-year Treasury the same as a leveraged loan, banks hit capacity limits precisely when markets need them to absorb sovereign supply.",
+     "Insured depository subsidiaries face a 6.0 percent enhanced ratio to avoid payout restrictions, while holding companies must clear 5.0 percent."
+    ],
+    interactive: "slr"
+   },
+   {
+    heading: "The 2020 Exemption and Its Expiry",
+    body: "During the March 2020 liquidity shock the Federal Reserve temporarily excluded reserves and Treasuries from the SLR denominator. When the exemption expired on March 31, 2021, denominators expanded overnight. Primary dealers scaled back Treasury market-making, cash fled bank deposits for money market funds, and more than 2.5 trillion dollars piled into the overnight reverse repo facility.",
+    formula: "\\text{TLE}_{\\text{exempt}} = \\text{TLE} - (\\text{Reserves} + \\text{Treasuries})",
+    takeaways: [
+     "Whenever QT or heavy deficit issuance forces banks to absorb supply, dealers demand wider term premiums to compensate for binding leverage constraints.",
+     "Regulatory relief, not just rate cuts, is what restores dealer balance sheet capacity in a funding squeeze.",
+     "Watch the ON RRP facility balance as a gauge of cash the banking system cannot or will not absorb."
+    ]
+   },
+   {
+    heading: "Repo, SOFR and the Standing Repo Facility",
+    body: "Overnight repo is the plumbing beneath every asset price. SOFR benchmarks collateralized Treasury funding, and its spread over interest on reserve balances reveals funding stress. In September 2019 a corporate tax date collided with heavy Treasury issuance, draining reserves and spiking overnight repo toward 10 percent. The Standing Repo Facility, created in July 2021, lets dealers exchange Treasuries for overnight cash at an administered rate, capping such spikes without the stigma of the discount window.",
+    formula: "\\text{SOFR Spread} = \\text{SOFR} - \\text{IORB}",
+    takeaways: [
+     "Repo spikes are plumbing failures, not policy signals, and they tighten financial conditions mechanically.",
+     "The SRF backstop means 2019-style spikes should be shallower, though quarter-ends still see pressure.",
+     "Persistent SOFR firmness above IORB warns that reserves are becoming scarce well before any official announcement."
+    ]
+   }
+  ]
+ },
+ {
+  id: "dcf-modeling", number: "08", title: "DCF Modeling and Valuation Architecture",
+  category: "Valuation", readTime: "30 min read",
+  summary: "Unlevered free cash flow, terminal value methods, and how the pieces of an institutional DCF fit together.",
+  sections: [
+   {
+    heading: "Unlevered Free Cash Flow",
+    body: "Research desks value the enterprise with unlevered free cash flow, the cash available to all capital providers before financing decisions. Start from NOPAT, which is EBIT taxed as if the firm carried no debt, then add back non-cash charges and subtract the investments the business must make in fixed assets and working capital.",
+    formula: "\\text{UFCF} = \\text{NOPAT} + \\text{D\\&A} - \\text{CapEx} - \\Delta\\text{NWC}",
+    takeaways: [
+     "NOPAT isolates operating performance from capital structure so leverage never flatters the cash flow.",
+     "A rising change in net working capital is a cash drain, while falling working capital is a source of cash.",
+     "Levered free cash flow instead starts from net income and adds net debt issuance, then discounts at the cost of equity to reach equity value directly."
+    ]
+   },
+   {
+    heading: "Terminal Value: Gordon Growth vs Exit Multiple",
+    body: "In a standard ten-year DCF the terminal value typically represents 65 to 85 percent of total enterprise value, so its assumptions deserve more scrutiny than the explicit forecast. The Gordon growth method compounds the final cash flow into perpetuity, while the exit multiple method applies a mature peer multiple to final-year EBITDA. Desks run both and reconcile them.",
+    formula: "\\text{TV}_{\\text{Gordon}} = \\frac{\\text{UFCF}_n (1+g)}{\\text{WACC} - g}",
+    takeaways: [
+     "Perpetual growth must never exceed long-run nominal GDP, typically 1.5 to 2.5 percent for dollar models.",
+     "Convert the Gordon result into an implied terminal EBITDA multiple and check it against mature peers.",
+     "Equity value equals enterprise value plus cash minus total debt, preferred stock, and minority interest."
+    ]
+   }
+  ]
+ },
+ {
+  id: "wacc-mechanics", number: "09", title: "WACC and the Cost of Capital",
+  category: "Valuation", readTime: "25 min read",
+  summary: "Building the discount rate from capital structure weights, the CAPM cost of equity, and Hamada's beta adjustments.",
+  sections: [
+   {
+    heading: "The Complete WACC Build",
+    body: "The weighted average cost of capital is the blended hurdle every invested dollar must clear. Weights come from market values, never book values, because the market prices the actual claims. Debt carries a tax shield since interest is deductible, which is why the after-tax cost of debt enters the formula.",
+    formula: "\\text{WACC} = \\frac{E}{V} r_e + \\frac{D}{V} r_d (1-t)",
+    takeaways: [
+     "Adding leverage lowers WACC until distress risk pushes the cost of debt up faster than the tax shield helps.",
+     "The cost of debt is read from the yield to maturity on the firm's liquid long-term bonds, or a synthetic spread over Treasuries.",
+     "Small errors in WACC compound enormously because the terminal value divides by WACC minus growth."
+    ],
+    interactive: "wacc"
+   },
+   {
+    heading: "CAPM and Hamada's Beta",
+    body: "The cost of equity comes from CAPM: the risk-free rate plus beta times the equity risk premium. When valuing a private company or a segment, analysts unlever a peer beta to strip out the peer's capital structure, then relever it to the target's structure with Hamada's equation.",
+    formula: "r_e = R_f + \\beta_L (\\mathbb{E}[R_m] - R_f)",
+    takeaways: [
+     "The risk-free rate should match the forecast horizon, usually the 10-year Treasury.",
+     "Unlevered beta measures pure business risk, while relevering restores the financing risk of the specific capital structure.",
+     "Blume-adjusted or peer-median betas are standard when a single stock's regression beta looks like noise."
+    ]
+   }
+  ]
+ },
+ {
+  id: "sotp-valuation", number: "10", title: "Sum-of-the-Parts Valuation",
+  category: "Valuation", readTime: "25 min read",
+  summary: "Breaking conglomerates into segments, assigning pure-play multiples, and pricing the holding company discount.",
+  sections: [
+   {
+    heading: "SOTP Architecture",
+    body: "A single blended multiple obscures value inside multi-division companies. Sum-of-the-parts values each reporting segment against its own pure-play peers, then subtracts capitalized corporate overhead, the headquarters cost treated as a perpetuity. Intersegment sales must be eliminated or earnings get double counted.",
+    formula: "\\text{EV} = \\sum_i (\\text{Segment Metric}_i \\times \\text{Peer Multiple}_i) - \\frac{\\text{Corporate Overhead}}{\\text{WACC}}",
+    takeaways: [
+     "Match the metric to the segment, using EV/ARR for software units, EV/EBITDA for industrials, and price-to-book for financial arms.",
+     "Overhead capitalized at the corporate WACC is often larger than analysts expect.",
+     "SOTP is the natural framework for spin-off and breakup analysis."
+    ]
+   },
+   {
+    heading: "The Conglomerate Discount",
+    body: "Diversified holding companies have historically traded 10 to 25 percent below the sum of their parts, because strong divisions subsidize weak ones and capital allocation turns political. Activists hunt stub value, where the parent's market cap implies a negative value for everything except its listed stakes.",
+    formula: "\\text{Stub Value} = \\text{Parent Market Cap} - \\text{Value of Listed Stakes}",
+    takeaways: [
+     "A tax-free spin-off can crystallize the discount by creating focused, independently managed companies.",
+     "Negative stub values are rare, loud, and usually close fast.",
+     "The discount persists because conglomerate chief executives rarely volunteer to shrink their empires."
+    ]
+   }
+  ]
+ },
+ {
+  id: "peer-relative", number: "11", title: "Peer Multiples and Relative Valuation",
+  category: "Valuation", readTime: "22 min read",
+  summary: "EV versus equity multiples, the PEG ratio, and normalizing growth so multiples compare cleanly.",
+  sections: [
+   {
+    heading: "EV Multiples vs Equity Multiples",
+    body: "The numerator must match the denominator's claim on cash flows. Enterprise value multiples use operating earnings before interest, which neutralizes leverage differences across peers. Equity multiples like P/E use net income, so they inherit the capital structure.",
+    formula: "\\frac{\\text{EV}}{\\text{EBITDA}} \\;\\; \\text{vs} \\;\\; \\frac{P}{E}",
+    takeaways: [
+     "EV/EBITDA is the workhorse for cross-border comps because it washes out leverage, tax regimes, and depreciation policy.",
+     "EV/Sales suits pre-profit software and biotech but must be paired with gross margin and unit economics.",
+     "P/E screens flatter levered companies in credit booms and punish them when rates rise."
+    ]
+   },
+   {
+    heading: "The PEG Ratio",
+    body: "A bare P/E cannot distinguish a fairly priced grower from an expensive one. Dividing by the expected earnings growth rate normalizes the multiple, which is the whole logic of growth-at-a-reasonable-price investing.",
+    formula: "\\text{PEG} = \\frac{P/E}{\\text{EPS Growth \\%}}",
+    takeaways: [
+     "Below 1.0 has historically flagged growth at a reasonable price, while above 2.0 demands high execution confidence.",
+     "Use three-to-five-year forward consensus growth, never a single noisy trailing year.",
+     "PEG breaks for cyclicals at peak earnings, where the E is unsustainably high and growth prints negative."
+    ]
+   }
+  ]
+ },
+ {
+  id: "t10yie-mechanics", number: "12", title: "Breakeven Inflation and the Fisher Equation",
+  category: "Rates", readTime: "24 min read",
+  summary: "How the TIPS market reveals expected inflation, and what contaminates the signal.",
+  sections: [
+   {
+    heading: "What Breakeven Measures",
+    body: "The 10-year breakeven rate is the market's average expected CPI inflation over the next decade, extracted from the spread between nominal Treasuries and TIPS. At exactly the breakeven rate both securities return the same; higher realized inflation favors TIPS. Since CPI runs 30 to 40 basis points above core PCE, a breakeven near 2.3 to 2.4 percent is consistent with the Fed's 2 percent target.",
+    formula: "\\text{BEIR} = Y_{\\text{Nominal}} - Y_{\\text{TIPS}}",
+    takeaways: [
+     "TIPS principal accretes with CPI, so the coupon is paid on a growing base.",
+     "Breakevens are traded expectations, not forecasts, and they embed risk compensation.",
+     "The live 10-year breakeven is tracked daily on the Market Internals page."
+    ],
+    interactive: "breakeven"
+   },
+   {
+    heading: "The Full Fisher Decomposition",
+    body: "Textbook Fisher says nominal equals real plus expected inflation. Trading desks add two adjustments: an inflation risk premium compensating nominal holders for inflation volatility, and a TIPS liquidity discount because nominal Treasuries are the world's deepest market. In liquidations the liquidity term spikes and raw breakevens understate true expectations, exactly as happened in March 2020.",
+    formula: "Y_{\\text{Nom}} = Y_{\\text{Real}} + \\mathbb{E}[\\pi] + \\theta - \\lambda",
+    takeaways: [
+     "Rising nominal yields with flat breakevens mean real yields are doing the tightening.",
+     "TIPS liquidity premia of 10 to 30 basis points are normal, while triple digits signal stress.",
+     "Strip out the liquidity estimate before concluding that expectations have moved."
+    ]
+   }
+  ]
+ },
+ {
+  id: "forward-5y5y", number: "13", title: "The 5Y5Y Forward Inflation Expectation",
+  category: "Rates", readTime: "20 min read",
+  summary: "Why policymakers watch the five-year, five-year forward instead of spot breakevens.",
+  sections: [
+   {
+    heading: "Seeing Past Transitory Shocks",
+    body: "Spot breakevens swing with oil prices and supply snarls, which tells policymakers little about credibility. The 5y5y forward isolates expected inflation for the five years starting five years out, filtering near-term noise. The Fed treats 2.1 to 2.5 percent as anchored.",
+    formula: "F_{5y5y} \\approx 2 \\times \\text{BEIR}_{10y} - \\text{BEIR}_{5y}",
+    takeaways: [
+     "A sustained break above 2.75 percent would signal de-anchoring and force tightening into weakness.",
+     "The linear approximation above is close; the workbench in the previous module compounds it exactly.",
+     "Forward expectations move slowly, which is precisely why fast moves matter."
+    ]
+   },
+   {
+    heading: "Reading the Breakeven Curve",
+    body: "The slope between 5-year and 10-year breakevens carries its own signal. An inverted curve means the market expects a near-term inflation shock that policy will extinguish; an upward slope is the normal expansion regime.",
+    formula: "\\text{Slope} = \\text{BEIR}_{10y} - \\text{BEIR}_{5y}",
+    takeaways: [
+     "Inversion typically follows energy spikes and resolves as policy bites.",
+     "A steepening breakeven curve alongside rising nominal yields is the classic reflation signature.",
+     "Flat curves near the target read as credibility, since the market believes the central bank."
+    ]
+   }
+  ]
+ },
+ {
+  id: "real-rates-equities", number: "14", title: "Real Yields and Equity Multiples",
+  category: "Rates", readTime: "22 min read",
+  summary: "The transmission from TIPS yields to P/E ratios, and why duration decides who suffers.",
+  sections: [
+   {
+    heading: "The Real Hurdle Rate",
+    body: "Equities are claims on real earnings, so the correct discount anchor is the real yield plus an equity risk premium, not the nominal yield. Long-duration growth stocks, whose cash flows arrive a decade out, behave like very long bonds. When real yields sat below zero in 2020 and 2021 capital had nowhere else to go; at positive 2 percent, risk-free real returns compete directly with earnings yields.",
+    formula: "\\text{Hurdle} = Y_{\\text{TIPS}} + \\text{ERP}",
+    takeaways: [
+     "Equity duration approximates one over dividend yield plus growth, which is why low-yielding growers are the most rate-sensitive.",
+     "A 100 basis point rise in real yields can compress a 40x P/E by 15 to 25 percent with no change in fundamentals.",
+     "Value stocks with near-term cash flows carry short duration and suffer far less."
+    ]
+   },
+   {
+    heading: "The Multiple Matrix",
+    body: "Desks linearize the relationship: the percentage change in P/E is roughly negative equity duration times the change in the real yield. History clusters into regimes worth memorizing.",
+    formula: "\\Delta(P/E) \\approx -D_{\\text{eq}} \\times \\Delta r_{\\text{real}}",
+    takeaways: [
+     "Real yields below zero supported forward P/Es of 22 to 26 times.",
+     "Between 1 and 2 percent, the historical median sits near 17 to 19 times.",
+     "Above 2.25 percent capital rotates toward credit and short paper, and equities develop air pockets."
+    ]
+   }
+  ]
+ }
+);
+
 function ensureKaTeX(cb) {
  if (window.katex) { cb(); return; }
  if (document.getElementById("katex-css")) { const t = setInterval(() => { if (window.katex) { clearInterval(t); cb(); } }, 300); setTimeout(() => { clearInterval(t); cb(); }, 8000); return; }
@@ -4556,6 +4788,31 @@ function academyInteractiveHtml(kind) {
    '<div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Index level: <b id="gx-s-v" style="color:#e8ecf1;">5000</b> <span style="color:#5b6b82;">(fictional gamma flip: 4950)</span></div>' +
    '<input type="range" id="gx-s" min="4800" max="5150" step="5" value="5000" style="width:100%;max-width:420px;" class="acad-slider">' +
    '<div id="gx-out" style="margin-top:10px;"></div>');
+ }
+ if (kind === "slr") {
+  return wrap(
+   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   [["slr-t1", "Tier 1 Capital ($B)", 250, 50, 600, 5], ["slr-on", "On-Balance Assets ($B)", 4000, 1000, 6000, 50], ["slr-off", "Off-Balance Exposures ($B)", 1200, 200, 2500, 25]].map((s) =>
+    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="slr-out"></div>');
+ }
+ if (kind === "wacc") {
+  return wrap(
+   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   [["wc-e", "Market Value of Equity ($M)", 80000, 5000, 300000, 5000], ["wc-d", "Market Value of Debt ($M)", 20000, 0, 150000, 2500], ["wc-re", "Cost of Equity (%)", 9.5, 4, 20, 0.1], ["wc-rd", "Pre-Tax Cost of Debt (%)", 5.5, 2, 12, 0.1], ["wc-t", "Marginal Tax Rate (%)", 21, 0, 35, 1]].map((s) =>
+    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="wacc-out"></div>');
+ }
+ if (kind === "breakeven") {
+  return wrap(
+   '<div id="be-metrics" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;"></div>' +
+   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   [["be-n10", "10Y Nominal Yield (%)", 4.25, 2, 7, 0.05], ["be-t10", "10Y TIPS Real Yield (%)", 1.90, -1, 4, 0.05], ["be-n5", "5Y Nominal Yield (%)", 4.00, 2, 7, 0.05], ["be-t5", "5Y TIPS Real Yield (%)", 1.65, -1, 4, 0.05], ["be-lam", "TIPS Liquidity Premium (%)", 0.15, 0, 0.6, 0.02], ["be-dur", "Equity Duration (years)", 18, 8, 30, 1]].map((s) =>
+    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="be-out"></div><div id="be-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
  }
  return "";
 }
@@ -4725,6 +4982,83 @@ function wireAcademyInteractive(kind) {
   };
   on("gx-s", "input", draw); draw();
  }
+ if (kind === "slr") {
+  const ids = ["slr-t1", "slr-on", "slr-off"];
+  const draw = () => {
+   const t1 = +$("slr-t1").value, ob = +$("slr-on").value, off = +$("slr-off").value;
+   ids.forEach((id) => { $(id + "-v").textContent = +$(id).value; });
+   const tle = ob + off;
+   const slr = tle > 0 ? (t1 / tle) * 100 : 0;
+   const ok = slr >= 5.0;
+   const col = ok ? "#3fb950" : "#f85149";
+   $("slr-out").innerHTML = '<div style="display:flex;align-items:center;gap:14px;padding:14px;border:1px solid ' + col + ';border-radius:10px;background:rgba(255,255,255,0.02);flex-wrap:wrap;">' +
+    '<div><div style="font-size:11px;color:#8b949e;">SUPPLEMENTARY LEVERAGE RATIO</div>' +
+    '<div style="font-size:28px;font-weight:800;color:' + col + ';">' + slr.toFixed(2) + '%</div></div>' +
+    '<div style="font-size:12px;font-weight:700;color:' + col + ';padding:6px 12px;border:1px solid ' + col + ';border-radius:8px;">' + (ok ? "COMPLIANT (≥ 5.0%)" : "BINDING CONSTRAINT (< 5.0%)") + "</div>" +
+    '<div style="font-size:12px;color:#8b949e;">Total Leverage Exposure: <b style="color:#e8ecf1;">$' + tle.toLocaleString() + 'B</b> (fictional)</div></div>';
+  };
+  ids.forEach((id) => on(id, "input", draw)); draw();
+ }
+ if (kind === "wacc") {
+  const ids = ["wc-e", "wc-d", "wc-re", "wc-rd", "wc-t"];
+  const draw = () => {
+   const e = +$("wc-e").value, d = +$("wc-d").value, re = +$("wc-re").value, rd = +$("wc-rd").value, t = +$("wc-t").value;
+   ids.forEach((id) => { $(id + "-v").textContent = +$(id).value; });
+   const v = e + d;
+   const wE = v > 0 ? e / v : 0, wD = v > 0 ? d / v : 0;
+   const afterRd = rd * (1 - t / 100);
+   const wacc = wE * re + wD * afterRd;
+   const W = 560, H = 96;
+   const barW = (W - 16);
+   $("wacc-out").innerHTML =
+    '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;"><span style="font-size:26px;font-weight:800;color:#c9a961;">' + wacc.toFixed(2) + '%</span><span style="font-size:12px;color:#8b949e;">WACC (fictional inputs)</span></div>' +
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block;" role="img">' +
+    '<rect x="8" y="18" width="' + (barW * wE).toFixed(1) + '" height="20" rx="4" fill="#c9a961" opacity="0.9"/>' +
+    '<rect x="' + (8 + barW * wE).toFixed(1) + '" y="18" width="' + (barW * wD).toFixed(1) + '" height="20" rx="4" fill="#38bdf8" opacity="0.9"/>' +
+    '<text x="8" y="12" fill="#8b949e" font-size="11">Equity ' + (wE * 100).toFixed(1) + '% @ ' + re.toFixed(1) + '%</text>' +
+    '<text x="' + W - 8 + '" y="12" fill="#8b949e" font-size="11" text-anchor="end">Debt ' + (wD * 100).toFixed(1) + '% @ ' + afterRd.toFixed(2) + '% after tax</text>' +
+    '<text x="8" y="58" fill="#8b949e" font-size="11">After-tax cost of debt: ' + afterRd.toFixed(2) + '% · E/V ' + (wE * 100).toFixed(1) + '% · D/V ' + (wD * 100).toFixed(1) + '%</text></svg>';
+  };
+  ids.forEach((id) => on(id, "input", draw)); draw();
+ }
+ if (kind === "breakeven") {
+  const ids = ["be-n10", "be-t10", "be-n5", "be-t5", "be-lam", "be-dur"];
+  const draw = () => {
+   const n10 = +$("be-n10").value, t10 = +$("be-t10").value, n5 = +$("be-n5").value, t5 = +$("be-t5").value, lam = +$("be-lam").value, dur = +$("be-dur").value;
+   ids.forEach((id) => { $(id + "-v").textContent = +$(id).value; });
+   const be10 = n10 - t10, be5 = n5 - t5;
+   const fwd = (Math.pow(Math.pow(1 + be10 / 100, 10) / Math.pow(1 + be5 / 100, 5), 1 / 5) - 1) * 100;
+   const adjBe = be10 + lam;
+   const peDrift = -(dur * (t10 - 1.0));
+   const shape = be5 > be10 ? "INVERTED" : "UPWARD SLOPING";
+   const shapeCol = be5 > be10 ? "#f85149" : "#3fb950";
+   const card = (label, val, col, sub) => '<div style="background:#0b1119;border:1px solid #2a3448;border-radius:10px;padding:10px;"><div style="font-size:10px;color:#8b949e;letter-spacing:0.5px;">' + label + '</div><div style="font-size:22px;font-weight:800;color:' + col + ';margin:2px 0;">' + val + '</div><div style="font-size:10px;color:#8b949e;">' + sub + "</div></div>";
+   $("be-metrics").innerHTML =
+    card("10Y BREAKEVEN", be10.toFixed(2) + "%", "#e8ecf1", "liquidity-adjusted " + adjBe.toFixed(2) + "%") +
+    card("5Y5Y FORWARD", fwd.toFixed(2) + "%", "#c9a961", "Fed credibility anchor") +
+    card("10Y REAL YIELD", t10.toFixed(2) + "%", "#38bdf8", "equity hurdle base") +
+    card("P/E DRIFT", (peDrift >= 0 ? "+" : "") + peDrift.toFixed(1) + "%", peDrift >= 0 ? "#3fb950" : "#f85149", "vs 1.0% real baseline");
+   const W = 560, H = 210, pad = 40;
+   const tenors = ["2Y", "5Y", "10Y", "30Y"];
+   const nom = [n5 - 0.15, n5, n10, n10 + 0.35];
+   const tips = [t5 - 0.20, t5, t10, t10 + 0.25];
+   const be = nom.map((v, i) => v - tips[i]);
+   const lo = -1, hi = 7;
+   const x = (i) => pad + (i / 3) * (W - pad - 16);
+   const y = (v) => H - pad - ((v - lo) / (hi - lo)) * (H - pad - 24);
+   const line = (vals, col, dash) => acadPath(vals.map((v, i) => [x(i), y(v)]), col, 2.5, dash);
+   const dots = (vals, col) => vals.map((v, i) => '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="4" fill="' + col + '"/>').join("");
+   $("be-out").innerHTML = acadSvgOpen(W, H) + acadAxes(W, H, pad) +
+    line(nom, "#c9a961") + dots(nom, "#c9a961") +
+    line(tips, "#38bdf8") + dots(tips, "#38bdf8") +
+    line(be, "#3fb950", "5 4") + dots(be, "#3fb950") +
+    tenors.map((t, i) => '<text x="' + x(i).toFixed(1) + '" y="' + (H - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="middle">' + t + "</text>").join("") +
+    '<text x="8" y="16" fill="#8b949e" font-size="11">Gold nominal · Blue TIPS · Green dashed breakeven (fictional)</text></svg>';
+   $("be-note").innerHTML = 'Breakeven curve: <b style="color:' + shapeCol + ';">' + shape + "</b> — " + (be5 > be10 ? "near-term shock the market expects policy to extinguish." : "normal expansion regime with compounding expectations.");
+  };
+  ids.forEach((id) => on(id, "input", draw)); draw();
+ }
+
 }
 
 function academySectionHtml(sec, idx) {
