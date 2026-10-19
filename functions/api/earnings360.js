@@ -17,6 +17,7 @@
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 const GEMINI_MODEL = "gemini-3.8-flash";
 const GROQ_MODEL = "openai/gpt-oss-20b";
+const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
 
 async function getCrumb() {
   const cookieRes = await fetch("https://fc.yahoo.com", {
@@ -106,6 +107,29 @@ async function callGroq(prompt, apiKey) {
   return text;
 }
 
+async function callOpenRouter(prompt, apiKey) {
+  const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: OPENROUTER_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.2,
+      response_format: { type: "json_object" },
+    }),
+  });
+  if (r.status === 429) {
+    const e = new Error("OpenRouter rate-limited");
+    e.code = 429;
+    throw e;
+  }
+  if (!r.ok) throw new Error(`OpenRouter returned HTTP ${r.status}`);
+  const j = await r.json();
+  const text = j?.choices?.[0]?.message?.content;
+  if (!text) throw new Error("Empty response from OpenRouter.");
+  return text;
+}
+
 export async function onRequestGet(context) {
   const { searchParams } = new URL(context.request.url);
   const ticker = (searchParams.get("ticker") || "").toUpperCase().trim().replace(/[^A-Z0-9.\-=]/g, "");
@@ -115,7 +139,8 @@ export async function onRequestGet(context) {
 
   const GEMINI_API_KEY = context.env && context.env.GEMINI_API_KEY;
   const GROQ_API_KEY = context.env && context.env.GROQ_API_KEY;
-  if (!GEMINI_API_KEY && !GROQ_API_KEY) {
+  const OPENROUTER_API_KEY = context.env && context.env.OPENROUTER_API_KEY;
+  if (!GEMINI_API_KEY && !GROQ_API_KEY && !OPENROUTER_API_KEY) {
     return Response.json(
       { error: "AI analysis is not configured yet (missing API key).", ticker },
       { status: 503 }
@@ -198,7 +223,7 @@ export async function onRequestGet(context) {
       putCallRatio,
     };
 
-    // AI synthesis: Gemini first, Groq fallback on rate limits or errors.
+    // AI synthesis: Gemini first, then Groq, then OpenRouter on rate limits or errors.
     const prompt = buildPrompt(ticker, grounded);
     let rawText = null;
     let provider = null;
@@ -215,6 +240,14 @@ export async function onRequestGet(context) {
       try {
         rawText = await callGroq(prompt, GROQ_API_KEY);
         provider = "groq";
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    if (!rawText && OPENROUTER_API_KEY) {
+      try {
+        rawText = await callOpenRouter(prompt, OPENROUTER_API_KEY);
+        provider = "openrouter";
       } catch (e) {
         lastErr = e;
       }
