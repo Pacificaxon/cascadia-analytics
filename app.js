@@ -4657,7 +4657,7 @@ function bindZoomHandlers() {
   h += gated("Event Matrix, Pro", "AI-synthesized earnings preview for " + tk + ": macro, micro, management tone history, live options-implied move, and a definitive lean.",
    '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Event Matrix</button></div>' +
    '<input id="e360-input-' + tk + '" type="hidden" value="' + esc(tk) + '" />' +
-   '<div id="e360-' + tk + '"><p style="color:var(--muted);font-size:13px;">Live front-month straddle math plus AI synthesis across macro, fundamentals, management tone, and options positioning.</p></div>');
+   '<div id="e360-' + tk + '"><p style="color:var(--muted);font-size:13px;">Live front-month straddle math plus AI synthesis across macro, fundamentals, management tone, and options positioning. Each generation takes about 20-30 seconds.</p></div>');
   h += "</div>";
 
   // Dark Pool & Off-Exchange Flow (FREE), FINRA Reg SHO daily
@@ -7559,7 +7559,7 @@ function bindZoomHandlers() {
   const tk = inp.value.toUpperCase().trim();
   if (!tk) return;
   if (btn) { btn.disabled = true; btn.textContent = "GENERATING..."; }
-  el.innerHTML = '<div class="card"><p style="color:#8b949e;">Running quantitative models and AI synthesis for ' + esc(tk) + "...</p></div>";
+  el.innerHTML = '<div class="card"><p style="color:#8b949e;">Running quantitative models and AI synthesis for ' + esc(tk) + ". This usually takes 20-30 seconds.</p></div>";
   const d = await fetchEarnings360(tk);
   renderEarnings360(d, resultId);
   if (btn) { btn.disabled = false; btn.textContent = "ANALYZE"; }
@@ -7840,7 +7840,7 @@ function bindZoomHandlers() {
   const initial = (param || "").toUpperCase().trim();
   app.innerHTML = '<div class="crumb">EVENT MATRIX</div>' +
    '<div class="hero"><div><h1 class="hero-h">Cascadia Event Matrix</h1>' +
-   "<p class='hero-sub'>Five-pillar earnings previews for any ticker. Live straddle math, AI synthesis.</p></div></div>" +
+   "<p class='hero-sub'>Five-pillar earnings previews for any ticker. Live straddle math, AI synthesis. Each generation takes about 20-30 seconds.</p></div></div>" +
    '<div class="section"><div class="section-title">Ticker Lookup <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
    '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
    '<input id="e360-ticker" type="text" placeholder="TICKER (e.g. NVDA)" value="' + esc(initial) + '" ' +
