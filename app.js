@@ -4744,12 +4744,12 @@ function academySectionHtml(sec, idx) {
 let _academyModule = "macro";
 let _academyQuery = "";
 
-route("academy", function () {
+route("primer", function () {
  const mod = ACADEMY_MODULES.find((m) => m.id === _academyModule) || ACADEMY_MODULES[0];
  const q = _academyQuery.trim().toLowerCase();
  const filtered = ACADEMY_MODULES.filter((m) => !q || m.title.toLowerCase().includes(q) || m.category.toLowerCase().includes(q) || m.summary.toLowerCase().includes(q));
  let h = '<div class="crumb">FREE · EDUCATION</div>' +
-  '<div class="hero"><div><h1 class="hero-h">Cascadia Academy</h1>' +
+  '<div class="hero"><div><h1 class="hero-h">Cascadia Primer</h1>' +
   '<p class="hero-sub">Institutional trading and research concepts, taught plainly. Six modules across macro, fundamentals, derivatives, volatility, and execution.</p></div></div>' +
   '<div class="card" style="border-left:3px solid #c9a961;margin-bottom:20px;"><div style="font-size:12px;color:#c9a961;font-weight:700;letter-spacing:1px;margin-bottom:6px;">PLEASE READ</div>' +
   '<div style="font-size:13px;color:#c3ccd8;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div></div>" +
