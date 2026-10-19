@@ -485,3 +485,11 @@ table.fin-table tr:last-child td { border-bottom: none; }
   .hero-right { grid-template-columns: 1fr 1fr; }
   .subhead .mono { font-size: 10px; }
 }
+
+/* Academy interactive sliders */
+.acad-slider { height: 28px; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.acad-slider::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: #2a3448; }
+.acad-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #c9a961; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.5); margin-top: -7px; }
+.acad-slider::-moz-range-track { height: 4px; border-radius: 2px; background: #2a3448; }
+.acad-slider::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #c9a961; border: none; }
+.acad-formula { font-family: monospace; font-size: 15px; }

@@ -4247,7 +4247,558 @@ function bindZoomHandlers() {
   embedAnalysisVisuals();
  });
 
- route("alerts", function () {
+ /* ================= ACADEMY (FREE EDUCATION) ================= */
+/* Static educational curriculum. All example numbers are fictional and
+   illustrative only, never live data. Weights/methodology of proprietary
+   models are not disclosed here. */
+const ACADEMY_DISCLAIMER = "For educational purposes only. This is not financial advice. All example data on this page is fictional and illustrative, not meant to be taken as fact or relied upon for real trades.";
+
+const ACADEMY_MODULES = [
+ {
+  id: "macro", number: "01", title: "Macroeconomic Mechanics and Liquidity Flows",
+  category: "Macro", readTime: "22 min read",
+  summary: "How central bank balance sheets, Treasury cash flows, the yield curve, and inflation mechanics transmit into equity multiples.",
+  sections: [
+   {
+    heading: "The Net Liquidity Equation",
+    body: "On an institutional trading desk, equity multiples are governed first by liquidity plumbing and only second by trailing earnings. The headline size of the Federal Reserve balance sheet (WALCL on FRED) is not the same as investable liquidity. Cash locked in the Treasury General Account (TGA) and the Overnight Reverse Repo Facility (RRP) cannot chase assets, so desks subtract both to get true net liquidity.",
+    formula: "\\text{Net US Liquidity} = \\text{Fed Assets (WALCL)} - \\text{TGA} - \\text{RRP}",
+    takeaways: [
+     "When the Treasury spends out of the TGA, reserves flow into commercial banks and the effect resembles stealth quantitative easing.",
+     "When money funds rotate out of the RRP into Treasury bills, net liquidity can expand even while the balance sheet is officially shrinking.",
+     "A rapid TGA refill through heavy issuance, without an offsetting RRP drain, pulls reserves from dealers and compresses multiples."
+    ],
+    interactive: "netliq"
+   },
+   {
+    heading: "Reading the Yield Curve",
+    body: "The 10Y-2Y spread expresses the market consensus on growth, borrowing demand, and the policy path. Headlines fixate on inversions, yet drawdowns have historically clustered in the un-inversion phase, when short rates collapse faster than long rates because the central bank is easing into visible credit stress.",
+    formula: "\\text{Spread} = Y_{10Y} - Y_{2Y}",
+    takeaways: [
+     "Bear flattening arrives when aggressive tightening lifts short rates faster than long rates. Multiples compress while credit stays orderly.",
+     "Bear steepening arrives when fiscal issuance or sticky inflation expectations lift long rates faster. Long-duration equities reprice hardest.",
+     "Bull steepening is the shock phase. Emergency easing collapses the front end and the un-inversion itself has often marked the equity peak."
+    ],
+    interactive: "yieldcurve"
+   },
+   {
+    heading: "Inflation and Labor Releases",
+    body: "Desks separate headline noise from the momentum of sub-components. Core PCE strips food and energy, and within it the focus falls on supercore services excluding housing, which tracks wage pressure most tightly. Shelter carries roughly a twelve-month lag to real-time rent indices because of how the BLS samples leases.",
+    formula: "\\text{Supercore} = \\text{Core Services} - \\text{Shelter}",
+    takeaways: [
+     "Supercore running above 0.3% month over month keeps terminal rate expectations elevated.",
+     "In payrolls reports, compare the household survey against the establishment survey and watch average hourly earnings for wage-push signal.",
+     "Tariff pass-through shows up first in import prices and goods PPI, then in margins two to three quarters later."
+    ]
+   }
+  ]
+ },
+ {
+  id: "fundamentals", number: "02", title: "Capital Efficiency, ROIC and Financial Forensics",
+  category: "Fundamentals", readTime: "28 min read",
+  summary: "Return on invested capital, DuPont decomposition, cash conversion cycles, and how to spot deteriorating business quality in the numbers.",
+  sections: [
+   {
+    heading: "ROIC Versus the Cost of Capital",
+    body: "A company creates value only when its return on invested capital exceeds its weighted average cost of capital. Growth without a positive spread destroys enterprise value. Unlike ROE, which leverage can flatter, ROIC measures the return on all capital actually deployed in the business.",
+    formula: "\\text{ROIC} = \\frac{\\text{EBIT} \\times (1-t)}{\\text{Debt} + \\text{Equity} - \\text{Excess Cash}}",
+    takeaways: [
+     "Economic profit equals invested capital multiplied by the spread of ROIC over WACC. That spread is the compounding engine.",
+     "Cash ROIC, using free cash flow instead of NOPAT, strips out accruals and capitalized expenses that flatter the accounting return.",
+     "Sustainable growth is the product of ROIC and the reinvestment rate, so capital-light compounders need less growth to create value."
+    ],
+    interactive: "roic"
+   },
+   {
+    heading: "The Five-Stage DuPont Decomposition",
+    body: "Decomposing ROE into five levers reveals whether returns come from operations or from financial engineering. A rising ROE driven by leverage while operating margin decays is a classic quality warning.",
+    formula: "\\text{ROE} = \\frac{\\text{NI}}{\\text{EBT}} \\times \\frac{\\text{EBT}}{\\text{EBIT}} \\times \\frac{\\text{EBIT}}{\\text{Rev}} \\times \\frac{\\text{Rev}}{\\text{Assets}} \\times \\frac{\\text{Assets}}{\\text{Equity}}",
+    takeaways: [
+     "High asset turnover signals operational dominance or tight working capital control.",
+     "Margin decay masked by rising leverage is a primary quantitative flag for deteriorating quality.",
+     "The tax and interest burden terms show how exposed net margins are to policy and refinancing risk."
+    ],
+    interactive: "dupont"
+   },
+   {
+    heading: "The Cash Conversion Cycle",
+    body: "The cycle measures how long a dollar stays trapped between paying suppliers and collecting from customers. Businesses with real pricing power stretch payables and collect quickly, sometimes running the cycle negative so suppliers fund operations.",
+    formula: "\\text{CCC} = \\text{DIO} + \\text{DSO} - \\text{DPO}",
+    takeaways: [
+     "A negative cycle means customers and suppliers finance the business interest-free.",
+     "A sudden jump in days sales outstanding can precede channel stuffing or aggressive revenue recognition.",
+     "Inventory building without matching revenue growth usually foreshadows markdowns and margin compression."
+    ]
+   }
+  ]
+ },
+ {
+  id: "options1", number: "03", title: "Options Mechanics and First-Order Greeks",
+  category: "Derivatives", readTime: "25 min read",
+  summary: "Put-call parity, synthetic positions, and the working intuition behind delta, gamma, theta, vega, and rho.",
+  sections: [
+   {
+    heading: "Put-Call Parity and Synthetics",
+    body: "Put-call parity is the no-arbitrage spine of options pricing. A long call plus a short put at the same strike and expiry replicates long stock, which means any listed option can be decomposed into stock plus financing. Persistent deviations usually point to borrow constraints or dividend uncertainty rather than free money.",
+    formula: "C - P = S - Ke^{-rT}",
+    takeaways: [
+     "Long call plus short put at one strike behaves like 100 shares of stock.",
+     "Long call plus short stock replicates a long put, and the other combinations follow the same algebra.",
+     "Skewed parity pricing often reveals hard-to-borrow names before the stock borrow desk confirms it."
+    ],
+    interactive: "payoff"
+   },
+   {
+    heading: "The First-Order Greeks",
+    body: "Each Greek is a partial derivative of the option price with respect to one market input. Delta is the hedge ratio, gamma is how fast that ratio changes, theta is the daily rent on the position, vega is exposure to implied volatility, and rho is sensitivity to rates.",
+    formula: "\\Delta=\\frac{\\partial V}{\\partial S},\\; \\Gamma=\\frac{\\partial^2 V}{\\partial S^2},\\; \\Theta=-\\frac{\\partial V}{\\partial \\tau},\\; \\mathcal{V}=\\frac{\\partial V}{\\partial \\sigma},\\; \\rho=\\frac{\\partial V}{\\partial r}",
+    takeaways: [
+     "At-the-money gamma peaks and accelerates into expiry, which is why 0DTE hedging flows can dominate the last hour of trade.",
+     "Theta decay is non-linear and concentrates in the final thirty days for at-the-money contracts.",
+     "Long-dated options carry far more vega, so calendar spreads are implicitly volatility term-structure trades."
+    ]
+   }
+  ]
+ },
+ {
+  id: "options2", number: "04", title: "Higher-Order Greeks and Dealer Hedging",
+  category: "Derivatives", readTime: "30 min read",
+  summary: "Vanna, charm, and volga, and how dealer rebalancing turns derivatives positioning into equity price drift.",
+  sections: [
+   {
+    heading: "Vanna and the Volatility Feedback Loop",
+    body: "Vanna measures how delta shifts as implied volatility moves. When spot falls and volatility rises together, dealers short volatility must sell more underlying to stay hedged, which deepens the decline. When volatility collapses after an event, the same machinery runs in reverse and fuels the snapback rally.",
+    formula: "\\text{Vanna} = \\frac{\\partial \\Delta}{\\partial \\sigma}",
+    takeaways: [
+     "Joint spot-down and vol-up episodes trigger mechanical dealer selling through negative vanna exposure.",
+     "Post-event vol crush forces dealers to cover short hedges, adding fuel to relief rallies.",
+     "Pinning near large strikes into expiry is often vanna and charm decay doing the dealer's work quietly."
+    ]
+   },
+   {
+    heading: "Charm, the Quiet Drift Operator",
+    body: "Charm is the rate at which delta decays with passing time. Into weekly and monthly expirations, charm mechanically erodes the deltas of out-of-the-money options, forcing dealers to unwind hedges and creating the familiar late-week drift that has little to do with news flow.",
+    formula: "\\text{Charm} = -\\frac{\\partial \\Delta}{\\partial \\tau}",
+    takeaways: [
+     "Short upside call hedges decay into Friday, and unwinding them leans against rallies late in the week.",
+     "Heavy short put open interest works the other way, with buybacks supporting dips into expiry.",
+     "Charm is largest for options closest to the money with the least time remaining."
+    ],
+    interactive: "gamma"
+   },
+   {
+    heading: "Volga and Tail Convexity",
+    body: "Volga is the convexity of vega itself. Far out-of-the-money options carry little vega but meaningful volga, so their prices explode non-linearly when a volatility shock arrives. Anyone short tail risk without respecting volga learns this lesson exactly once.",
+    formula: "\\text{Volga} = \\frac{\\partial^2 V}{\\partial \\sigma^2}",
+    takeaways: [
+     "Linear vega models underprice wings precisely when it matters most.",
+     "Short-volatility sellers are short volga whether they hedge it or not.",
+     "After earnings, volga accelerates the deflation of lottery-ticket options as implied volatility collapses."
+    ]
+   }
+  ]
+ },
+ {
+  id: "vol", number: "05", title: "Volatility Surface, Skew and Term Structure",
+  category: "Volatility", readTime: "30 min read",
+  summary: "Downside put skew, sticky-strike versus sticky-delta regimes, and reading contango against backwardation.",
+  sections: [
+   {
+    heading: "The Downside Put Skew",
+    body: "Equity index options have traded with a persistent downside skew since 1987 because portfolio insurance demand never really leaves. Out-of-the-money puts carry higher implied volatility than equidistant calls, and the steepness of that skew is itself a sentiment gauge worth tracking.",
+    formula: "\\text{Skew} = \\sigma_{25\\Delta\\,Put} - \\sigma_{25\\Delta\\,Call}",
+    takeaways: [
+     "Persistent institutional put buying keeps downside implied volatility structurally elevated.",
+     "An inverted skew, with calls bid over puts, usually marks speculative exhaustion rather than confidence.",
+     "Tail-risk indices that compare wing volatility to at-the-money volatility quantify crash-hedging demand directly."
+    ],
+    interactive: "skew"
+   },
+   {
+    heading: "Term Structure Regimes",
+    body: "The term structure maps at-the-money implied volatility across expirations. In calm markets it slopes upward because the future is less certain than the present. When it inverts, the market is pricing immediate danger above distant uncertainty, and those inversions have historically coincided with selling climaxes.",
+    formula: "\\text{Slope} = \\frac{\\sigma_{3M}}{\\sigma_{1M}} - 1",
+    takeaways: [
+     "Contango rewards short-volatility carry and punishes long-volatility holders through roll decay.",
+     "Backwardation marks panic regimes where near-term insurance costs more than distant insurance.",
+     "Extreme backwardation spikes have often aligned with multi-month bottoming processes, not with the start of declines."
+    ],
+    interactive: "termstruct"
+   }
+  ]
+ },
+ {
+  id: "micro", number: "06", title: "Market Microstructure and Order Flow",
+  category: "Execution", readTime: "24 min read",
+  summary: "Dealer gamma regimes, dark pool prints, and why reported short volume often means the opposite of what it seems.",
+  sections: [
+   {
+    heading: "Dealer Gamma and Volatility Regimes",
+    body: "Market makers take the other side of customer option flow, so their aggregate gamma decides whether the tape mean-reverts or trends. In long-gamma regimes dealers fade moves and volatility stays contained. In short-gamma regimes they chase moves and volatility feeds on itself. The flip level between the two is one of the most watched lines on any institutional desk.",
+    formula: "\\text{Net GEX} = \\sum \\Gamma_i \\times S \\times 100 \\times \\text{OI}_i",
+    takeaways: [
+     "Long gamma means dealers buy dips and sell rips to stay neutral, damping realized volatility.",
+     "Short gamma means dealers sell weakness and buy strength, amplifying moves in both directions.",
+     "Losing the gamma flip level to the downside is when orderly pullbacks turn disorderly."
+    ],
+    interactive: "gex"
+   },
+   {
+    heading: "Dark Pools and Short Volume",
+    body: "Off-exchange prints reflect internalized wholesale flow, and under Regulation SHO a dealer filling a customer buy from inventory marks the print short. High dark-pool short ratios therefore frequently coincide with aggressive institutional buying, which is the opposite of the retail interpretation.",
+    formula: "\\text{DPSR} = \\frac{\\text{Short Vol} + \\text{Short Exempt Vol}}{\\text{Total Off-Exchange Vol}}",
+    takeaways: [
+     "Elevated dark-pool short ratios often accompany institutional accumulation, not distribution.",
+     "Depressed ratios suggest dealers are absorbing institutional sell blocks into inventory.",
+     "Off-exchange market share above half of consolidated volume signals heavy institutional internalization."
+    ]
+   }
+  ]
+ }
+];
+
+function ensureKaTeX(cb) {
+ if (window.katex) { cb(); return; }
+ if (document.getElementById("katex-css")) { const t = setInterval(() => { if (window.katex) { clearInterval(t); cb(); } }, 300); setTimeout(() => { clearInterval(t); cb(); }, 8000); return; }
+ const link = document.createElement("link");
+ link.id = "katex-css"; link.rel = "stylesheet";
+ link.href = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css";
+ document.head.appendChild(link);
+ const s = document.createElement("script");
+ s.src = "https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js";
+ s.onload = cb; s.onerror = cb;
+ document.head.appendChild(s);
+}
+function renderAcademyFormulas() {
+ document.querySelectorAll(".acad-formula").forEach((el) => {
+  const tex = el.getAttribute("data-tex");
+  if (window.katex) { try { window.katex.render(tex, el, { displayMode: true, throwOnError: false }); } catch (e) { el.textContent = tex; } }
+  else { el.textContent = tex; }
+ });
+}
+
+/* --- small SVG builders for the interactive visuals (fictional example data) --- */
+function acadSvgOpen(w, h) { return '<svg viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:auto;display:block;" role="img">'; }
+function acadAxes(w, h, pad) {
+ return '<line x1="' + pad + '" y1="' + (h - pad) + '" x2="' + (w - 8) + '" y2="' + (h - pad) + '" stroke="#2d435e" stroke-width="1"/>' +
+  '<line x1="' + pad + '" y1="8" x2="' + pad + '" y2="' + (h - pad) + '" stroke="#2d435e" stroke-width="1"/>';
+}
+function acadPath(pts, color, width, dash) {
+ const d = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+ return '<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="' + (width || 2) + '"' + (dash ? ' stroke-dasharray="' + dash + '"' : "") + "/>";
+}
+
+function academyInteractiveHtml(kind) {
+ const wrap = (inner) => '<div class="card" style="margin-top:14px;"><div style="font-size:11px;letter-spacing:1px;color:#c9a961;font-weight:700;margin-bottom:10px;">INTERACTIVE EXAMPLE · FICTIONAL DATA</div>' + inner + '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Illustrative only. Numbers are fictional and not market data.</div></div>';
+ if (kind === "netliq") {
+  return wrap(
+   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   [["nl-a", "Fed Assets ($T)", 8.5, 5, 10], ["nl-t", "TGA ($T)", 0.8, 0, 2], ["nl-r", "RRP ($T)", 1.9, 0, 3]].map((s) =>
+    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2].toFixed(1) + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="0.1" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="nl-out"></div>');
+ }
+ if (kind === "yieldcurve") {
+  return wrap(
+   '<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">' +
+   [["yc-bf", "Bear Flattening"], ["yc-bs", "Bear Steepening"], ["yc-us", "Bull Steepening"]].map((b, i) =>
+    '<button class="btn secondary acad-yc" data-m="' + b[0] + '" style="' + (i === 0 ? "border-color:#c9a961;color:#c9a961;" : "") + '">' + b[1] + "</button>").join("") +
+   '</div><div id="yc-out"></div><div id="yc-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+ }
+ if (kind === "roic") {
+  return wrap(
+   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
+   [["roic-r", "ROIC (%)", 14, 2, 25], ["roic-w", "WACC (%)", 9, 4, 15]].map((s) =>
+    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="0.5" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="roic-out"></div>');
+ }
+ if (kind === "dupont") {
+  const items = [["dp-tb", "Tax Burden", 0.75, 0.5, 1], ["dp-ib", "Interest Burden", 0.9, 0.5, 1], ["dp-om", "Operating Margin", 0.22, 0.05, 0.4], ["dp-at", "Asset Turnover", 0.8, 0.2, 2], ["dp-fl", "Leverage", 2.2, 1, 4]];
+  return wrap('<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
+   items.map((s) => '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="0.01" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
+   '</div><div id="dupont-out" style="font-size:14px;"></div>');
+ }
+ if (kind === "payoff") {
+  return wrap(
+   '<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">' +
+   '<button class="btn secondary acad-po" data-m="call" style="border-color:#c9a961;color:#c9a961;">Long Call</button>' +
+   '<button class="btn secondary acad-po" data-m="put">Long Put</button>' +
+   '<div style="margin-left:8px;font-size:12px;color:#8b949e;">Strike: <b id="po-k-v" style="color:#e8ecf1;">100</b></div>' +
+   '<input type="range" id="po-k" min="70" max="130" step="1" value="100" style="width:160px;" class="acad-slider"></div>' +
+   '<div id="po-out"></div>');
+ }
+ if (kind === "gamma") {
+  return wrap(
+   '<div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Spot price: <b id="gm-s-v" style="color:#e8ecf1;">100</b></div>' +
+   '<input type="range" id="gm-s" min="80" max="120" step="0.5" value="100" style="width:100%;max-width:420px;" class="acad-slider">' +
+   '<div id="gm-out" style="margin-top:8px;"></div>');
+ }
+ if (kind === "skew") {
+  return wrap(
+   '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
+   '<button class="btn secondary acad-sk" data-m="normal" style="border-color:#c9a961;color:#c9a961;">Normal Skew</button>' +
+   '<button class="btn secondary acad-sk" data-m="inverted">Inverted Skew</button></div>' +
+   '<div id="sk-out"></div><div id="sk-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+ }
+ if (kind === "termstruct") {
+  return wrap(
+   '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
+   '<button class="btn secondary acad-ts" data-m="contango" style="border-color:#c9a961;color:#c9a961;">Contango</button>' +
+   '<button class="btn secondary acad-ts" data-m="backward">Backwardation</button></div>' +
+   '<div id="ts-out"></div><div id="ts-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+ }
+ if (kind === "gex") {
+  return wrap(
+   '<div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Index level: <b id="gx-s-v" style="color:#e8ecf1;">5000</b> <span style="color:#5b6b82;">(fictional gamma flip: 4950)</span></div>' +
+   '<input type="range" id="gx-s" min="4800" max="5150" step="5" value="5000" style="width:100%;max-width:420px;" class="acad-slider">' +
+   '<div id="gx-out" style="margin-top:10px;"></div>');
+ }
+ return "";
+}
+
+function wireAcademyInteractive(kind) {
+ const $ = (id) => document.getElementById(id);
+ const on = (id, ev, fn) => { const el = $(id); if (el) el.addEventListener(ev, fn); };
+ if (kind === "netliq") {
+  const draw = () => {
+   const a = +$("nl-a").value, t = +$("nl-t").value, r = +$("nl-r").value;
+   $("nl-a-v").textContent = a.toFixed(1); $("nl-t-v").textContent = t.toFixed(1); $("nl-r-v").textContent = r.toFixed(1);
+   const nl = a - t - r;
+   const w = 560, h = 120, pad = 40;
+   const maxV = 10;
+   const bx = (v) => pad + (v / maxV) * (w - pad - 16);
+   $("nl-out").innerHTML = acadSvgOpen(w, h) +
+    [["Fed Assets", a, "#c9a961", 18], ["TGA", t, "#f85149", 52], ["RRP", r, "#f85149", 86]].map((b) =>
+     '<text x="4" y="' + (b[3] + 5) + '" fill="#8b949e" font-size="11">' + b[0] + '</text>' +
+     '<rect x="' + pad + '" y="' + (b[3] - 8) + '" width="' + Math.max(2, bx(b[1]) - pad) + '" height="14" rx="3" fill="' + b[2] + '" opacity="0.85"/>').join("") +
+    '<text x="' + pad + '" y="' + (h - 6) + '" fill="#e8ecf1" font-size="12" font-weight="700">Net Liquidity = $' + nl.toFixed(1) + 'T (fictional)</text>' + "</svg>";
+  };
+  ["nl-a", "nl-t", "nl-r"].forEach((id) => on(id, "input", draw)); draw();
+ }
+ if (kind === "yieldcurve") {
+  const modes = {
+   "yc-bf": { pts: [[2, 4.6], [5, 4.35], [10, 4.1]], note: "Bear flattening. Short rates near long rates, the curve sits almost flat. Tightening is compressing multiples while credit stays orderly." },
+   "yc-bs": { pts: [[2, 4.2], [5, 4.7], [10, 5.2]], note: "Bear steepening. Long rates climb on issuance and inflation expectations. Long-duration equities reprice hardest in this regime." },
+   "yc-us": { pts: [[2, 2.6], [5, 3.4], [10, 4.0]], note: "Bull steepening. The front end collapses as policy eases into stress. This un-inversion phase has historically marked equity peaks." }
+  };
+  const draw = (m) => {
+   const w = 560, h = 200, pad = 40;
+   const xs = modes[m].pts.map((p) => p[0]), ys = modes[m].pts.map((p) => p[1]);
+   const x = (v) => pad + ((v - 2) / 8) * (w - pad - 16);
+   const y = (v) => h - pad - ((v - 2) / 3.6) * (h - pad - 24);
+   const pts = modes[m].pts.map((p) => [x(p[0]), y(p[1])]);
+   $("yc-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#c9a961", 2.5) +
+    pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="#c9a961"/><text x="' + p[0] + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="middle">' + xs[i] + 'Y</text><text x="' + (p[0] + 8) + '" y="' + (p[1] - 8) + '" fill="#e8ecf1" font-size="11">' + ys[i].toFixed(1) + '%</text>').join("") + "</svg>";
+   $("yc-note").textContent = modes[m].note;
+   document.querySelectorAll(".acad-yc").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === m) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+  };
+  document.querySelectorAll(".acad-yc").forEach((b) => b.addEventListener("click", () => draw(b.dataset.m)));
+  draw("yc-bf");
+ }
+ if (kind === "roic") {
+  const draw = () => {
+   const r = +$("roic-r").value, wacc = +$("roic-w").value;
+   $("roic-r-v").textContent = r.toFixed(1); $("roic-w-v").textContent = wacc.toFixed(1);
+   const spread = r - wacc;
+   const col = spread >= 0 ? "#3fb950" : "#f85149";
+   const w = 560, h = 90, pad = 8;
+   const cx = w / 2, scale = (w - pad * 2 - 40) / 2 / 12;
+   $("roic-out").innerHTML = acadSvgOpen(w, h) +
+    '<line x1="' + cx + '" y1="10" x2="' + cx + '" y2="60" stroke="#2d435e"/>' +
+    '<rect x="' + Math.min(cx, cx + spread * scale) + '" y="24" width="' + Math.abs(spread * scale) + '" height="22" rx="4" fill="' + col + '" opacity="0.85"/>' +
+    '<text x="' + cx + '" y="76" fill="#8b949e" font-size="11" text-anchor="middle">0</text>' +
+    '<text x="10" y="76" fill="#8b949e" font-size="11">value destruction</text>' +
+    '<text x="' + (w - 10) + '" y="76" fill="#8b949e" font-size="11" text-anchor="end">value creation</text>' +
+    '<text x="' + (w / 2) + '" y="14" fill="#e8ecf1" font-size="13" font-weight="700" text-anchor="middle">Spread: ' + (spread >= 0 ? "+" : "") + spread.toFixed(1) + 'pp ' + (spread >= 0 ? "· creating value" : "· destroying value") + '</text></svg>';
+  };
+  ["roic-r", "roic-w"].forEach((id) => on(id, "input", draw)); draw();
+ }
+ if (kind === "dupont") {
+  const ids = ["dp-tb", "dp-ib", "dp-om", "dp-at", "dp-fl"];
+  const draw = () => {
+   const vs = ids.map((id) => +$(id).value);
+   ids.forEach((id, i) => { $(id + "-v").textContent = vs[i].toFixed(2); });
+   const roe = vs.reduce((a, b) => a * b, 1) * 100;
+   $("dupont-out").innerHTML = 'Implied ROE = <b style="color:#c9a961;font-size:18px;">' + roe.toFixed(1) + '%</b> <span style="color:#8b949e;font-size:12px;">(fictional inputs)</span>';
+  };
+  ids.forEach((id) => on(id, "input", draw)); draw();
+ }
+ if (kind === "payoff") {
+  let mode = "call";
+  const draw = () => {
+   const k = +$("po-k").value;
+   $("po-k-v").textContent = k;
+   const w = 560, h = 220, pad = 40;
+   const lo = k - 40, hi = k + 40;
+   const x = (s) => pad + ((s - lo) / (hi - lo)) * (w - pad - 16);
+   const prem = 4;
+   const payoff = (s) => mode === "call" ? Math.max(0, s - k) - prem : Math.max(0, k - s) - prem;
+   const yMax = 36, yMin = -8;
+   const y = (v) => h - pad - ((v - yMin) / (yMax - yMin)) * (h - pad - 24);
+   const pts = [];
+   for (let s = lo; s <= hi; s += 1) pts.push([x(s), y(payoff(s))]);
+   $("po-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) +
+    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#2d435e" stroke-dasharray="4"/>' +
+    acadPath(pts, mode === "call" ? "#3fb950" : "#f85149", 2.5) +
+    '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#c9a961" stroke-dasharray="4"/>' +
+    '<text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#c9a961" font-size="11" text-anchor="middle">Strike ' + k + '</text>' +
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="end">Spot at expiry →</text>' +
+    '<text x="8" y="16" fill="#8b949e" font-size="11">Profit / loss (fictional $' + prem + ' premium)</text></svg>';
+   document.querySelectorAll(".acad-po").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+  };
+  document.querySelectorAll(".acad-po").forEach((b) => b.addEventListener("click", () => { mode = b.dataset.m; draw(); }));
+  on("po-k", "input", draw); draw();
+ }
+ if (kind === "gamma") {
+  const draw = () => {
+   const s = +$("gm-s").value;
+   $("gm-s-v").textContent = s.toFixed(0);
+   const w = 560, h = 200, pad = 40, k = 100;
+   const x = (strike) => pad + ((strike - 80) / 40) * (w - pad - 16);
+   const g = (strike) => Math.exp(-Math.pow(strike - k, 2) / 18);
+   const y = (v) => h - pad - v * (h - pad - 24);
+   const pts = [];
+   for (let st = 80; st <= 120; st += 0.5) pts.push([x(st), y(g(st))]);
+   const nearK = Math.abs(s - k) < 4;
+   $("gm-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#c9a961", 2.5) +
+    '<line x1="' + x(s) + '" y1="8" x2="' + x(s) + '" y2="' + (h - pad) + '" stroke="#3fb950" stroke-width="2"/>' +
+    '<text x="' + x(s) + '" y="' + (h - pad + 16) + '" fill="#3fb950" font-size="11" text-anchor="middle">Spot ' + s.toFixed(0) + '</text>' +
+    '<text x="8" y="16" fill="#8b949e" font-size="11">Gamma by strike (fictional) — ' + (nearK ? "spot near the strike: gamma risk is highest here" : "spot away from the strike: gamma risk is muted") + '</text></svg>';
+  };
+  on("gm-s", "input", draw); draw();
+ }
+ if (kind === "skew") {
+  const draw = (m) => {
+   const w = 560, h = 200, pad = 40;
+   const x = (d) => pad + ((d - 5) / 45) * (w - pad - 16);
+   const iv = (d) => m === "normal" ? 22 + 14 * Math.exp(-(d - 12) / 9) - 0.06 * d : 22 - 8 * Math.exp(-(d - 38) / 8) + 0.05 * d;
+   const y = (v) => h - pad - ((v - 14) / 22) * (h - pad - 24);
+   const pts = [];
+   for (let d = 5; d <= 50; d += 1) pts.push([x(d), y(iv(d))]);
+   $("sk-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#c9a961", 2.5) +
+    '<text x="' + x(12) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="middle">25Δ Put</text>' +
+    '<text x="' + x(50) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="middle">25Δ Call</text>' +
+    '<text x="8" y="16" fill="#8b949e" font-size="11">Implied volatility by delta (fictional)</text></svg>';
+   $("sk-note").textContent = m === "normal"
+    ? "Normal equity skew. Downside puts carry higher implied volatility because portfolio insurance demand is structural."
+    : "Inverted skew. Calls bid over puts. This usually marks speculative call chasing and often arrives near short-term tops.";
+   document.querySelectorAll(".acad-sk").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === m) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+  };
+  document.querySelectorAll(".acad-sk").forEach((b) => b.addEventListener("click", () => draw(b.dataset.m)));
+  draw("normal");
+ }
+ if (kind === "termstruct") {
+  const draw = (m) => {
+   const w = 560, h = 200, pad = 40;
+   const tenors = ["1M", "2M", "3M", "6M", "1Y"];
+   const ivs = m === "contango" ? [18, 19.5, 21, 23, 25] : [34, 28, 24, 21, 19];
+   const x = (i) => pad + (i / 4) * (w - pad - 16);
+   const y = (v) => h - pad - ((v - 14) / 24) * (h - pad - 24);
+   const pts = ivs.map((v, i) => [x(i), y(v)]);
+   $("ts-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, m === "contango" ? "#3fb950" : "#f85149", 2.5) +
+    pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="' + (m === "contango" ? "#3fb950" : "#f85149") + '"/><text x="' + p[0] + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="middle">' + tenors[i] + '</text>').join("") +
+    '<text x="8" y="16" fill="#8b949e" font-size="11">ATM implied volatility by tenor (fictional)</text></svg>';
+   $("ts-note").textContent = m === "contango"
+    ? "Contango. Distant uncertainty costs more than near-term calm. Roll decay favors short-volatility carry."
+    : "Backwardation. Near-term insurance costs more than distant insurance. This panic pricing has historically coincided with selling climaxes.";
+   document.querySelectorAll(".acad-ts").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === m) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+  };
+  document.querySelectorAll(".acad-ts").forEach((b) => b.addEventListener("click", () => draw(b.dataset.m)));
+  draw("contango");
+ }
+ if (kind === "gex") {
+  const flip = 4950;
+  const draw = () => {
+   const s = +$("gx-s").value;
+   $("gx-s-v").textContent = s;
+   const pos = s >= flip;
+   const col = pos ? "#3fb950" : "#f85149";
+   $("gx-out").innerHTML = '<div style="display:flex;align-items:center;gap:14px;padding:14px;border:1px solid ' + col + ';border-radius:10px;background:rgba(255,255,255,0.02);">' +
+    '<div style="font-size:15px;font-weight:800;color:' + col + ';">' + (pos ? "LONG GAMMA" : "SHORT GAMMA") + '</div>' +
+    '<div style="font-size:12px;color:#8b949e;max-width:520px;">' + (pos
+     ? "Index above the fictional flip level. Dealers buy dips and sell rips to stay neutral, which damps realized volatility."
+     : "Index below the fictional flip level. Dealers sell weakness and buy strength to stay hedged, which amplifies moves both ways.") + "</div></div>";
+  };
+  on("gx-s", "input", draw); draw();
+ }
+}
+
+function academySectionHtml(sec, idx) {
+ let h = '<section style="margin-bottom:36px;">' +
+  '<h2 style="font-size:18px;font-weight:700;color:#e8ecf1;margin-bottom:10px;"><span style="color:#c9a961;font-family:monospace;font-size:14px;margin-right:8px;">' + (idx + 1) + '.0</span>' + esc(sec.heading) + "</h2>" +
+  '<div style="font-size:14px;color:#c3ccd8;line-height:1.75;margin-bottom:12px;">' + esc(sec.body) + "</div>";
+ if (sec.formula) {
+  h += '<div class="card" style="margin:12px 0;overflow-x:auto;"><div style="font-size:10px;letter-spacing:1px;color:#c9a961;font-weight:700;margin-bottom:8px;">FORMULA</div>' +
+   '<div class="acad-formula" data-tex="' + esc(sec.formula) + '" style="color:#e8ecf1;text-align:center;padding:6px 0;">' + esc(sec.formula) + "</div></div>";
+ }
+ if (sec.interactive) { h += '<div id="acad-int-' + sec.interactive + '">' + academyInteractiveHtml(sec.interactive) + "</div>"; }
+ if (sec.takeaways) {
+  h += '<div class="card" style="margin-top:12px;border-left:3px solid #3fb950;"><div style="font-size:11px;letter-spacing:1px;color:#3fb950;font-weight:700;margin-bottom:8px;">DESK TAKEAWAYS</div><ul style="margin:0;padding-left:18px;font-size:13px;color:#c3ccd8;line-height:1.7;">' +
+   sec.takeaways.map((t) => "<li style='margin-bottom:6px;'>" + esc(t) + "</li>").join("") + "</ul></div>";
+ }
+ return h + "</section>";
+}
+
+let _academyModule = "macro";
+let _academyQuery = "";
+
+route("academy", function () {
+ const mod = ACADEMY_MODULES.find((m) => m.id === _academyModule) || ACADEMY_MODULES[0];
+ const q = _academyQuery.trim().toLowerCase();
+ const filtered = ACADEMY_MODULES.filter((m) => !q || m.title.toLowerCase().includes(q) || m.category.toLowerCase().includes(q) || m.summary.toLowerCase().includes(q));
+ let h = '<div class="crumb">FREE · EDUCATION</div>' +
+  '<div class="hero"><div><h1 class="hero-h">Cascadia Academy</h1>' +
+  '<p class="hero-sub">Institutional trading and research concepts, taught plainly. Six modules across macro, fundamentals, derivatives, volatility, and execution.</p></div></div>' +
+  '<div class="card" style="border-left:3px solid #c9a961;margin-bottom:20px;"><div style="font-size:12px;color:#c9a961;font-weight:700;letter-spacing:1px;margin-bottom:6px;">PLEASE READ</div>' +
+  '<div style="font-size:13px;color:#c3ccd8;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div></div>" +
+  '<div style="display:flex;gap:20px;align-items:flex-start;">' +
+  '<aside style="width:280px;flex-shrink:0;position:sticky;top:16px;">' +
+  '<div class="card"><div style="font-size:11px;letter-spacing:1px;color:#c9a961;font-weight:700;margin-bottom:10px;">CURRICULUM · FREE</div>' +
+  '<input id="acad-search" type="text" placeholder="Search topics, Greeks, models..." value="' + esc(_academyQuery) + '" style="width:100%;margin-bottom:10px;padding:8px 10px;border-radius:8px;border:1px solid #2a3448;background:#0b1119;color:#e8ecf1;font-size:13px;">' +
+  '<nav>' + filtered.map((m) => {
+   const active = m.id === mod.id;
+   return '<button data-acad="' + m.id + '" style="display:block;width:100%;text-align:left;padding:10px 12px;border-radius:10px;margin-bottom:6px;border:1px solid ' + (active ? "#c9a961" : "#2a3448") + ';background:' + (active ? "rgba(201,169,97,0.08)" : "transparent") + ';cursor:pointer;">' +
+    '<div style="font-size:11px;font-family:monospace;color:' + (active ? "#c9a961" : "#8b949e") + ';font-weight:700;">' + m.number + '</div>' +
+    '<div style="font-size:13px;font-weight:600;color:' + (active ? "#fff" : "#c3ccd8") + ';line-height:1.4;">' + esc(m.title) + "</div>" +
+    '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(m.category) + " · " + esc(m.readTime) + "</div></button>";
+  }).join("") + "</nav></div>" +
+  '<div class="card" style="margin-top:12px;"><div style="font-size:11px;letter-spacing:1px;color:#c9a961;font-weight:700;margin-bottom:8px;">HOUSE PRINCIPLE</div>' +
+  '<div style="font-size:12px;color:#8b949e;line-height:1.6;">Price action is evaluated through liquidity plumbing, capital efficiency spreads, and derivatives positioning, not through lagging retail indicators.</div></div>' +
+  "</aside>" +
+  '<main class="card" style="flex:1;min-width:0;" id="acad-main">' +
+  '<div style="border-bottom:1px solid #2a3448;padding-bottom:14px;margin-bottom:20px;">' +
+  '<div style="font-size:11px;font-family:monospace;color:#c9a961;font-weight:700;">' + mod.number + " // " + esc(mod.category).toUpperCase() + '</div>' +
+  '<h2 style="font-size:24px;font-weight:800;color:#e8ecf1;margin:6px 0;">' + esc(mod.title) + "</h2>" +
+  '<div style="font-size:13px;color:#8b949e;">' + esc(mod.summary) + " · " + esc(mod.readTime) + "</div></div>" +
+  '<div id="acad-sections">' + mod.sections.map(academySectionHtml).join("") + "</div>" +
+  '<div style="display:flex;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:1px solid #2a3448;">' +
+  (ACADEMY_MODULES.indexOf(mod) > 0 ? '<button class="btn secondary" id="acad-prev">← Previous Module</button>' : "<span></span>") +
+  (ACADEMY_MODULES.indexOf(mod) < ACADEMY_MODULES.length - 1 ? '<button class="btn secondary" id="acad-next" style="border-color:#c9a961;color:#c9a961;">Next Module →</button>' : "<span></span>") +
+  "</div>" +
+  '<div style="margin-top:20px;padding-top:14px;border-top:1px solid #2a3448;font-size:11px;color:#8b949e;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div>" +
+  "</main></div>";
+
+ app.innerHTML = h;
+
+ // module switching (direct function calls, never inline scripts)
+ app.querySelectorAll("[data-acad]").forEach((b) => b.addEventListener("click", () => { _academyModule = b.dataset.acad; render(); window.scrollTo({ top: 0 }); }));
+ const prev = document.getElementById("acad-prev");
+ if (prev) prev.addEventListener("click", () => { _academyModule = ACADEMY_MODULES[ACADEMY_MODULES.indexOf(mod) - 1].id; render(); window.scrollTo({ top: 0 }); });
+ const next = document.getElementById("acad-next");
+ if (next) next.addEventListener("click", () => { _academyModule = ACADEMY_MODULES[ACADEMY_MODULES.indexOf(mod) + 1].id; render(); window.scrollTo({ top: 0 }); });
+ const search = document.getElementById("acad-search");
+ if (search) search.addEventListener("input", () => { _academyQuery = search.value; render(); const s2 = document.getElementById("acad-search"); if (s2) { s2.focus(); s2.setSelectionRange(s2.value.length, s2.value.length); } });
+
+ // wire interactives present in this module
+ mod.sections.forEach((s) => { if (s.interactive) wireAcademyInteractive(s.interactive); });
+
+ // lazy KaTeX for formulas, fallback to plain text
+ ensureKaTeX(renderAcademyFormulas);
+});
+
+route("alerts", function () {
   if (!isPro()) {
    app.innerHTML = '<div class="section"><div class="section-title">Email Alerts</div>' +
     '<div class="card"><h3>Pro Feature</h3><p>Email alerts for market internals monitors are available to Pro subscribers.</p>' +
