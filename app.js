@@ -4832,6 +4832,10 @@ function bindZoomHandlers() {
     e360Btn.addEventListener("click", () =>
      runEarnings360Search("e360-input-" + tk, "e360-" + tk, "e360-btn-" + tk));
    }
+   // Restore a previously generated matrix after route re-renders (in-memory cache)
+   if (typeof _e360Cache !== "undefined" && _e360Cache[tk] && !_e360Cache[tk].error) {
+    renderEarnings360(_e360Cache[tk], "e360-" + tk);
+   }
   }
   } catch (err) {
    app.innerHTML = '<div class="card"><h3>Error loading ' + esc(tk) + '</h3><p style="color:#ff6b6b;">' + esc(err.message) + '</p><p><a href="#/">Back home</a></p></div>';
