@@ -3719,6 +3719,34 @@ function bindZoomHandlers() {
      });
     } catch (e) { console.error("Breakeven chart error", e); }
    }
+   // Implied ERP chart (free): inline render, same data as the zoom modal
+   const erpCv = document.getElementById("erp-chart");
+   const erpD = D.implied_erp;
+   if (erpCv && erpD && (erpD.history || []).length) {
+    try {
+     const hist = erpD.history.slice(-365);
+     const ctx0 = erpCv.getContext("2d");
+     const grad = ctx0.createLinearGradient(0, 0, 0, 300);
+     grad.addColorStop(0, "rgba(201,169,97,0.35)");
+     grad.addColorStop(1, "rgba(201,169,97,0)");
+     new Chart(erpCv, {
+      type: "line",
+      data: { labels: hist.map((r) => r.date),
+       datasets: [{label: "Implied ERP (%)", data: hist.map((r) => r.erp * 100),
+        borderColor: "#c9a961", borderWidth: 1.5, backgroundColor: grad, fill: true,
+        pointRadius: 0, pointHoverRadius: 4, tension: 0.1}]},
+      options: { animation: false, responsive: true, maintainAspectRatio: false,
+       interaction: {mode: "index", intersect: false},
+       plugins: {legend: {display: false},
+        tooltip: {backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
+         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+         callbacks: {label: (c) => " " + c.parsed.y.toFixed(2) + "%"}}},
+       scales: {
+        x: {ticks: {color: "#6b7280", maxTicksLimit: 6, maxRotation: 0}, grid: {display: false}},
+        y: {position: "right", ticks: {color: "#6b7280", callback: (v) => v.toFixed(1) + "%"}, grid: {color: "rgba(42,46,57,0.4)"}}}}
+     });
+    } catch (e) { console.error("ERP chart error", e); }
+   }
    // COT chart (free): net positioning over time for SPX
    const cotCv = document.getElementById("cot-chart");
    const cotD = D.cot_data;
