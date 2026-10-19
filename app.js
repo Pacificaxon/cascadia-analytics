@@ -1637,7 +1637,7 @@ function bindZoomHandlers() {
   const sel = document.getElementById("coverage-pick");
   if (!sel) return;
   sel.innerHTML = '<option value="">HOME · Macro &amp; market intelligence</option>' +
-   ORDER.map((tk) => '<option value="' + esc(tk) + '">' + esc(tk) + ", " + esc(TICKERS[tk].name) + "</option>").join("");
+   ORDER.map((tk) => { const _nm = (TICKERS[tk] || {}).name || ""; return '<option value="' + esc(tk) + '">' + esc(tk) + ((_nm && _nm.toUpperCase() !== tk.toUpperCase()) ? ", " + esc(_nm) : "") + "</option>"; }).join("");
   sel.addEventListener("change", () => {
    if (sel.value) nav("ticker/" + sel.value);
    else nav("");
@@ -5306,10 +5306,10 @@ route("alerts", function () {
   if (!sel) return;
   // Indices first, then all coverage tickers (auto-includes future additions)
   let opts = '<option value="QQQ">QQQ, Nasdaq 100</option><option value="SPY">SPY, S&P 500</option>';
-  opts += ORDER.map((tk) => '<option value="' + esc(tk) + '">' + esc(tk) + ", " + esc((TICKERS[tk] || {}).name || "") + "</option>").join("");
+  opts += ORDER.map((tk) => { const _nm = (TICKERS[tk] || {}).name || ""; return '<option value="' + esc(tk) + '">' + esc(tk) + ((_nm && _nm.toUpperCase() !== tk.toUpperCase()) ? ", " + esc(_nm) : "") + "</option>"; }).join("");
   sel.innerHTML = opts;
   if (priceSel) {
-   priceSel.innerHTML = ORDER.map((tk) => '<option value="' + esc(tk) + '">' + esc(tk) + ", " + esc((TICKERS[tk] || {}).name || "") + "</option>").join("");
+   priceSel.innerHTML = ORDER.map((tk) => { const _nm = (TICKERS[tk] || {}).name || ""; return '<option value="' + esc(tk) + '">' + esc(tk) + ((_nm && _nm.toUpperCase() !== tk.toUpperCase()) ? ", " + esc(_nm) : "") + "</option>"; }).join("");
   }
  }
 
@@ -5423,7 +5423,7 @@ route("alerts", function () {
   const attrScore = t.scorecard && t.scorecard.score;
   const attrBand = attrScore != null ? (attrScore >= 80 ? "Highly Attractive" : attrScore >= 65 ? "Attractive" : attrScore >= 50 ? "Fair" : attrScore >= 35 ? "Unattractive" : "Avoid") : null;
   let h = '<div class="tk-kicker">DCF COVERAGE · SINGLE-NAME RESEARCH</div>';
-  h += '<div class="ticker-head" style="display:flex;align-items:center;gap:12px;"><div>' + tickerLogo(tk) + '</div><div><h1 style="margin:0;">' + esc(tk) + '</h1><span class="co-name">' + esc(t.name) + "</span>";
+  h += '<div class="ticker-head" style="display:flex;align-items:center;gap:12px;"><div>' + tickerLogo(tk) + '</div><div><h1 style="margin:0;">' + esc(tk) + '</h1>' + ((t.name && t.name.toUpperCase() !== tk.toUpperCase()) ? '<span class="co-name">' + esc(t.name) + "</span>" : "");
   const ind = tickerIndustry(tk);
   if (ind) h += '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + esc(ind) + "</div>";
   h += "</div>";
