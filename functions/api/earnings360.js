@@ -1,5 +1,5 @@
 /**
- * Cascadia Analytics - Upcoming Earnings Verdict (PRO)
+ * Cascadia Analytics - Event Matrix (PRO)
  * GET /api/earnings360?ticker=NVDA
  *
  * On-demand institutional earnings preview for ANY ticker:
