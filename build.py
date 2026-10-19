@@ -563,7 +563,7 @@ def main():
         # key: (direction, pillar, display name)
         "correction_risk": (+1, "Structural & Breadth", "Correction Risk"),
         "liquidity_drain": (-1, "Macro & Liquidity", "Liquidity Drain"),
-        "rv_shock": (+1, "Systematic & Volatility", "RV Shock"),
+        "rv_shock": (+1, "Systematic & Volatility", "Realized Vol Shock"),
         "contagion": (+1, "Macro & Liquidity", "Contagion"),
         "concentration": (+1, "Structural & Breadth", "Concentration"),
         "margin_leverage": (+1, "Flow & Leverage", "Margin Leverage"),

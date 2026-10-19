@@ -7906,8 +7906,8 @@ route("alerts", function () {
  function rvShockHtml() {
   const R = D.rv_shock || {};
   if (!R.countdown) {
-   return '<div class="section"><div class="section-title">RV Shock Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    '<div class="card"><p style="color:var(--muted)">RV Shock data unavailable. Check back after the next refresh.</p></div></div>';
+   return '<div class="section"><div class="section-title">Realized Vol Shock Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="card"><p style="color:var(--muted)">Realized Vol Shock data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const cd = R.countdown, rv = R.rvCurrent || {};
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
@@ -7915,7 +7915,7 @@ route("alerts", function () {
   const vcf = rv.vcfExposurePercentile || 0;
   const vcfColor = vcf >= 80 ? "#f85149" : vcf >= 50 ? "#d29922" : "#3fb950";
 
-  let h = '<div class="section"><div class="section-title">RV Shock Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+  let h = '<div class="section"><div class="section-title">Realized Vol Shock Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
    '<div class="section-sub">Realized volatility shocks and systematic fund positioning. When volatility has been quiet too long, mechanical sellers are fully loaded.</div>';
 
   // What this means (for everyone)
@@ -8338,7 +8338,7 @@ route("alerts", function () {
   const pillars = comp.pillars || [];
   // Top 3 risk contributors
   const top = comps.slice().sort((a, b) => b.risk - a.risk).slice(0, 3);
-  const nameMap = { correction_risk: "Correction", liquidity_drain: "Liquidity", rv_shock: "RV Shock",
+  const nameMap = { correction_risk: "Correction", liquidity_drain: "Liquidity", rv_shock: "Realized Vol",
    contagion: "Contagion", flow_divergence: "Flow Div.", concentration: "Concentration",
    margin_leverage: "Margin Lev.", sector_rotation: "Rotation", fear_index: "Fear" };
   let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
@@ -9013,7 +9013,7 @@ route("alerts", function () {
     '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">' +
     card("Correction Risk", cr.score, cr.regime, cr.color) +
     card("Liquidity Drain", ld.score, ld.regime, ld.color) +
-    card("RV Shock", rv.score, rv.regime, rv.color) +
+    card("Realized Vol Shock", rv.score, rv.regime, rv.color) +
     card("Contagion", cg.score, cg.regime, cg.color) +
     card("Flow Divergence", fd.score, fd.regime, fd.color) +
     card("Concentration", dc.score, dc.regime, dc.color) +
@@ -9021,7 +9021,7 @@ route("alerts", function () {
     card("Sector Rotation", sr.score, sr.regime, sr.color) +
     card("Fear Index", fi.score, fi.regime, fiColor) +
     "</div>" +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, RV Shock Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;
    return;
   }
@@ -9298,7 +9298,7 @@ route("alerts", function () {
    '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
-   '<li>✓ All 9 Risk Models in full: Correction Risk, Liquidity Drain, RV Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, with charts, history, and plain-English explainers</li>' +
+   '<li>✓ All 9 Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, with charts, history, and plain-English explainers</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
    '<li>✓ Full market internals suite: Volatility Divergence, Alligator Jaw, Credit Spreads vs VIX, Market Breadth, Theme Rotation, Small/Mid Cap Monitor, RSI Cyclicals vs Defensives, Macroeconomic Analysis</li>' +
