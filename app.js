@@ -232,6 +232,12 @@
    if (sections.sector_rotation) flat.sector_rotation = sections.sector_rotation;
    if (sections.trend_signals) flat.trend_signals = sections.trend_signals;
    if (sections.flow_divergence) flat.flow_divergence = sections.flow_divergence;
+   if (sections.oas_distress) flat.oas_distress = sections.oas_distress;
+   if (sections.pead_screener) flat.pead_screener = sections.pead_screener;
+   if (sections.treasury_slr) flat.treasury_slr = sections.treasury_slr;
+   if (sections.squeeze_radar) flat.squeeze_radar = sections.squeeze_radar;
+   if (sections.gamma_flip) flat.gamma_flip = sections.gamma_flip;
+   if (sections.real_yield_shock) flat.real_yield_shock = sections.real_yield_shock;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -2533,6 +2539,10 @@ function bindZoomHandlers() {
   // 10Y Breakeven Inflation, FREE, updates every morning
   if (D.breakeven_inflation && D.breakeven_inflation.latest != null) {
    h += breakevenHtml(D.breakeven_inflation);
+   // Treasury Absorption & SLR Gauge, FREE headline (Pro users see the full section below)
+   if (D.treasury_slr && D.treasury_slr.score != null) {
+    h += treasurySlrFreeCard(D.treasury_slr);
+   }
   }
   // Implied ERP, FREE data + chart, PRO analysis
   if (D.implied_erp && D.implied_erp.erp != null) {
@@ -3438,6 +3448,16 @@ function bindZoomHandlers() {
     '<div class="section-sub">Options expiration calendar, max pain strikes, and dealer positioning. Updates daily.</div>' +
     gated("OPEX Cycle Tracker", "Max pain strikes, put/call OI, and expiration calendar. Front-run dealer hedging flows.", opexHtml + opexExplainer) +
     "</div>";
+  }
+  // Treasury Absorption & SLR Gauge, Pro details
+  if (D.treasury_slr && D.treasury_slr.score != null) {
+   h += treasurySlrHtml();
+  }
+  // Dealer Gamma Flip Barometer, Pro-gated
+  if (D.gamma_flip && (D.gamma_flip.spy || D.gamma_flip.qqq)) {
+   h += gatedSafe("Dealer Gamma Flip Barometer",
+    "SPY and QQQ gamma flip levels, dealer hedging regimes, and distance to the flip.",
+    gammaFlipHtml);
   }
   // render interactive vol divergence chart after DOM insert
   setTimeout(() => {
@@ -8056,6 +8076,9 @@ route("alerts", function () {
     metricsTrackerInputHtml("metrics-ticker-scr", "metrics-result-scr", "") + "</div>";
    app.appendChild(metDiv);
    wireMetricsInput("metrics-ticker-scr", "metrics-result-scr", false);
+      const sqDiv = document.createElement("div");
+      sqDiv.innerHTML = squeezeRadarHtml();
+      app.appendChild(sqDiv);
   } else {
    const t1 = document.createElement("div");
    t1.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
@@ -8156,6 +8179,7 @@ route("alerts", function () {
    tickers.map((t) => '<option value="' + esc(t) + '"' + (t === sel ? " selected" : "") + '>' + esc(t) + '</option>').join("") + '</select>';
   h += '<span style="font-size:11px;color:var(--muted);margin-left:auto;">Auto-sync: 12:00 UTC weekdays</span></div></div>';
   h += '<div id="ed-body">' + renderDash(sel) + '</div></div>';
+  h += peadScreenerHtml();
   app.innerHTML = h;
   document.getElementById("ed-ticker").addEventListener("change", (e) => {
    document.getElementById("ed-body").innerHTML = renderDash(e.target.value);
@@ -8172,7 +8196,7 @@ route("alerts", function () {
     '<div class="hero"><div><h1 class="hero-h">Relative Valuation</h1>' +
     "<p class='hero-sub'>Cross-reference DCF values with regression-modeled peer multiples.</p></div></div>" +
     '<div class="section"><div class="section-title">Comps Matrix <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
-    proTeaser("Comps Matrix, Pro", "OLS regression of EV/Revenue and P/E against NTM growth across all " + ORDER.length + " tickers. Find discounted growth and stretched multiples.") + "</div>";
+    proTeaser("Comps Matrix, Pro", "OLS regression of EV/Revenue and P/E against NTM growth across all " + ORDER.length + " tickers. Find discounted growth and stretched multiples.") + "</div>" + realYieldShockHtml();
    return;
   }
   const cm = D.comps_matrix || {};
@@ -8229,6 +8253,7 @@ route("alerts", function () {
   });
   h += '</tbody></table></div>';
   h += '<div class="panel-asof">Source: yfinance consensus estimates · OLS regression across coverage universe</div></div>';
+  h += realYieldShockHtml();
   app.innerHTML = h;
   bindZoomHandlers();
   // Toggle button
@@ -8637,6 +8662,388 @@ route("alerts", function () {
   return h;
  }
 
+
+// === oas_distress.js ===
+function oasDistressHtml() {
+  const O = D.oas_distress || {};
+  if (O.score == null) {
+   return '<div class="section"><div class="section-title">Credit Stress Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="card"><p style="color:var(--muted)">Credit Stress data unavailable. Check back after the next refresh.</p></div></div>';
+  }
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+  const c = colorMap[O.color] || "#e8ecf1";
+  const bps = (v) => v != null ? Number(v).toLocaleString() + " bps" : "N/A";
+  let h = '<div class="section"><div class="section-title">Credit Stress Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section-sub">Option-adjusted spreads across high-yield and investment-grade bonds. Widening spreads mean credit markets are pricing distress, and the HY minus IG quality spread isolates true default fear.</div>';
+  // Score banner
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + O.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(O.regime || "") + "</div>" +
+   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">HY OAS ' + bps(O.hy_oas) +
+   " \u00B7 Quality spread " + bps(O.quality_spread) +
+   (O.implied_default_5y != null ? " \u00B7 Implied 5Y default " + O.implied_default_5y + "%" : "") + "</div></div></div>";
+  // Metric cards
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
+  const mc = (label, val) =>
+   '<div style="background:#161b26;border-radius:10px;padding:12px;text-align:center;">' +
+   '<div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
+   '<div style="font-size:22px;font-weight:800;color:#e8ecf1;">' + val + "</div></div>";
+  h += mc("HY OAS", bps(O.hy_oas));
+  h += mc("IG OAS", bps(O.ig_oas));
+  h += mc("QUALITY SPREAD", bps(O.quality_spread));
+  h += "</div>";
+  // Chart: 60-day HY OAS vs quality spread (drawn by drawOasDistressChart)
+  const hist = O.history || [];
+  if (hist.length) {
+   h += '<div class="zoomable-chart" data-chart="oas-distress" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="oas-distress-chart"></canvas>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
+  }
+  h += '<div class="panel-asof">As of ' + esc((O.as_of || "").slice(0, 10)) + "</div></div>";
+  // Explainer AFTER the visuals
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+   "An option-adjusted spread measures the extra yield investors demand to hold a corporate bond instead of a Treasury of the same maturity, after stripping out the value of embedded options such as call features. When spreads rise, investors are demanding more compensation for credit risk. When spreads fall, confidence is returning.<br><br>" +
+   "High-yield spreads move with broad risk appetite and liquidity conditions. Investment-grade spreads move with those same forces but carry far less default risk. The gap between them, the quality spread, strips out what hits all bonds equally and leaves the part driven by fear of actual defaults. A widening quality spread means investors are repricing default risk in the weakest balance sheets, and that repricing has historically shown up in equities soon after.<br><br>" +
+   "The model compresses this picture into a 0 to 100 score. Low readings mean credit markets are calm and supportive of risk assets. Elevated readings mean spreads are pricing in real stress, and equity drawdowns have historically been more frequent in those stretches. Credit markets turn before headlines do, so the gauge works best as a slow-moving backdrop rather than a timing signal." +
+   "</div></div>";
+  return h;
+ }
+
+ // Free-tier headline card for the #/risk daily snapshot (score + regime only).
+ function oasDistressFreeCard() {
+  const O = D.oas_distress || {};
+  if (O.score == null) return "";
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+  const c = colorMap[O.color] || "#e8ecf1";
+  return '<div style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+   '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">CREDIT STRESS</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + O.score + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
+   '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(O.regime || "") + "</div></div>";
+ }
+
+ // Draw the 60-day HY OAS vs quality spread chart. Call after bindZoomHandlers()
+ // in the Pro #/risk route (see insertion step 3 above).
+ function drawOasDistressChart() {
+  const O = D.oas_distress || {};
+  const hist = O.history || [];
+  const cv = document.getElementById("oas-distress-chart");
+  if (!cv || !hist.length || !window.Chart) return;
+  const old = Chart.getChart(cv);
+  if (old) old.destroy();
+  new Chart(cv, {
+   data: {
+    labels: hist.map((r) => r.date),
+    datasets: [
+     { type: "line", label: "HY OAS (bps)", data: hist.map((r) => r.hy_oas),
+       borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+     { type: "line", label: "Quality Spread (bps)", data: hist.map((r) => r.spread),
+       borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+    ]},
+   options: { animation: false, responsive: true, maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+    scales: {
+     x: { ticks: { color: "#6b7280", maxTicksLimit: 8 }, grid: { display: false } },
+     y: { title: { display: true, text: "bps", color: "#8b949e" },
+          ticks: { color: "#8b949e" }, grid: { color: "rgba(42,46,57,0.4)" } },
+    }},
+  });
+ }
+
+// === real_yield_shock.js ===
+function realYieldShockHtml() {
+  const R = D.real_yield_shock || {};
+  const isProUser = typeof isPro === "function" ? isPro() : false;
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+  const c = colorMap[R.color] || "#e8ecf1";
+  const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
+  const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
+  let h = '<div class="section"><div class="section-title">Real Yield Shock Model <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+   '<div class="section-sub">The 10-year TIPS yield is the market\u2019s real cost of capital. When real yields rise, equity multiples tend to compress, and this gauge tracks that pressure.</div>';
+  // Gauge banner (free): regime badge, 10Y real yield, fair P/E vs benchmark P/E
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
+   '<div style="font-size:13px;font-weight:800;padding:6px 14px;border-radius:20px;background:' + c + '22;color:' + c + ';border:1px solid ' + c + ';">' + esc(R.regime || "N/A") + "</div>" +
+   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;flex:1;min-width:260px;">' +
+   '<div><div style="font-size:11px;color:#8b949e;">10Y REAL YIELD</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.tips_10y != null ? f2(R.tips_10y) + "%" : "N/A") + "</div></div>" +
+   '<div><div style="font-size:11px;color:#8b949e;">FAIR P/E</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.fair_pe != null ? f1(R.fair_pe) + "x" : "N/A") + "</div></div>" +
+   '<div><div style="font-size:11px;color:#8b949e;">BENCHMARK P/E</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.benchmark_pe != null ? f1(R.benchmark_pe) + "x" : "N/A") + "</div></div>" +
+   "</div></div>";
+  if (isProUser) {
+   // Pro details: implied compression + real yield z-score
+   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
+    '<div class="card"><div style="font-size:11px;color:#8b949e;">IMPLIED MULTIPLE COMPRESSION</div>' +
+    '<div style="font-size:24px;font-weight:800;color:' + c + ';">' + (R.compression_pct != null ? f1(R.compression_pct) + "%" : "N/A") + '</div>' +
+    '<div style="font-size:11px;color:#8b949e;margin-top:4px;">The gap between the benchmark multiple and the fair multiple implied by current real yields.</div></div>' +
+    '<div class="card"><div style="font-size:11px;color:#8b949e;">REAL YIELD Z-SCORE</div>' +
+    '<div style="font-size:24px;font-weight:800;color:#e8ecf1;">' + (R.tips_z != null ? f2(R.tips_z) : "N/A") + '</div>' +
+    '<div style="font-size:11px;color:#8b949e;margin-top:4px;">Where the current real yield sits against its own history.</div></div></div>';
+   // Explainer AFTER the visuals
+   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+    '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+    "The 10-year TIPS yield measures the real return investors can lock in by holding risk-free bonds for a decade. It is the hurdle rate that competes directly with equities for capital, and every valuation multiple is priced against it.<br><br>" +
+    "The fair P/E comes from that relationship. When real yields climb, each dollar of future earnings is worth less in present terms, so the fair multiple falls. The gauge compares that fair multiple with the market\u2019s actual multiple to estimate how much compression is needed for valuations to reconcile with the current cost of capital.<br><br>" +
+    "The z-score puts the current real yield in historical context. Readings near zero mean yields are ordinary, while readings beyond two standard deviations mean yields are unusually high relative to recent history, and that is when multiple compression pressure has historically been most acute." +
+    "</div></div>";
+  } else {
+   h += proTeaser("Real Yield Shock, Pro", "The full multiple-compression breakdown, the real yield z-score against history, and the read on what current real yields imply for equity valuations.");
+  }
+  h += '<div class="panel-asof">As of ' + esc((R.as_of || "").slice(0, 10)) + "</div></div>";
+  return h;
+ }
+
+// === pead_screener.js ===
+function peadScreenerHtml() {
+ const PRO_BADGE = '<span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>';
+ const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+
+ const fmtP = (v) => {
+  if (v == null || v === "" || isNaN(+v)) return "N/A";
+  const n = +v;
+  return (n >= 0 ? "+" : "") + n.toFixed(1) + "%";
+ };
+ const fmtSue = (v) => (v == null || v === "" || isNaN(+v)) ? "N/A" : (+v).toFixed(2);
+ const badge = (label, colorKey) => {
+  const col = colorMap[colorKey] || "#8b949e";
+  return '<span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:' +
+   col + '22;color:' + col + ';">' + esc(label || "N/A") + "</span>";
+ };
+
+ const p = D.pead_screener || {};
+ const cands = p.candidates || [];
+
+ let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">PEAD Drift Screener ' + PRO_BADGE + "</div>" +
+  '<div class="section-sub">Earnings surprises that keep drifting. Sorted by standardized unexpected earnings, strongest first.</div>';
+
+ if (!cands.length) {
+  h += '<div class="card"><p style="color:var(--muted)">No recent earnings surprises with drift data.</p></div></div>';
+  return h;
+ }
+
+ // Summary line: count of candidates in active accumulation drift
+ const active = cands.filter((c) => /accumulation drift/i.test(String(c.status || ""))).length;
+ h += '<p style="font-size:13px;color:#8b949e;margin:0 0 12px;"><b style="color:#e8ecf1;">' + active + "</b> of " + cands.length +
+  (active === 1 ? " candidate" : " candidates") + " in active accumulation drift.</p>";
+
+ h += '<div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table class="coverage">' +
+  "<thead><tr><th>Ticker</th><th>Report Date</th><th>Surprise %</th><th>SUE</th><th>Drift %</th><th>Status</th></tr></thead><tbody>";
+ cands.forEach((c) => {
+  h += "<tr>" +
+   '<td><a href="#/ticker/' + esc(c.ticker) + '" style="color:#e8ecf1;font-weight:600;text-decoration:none;">' + esc(c.ticker) + "</a></td>" +
+   "<td>" + esc(c.report_date || "N/A") + "</td>" +
+   '<td class="' + cls(c.surprise_pct) + '">' + fmtP(c.surprise_pct) + "</td>" +
+   "<td>" + fmtSue(c.sue) + "</td>" +
+   '<td class="' + cls(c.drift_pct) + '">' + fmtP(c.drift_pct) + "</td>" +
+   "<td>" + badge(c.status, c.color) + "</td></tr>";
+ });
+ h += "</tbody></table></div></div>";
+
+ h += '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + "</div></div>";
+
+ // Plain-English explainer, after the visual
+ const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+  "Post-earnings announcement drift is the tendency for a stock to keep moving in the direction of its earnings surprise for weeks after the report. The initial reaction captures only part of the repricing, and the rest leaks in gradually as the market digests the print.<br><br>" +
+  "The drift exists largely because large institutions rarely buy or sell their full position at once. They scale in over days and weeks to avoid moving the price against themselves, and that steady flow of orders extends the move well beyond the first session. Research desks also take time to update models and recommendations, which adds a second wave of demand after strong reports and persistent selling after weak ones. The screener separates fresh surprises from stale ones so the drift still has room to run.<br><br>" +
+  "SUE, or standardized unexpected earnings, scales the surprise by the stock's own history of forecast error. A 10 percent beat means little for a company that routinely beats by 12 percent, while a 5 percent beat is large for one that usually lands within 2 percent. Higher SUE values mark surprises that are genuinely unusual for that name, and those are the ones where drift has historically been strongest." +
+  "</div></div>";
+
+ h += explainerHtml;
+ return h;
+}
+
+// === squeeze_radar.js ===
+function squeezeRadarHtml() {
+ const PRO_BADGE = '<span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>';
+ const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+
+ const fmtLvl = (v) => {
+  if (v == null || v === "" || isNaN(+v)) return "N/A";
+  return (+v).toFixed(1) + "%";
+ };
+ const fmtChg = (v) => {
+  if (v == null || v === "" || isNaN(+v)) return "N/A";
+  const n = +v;
+  return (n >= 0 ? "+" : "") + n.toFixed(1) + "%";
+ };
+ const fmtNum = (v) => (v == null || v === "" || isNaN(+v)) ? "N/A" : (+v).toFixed(1);
+ const fmtScore = (v) => (v == null || v === "" || isNaN(+v)) ? "N/A" : (+v).toFixed(1).replace(/\.0$/, "");
+ const badge = (label, colorKey) => {
+  const col = colorMap[colorKey] || "#8b949e";
+  return '<span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:' +
+   col + '22;color:' + col + ';">' + esc(label || "N/A") + "</span>";
+ };
+
+ const s = D.squeeze_radar || {};
+ const recs = s.records || [];
+
+ let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Short Squeeze Radar ' + PRO_BADGE + "</div>" +
+  '<div class="section-sub">Where short positioning is most crowded and vulnerable to forced covering. Sorted by squeeze score, highest first.</div>';
+
+ if (!recs.length) {
+  h += '<div class="card"><p style="color:var(--muted)">No short squeeze data available. Check back after the next refresh.</p></div></div>';
+  return h;
+ }
+
+ h += '<div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table class="coverage">' +
+  "<thead><tr><th>Ticker</th><th>Short % Float</th><th>Days to Cover</th><th>SI Velocity %</th><th>Squeeze Score</th><th>Classification</th></tr></thead><tbody>";
+ recs.forEach((r, i) => {
+  const rowStyle = i < 3 ? ' style="background:rgba(255,255,255,0.04);"' : "";
+  h += "<tr" + rowStyle + ">" +
+   '<td><a href="#/ticker/' + esc(r.ticker) + '" style="color:#e8ecf1;font-weight:600;text-decoration:none;">' + esc(r.ticker) + "</a></td>" +
+   "<td>" + fmtLvl(r.si_pct) + "</td>" +
+   "<td>" + fmtNum(r.dtc) + "</td>" +
+   '<td class="' + cls(r.si_velocity) + '">' + fmtChg(r.si_velocity) + "</td>" +
+   '<td style="font-weight:700;">' + fmtScore(r.squeeze_score) + "</td>" +
+   "<td>" + badge(r.classification, r.color) + "</td></tr>";
+ });
+ h += "</tbody></table></div></div>";
+
+ h += '<div class="panel-asof">As of ' + esc((s.as_of || "").slice(0, 10)) + "</div></div>";
+
+ // Plain-English explainer, after the visual
+ const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+  "Days to cover estimates how long it would take short sellers to buy back every share they have borrowed, based on average daily trading volume. A reading of three means roughly three days of normal volume must be purchased to unwind the entire short position. When that number is high, exits are orderly in theory but crowded in practice, because every short seller is heading for the same narrow exit.<br><br>" +
+  "Borrow exhaustion is the point where the supply of shares available to short runs out. New shorts can no longer be opened easily, and existing shorts face rising borrow fees and recall risk. At that point any buying, from a strong earnings report or a technical breakout, forces shorts to compete for the same limited float, and the covering itself becomes the catalyst for further upside.<br><br>" +
+  "The squeeze score blends short interest, days to cover, the velocity of short interest change, and related positioning signals into a single gauge. Higher scores flag names where positioning is most crowded and most vulnerable to a sharp reversal, not names that are fundamentally sound. The radar is a positioning tool rather than a quality screen, and elevated scores warrant tighter risk management rather than larger positions." +
+  "</div></div>";
+
+ h += explainerHtml;
+ return h;
+}
+
+// === treasury_slr.js ===
+function treasurySlrFreeCard(d) {
+ const S = d || {};
+ if (S.score == null) return "";
+ if (typeof isPro === "function" && isPro()) return ""; // Pro users see the full section
+ const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+ const c = colorMap[S.color] || "#e8ecf1";
+ return '<div class="card" style="margin-bottom:16px;"><h3>Treasury Absorption &amp; SLR Gauge ' +
+  '<span style="font-size:10px;background:#3fb950;color:#fff;padding:2px 7px;border-radius:4px;vertical-align:middle;">FREE</span></h3>' +
+  '<div style="display:flex;align-items:center;gap:16px;margin:8px 0;">' +
+  '<div style="font-size:32px;font-weight:800;color:' + c + ';">' + S.score +
+  '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
+  '<div><div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(S.status || "") + "</div>" +
+  '<div style="font-size:11px;color:#8b949e;margin-top:2px;">Dealer balance-sheet capacity. Full breakdown is Pro.</div></div></div>' +
+  '<div class="panel-asof">As of ' + esc((S.as_of || "").slice(0, 10)) + "</div></div>";
+}
+
+function treasurySlrHtml() {
+ const S = D.treasury_slr || {};
+ const PRO_BADGE = '<span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>';
+ if (S.score == null) {
+  return '<div class="section"><div class="section-title">Treasury Absorption &amp; SLR Gauge ' + PRO_BADGE + "</div>" +
+   '<div class="card"><p style="color:var(--muted)">Treasury absorption data unavailable. Check back after the next refresh.</p></div></div>';
+ }
+ const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+ const c = colorMap[S.color] || "#e8ecf1";
+ const fmtB = (v) => (v == null ? "N/A" : "$" + Number(v).toLocaleString() + "B");
+
+ let h = '<div class="section"><div class="section-title">Treasury Absorption &amp; SLR Gauge ' + PRO_BADGE + "</div>" +
+  '<div class="section-sub">How much room dealers have on their balance sheets to absorb Treasury supply, and whether the leverage ratio is the binding constraint.</div>';
+
+ // Capacity score banner (score/100 + status)
+ h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
+  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + S.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+  '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(S.status || "") + "</div>" +
+  '<div style="font-size:12px;color:#8b949e;margin-top:4px;max-width:620px;">Higher scores mean ample balance-sheet room for dealers to intermediate Treasury auctions. Low scores mean the system is running close to the constraint.</div></div></div>';
+
+ // 4 metric cards: reserves, TGA, RRP, reserve buffer
+ h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
+ const card4 = (label, val, sub) =>
+  '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
+  '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + label + "</div>" +
+  '<div style="font-size:24px;font-weight:800;color:#e8ecf1;margin:2px 0;">' + val + "</div>" +
+  '<div style="font-size:11px;color:#8b949e;">' + sub + "</div></div>";
+ h += card4("BANK RESERVES", fmtB(S.reserves_b), "Cash banks hold at the Fed, the raw material of dealer balance-sheet capacity");
+ h += card4("TREASURY GENERAL ACCOUNT", fmtB(S.tga_b), "Treasury cash at the Fed, every dollar here is a dollar drained from reserves");
+ h += card4("REVERSE REPO FACILITY", fmtB(S.rrp_b), "Cash parked by money funds at the Fed, outside the banking system");
+ h += card4("RESERVE BUFFER", fmtB(S.reserve_buffer_b), "Estimated reserves left before funding stress historically appears");
+ h += "</div>";
+
+ // Explainer AFTER the visuals
+ h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">How the SLR works.</b> The Supplementary Leverage Ratio is a post-2008 backstop that forces large US banks to hold Tier 1 capital against total leverage exposure, with no credit for the safety of the asset. Treasuries and reserves count the same as risky loans, so the ratio penalizes banks for holding exactly the assets that make markets function.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">Why reserves versus TGA and RRP matter.</b> Bank reserves are the cash balances banks keep at the Federal Reserve, and they are the funding base that lets dealers finance Treasury inventories. When the Treasury rebuilds its General Account after a debt-ceiling standoff, or when money market funds flood the reverse repo facility, cash leaves the banking system and reserves fall. The deficit itself may be unchanged, yet dealer balance-sheet room has quietly tightened.</p>' +
+  '<p style="margin:0;"><b style="color:#e8ecf1;">What a binding constraint means.</b> When the SLR binds, banks pull back from market making and auction participation because adding Treasuries would breach the ratio. Auction tails widen, bid-ask spreads stretch, and the Treasury has to pay higher yields to clear supply. Regulators temporarily excluded Treasuries and reserves from the SLR in 2020 for exactly this reason, a binding ratio can turn an ordinary funding squeeze into a market event.</p>' +
+  "</div></div>";
+
+ h += '<div class="panel-asof">As of ' + esc((S.as_of || "").slice(0, 10)) + " · Sources: FRED (WRESBAL, WTREGEN, RRPONTSYD)</div></div>";
+ return h;
+}
+
+// === gamma_flip.js ===
+function gammaFlipHtml() {
+ const G = D.gamma_flip || {};
+ const PRO_BADGE = '<span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span>';
+ const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+
+ // One index panel (SPY or QQQ). Handles the N/A fallback gracefully.
+ const legPanel = (name, leg) => {
+  const L = leg || {};
+  const isNA = L.regime === "N/A" || L.flip_strike == null;
+  let body;
+  if (isNA) {
+   body = '<p style="color:var(--muted);font-size:13px;margin:12px 0;">Options data unavailable.</p>';
+  } else {
+   const c = colorMap[L.color] || "#e8ecf1";
+   const spot = Number(L.spot), flip = Number(L.flip_strike), dist = Number(L.distance_pct);
+   const dir = dist >= 0 ? "above" : "below";
+   // Marker position on the bar: flip strike sits at center, spot is offset by distance.
+   const pos = Math.min(97, Math.max(3, 50 + (dist / 5) * 45));
+   const sideColor = dist >= 0 ? "#3fb950" : "#f85149";
+   const stat = (label, val, sub) =>
+    '<div style="background:#161b26;border-radius:10px;padding:12px;text-align:center;">' +
+    '<div style="font-size:11px;color:#8b949e;">' + label + "</div>" +
+    '<div style="font-size:22px;font-weight:800;color:#e8ecf1;">' + val + "</div>" +
+    '<div style="font-size:11px;color:#8b949e;">' + sub + "</div></div>";
+   body =
+    '<div style="display:flex;align-items:baseline;gap:10px;margin:10px 0 4px;">' +
+    '<span style="font-size:28px;font-weight:800;color:#e8ecf1;">$' + spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</span>" +
+    '<span style="font-size:11px;font-weight:700;color:#fff;background:' + c + ';padding:3px 10px;border-radius:12px;">' + esc(L.regime || "") + "</span></div>" +
+    (L.regime_detail ? '<div style="font-size:12px;color:#8b949e;margin-bottom:10px;">' + esc(L.regime_detail) + "</div>" : "") +
+    // Spot vs flip position bar (pure divs, no chart library)
+    '<div style="margin:12px 0;">' +
+    '<div style="position:relative;height:52px;border-radius:8px;overflow:hidden;display:flex;border:1px solid #2a3448;">' +
+    '<div style="flex:1;background:rgba(248,81,73,0.10);"></div>' +
+    '<div style="flex:1;background:rgba(63,185,80,0.10);"></div>' +
+    '<div title="Gamma flip $' + flip.toLocaleString() + '" style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:#c9a961;"></div>' +
+    '<div title="Spot $' + spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '" style="position:absolute;left:calc(' + pos.toFixed(1) + '% - 7px);top:19px;width:14px;height:14px;border-radius:50%;background:' + sideColor + ';border:2px solid #fff;"></div></div>' +
+    '<div style="display:flex;justify-content:space-between;font-size:10px;color:#8b949e;margin-top:4px;">' +
+    '<span>Below flip · hedging amplifies moves</span>' +
+    '<span style="color:#c9a961;font-weight:700;">Flip $' + flip.toLocaleString() + "</span>" +
+    '<span>Above flip · hedging dampens moves</span></div>' +
+    '<div style="text-align:center;font-size:12px;color:' + sideColor + ';font-weight:700;margin-top:6px;">' +
+    Math.abs(dist).toFixed(2) + "% " + dir + " the flip</div></div>" +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0;">' +
+    stat("FLIP STRIKE", "$" + flip.toLocaleString(), "nearest expiry with full chain") +
+    stat("DAYS TO EXPIRY", (L.days_to_expiry != null ? L.days_to_expiry : "N/A"),
+     (L.expiry ? "expiry " + esc(String(L.expiry).slice(0, 10)) : "expiry unknown")) +
+    "</div>";
+  }
+  return '<div class="card" style="flex:1;min-width:280px;"><h3>' + esc(name) + "</h3>" + body + "</div>";
+ };
+
+ const h =
+  '<div class="section"><div class="section-title">Dealer Gamma Flip Barometer ' + PRO_BADGE + "</div>" +
+  '<div class="section-sub">Where dealer hedging flips from stabilizing to amplifying, for SPY and QQQ.</div>' +
+  '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;">' +
+  legPanel("SPY", G.spy) + legPanel("QQQ", G.qqq) +
+  "</div>" +
+  // Explainer AFTER the visuals
+  '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this barometer tells you</div>' +
+  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">How the gamma flip works.</b> Option dealers hedge the options they sell by trading the underlying, and the direction of that hedging depends on their aggregate gamma. The gamma flip is the index level where total dealer gamma changes sign, estimated from the full options chain by weighting gamma exposure across strikes. It moves as the chain changes, so it is a living level, not a fixed line in the sand.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">Why dealers hedge differently above and below it.</b> Above the flip, dealers are net long gamma and their hedging is stabilizing. They buy into weakness and sell into strength, which absorbs intraday moves and compresses realized volatility. Below the flip, dealers are net short gamma and hedging turns destabilizing. They sell into weakness and buy into strength, which feeds momentum and can turn an ordinary down day into an accelerated selloff.</p>' +
+  '<p style="margin:0;"><b style="color:#e8ecf1;">What OPEX charm means.</b> As options approach expiration their gamma first rises and then collapses at expiry, while charm measures how fast their delta decays with the passage of time. Into monthly expiration, large gamma positions rolling off can shift the flip level and release the hedging pressure that had been pinning price in place, which is why ranges often expand in the sessions right after expiration.</p>' +
+  "</div></div>" +
+  '<div class="panel-asof">As of ' + esc((G.as_of || "").slice(0, 10)) + " · Source: CBOE delayed options chains</div></div>";
+ return h;
+}
  function contagionHtml() {  const C = D.contagion || {};
   if (!C.composite) {
    return '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
@@ -9431,8 +9838,9 @@ route("alerts", function () {
     card("Margin Leverage", ml.score, ml.regime, ml.color) +
     card("Sector Rotation", sr.score, sr.regime, sr.color) +
     card("Fear Index", fi.score, fi.regime, fiColor) +
+    oasDistressFreeCard() +
     "</div>" +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;
    return;
   }
@@ -9443,6 +9851,7 @@ route("alerts", function () {
   h += correctionRiskHtml();
   h += liquidityDrainHtml();
   h += rvShockHtml();
+  h += oasDistressHtml();
   h += contagionHtml();
   h += flowDivergenceHtml();
   h += concentrationHtml();
@@ -9523,6 +9932,7 @@ route("alerts", function () {
      }},
    });
   }
+  drawOasDistressChart();
   // Draw contagion chart inline
   const cg = D.contagion || {};
   const cgHist = cg.history || [];
@@ -9684,7 +10094,7 @@ route("alerts", function () {
    '<li>✓ Valuation multiples, market cap, EV, TTM and forward multiples</li>' +
    '<li>✓ Interactive price charts with moving averages (10/20/50/100/200-day)</li>' +
    '<li>✓ 5 years of financial statements, income, balance sheet, cash flow</li>' +
-   '<li>✓ Daily Snapshot risk scores, all 9 models, score plus regime</li>' +
+   '<li>✓ Daily Snapshot risk scores, all 10 models, score plus regime</li>' +
    '<li>✓ AAII Investor Sentiment tracker (weekly)</li>' +
    '<li>✓ COT Positioning tracker, commercial, large spec, small spec (weekly)</li>' +
    '<li>✓ Fed funds futures tracker with meeting probabilities</li>' +
@@ -9709,7 +10119,7 @@ route("alerts", function () {
    '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
-   '<li>✓ All 9 Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, with charts, history, and plain-English explainers</li>' +
+   '<li>✓ All 10 Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, with charts, history, and plain-English explainers</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
    '<li>✓ Full market internals suite: Volatility Divergence, Alligator Jaw, Credit Spreads vs VIX, Market Breadth, Theme Rotation, Small/Mid Cap Monitor, RSI Cyclicals vs Defensives, Macroeconomic Analysis</li>' +
@@ -9728,6 +10138,9 @@ route("alerts", function () {
 '<li>✓ Agency Risk tracker, executive alignment scoring with SEC proxy audits</li>' +
 '<li>✓ Week Ahead memos, Pro-only weekly market outlook</li>' +
 '<li>✓ OPEX Cycle Tracker, options expiration calendar with max-pain levels</li>' +
+   '<li>✓ PEAD Screener, post-earnings drift candidates ranked by surprise score</li>' +
+   '<li>✓ Short Squeeze Radar, days-to-cover and borrow exhaustion signals</li>' +
+   '<li>✓ Gamma Flip Barometer, dealer positioning regime for SPY and QQQ</li>' +
    '<li>✓ ' + ORDER.length + ' Cascadia research reports (PDF, full institutional format)</li>' +
    '<li>✓ Investment scorecard PDFs, one-glance 0-100 attractiveness rating</li>' +
    '<li>✓ Morning Briefing, institutional-grade daily synthesis of macro, internals, and positioning</li>' +

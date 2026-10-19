@@ -493,6 +493,12 @@ def main():
         "sector_rotation": load(os.path.join(MR, "sector_rotation.json")) if os.path.exists(os.path.join(MR, "sector_rotation.json")) else {},
         "trend_signals": load(os.path.join(MR, "trend_signals.json")) if os.path.exists(os.path.join(MR, "trend_signals.json")) else {},
         "transcript_tone": load(os.path.join(MR, "transcript_tone.json")) if os.path.exists(os.path.join(MR, "transcript_tone.json")) else {},
+        "oas_distress": load(os.path.join(MR, "oas_distress.json")) if os.path.exists(os.path.join(MR, "oas_distress.json")) else {},
+        "pead_screener": load(os.path.join(MR, "pead_screener.json")) if os.path.exists(os.path.join(MR, "pead_screener.json")) else {},
+        "treasury_slr": load(os.path.join(MR, "treasury_slr.json")) if os.path.exists(os.path.join(MR, "treasury_slr.json")) else {},
+        "squeeze_radar": load(os.path.join(MR, "squeeze_radar.json")) if os.path.exists(os.path.join(MR, "squeeze_radar.json")) else {},
+        "gamma_flip": load(os.path.join(MR, "gamma_flip.json")) if os.path.exists(os.path.join(MR, "gamma_flip.json")) else {},
+        "real_yield_shock": load(os.path.join(MR, "real_yield_shock.json")) if os.path.exists(os.path.join(MR, "real_yield_shock.json")) else {},
     }
     # Per-ticker transcript tone detail files
     import glob
@@ -523,6 +529,13 @@ def main():
     pro_sections["dcf_targets"] = dcf_targets
     pro_sections["fcf_projections"] = fcf_projections
 
+    # Real yield shock 0-100 risk score from 10Y TIPS (higher = more duration risk)
+    _ry_tips = pro_sections.get("real_yield_shock", {}).get("tips_10y")
+    try:
+        _ry_score = max(0.0, min(100.0, (float(_ry_tips) - 1.0) * 40.0)) if _ry_tips is not None else None
+    except (TypeError, ValueError):
+        _ry_score = None
+
     # Free risk headlines (score + regime only, no analysis) for the #/risk teaser
     site["risk_headlines"] = {
         "correction_risk": {"score": pro_sections.get("correction_risk", {}).get("totalRiskScore"),
@@ -551,6 +564,15 @@ def main():
                           "color": pro_sections.get("sector_rotation", {}).get("color")},
         "fear_index": {"score": pro_sections.get("fear_index", {}).get("fear_index"),
                        "regime": pro_sections.get("fear_index", {}).get("sentiment")},
+        "oas_distress": {"score": pro_sections.get("oas_distress", {}).get("score"),
+                         "regime": pro_sections.get("oas_distress", {}).get("regime"),
+                         "color": pro_sections.get("oas_distress", {}).get("color")},
+        "treasury_slr": {"score": pro_sections.get("treasury_slr", {}).get("score"),
+                         "regime": pro_sections.get("treasury_slr", {}).get("status"),
+                         "color": pro_sections.get("treasury_slr", {}).get("color")},
+        "real_yield_shock": {"score": _ry_score,
+                             "regime": pro_sections.get("real_yield_shock", {}).get("regime"),
+                             "color": pro_sections.get("real_yield_shock", {}).get("color")},
     }
 
     # Cascadia Composite Risk Index (CCRI): overall assessment across all risk models.
@@ -569,6 +591,7 @@ def main():
         "margin_leverage": (+1, "Flow & Leverage", "Margin Leverage"),
         "sector_rotation": (-1, "Structural & Breadth", "Sector Rotation"),
         "fear_index": (+1, "Systematic & Volatility", "Fear Index"),
+        "oas_distress": (+1, "Macro & Liquidity", "Credit Stress"),
     }
     _components = []  # (key, risk, pillar, display name)
     for _key, (_direction, _pillar, _dname) in _composite_cfg.items():
