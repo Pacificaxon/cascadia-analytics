@@ -1,6 +1,6 @@
 // Supabase Auth webhook receiver for new user signups.
 // Configure in Supabase Dashboard: Authentication > Webhooks > Add webhook
-//   Event: user.created, URL: https://cascadia-analytics.pages.dev/api/auth-webhook
+//   Event: user.created, URL: https://cascadia.jda-properties.com/api/auth-webhook
 // Stores the signup event; a cron picks it up and notifies Justin in chat.
 
 export async function onRequestPost({ request, env }) {
