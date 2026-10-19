@@ -16,7 +16,7 @@
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 const GEMINI_MODEL = "gemini-3.8-flash";
-const GROQ_MODEL = "openai/gpt-oss-20b";
+const GROQ_MODEL = "openai/gpt-oss-120b";
 const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
 // Timeouts so a hung upstream becomes a fast fallback instead of a hung request.
 const YAHOO_TIMEOUT_MS = 10000;
