@@ -2404,7 +2404,7 @@ function bindZoomHandlers() {
   let h = '<div class="crumb">MACRO INTELLIGENCE · DCF COVERAGE</div>';
   h += '<div class="hero"><div>' +
    '<h1 class="hero-h" style="color:var(--gold);">The signals moving markets, in one research view.</h1>' +
-   "<p class='hero-sub' style=\"color:var(--gold);opacity:0.85;\">Track macro releases and central-bank commentary, gauge market risk across nine quantitative models, " +
+   "<p class='hero-sub' style=\"color:var(--gold);opacity:0.85;\">Track macro releases and central-bank commentary, gauge market risk across ten quantitative models, " +
    "screen 500+ stocks on quality and momentum factors, then move directly into company valuation work across " + ORDER.length + " DCF-covered names.</p></div>" +
    '<div class="hero-right">' +
    '<div class="statbox"><div class="mono-label">Coverage</div><div class="statbox-v">' + ORDER.length + " DCF models</div></div>" +
