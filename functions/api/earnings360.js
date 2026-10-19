@@ -57,7 +57,7 @@ function buildPrompt(tk, g) {
     `HOUSE STYLE (mandatory): never use em dashes. Never use the "label: explanation" pattern; write flowing sentences instead. ` +
     `Never ask rhetorical questions; use transitions like however, while, and furthermore. Be precise and quantitative, ` +
     `confident without arrogance, and concede uncertainty where the data is thin. No markdown, no bullet lists, plain paragraphs.\n\n` +
-    `Return ONLY a strict JSON object with exactly these five string fields, no markdown fences, no commentary outside the JSON:\n` +
+    `Return ONLY a strict JSON object with exactly these five string fields, no markdown fences, no commentary outside the json:\n` +
     `{\n` +
     `  "macroDynamics": "How the current yield curve, Fed policy, liquidity conditions, and any tariff or supply-chain forces bear on this specific sector and company.",\n` +
     `  "microFundamentals": "Operating metrics, margin trajectory, and the top two narrative drivers institutional investors are focused on for ${tk}.",\n` +
