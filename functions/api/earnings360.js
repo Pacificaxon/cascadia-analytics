@@ -197,6 +197,17 @@ export async function onRequestGet(context) {
         const exp = chain?.options?.[0];
         const calls = (exp && exp.calls) || [];
         const puts = (exp && exp.puts) || [];
+        // Diagnostic: ?ticker=NVDA&shape=1 returns the raw contract field names.
+        if (searchParams.get("shape") === "1") {
+          return Response.json({
+            ticker,
+            nCalls: calls.length,
+            nPuts: puts.length,
+            callKeys: calls.length ? Object.keys(calls[0]) : [],
+            callSample: calls.length ? calls[0] : null,
+            putSample: puts.length ? puts[0] : null,
+          });
+        }
         if (calls.length && puts.length && price > 0) {
           const atm = (arr) =>
             arr.reduce((a, b) => (Math.abs(numOf(b.strike) - price) < Math.abs(numOf(a.strike) - price) ? b : a));
