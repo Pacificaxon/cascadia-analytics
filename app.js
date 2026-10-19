@@ -4636,6 +4636,12 @@ function bindZoomHandlers() {
   h += gated("Agency Risk, Pro", "Executive alignment score: insider ownership, open-market Form 4 flow, and pay-for-performance. Detects value traps and mercenary management.", '<div id="agency-risk-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading agency risk data...</div></div><script>loadAgencyRisk("' + tk + '")</script>');
   h += "</div>";
 
+  // 56-Metric Institutional Fundamentals Tracker (Pro)
+  h += '<div class="section"><div class="section-title">Institutional Fundamentals Tracker</div>';
+  h += gated("Fundamentals Tracker, Pro", "56 institutional metrics: valuation multiples, ROIC, growth rates, margins, and balance sheet health, computed live from financial statements.",
+   '<div id="metrics-tracker-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading 56 fundamentals metrics...</div></div>');
+  h += "</div>";
+
   // Seasonality (Pro) - average monthly returns from price history
   h += '<div class="section"><div class="section-title">Seasonality</div>';
   h += gated("Seasonality, Pro", "Average monthly returns by calendar month, computed from price history.", seasonalityHtml(tk));
@@ -4804,6 +4810,13 @@ function bindZoomHandlers() {
    }
   };
   setTimeout(tryRenderSI, 100);
+  // 56-Metric Fundamentals Tracker (Pro), load after DOM insert
+  if (isPro()) {
+   (async () => {
+    const m = await fetchMetrics(tk);
+    renderMetricsTable(m, "metrics-tracker-" + tk);
+   })();
+  }
   } catch (err) {
    app.innerHTML = '<div class="card"><h3>Error loading ' + esc(tk) + '</h3><p style="color:#ff6b6b;">' + esc(err.message) + '</p><p><a href="#/">Back home</a></p></div>';
    console.error("Ticker render error for " + tk + ":", err);
@@ -6665,6 +6678,13 @@ function bindZoomHandlers() {
    trendDiv.innerHTML = trendScreenerHtml();
    app.appendChild(trendDiv);
    initTrendScreener();
+   // 56-Metric Institutional Fundamentals Tracker (Pro), below trend screener
+   const metDiv = document.createElement("div");
+   metDiv.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Institutional Fundamentals Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    '<div class="section-sub">56 institutional metrics for any ticker: valuation, returns, growth, margins, and financial health, computed live from financial statements.</div>' +
+    metricsTrackerInputHtml("metrics-ticker-scr", "metrics-result-scr", "") + "</div>";
+   app.appendChild(metDiv);
+   wireMetricsInput("metrics-ticker-scr", "metrics-result-scr", false);
   } else {
    const t1 = document.createElement("div");
    t1.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
@@ -6678,6 +6698,10 @@ function bindZoomHandlers() {
    t3.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
     proTeaser("Trend & Reversal Screener, Pro", "Trend Conviction vs Exhaustion Risk for every coverage ticker. Spot healthy trends, crowded trades, and MACD divergences before reversals.") + "</div>";
    app.appendChild(t3);
+   const t4 = document.createElement("div");
+   t4.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Institutional Fundamentals Tracker <span style="font-size:11px;background:#7d4fc9;color:#fff;padding:2px 8px;border-radius:4px;vertical-align:middle;">PRO</span></div>' +
+    proTeaser("Institutional Fundamentals Tracker, Pro", "56 institutional metrics for any ticker in the world: valuation multiples, ROIC, growth rates, margins, and balance sheet health, computed live.") + "</div>";
+   app.appendChild(t4);
   }
  });
 
@@ -7450,6 +7474,85 @@ function bindZoomHandlers() {
   el.innerHTML = '<div class="card"><p style="color:#8b949e;">Analyzing ' + esc(tk) + "...</p></div>";
   const q = await fetchQuality(tk);
   renderQualityResult(q);
+ }
+ // 56-Metric Institutional Fundamentals Tracker (PRO).
+ // Backend: /api/metrics edge function (Yahoo Finance, free, 1h cache).
+ let _metricsCache = {};
+ async function fetchMetrics(ticker) {
+  const tk = (ticker || "").toUpperCase().trim();
+  if (!tk) return { error: "No ticker." };
+  if (_metricsCache[tk]) return _metricsCache[tk];
+  try {
+   const res = await fetch("/api/metrics?ticker=" + encodeURIComponent(tk));
+   const j = await res.json();
+   if (j.error) return { error: j.error };
+   _metricsCache[tk] = j;
+   return j;
+  } catch (e) {
+   return { error: "Could not load fundamentals data. Try again shortly." };
+  }
+ }
+ const METRICS_CURRENCY = ["Market Cap", "Revenue", "Total Debt", "Cash (Balance Sheet)", "EBITDA", "EBIT", "Total Assets", "Current Liabilities"];
+ function fmtMetric(key, val) {
+  if (val === null || val === undefined || Number.isNaN(val)) return '<span style="color:#5b6577;">--</span>';
+  const isCurrency = METRICS_CURRENCY.indexOf(key) >= 0;
+  const isPct = /Yield|Return|Growth|Margin|Turnover|Rate/.test(key);
+  const isMoney = /EPS/.test(key);
+  const neg = val < 0;
+  const sign = neg ? "-" : "";
+  const abs = Math.abs(val);
+  if (isCurrency) {
+   if (abs >= 1e9) return sign + "$" + (abs / 1e9).toFixed(2) + "B";
+   if (abs >= 1e6) return sign + "$" + (abs / 1e6).toFixed(2) + "M";
+   return sign + "$" + abs.toLocaleString();
+  }
+  if (isMoney) return sign + "$" + abs.toFixed(2);
+  if (isPct) return sign + abs.toFixed(2) + "%";
+  return sign + abs.toFixed(2);
+ }
+ function renderMetricsTable(data, elId) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (data.error) {
+   el.innerHTML = '<div class="card"><p style="color:#f87171;">' + esc(data.error) + "</p></div>";
+   return;
+  }
+  const rows = Object.entries(data.metrics || {}).map(([k, v]) =>
+   '<tr style="border-bottom:1px solid #1f293d;">' +
+   '<td style="padding:8px 12px;color:#8b949e;font-weight:600;">' + esc(k) + "</td>" +
+   '<td style="padding:8px 12px;text-align:right;font-weight:700;color:#fff;font-family:monospace;">' + fmtMetric(k, v) + "</td></tr>"
+  ).join("");
+  el.innerHTML =
+   '<div style="background:#0f1420;border:1px solid #2a3448;border-radius:12px;overflow:hidden;">' +
+   '<div style="padding:12px 16px;background:#161b26;border-bottom:1px solid #2a3448;display:flex;justify-content:space-between;align-items:center;">' +
+   '<span style="font-weight:800;font-size:16px;color:#fff;">' + esc(data.ticker) +
+   ' <span style="font-size:12px;font-weight:400;color:#8b949e;">' + esc(data.companyName || "") + "</span></span>" +
+   '<span style="font-size:11px;color:#8b949e;font-family:monospace;">56 METRICS</span></div>' +
+   '<div style="max-height:560px;overflow-y:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><tbody>' +
+   rows + "</tbody></table></div></div>";
+ }
+ async function runMetricsSearch(inputId, resultId) {
+  const inp = document.getElementById(inputId);
+  const el = document.getElementById(resultId);
+  if (!inp || !el) return;
+  const tk = inp.value.toUpperCase().trim();
+  if (!tk) return;
+  el.innerHTML = '<div class="card"><p style="color:#8b949e;">Loading 56 metrics for ' + esc(tk) + "...</p></div>";
+  const m = await fetchMetrics(tk);
+  renderMetricsTable(m, resultId);
+ }
+ function metricsTrackerInputHtml(inputId, resultId, initial) {
+  return '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
+   '<input id="' + inputId + '" type="text" placeholder="TICKER (e.g. CRWD)" value="' + esc(initial || "") + '" ' +
+   'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
+   '<button onclick="runMetricsSearch(\'' + inputId + "','" + resultId + '\')" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
+   '<div id="' + resultId + '"></div>';
+ }
+ function wireMetricsInput(inputId, resultId, autoRun) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") runMetricsSearch(inputId, resultId); });
+  if (autoRun && inp.value.trim()) runMetricsSearch(inputId, resultId);
  }
  // Agency Risk: on-demand Executive Alignment & Agency Risk Score (PRO).
  // Backend: /api/alignment edge function (Yahoo Finance, free).
