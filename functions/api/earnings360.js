@@ -21,6 +21,7 @@ const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
 // Timeouts so a hung upstream becomes a fast fallback instead of a hung request.
 const YAHOO_TIMEOUT_MS = 10000;
 const AI_TIMEOUT_MS = 15000;
+const OPENROUTER_TIMEOUT_MS = 30000;
 const tmo = (ms) => ({ signal: AbortSignal.timeout(ms) });
 
 async function getCrumb() {
@@ -103,7 +104,6 @@ async function callGroq(prompt, apiKey) {
       model: GROQ_MODEL,
       messages: [{ role: "user", content: prompt }],
       temperature: 0.2,
-      response_format: { type: "json_object" },
     }),
   });
   if (r.status === 429) {
@@ -125,7 +125,7 @@ async function callOpenRouter(prompt, apiKey) {
   const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    ...tmo(AI_TIMEOUT_MS),
+    ...tmo(OPENROUTER_TIMEOUT_MS),
     body: JSON.stringify({
       model: OPENROUTER_MODEL,
       messages: [{ role: "user", content: prompt }],
