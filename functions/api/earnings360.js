@@ -180,6 +180,12 @@ export async function onRequestGet(context) {
     }
 
     // Front-month options chain: ATM straddle implied move + put/call OI ratio.
+    // numOf: Yahoo sometimes returns numbers flat, sometimes as {raw, fmt} objects.
+    const numOf = (v) => {
+      if (typeof v === "number") return v;
+      if (v && typeof v.raw === "number") return v.raw;
+      return 0;
+    };
     let impliedMove = null;
     let putCallRatio = null;
     try {
@@ -193,16 +199,16 @@ export async function onRequestGet(context) {
         const puts = (exp && exp.puts) || [];
         if (calls.length && puts.length && price > 0) {
           const atm = (arr) =>
-            arr.reduce((a, b) => (Math.abs(b.strike - price) < Math.abs(a.strike - price) ? b : a));
+            arr.reduce((a, b) => (Math.abs(numOf(b.strike) - price) < Math.abs(numOf(a.strike) - price) ? b : a));
           const c = atm(calls);
           const p = atm(puts);
-          const callPx = c.lastPrice || c.bid || 0;
-          const putPx = p.lastPrice || p.bid || 0;
+          const callPx = numOf(c.lastPrice) || numOf(c.bid);
+          const putPx = numOf(p.lastPrice) || numOf(p.bid);
           if (callPx > 0 && putPx > 0) {
             impliedMove = Math.round(((callPx + putPx) / price) * 10000) / 100;
           }
-          const callOI = calls.reduce((s, x) => s + (x.openInterest || 0), 0);
-          const putOI = puts.reduce((s, x) => s + (x.openInterest || 0), 0);
+          const callOI = calls.reduce((s, x) => s + numOf(x.openInterest), 0);
+          const putOI = puts.reduce((s, x) => s + numOf(x.openInterest), 0);
           if (callOI > 0) putCallRatio = Math.round((putOI / callOI) * 100) / 100;
         }
       }
