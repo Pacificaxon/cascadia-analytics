@@ -20,7 +20,7 @@ const GROQ_MODEL = "openai/gpt-oss-20b";
 const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
 // Timeouts so a hung upstream becomes a fast fallback instead of a hung request.
 const YAHOO_TIMEOUT_MS = 10000;
-const AI_TIMEOUT_MS = 25000;
+const AI_TIMEOUT_MS = 15000;
 const tmo = (ms) => ({ signal: AbortSignal.timeout(ms) });
 
 async function getCrumb() {
