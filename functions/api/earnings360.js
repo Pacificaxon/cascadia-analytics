@@ -18,16 +18,22 @@ const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 const GEMINI_MODEL = "gemini-3.8-flash";
 const GROQ_MODEL = "openai/gpt-oss-20b";
 const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
+// Timeouts so a hung upstream becomes a fast fallback instead of a hung request.
+const YAHOO_TIMEOUT_MS = 10000;
+const AI_TIMEOUT_MS = 25000;
+const tmo = (ms) => ({ signal: AbortSignal.timeout(ms) });
 
 async function getCrumb() {
   const cookieRes = await fetch("https://fc.yahoo.com", {
     headers: { "User-Agent": UA },
     redirect: "manual",
+    ...tmo(YAHOO_TIMEOUT_MS),
   });
   const setCookie = cookieRes.headers.get("set-cookie") || "";
   const cookies = setCookie.split(",").map((c) => c.split(";")[0].trim()).filter(Boolean).join("; ");
   const crumbRes = await fetch("https://query1.finance.yahoo.com/v1/test/getcrumb", {
     headers: { "User-Agent": UA, Cookie: cookies },
+    ...tmo(YAHOO_TIMEOUT_MS),
   });
   if (!crumbRes.ok) throw new Error("crumb fetch failed: " + crumbRes.status);
   const crumb = (await crumbRes.text()).trim();
@@ -67,6 +73,7 @@ async function callGemini(prompt, apiKey) {
   const gRes = await fetch(gUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    ...tmo(AI_TIMEOUT_MS),
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: { temperature: 0.2, responseMimeType: "application/json" },
@@ -88,6 +95,7 @@ async function callGroq(prompt, apiKey) {
   const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    ...tmo(AI_TIMEOUT_MS),
     body: JSON.stringify({
       model: GROQ_MODEL,
       messages: [{ role: "user", content: prompt }],
@@ -111,6 +119,7 @@ async function callOpenRouter(prompt, apiKey) {
   const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    ...tmo(AI_TIMEOUT_MS),
     body: JSON.stringify({
       model: OPENROUTER_MODEL,
       messages: [{ role: "user", content: prompt }],
@@ -156,7 +165,7 @@ export async function onRequestGet(context) {
     const qUrl =
       `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${ticker}` +
       `?modules=price,summaryProfile,financialData,calendarEvents${cb}`;
-    const qRes = await fetch(qUrl, { headers: H });
+    const qRes = await fetch(qUrl, { headers: H, ...tmo(YAHOO_TIMEOUT_MS) });
     if (!qRes.ok) throw new Error(`Yahoo quote returned HTTP ${qRes.status}`);
     const qJson = await qRes.json();
     const q = qJson?.quoteSummary?.result?.[0];
@@ -190,7 +199,7 @@ export async function onRequestGet(context) {
     let putCallRatio = null;
     try {
       const oUrl = `https://query2.finance.yahoo.com/v7/finance/options/${ticker}?${cb.slice(1)}`;
-      const oRes = await fetch(oUrl, { headers: H });
+      const oRes = await fetch(oUrl, { headers: H, ...tmo(YAHOO_TIMEOUT_MS) });
       if (oRes.ok) {
         const oJson = await oRes.json();
         const chain = oJson?.optionChain?.result?.[0];
