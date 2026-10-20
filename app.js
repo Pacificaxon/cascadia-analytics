@@ -22,8 +22,8 @@
  const fmtPct = (n, d) => (n == null || isNaN(n)) ? " - " : (n >= 0 ? "+" : "") + Number(n).toFixed(d != null ? d : 1) + "%";
  const cls = (n) => (n == null || isNaN(n)) ? "" : (n >= 0 ? "pos" : "neg");
  // Modern FREE/PRO badges (gold = Pro, green outline = Free)
- const PRO_BADGE = '<span style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:#080d14;background:linear-gradient(135deg,#dfb76c,#c9a961 55%,#a8823d);padding:3px 11px;border-radius:20px;vertical-align:middle;box-shadow:0 1px 8px rgba(201,169,97,0.35);white-space:nowrap;">Pro</span>';
- const FREE_BADGE = '<span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#7ab88a;background:#0d1522;border:1px solid #457854;padding:2px 10px;border-radius:20px;vertical-align:middle;white-space:nowrap;">Free</span>';
+ const PRO_BADGE = '<span style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:#0a0e17;background:linear-gradient(135deg,#d9a441,#d9a441 55%,#a8823d);padding:3px 11px;border-radius:20px;vertical-align:middle;box-shadow:0 1px 8px rgba(217,164,65,0.35);white-space:nowrap;">Pro</span>';
+ const FREE_BADGE = '<span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#7ab88a;background:#0a0e17;border:1px solid #457854;padding:2px 10px;border-radius:20px;vertical-align:middle;white-space:nowrap;">Free</span>';
  // Company logos (Clearbit) and industries for ticker headers
  const TICKER_META = {
   "ALAB": { domain: "asteralabs.com", industry: "Semiconductors" },
@@ -431,13 +431,13 @@
   const root = document.getElementById("modal-root");
   root.innerHTML =
    '<div class="modal-back" id="pdf-mb" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;flex-direction:column;">' +
-   '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#161b26;">' +
-   '<div style="font-size:13px;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">' + esc(title || "Research Note") + "</div>" +
-   '<a href="' + esc(pdfUrl) + '" target="_blank" rel="noopener" style="background:transparent;color:#c9a961;border:1px solid #c9a961;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;white-space:nowrap;text-decoration:none;">Open in new tab</a>' +
-   '<button id="pdf-close" style="background:#c9a961;color:#080d14;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0;">Close</button>' +
+   '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#101620;">' +
+   '<div style="font-size:13px;font-weight:600;color:#f5f7fa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">' + esc(title || "Research Note") + "</div>" +
+   '<a href="' + esc(pdfUrl) + '" target="_blank" rel="noopener" style="background:transparent;color:#d9a441;border:1px solid #d9a441;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;white-space:nowrap;text-decoration:none;">Open in new tab</a>' +
+   '<button id="pdf-close" style="background:#d9a441;color:#0a0e17;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0;">Close</button>' +
    "</div>" +
    '<iframe src="' + esc(pdfUrl) + '" style="flex:1;width:100%;border:none;background:#fff;" title="PDF Viewer"></iframe>' +
-   '<div style="padding:8px 12px;background:#161b26;font-size:11px;color:#8b949e;text-align:center;">For the best reading experience on mobile, use "Open in new tab" for full-page zoom and page controls.</div>' +
+   '<div style="padding:8px 12px;background:#101620;font-size:11px;color:#8d99aa;text-align:center;">For the best reading experience on mobile, use "Open in new tab" for full-page zoom and page controls.</div>' +
    "</div>";
   document.getElementById("pdf-close").addEventListener("click", () => { root.innerHTML = ""; });
   document.getElementById("pdf-mb").addEventListener("click", (e) => {
@@ -578,7 +578,7 @@
    return htmlFn();
   } catch (e) {
    console.error("Pro section render failed:", title, e);
-   return '<div class="card"><p style="color:#f85149;">This section failed to load. Please refresh the page.</p></div>';
+   return '<div class="card"><p style="color:#f37d83;">This section failed to load. Please refresh the page.</p></div>';
   }
  }
 
@@ -684,10 +684,10 @@ function bindZoomHandlers() {
        modal = document.createElement("div");
        modal.id = "chart-zoom-modal";
        modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;overflow-y:auto;";
-       modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
+       modal.innerHTML = '<div style="background:#0d131d;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-        '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Gamma Exposure, ' + esc(tk) + '</div>' +
-        '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+        '<div style="font-size:16px;font-weight:700;color:#dbe5f1;">Gamma Exposure, ' + esc(tk) + '</div>' +
+        '<button id="zoom-close" style="background:#253142;border:0;color:#dbe5f1;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
         tickerGexHtml(tk, tg) + "</div>";
        document.body.appendChild(modal);
        const close = () => modal.remove();
@@ -705,10 +705,10 @@ function bindZoomHandlers() {
        modal = document.createElement("div");
        modal.id = "chart-zoom-modal";
        modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;overflow-y:auto;";
-       modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
+       modal.innerHTML = '<div style="background:#0d131d;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-        '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Agency Risk Flow, ' + esc(tk) + '</div>' +
-        '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+        '<div style="font-size:16px;font-weight:700;color:#dbe5f1;">Agency Risk Flow, ' + esc(tk) + '</div>' +
+        '<button id="zoom-close" style="background:#253142;border:0;color:#dbe5f1;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
         '<div style="position:relative;height:400px;"><canvas id="agency-flow-zoom"></canvas></div></div>';
        document.body.appendChild(modal);
        const close = () => modal.remove();
@@ -720,16 +720,16 @@ function bindZoomHandlers() {
         data: {
          labels: a.flowHistory.map(function(x) { return x.month; }),
          datasets: [
-          { label: "Buys ($)", data: a.flowHistory.map(function(x) { return x.buys; }), backgroundColor: "#3fb950" },
-          { label: "Sells ($)", data: a.flowHistory.map(function(x) { return x.sells; }), backgroundColor: "#f85149" }
+          { label: "Buys ($)", data: a.flowHistory.map(function(x) { return x.buys; }), backgroundColor: "#4dd2aa" },
+          { label: "Sells ($)", data: a.flowHistory.map(function(x) { return x.sells; }), backgroundColor: "#f37d83" }
          ]
         },
         options: {
          animation: false, responsive: true, maintainAspectRatio: false,
-         plugins: { legend: { labels: { color: "#8b949e", font: { size: 12 } } } },
+         plugins: { legend: { labels: { color: "#8d99aa", font: { size: 12 } } } },
          scales: {
-          x: { ticks: { color: "#e8ecf1", font: { size: 12 } }, grid: { display: false } },
-          y: { ticks: { color: "#e8ecf1", font: { size: 12 } }, grid: { color: "rgba(42,46,57,0.4)" } }
+          x: { ticks: { color: "#dbe5f1", font: { size: 12 } }, grid: { display: false } },
+          y: { ticks: { color: "#dbe5f1", font: { size: 12 } }, grid: { color: "rgba(42,46,57,0.4)" } }
          }
         }
        });
@@ -745,10 +745,10 @@ function bindZoomHandlers() {
        modal = document.createElement("div");
        modal.id = "chart-zoom-modal";
        modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;overflow-y:auto;";
-       modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
+       modal.innerHTML = '<div style="background:#0d131d;border-radius:12px;padding:24px;width:100%;max-width:700px;margin:auto;" onclick="event.stopPropagation()">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-        '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Volatility Skew, ' + esc(tk) + '</div>' +
-        '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+        '<div style="font-size:16px;font-weight:700;color:#dbe5f1;">Volatility Skew, ' + esc(tk) + '</div>' +
+        '<button id="zoom-close" style="background:#253142;border:0;color:#dbe5f1;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
         tickerSkewHtml(tk, ts) + "</div>";
        document.body.appendChild(modal);
        const close = () => modal.remove();
@@ -766,10 +766,10 @@ function bindZoomHandlers() {
        modal = document.createElement("div");
        modal.id = "chart-zoom-modal";
        modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
-       modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:20px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
+       modal.innerHTML = '<div style="background:#0d131d;border-radius:12px;padding:20px;width:100%;max-width:800px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-        '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">Gamma Exposure, ' + esc(sym) + ' Price Levels</div>' +
-        '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+        '<div style="font-size:16px;font-weight:700;color:#dbe5f1;">Gamma Exposure, ' + esc(sym) + ' Price Levels</div>' +
+        '<button id="zoom-close" style="background:#253142;border:0;color:#dbe5f1;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
         '<div style="position:relative;flex:1;min-height:300px;"><canvas id="zoom-chart"></canvas></div></div>';
        document.body.appendChild(modal);
        const close = () => modal.remove();
@@ -778,10 +778,10 @@ function bindZoomHandlers() {
        const zc = document.getElementById("zoom-chart");
        try {
         const levels = [];
-        if (d.put_wall != null) levels.push({ label: "Put Wall (support)", value: d.put_wall, color: "#f85149" });
-        levels.push({ label: "Spot", value: d.spot, color: "#e8ecf1" });
+        if (d.put_wall != null) levels.push({ label: "Put Wall (support)", value: d.put_wall, color: "#f37d83" });
+        levels.push({ label: "Spot", value: d.spot, color: "#dbe5f1" });
         if (d.zero_gamma != null) levels.push({ label: "Zero Gamma (flip)", value: d.zero_gamma, color: "#c678dd" });
-        if (d.call_wall != null) levels.push({ label: "Call Wall (resistance)", value: d.call_wall, color: "#3fb950" });
+        if (d.call_wall != null) levels.push({ label: "Call Wall (resistance)", value: d.call_wall, color: "#4dd2aa" });
         levels.sort((a, b) => a.value - b.value);
         new Chart(zc, {
          type: "bar",
@@ -798,12 +798,12 @@ function bindZoomHandlers() {
           responsive: true, maintainAspectRatio: false,
           plugins: {
            legend: { display: false },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
             callbacks: { label: (c) => " $" + c.parsed.x.toFixed(2) } },
           },
           scales: {
-           x: { ticks: { color: "#e8ecf1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { ticks: { color: "#c8d0dc" }, grid: { display: false } },
+           x: { ticks: { color: "#dbe5f1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#dbe5f1" }, grid: { display: false } },
           },
          },
         });
@@ -816,10 +816,10 @@ function bindZoomHandlers() {
       modal = document.createElement("div");
       modal.id = "chart-zoom-modal";
       modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
-      modal.innerHTML = '<div style="background:#131722;border-radius:12px;padding:20px;width:100%;max-width:1000px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
+      modal.innerHTML = '<div style="background:#0d131d;border-radius:12px;padding:20px;width:100%;max-width:1000px;max-height:90vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">' +
        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-       '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (titles[kind] || "Chart") + '</div>' +
-       '<button id="zoom-close" style="background:#2a3448;border:0;color:#c8d0dc;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
+       '<div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + (titles[kind] || "Chart") + '</div>' +
+       '<button id="zoom-close" style="background:#253142;border:0;color:#dbe5f1;font-size:18px;width:36px;height:36px;border-radius:8px;cursor:pointer;">✕</button></div>' +
        '<div style="position:relative;flex:1;min-height:400px;"><canvas id="zoom-chart"></canvas></div></div>';
       document.body.appendChild(modal);
       const close = () => modal.remove();
@@ -834,39 +834,39 @@ function bindZoomHandlers() {
          type: "line",
          data: { labels: hist.map((r) => r.date), datasets: [
           { label: "S&P 500", data: hist.map((r) => r.price), borderColor: "#ffd60a", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
-          { label: "Forward 12m EPS", data: hist.map((r) => r.forward_eps), borderColor: "#00e676", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
+          { label: "Forward 12m EPS", data: hist.map((r) => r.forward_eps), borderColor: "#4dd2aa", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc" } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          plugins: { legend: { labels: { color: "#dbe5f1" } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12 } },
           scales: {
-           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
            y: { position: "left", ticks: { color: "#ffd60a" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "S&P 500", color: "#ffd60a" } },
-           y1: { position: "right", ticks: { color: "#00e676" }, grid: { display: false }, title: { display: true, text: "Fwd EPS ($)", color: "#00e676" } } } }
+           y1: { position: "right", ticks: { color: "#4dd2aa" }, grid: { display: false }, title: { display: true, text: "Fwd EPS ($)", color: "#4dd2aa" } } } }
         });
        } else if (kind === "voldiv") {
         const hist = D.vol_div_history.history;
         new Chart(zc, {
          type: "line",
          data: { labels: hist.map((r) => r.date), datasets: [
-          { label: "Divergence (MOVE z − VIX z)", data: hist.map((r) => r.divergence), borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
+          { label: "Divergence (MOVE z − VIX z)", data: hist.map((r) => r.divergence), borderColor: "#f37d83", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
           { label: "MOVE z-score", data: hist.map((r) => r.move_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
           { label: "VIX z-score", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc" } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          plugins: { legend: { labels: { color: "#dbe5f1" } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12 } },
           scales: {
-           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#e8ecf1" } } } }
+           x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#dbe5f1" } } } }
         });
        } else if (kind === "themerot") {
         const trh = D.theme_rot_history;
         const latest = trh.history[trh.history.length - 1];
         const themes = latest.themes || {};
-        const qColors = { Leading: "#3fb950", Improving: "#c678dd", Weakening: "#d29922", Lagging: "#f85149" };
+        const qColors = { Leading: "#4dd2aa", Improving: "#c678dd", Weakening: "#e0aa46", Lagging: "#f37d83" };
         const xs = Object.values(themes).map((v) => v.x), ys = Object.values(themes).map((v) => v.y);
         const maxAbs = Math.max(Math.abs(Math.min(...xs)), Math.abs(Math.max(...xs)), Math.abs(Math.min(...ys)), Math.abs(Math.max(...ys)), 5);
         const pad = Math.ceil(maxAbs * 1.15);
@@ -874,18 +874,18 @@ function bindZoomHandlers() {
          type: "scatter",
          data: { datasets: Object.entries(themes).map(([name, vals]) => ({
           label: name, data: [{ x: vals.x, y: vals.y }],
-          backgroundColor: qColors[vals.q] || "#e8ecf1", pointRadius: 9, pointHoverRadius: 12,
+          backgroundColor: qColors[vals.q] || "#dbe5f1", pointRadius: 9, pointHoverRadius: 12,
          }))},
          options: { responsive: true, maintainAspectRatio: false,
           plugins: { legend: { display: false },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
             callbacks: {
              title: (items) => items[0].dataset.label + " (" + (themes[items[0].dataset.label] || {}).q + ")",
              label: (c) => " RS vs 70d avg: " + c.parsed.x.toFixed(1) + "%, 20d momentum: " + c.parsed.y.toFixed(1) + "%"
             } } },
           scales: {
-           x: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#e8ecf1" } },
-           y: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "20d momentum (%) →", color: "#e8ecf1" } } } },
+           x: { min: -pad, max: pad, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#dbe5f1" } },
+           y: { min: -pad, max: pad, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "20d momentum (%) →", color: "#dbe5f1" } } } },
          plugins: [quadBg, themeLabels]
         });
        } else if (kind === "smcap") {
@@ -893,33 +893,33 @@ function bindZoomHandlers() {
         new Chart(zc, {
          type: "line",
          data: { labels: hist.map((r) => r.date), datasets: [
-          { label: "RUT vs 200d (%)", data: hist.map((r) => r.rut_vs_200d), borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+          { label: "RUT vs 200d (%)", data: hist.map((r) => r.rut_vs_200d), borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.1 },
           { label: "MID vs 200d (%)", data: hist.map((r) => r.mid_vs_200d), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1 },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc" } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          plugins: { legend: { labels: { color: "#dbe5f1" } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12 } },
           scales: {
-           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
+           x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#dbe5f1", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
         });
        } else if (kind === "creditvol") {
         const hist = D.credit_vol_history.history;
         new Chart(zc, {
          type: "line",
          data: { labels: hist.map((r) => r.date), datasets: [
-          { label: "Spread − VIX z-diff", data: hist.map((r) => r.diff), borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
+          { label: "Spread − VIX z-diff", data: hist.map((r) => r.diff), borderColor: "#f37d83", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
           { label: "Spread z", data: hist.map((r) => r.spread_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
           { label: "VIX z", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc" } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          plugins: { legend: { labels: { color: "#dbe5f1" } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12 } },
           scales: {
-           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#e8ecf1" } } } }
+           x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#dbe5f1" } } } }
         });
        } else if (kind === "breadth") {
         const hist = D.breadth_history.history;
@@ -928,16 +928,16 @@ function bindZoomHandlers() {
          data: { labels: hist.map((r) => r.date), datasets: [
           { label: "Breadth spread (pp)", data: hist.map((r) => r.breadth_spread), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
           { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
-          { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+          { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#e0aa46", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc" } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          plugins: { legend: { labels: { color: "#dbe5f1" } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12 } },
           scales: {
-           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
            y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y1: { position: "right", ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
+           y1: { position: "right", ticks: { color: "#dbe5f1", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
         });
        } else if (kind === "rsicd") {
         const hist = D.rsi_cd_history.history;
@@ -945,36 +945,36 @@ function bindZoomHandlers() {
          type: "line",
          data: { labels: hist.map((r) => r.date), datasets: [
           { label: "RSI (14)", data: hist.map((r) => r.rsi), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
-          { label: "Overbought (70)", data: hist.map(() => 70), borderColor: "#f85149", borderWidth: 1, pointRadius: 0, borderDash: [5, 3] },
-          { label: "Oversold (30)", data: hist.map(() => 30), borderColor: "#3fb950", borderWidth: 1, pointRadius: 0, borderDash: [5, 3] },
+          { label: "Overbought (70)", data: hist.map(() => 70), borderColor: "#f37d83", borderWidth: 1, pointRadius: 0, borderDash: [5, 3] },
+          { label: "Oversold (30)", data: hist.map(() => 30), borderColor: "#4dd2aa", borderWidth: 1, pointRadius: 0, borderDash: [5, 3] },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc" } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12 } },
+          plugins: { legend: { labels: { color: "#dbe5f1" } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12 } },
           scales: {
-           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { min: 0, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
-            title: { display: true, text: "RSI", color: "#e8ecf1" } } } }
+           x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { min: 0, max: 100, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" },
+            title: { display: true, text: "RSI", color: "#dbe5f1" } } } }
         });
        } else if (kind === "aaii") {
         const hist = (D.aaii_sentiment.history || []);
         new Chart(zc, {
          type: "line",
          data: { labels: hist.map((r) => r.week_ending), datasets: [
-          { label: "Bullish %", data: hist.map((r) => r.bullish), borderColor: "#3fb950", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
-          { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#c8d0dc", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-          { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f85149", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+          { label: "Bullish %", data: hist.map((r) => r.bullish), borderColor: "#4dd2aa", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
+          { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#dbe5f1", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+          { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f37d83", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc" } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+          plugins: { legend: { labels: { color: "#dbe5f1" } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
             callbacks: { label: (c) => " " + c.dataset.label + ": " + c.parsed.y.toFixed(1) + "%" } } },
           scales: {
-           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
-            title: { display: true, text: "Sentiment %", color: "#e8ecf1" } } } }
+           x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+            title: { display: true, text: "Sentiment %", color: "#dbe5f1" } } } }
         });
        } else if (kind === "breakeven") {
         const bdata = D.breakeven_inflation || {};
@@ -998,11 +998,11 @@ function bindZoomHandlers() {
          options: { animation: false, responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
           plugins: { legend: { display: false },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
             callbacks: { label: (c) => " " + c.parsed.y.toFixed(2) + "%" } } },
           scales: {
-           x: { ticks: { color: "#6b7280", maxTicksLimit: 6, maxRotation: 0 }, grid: { display: false } },
-           y: { position: "right", ticks: { color: "#6b7280", callback: (v) => v.toFixed(1) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
+           x: { ticks: { color: "#647184", maxTicksLimit: 6, maxRotation: 0 }, grid: { display: false } },
+           y: { position: "right", ticks: { color: "#647184", callback: (v) => v.toFixed(1) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
         });
         } catch (e) { console.error("Breakeven chart error:", e); }
        } else if (kind === "erp") {
@@ -1016,21 +1016,21 @@ function bindZoomHandlers() {
         if (existingChart) existingChart.destroy();
         const ctx0 = canvas.getContext("2d");
         const grad = ctx0.createLinearGradient(0, 0, 0, 300);
-        grad.addColorStop(0, "rgba(201,169,97,0.35)");
-        grad.addColorStop(1, "rgba(201,169,97,0)");
+        grad.addColorStop(0, "rgba(217,164,65,0.35)");
+        grad.addColorStop(1, "rgba(217,164,65,0)");
         new Chart(canvas, {
          type: "line",
          data: { labels: hist.map((r) => r.date), datasets: [
-          { label: "Implied ERP (%)", data: hist.map((r) => r.erp * 100), borderColor: "#c9a961", borderWidth: 1.5, backgroundColor: grad, fill: true, pointRadius: 0, pointHoverRadius: 4, tension: 0.1 },
+          { label: "Implied ERP (%)", data: hist.map((r) => r.erp * 100), borderColor: "#d9a441", borderWidth: 1.5, backgroundColor: grad, fill: true, pointRadius: 0, pointHoverRadius: 4, tension: 0.1 },
          ]},
          options: { animation: false, responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
           plugins: { legend: { display: false },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
             callbacks: { label: (c) => " " + c.parsed.y.toFixed(2) + "%" } } },
           scales: {
-           x: { ticks: { color: "#6b7280", maxTicksLimit: 6, maxRotation: 0 }, grid: { display: false } },
-           y: { position: "right", ticks: { color: "#6b7280", callback: (v) => v.toFixed(1) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
+           x: { ticks: { color: "#647184", maxTicksLimit: 6, maxRotation: 0 }, grid: { display: false } },
+           y: { position: "right", ticks: { color: "#647184", callback: (v) => v.toFixed(1) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
         });
         } catch (e) { console.error("ERP chart error:", e); }
        } else if (kind === "correction-risk") {
@@ -1054,9 +1054,9 @@ function bindZoomHandlers() {
            interaction: {mode: "index", intersect: false},
            plugins: {legend: {display: false}},
            scales: {
-            x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
+            x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
             yPrice: {position: "left", ticks: {color: "#c99a6b"}, grid: {color: "rgba(42,46,57,0.4)"}},
-            yScore: {position: "right", min: 0, max: 100, ticks: {color: "#8b949e", stepSize: 25}, grid: {display: false}},
+            yScore: {position: "right", min: 0, max: 100, ticks: {color: "#8d99aa", stepSize: 25}, grid: {display: false}},
            }},
          });
         } catch (e) { console.error("Correction risk chart error:", e); }
@@ -1074,16 +1074,16 @@ function bindZoomHandlers() {
            labels: hist.map((r) => r.date),
            datasets: [
             { type: "line", label: "Net Liquidity ($B)", data: hist.map((r) => r.netLiquidity),
-              borderColor: "#c9a961", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yLiq" },
+              borderColor: "#d9a441", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yLiq" },
             { type: "line", label: "SPY", data: hist.map((r) => r.spy),
               borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
            scales: {
-            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
-            yLiq: {position: "left", ticks: {color: "#c9a961"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
+            yLiq: {position: "left", ticks: {color: "#d9a441"}, grid: {color: "rgba(42,46,57,0.4)"}},
             ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
            }},
          });
@@ -1102,17 +1102,17 @@ function bindZoomHandlers() {
            labels: hist.map((r) => r.date),
            datasets: [
             { type: "line", label: "Contagion Score", data: hist.map((r) => r.contagionScore),
-              borderColor: "#d29922", backgroundColor: "rgba(210,153,34,0.1)", fill: true,
+              borderColor: "#e0aa46", backgroundColor: "rgba(210,153,34,0.1)", fill: true,
               borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yScore" },
             { type: "line", label: "SPY", data: hist.map((r) => r.spy),
               borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
            scales: {
-            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
-            yScore: {position: "left", min: 0, max: 100, ticks: {color: "#d29922"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
+            yScore: {position: "left", min: 0, max: 100, ticks: {color: "#e0aa46"}, grid: {color: "rgba(42,46,57,0.4)"}},
             ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
            }},
          });
@@ -1131,17 +1131,17 @@ function bindZoomHandlers() {
            labels: hist.map((r) => r.date),
            datasets: [
             { type: "line", label: "Divergence Oscillator", data: hist.map((r) => r.oscillator),
-              borderColor: "#f85149", backgroundColor: "rgba(248,81,73,0.1)", fill: true,
+              borderColor: "#f37d83", backgroundColor: "rgba(248,81,73,0.1)", fill: true,
               borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yOsc" },
             { type: "line", label: "SPY", data: hist.map((r) => r.spy),
               borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
            scales: {
-            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
-            yOsc: {position: "left", min: -3, max: 3, ticks: {color: "#f85149"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
+            yOsc: {position: "left", min: -3, max: 3, ticks: {color: "#f37d83"}, grid: {color: "rgba(42,46,57,0.4)"}},
             ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
            }},
          });
@@ -1161,19 +1161,19 @@ function bindZoomHandlers() {
            labels: hist.map((r) => r.date),
            datasets: [
             { type: "line", label: "Leader: " + leader, data: hist.map((r) => r.leader),
-              borderColor: "#3fb950", backgroundColor: "rgba(63,185,80,0.1)", fill: true,
+              borderColor: "#4dd2aa", backgroundColor: "rgba(63,185,80,0.1)", fill: true,
               borderWidth: 2, pointRadius: 0, tension: 0.2 },
             { type: "line", label: "SPY", data: hist.map((r) => r.spy),
               borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
             { type: "line", label: "RSP", data: hist.map((r) => r.rsp),
-              borderColor: "#8b949e", borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.2 },
+              borderColor: "#8d99aa", borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.2 },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
            scales: {
-            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
-            y: {ticks: {color: "#8b949e"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
+            y: {ticks: {color: "#8d99aa"}, grid: {color: "rgba(42,46,57,0.4)"}},
            }},
          });
         } catch (e) { console.error("Concentration chart error:", e); }
@@ -1191,16 +1191,16 @@ function bindZoomHandlers() {
            labels: hist.map((r) => r.date),
            datasets: [
             { type: "line", label: "Margin Debt YoY (%)", data: hist.map((r) => r.marginYoY),
-              borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+              borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.2 },
             { type: "line", label: "SPY YoY (%)", data: hist.map((r) => r.spyYoY),
               borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2 },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
            scales: {
-            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
-            y: {ticks: {color: "#8b949e", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
+            y: {ticks: {color: "#8d99aa", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
            }},
          });
         } catch (e) { console.error("Margin leverage chart error:", e); }
@@ -1220,14 +1220,14 @@ function bindZoomHandlers() {
             { type: "line", label: "RSPD/RSPS (equal-wt)", data: hist.map((r) => r.rspdRsps),
               borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
             { type: "line", label: "XLY/XLP (cap-wt)", data: hist.map((r) => r.xlyXlp),
-              borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+              borderColor: "#e0aa46", borderWidth: 2, pointRadius: 0, tension: 0.2 },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
            scales: {
-            x: {ticks: {color: "#6b7280", maxTicksLimit: 10}, grid: {display: false}},
-            y: {ticks: {color: "#8b949e"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
+            y: {ticks: {color: "#8d99aa"}, grid: {color: "rgba(42,46,57,0.4)"}},
            }},
          });
         } catch (e) { console.error("Sector rotation chart error:", e); }
@@ -1239,17 +1239,17 @@ function bindZoomHandlers() {
          data: { labels: hist.map((r) => r.report_date), datasets: [
           { label: "Commercials net", data: hist.map((r) => (r.markets[mkey] || {}).commercials?.net), borderColor: "#58a6ff", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
           { label: "Large Specs net", data: hist.map((r) => (r.markets[mkey] || {}).large_specs?.net), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
-          { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+          { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#e0aa46", borderWidth: 2, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc" } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+          plugins: { legend: { labels: { color: "#dbe5f1" } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
             callbacks: { label: (c) => " " + c.dataset.label + ": " + (c.parsed.y >= 0 ? "+" : "") + Math.round(c.parsed.y).toLocaleString() } } },
           scales: {
-           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { ticks: { color: "#e8ecf1", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
-            title: { display: true, text: "Net contracts", color: "#e8ecf1" } } } }
+           x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { ticks: { color: "#dbe5f1", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
+            title: { display: true, text: "Net contracts", color: "#dbe5f1" } } } }
         });
        } else if (kind === "macro") {
         const hist = ((D.macro_indicators || {}).history || []);
@@ -1260,10 +1260,10 @@ function bindZoomHandlers() {
         const series = [
          { key: "pmi", label: "Manufacturing PMI", color: "#a3e635" },
          { key: "ppi_yoy", label: "PPI (Producer Price)", color: "#a5b4fc" },
-         { key: "retail_mom", label: "Retail Sales", color: "#22c55e" },
+         { key: "retail_mom", label: "Retail Sales", color: "#4dd2aa" },
          { key: "cpi_yoy", label: "CPI (Consumer Price)", color: "#7dd3fc" },
-         { key: "wti_crude", label: "WTI Crude ($)", color: "#f5a623" },
-         { key: "gasoline_retail", label: "Gasoline Retail ($/gal)", color: "#ff6b6b" },
+         { key: "wti_crude", label: "WTI Crude ($)", color: "#e0aa46" },
+         { key: "gasoline_retail", label: "Gasoline Retail ($/gal)", color: "#f37d83" },
          { key: "diesel_retail", label: "Diesel Retail ($/gal)", color: "#c44dff" },
         ];
         const normalize = (vals) => {
@@ -1283,13 +1283,13 @@ function bindZoomHandlers() {
          }))},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc", usePointStyle: true, padding: 20 } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+          plugins: { legend: { labels: { color: "#dbe5f1", usePointStyle: true, padding: 20 } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
             callbacks: { label: (c) => " " + c.dataset.label + ": " + c.parsed.y.toFixed(0) + "% (normalized)" } } },
           scales: {
-           x: { ticks: { color: "#e8ecf1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { min: -50, max: 150, ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
-            title: { display: true, text: "Normalized (0–100%)", color: "#e8ecf1" } } } }
+           x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+           y: { min: -50, max: 150, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+            title: { display: true, text: "Normalized (0–100%)", color: "#dbe5f1" } } } }
         });
        } else if (kind === "leadership") {
         const leaders = (D.leadership.leaders || []);
@@ -1300,21 +1300,21 @@ function bindZoomHandlers() {
           labels: labels,
           datasets: [
            { label: "Relative Strength (50%)", data: leaders.map((l) => +(l.rs_score * 0.50).toFixed(1)), backgroundColor: "#58a6ff", borderWidth: 0 },
-           { label: "Trend Efficiency (30%)", data: leaders.map((l) => +(l.trend_score * 0.30).toFixed(1)), backgroundColor: "#d29922", borderWidth: 0 },
-           { label: "Institutional Volume (20%)", data: leaders.map((l) => +(l.vol_score * 0.20).toFixed(1)), backgroundColor: "#3fb950", borderWidth: 0 },
+           { label: "Trend Efficiency (30%)", data: leaders.map((l) => +(l.trend_score * 0.30).toFixed(1)), backgroundColor: "#e0aa46", borderWidth: 0 },
+           { label: "Institutional Volume (20%)", data: leaders.map((l) => +(l.vol_score * 0.20).toFixed(1)), backgroundColor: "#4dd2aa", borderWidth: 0 },
           ],
          },
          options: { indexAxis: "y", responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12,
+          plugins: { legend: { labels: { color: "#dbe5f1", boxWidth: 12 } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#f5f7fa", bodyColor: "#dbe5f1", padding: 12,
             callbacks: { afterBody: (items) => {
              const l = leaders[items[0].dataIndex];
              return "MLS: " + l.mls.toFixed(1) + "  |  " + l.sector + "  |  $" + l.price.toFixed(2);
             } } } },
           scales: {
-           x: { stacked: true, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "MLS (0-100)", color: "#e8ecf1" } },
-           y: { stacked: true, ticks: { color: "#fff", font: { size: 14, weight: "bold" } }, grid: { display: false } } } }
+           x: { stacked: true, max: 100, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "MLS (0-100)", color: "#dbe5f1" } },
+           y: { stacked: true, ticks: { color: "#f5f7fa", font: { size: 14, weight: "bold" } }, grid: { display: false } } } }
         });
        } else if (kind === "fvpath") {
         const ft = TICKERS[el.dataset.ticker] || {};
@@ -1327,20 +1327,20 @@ function bindZoomHandlers() {
           data: {
            labels: t.quarters,
            datasets: [
-            { type: "bar", label: "HF Buys", data: t.hedge_funds.buys, backgroundColor: "#00C805", borderRadius: 3, yAxisID: "yVol" },
+            { type: "bar", label: "HF Buys", data: t.hedge_funds.buys, backgroundColor: "#4dd2aa", borderRadius: 3, yAxisID: "yVol" },
             { type: "bar", label: "HF Sells", data: t.hedge_funds.sells, backgroundColor: "#FF5000", borderRadius: 3, yAxisID: "yVol" },
-            { type: "bar", label: "Insider Buys", data: t.insiders.buys, backgroundColor: "#00C805", borderRadius: 3, hidden: true, yAxisID: "yVol" },
+            { type: "bar", label: "Insider Buys", data: t.insiders.buys, backgroundColor: "#4dd2aa", borderRadius: 3, hidden: true, yAxisID: "yVol" },
             { type: "bar", label: "Insider Sells", data: t.insiders.sells, backgroundColor: "#FF5000", borderRadius: 3, hidden: true, yAxisID: "yVol" },
             { type: "line", label: "Price", data: t.prices, borderColor: "#2979FF", borderWidth: 2.5, pointRadius: 3, tension: 0.3, yAxisID: "yPrice", spanGaps: true },
            ],
           },
           options: { responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
-            tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12 } },
+           plugins: { legend: { labels: { color: "#dbe5f1", boxWidth: 12 } },
+            tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#f5f7fa", bodyColor: "#dbe5f1", padding: 12 } },
            scales: {
-            x: { ticks: { color: "#e8ecf1", maxTicksLimit: 8 }, grid: { color: "rgba(42,46,57,0.4)" } },
-            yVol: { position: "left", ticks: { color: "#e8ecf1", callback: (v) => v === 0 ? "0" : (Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Shares", color: "#e8ecf1" } },
+            x: { ticks: { color: "#dbe5f1", maxTicksLimit: 8 }, grid: { color: "rgba(42,46,57,0.4)" } },
+            yVol: { position: "left", ticks: { color: "#dbe5f1", callback: (v) => v === 0 ? "0" : (Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Shares", color: "#dbe5f1" } },
             yPrice: { position: "right", ticks: { color: "#2979FF", callback: (v) => "$" + v }, grid: { display: false }, title: { display: true, text: "Price", color: "#2979FF" } } } }
          });
         }
@@ -1363,7 +1363,7 @@ function bindZoomHandlers() {
           datasets: [
            { type: "line", label: "Net margin %", data: records.map((r) => r.net_margin_pct),
              borderColor: "#f97316", backgroundColor: "#f97316", borderWidth: 2.5,
-             pointRadius: 4, pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+             pointRadius: 4, pointBackgroundColor: "#0d131d", pointBorderColor: "#f97316", pointBorderWidth: 2,
              yAxisID: "yMargin", order: 1, tension: 0.15, spanGaps: true },
            { type: "bar", label: "Revenue", data: records.map((r) => r.revenue),
              backgroundColor: "#3b82f6", borderRadius: 3, yAxisID: "yAmount", order: 2 },
@@ -1373,15 +1373,15 @@ function bindZoomHandlers() {
          },
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12,
+          plugins: { legend: { labels: { color: "#dbe5f1", boxWidth: 12 } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#f5f7fa", bodyColor: "#dbe5f1", padding: 12,
             callbacks: { label: (c) => c.dataset.yAxisID === "yMargin"
              ? " Net margin: " + (c.parsed.y == null ? "N/A" : c.parsed.y.toFixed(1) + "%")
              : " " + c.dataset.label + ": " + fmtM(c.parsed.y) } } },
           scales: {
-           x: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" } },
-           yMargin: { position: "left", ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Net margin %", color: "#f97316" } },
-           yAmount: { position: "right", ticks: { color: "#e8ecf1", callback: fmtM }, grid: { display: false }, title: { display: true, text: "Revenue / Net income", color: "#e8ecf1" } } } }
+           x: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" } },
+           yMargin: { position: "left", ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Net margin %", color: "#f97316" } },
+           yAmount: { position: "right", ticks: { color: "#dbe5f1", callback: fmtM }, grid: { display: false }, title: { display: true, text: "Revenue / Net income", color: "#dbe5f1" } } } }
         });
        } else if (kind === "balance" || kind === "cashflow") {
         const tk2 = el.dataset.ticker;
@@ -1400,21 +1400,21 @@ function bindZoomHandlers() {
         const ds = isBal ? [
          { type: "line", label: "Current ratio", data: records.map((r) => r.current_ratio),
            borderColor: "#f97316", borderWidth: 2.5, pointRadius: 4,
-           pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+           pointBackgroundColor: "#0d131d", pointBorderColor: "#f97316", pointBorderWidth: 2,
            yAxisID: "yRatio", order: 1, tension: 0.15, spanGaps: true },
          { type: "bar", label: "Cash & equivalents", data: records.map((r) => r.cash),
-           backgroundColor: "#3fb950", borderRadius: 3, yAxisID: "yAmount", order: 2 },
+           backgroundColor: "#4dd2aa", borderRadius: 3, yAxisID: "yAmount", order: 2 },
          { type: "bar", label: "Total debt", data: records.map((r) => r.total_debt),
-           backgroundColor: "#f85149", borderRadius: 3, yAxisID: "yAmount", order: 3 },
+           backgroundColor: "#f37d83", borderRadius: 3, yAxisID: "yAmount", order: 3 },
         ] : [
          { type: "line", label: "FCF margin %", data: records.map((r) => r.fcf_margin_pct),
            borderColor: "#f97316", borderWidth: 2.5, pointRadius: 4,
-           pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+           pointBackgroundColor: "#0d131d", pointBorderColor: "#f97316", pointBorderWidth: 2,
            yAxisID: "yRatio", order: 1, tension: 0.15, spanGaps: true },
          { type: "bar", label: "Operating cash flow", data: records.map((r) => r.operating_cash_flow),
            backgroundColor: "#3b82f6", borderRadius: 3, yAxisID: "yAmount", order: 2 },
          { type: "bar", label: "CapEx", data: records.map((r) => r.capex),
-           backgroundColor: "#f85149", borderRadius: 3, yAxisID: "yAmount", order: 3 },
+           backgroundColor: "#f37d83", borderRadius: 3, yAxisID: "yAmount", order: 3 },
          { type: "bar", label: "Free cash flow", data: records.map((r) => r.free_cash_flow),
            backgroundColor: "#22d3ee", borderRadius: 3, yAxisID: "yAmount", order: 4 },
         ];
@@ -1422,8 +1422,8 @@ function bindZoomHandlers() {
          data: { labels: records.map((r) => r.period), datasets: ds },
          options: { responsive: true, maintainAspectRatio: false, animation: false,
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
-           tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12,
+          plugins: { legend: { labels: { color: "#dbe5f1", boxWidth: 12 } },
+           tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#f5f7fa", bodyColor: "#dbe5f1", padding: 12,
             callbacks: { label: (c) => {
              if (c.dataset.yAxisID === "yRatio") {
               const unit = isBal ? "x" : "%";
@@ -1437,11 +1437,11 @@ function bindZoomHandlers() {
              return " " + c.dataset.label + ": " + fmtM(c.parsed.y) + extra;
             } } } },
           scales: {
-           x: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" } },
-           yRatio: { position: "left", ticks: { color: "#e8ecf1", callback: (v) => v + (isBal ? "x" : "%") }, grid: { color: "rgba(42,46,57,0.4)" },
+           x: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" } },
+           yRatio: { position: "left", ticks: { color: "#dbe5f1", callback: (v) => v + (isBal ? "x" : "%") }, grid: { color: "rgba(42,46,57,0.4)" },
             title: { display: true, text: isBal ? "Current ratio" : "FCF margin %", color: "#f97316" } },
-           yAmount: { position: "right", ticks: { color: "#e8ecf1", callback: fmtM }, grid: { display: false },
-            title: { display: true, text: isBal ? "Cash / Debt" : "Cash flow", color: "#e8ecf1" } } } }
+           yAmount: { position: "right", ticks: { color: "#dbe5f1", callback: fmtM }, grid: { display: false },
+            title: { display: true, text: isBal ? "Cash / Debt" : "Cash flow", color: "#dbe5f1" } } } }
         });
        }
       } catch (e) { console.error("Zoom chart error", e); }
@@ -1482,6 +1482,7 @@ function bindZoomHandlers() {
   } catch (e) {}
   // Clear GEX strike chart registry for fresh render
   Object.keys(gexStrikeChartData).forEach((k) => delete gexStrikeChartData[k]);
+  try { document.body.dataset.route = r.name; } catch (e) {}
   document.querySelectorAll(".topnav a[data-route]").forEach((b) =>
    b.classList.toggle("active", b.dataset.route === r.name));
   syncCoveragePick(r);
@@ -1610,7 +1611,7 @@ function bindZoomHandlers() {
   const on = !!st.subscribed;
   wrap.innerHTML =
    "<label style='display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px'>" +
-   "<input type='checkbox' id='nl-check' " + (on ? "checked" : "") + " style='width:18px;height:18px;accent-color:#c7af7f'>" +
+   "<input type='checkbox' id='nl-check' " + (on ? "checked" : "") + " style='width:18px;height:18px;accent-color:#d9a441'>" +
    "<span><b>Morning briefing newsletter</b><br><span style='color:var(--muted);font-size:12px'>Daily pre-market email with the full market analysis. Unsubscribe anytime.</span></span></label>";
   document.getElementById("nl-check").onchange = async (e) => {
    const want = e.target.checked;
@@ -1739,8 +1740,8 @@ function bindZoomHandlers() {
   const omBuys = s.buys || 0, omSells = s.sells || 0;
   // Summary line: highlight open-market conviction activity
   let h = '<div style="display:flex;gap:16px;margin-bottom:12px;font-size:13px;">';
-  h += '<div><span style="color:var(--muted)">Open-market buys:</span> <b style="color:#3fb950">' + omBuys + '</b></div>';
-  h += '<div><span style="color:var(--muted)">Open-market sells:</span> <b style="color:#f85149">' + omSells + '</b></div>';
+  h += '<div><span style="color:var(--muted)">Open-market buys:</span> <b style="color:#4dd2aa">' + omBuys + '</b></div>';
+  h += '<div><span style="color:var(--muted)">Open-market sells:</span> <b style="color:#f37d83">' + omSells + '</b></div>';
   if (s.automatic_count) h += '<div><span style="color:var(--muted)">Automatic:</span> ' + s.automatic_count + '</div>';
   h += '</div>';
   h += '<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;border-collapse:collapse;">';
@@ -1755,10 +1756,10 @@ function bindZoomHandlers() {
    const rowStyle = isOM
     ? (isBuy ? "background:rgba(63,185,80,0.08);" : "background:rgba(248,81,73,0.08);")
     : "opacity:0.55;";
-   const typeColor = isBuy ? "#3fb950" : "#f85149";
+   const typeColor = isBuy ? "#4dd2aa" : "#f37d83";
    const typeLabel = (isBuy ? "Buy" : "Sell") + (isOM ? "" : ' <span style="color:var(--muted);font-size:10px;">(' + esc(t.code_label || "auto") + ")</span>");
-   const convictBadge = isOM ? ' <span style="font-size:9px;background:' + (isBuy ? "#3fb950" : "#f85149") + ';color:#fff;padding:1px 5px;border-radius:3px;font-weight:700;">OPEN MARKET</span>' : "";
-   h += '<tr style="border-bottom:1px solid #1a2030;' + rowStyle + '">' +
+   const convictBadge = isOM ? ' <span style="font-size:9px;background:' + (isBuy ? "#4dd2aa" : "#f37d83") + ';color:#f5f7fa;padding:1px 5px;border-radius:3px;font-weight:700;">OPEN MARKET</span>' : "";
+   h += '<tr style="border-bottom:1px solid #101620;' + rowStyle + '">' +
     '<td style="padding:6px 8px;color:var(--muted);">' + esc(t.date || "") + '</td>' +
     '<td style="padding:6px 8px;">' + esc(t.insider || "") +
     (t.title ? '<div style="font-size:10px;color:var(--muted);">' + esc(t.title) + '</div>' : '') + '</td>' +
@@ -1784,17 +1785,17 @@ function bindZoomHandlers() {
   // Store for tab switching
   trendsData[chartId] = { tk: tk, tab: "hedge_funds" };
   let h = '<div style="display:flex;gap:8px;margin-bottom:12px;">';
-  h += '<button data-trends-tab="hedge_funds" data-trends-chart="' + chartId + '" style="flex:1;padding:8px;border:0;border-radius:8px;background:#2c2c2e;color:#fff;font-weight:700;font-size:12px;cursor:pointer;">Hedge funds</button>';
-  h += '<button data-trends-tab="insiders" data-trends-chart="' + chartId + '" style="flex:1;padding:8px;border:0;border-radius:8px;background:transparent;color:#8b8fa3;font-weight:700;font-size:12px;cursor:pointer;">Insiders</button>';
+  h += '<button data-trends-tab="hedge_funds" data-trends-chart="' + chartId + '" style="flex:1;padding:8px;border:0;border-radius:8px;background:#2c2c2e;color:#f5f7fa;font-weight:700;font-size:12px;cursor:pointer;">Hedge funds</button>';
+  h += '<button data-trends-tab="insiders" data-trends-chart="' + chartId + '" style="flex:1;padding:8px;border:0;border-radius:8px;background:transparent;color:#647184;font-weight:700;font-size:12px;cursor:pointer;">Insiders</button>';
   h += '</div>';
   // Legend
-  h += '<div style="display:flex;gap:16px;font-size:11px;color:#8b8fa3;margin-bottom:8px;">';
-  h += '<span><span style="display:inline-block;width:12px;height:4px;background:#00C805;border-radius:2px;vertical-align:middle;"></span> Buy</span>';
+  h += '<div style="display:flex;gap:16px;font-size:11px;color:#647184;margin-bottom:8px;">';
+  h += '<span><span style="display:inline-block;width:12px;height:4px;background:#4dd2aa;border-radius:2px;vertical-align:middle;"></span> Buy</span>';
   h += '<span><span style="display:inline-block;width:12px;height:4px;background:#FF5000;border-radius:2px;vertical-align:middle;"></span> Sell</span>';
   h += '<span><span style="display:inline-block;width:12px;height:4px;background:#2979FF;border-radius:2px;vertical-align:middle;"></span> Price</span>';
   h += '</div>';
   h += '<div class="zoomable-chart" data-chart="trends" data-ticker="' + esc(tk) + '" style="position:relative;cursor:zoom-in;" title="Click to zoom"><canvas id="' + chartId + '" style="max-height:300px;"></canvas>';
-  h += '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div id="' + chartId + '-table" style="margin-top:16px;"></div>';
   // Defer chart draw until DOM is ready
   setTimeout(() => drawTrendsChart(chartId), 50);
@@ -1819,7 +1820,7 @@ function bindZoomHandlers() {
    data: {
     labels: labels,
     datasets: [
-     { type: "bar", label: "Buy", data: buys, backgroundColor: "#00C805", borderRadius: 3, barPercentage: 0.6, categoryPercentage: 0.6, yAxisID: "yVol" },
+     { type: "bar", label: "Buy", data: buys, backgroundColor: "#4dd2aa", borderRadius: 3, barPercentage: 0.6, categoryPercentage: 0.6, yAxisID: "yVol" },
      { type: "bar", label: "Sell", data: sells, backgroundColor: "#FF5000", borderRadius: 3, barPercentage: 0.6, categoryPercentage: 0.6, yAxisID: "yVol" },
      { type: "line", label: "Price", data: t.prices, borderColor: "#2979FF", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "yPrice", spanGaps: true },
     ],
@@ -1828,9 +1829,9 @@ function bindZoomHandlers() {
     responsive: true, maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
-     x: { grid: { display: false }, ticks: { color: "#8b8fa3", font: { size: 10 } } },
-     yVol: { position: "left", grid: { color: "#1a2030" },
-      ticks: { color: "#8b8fa3", font: { size: 10 },
+     x: { grid: { display: false }, ticks: { color: "#647184", font: { size: 10 } } },
+     yVol: { position: "left", grid: { color: "#101620" },
+      ticks: { color: "#647184", font: { size: 10 },
        callback: (v) => v === 0 ? "0" : (Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") } },
      yPrice: { position: "right", grid: { display: false },
       ticks: { color: "#2979FF", font: { size: 10 }, callback: (v) => "$" + v } },
@@ -1854,16 +1855,16 @@ function bindZoomHandlers() {
    if (!holders.length) {
     h = '<p style="color:var(--muted);font-size:12px;">No institutional holder data.</p>';
    } else {
-    h = '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid #1a2030;"><div>Hedge fund</div><div>Activity</div><div style="text-align:right;">Shares</div></div>';
+    h = '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid #101620;"><div>Hedge fund</div><div>Activity</div><div style="text-align:right;">Shares</div></div>';
     holders.forEach((x) => {
      const isBuy = x.activity === "buy";
-     const col = isBuy ? "#00C805" : (x.activity === "sell" ? "#FF5000" : "#8b8fa3");
+     const col = isBuy ? "#4dd2aa" : (x.activity === "sell" ? "#FF5000" : "#647184");
      const act = x.activity === "hold" ? "Hold" : (isBuy ? "Buy" : "Sell");
-     h += '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:12px;padding:8px 0;border-bottom:1px solid #141a28;align-items:center;">' +
-      '<div><div style="font-weight:700;color:#e8ecf1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">' + esc(x.name) + '</div>' +
+     h += '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:12px;padding:8px 0;border-bottom:1px solid #101620;align-items:center;">' +
+      '<div><div style="font-weight:700;color:#dbe5f1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">' + esc(x.name) + '</div>' +
       '<div style="font-size:10px;color:var(--muted);">' + esc(x.change_pct || "") + '</div></div>' +
       '<div style="color:' + col + ';font-weight:700;">' + act + '</div>' +
-      '<div style="text-align:right;font-weight:700;color:#e8ecf1;">' + Math.abs(x.shares_change || 0).toLocaleString() + '</div></div>';
+      '<div style="text-align:right;font-weight:700;color:#dbe5f1;">' + Math.abs(x.shares_change || 0).toLocaleString() + '</div></div>';
     });
     if (d && d.data_as_of) h += '<p style="font-size:10px;color:var(--muted);margin-top:6px;">13F data as of ' + esc(d.data_as_of) + '. Quarterly bars build from real snapshots going forward.</p>';
    }
@@ -1873,15 +1874,15 @@ function bindZoomHandlers() {
    if (!txns.length) {
     h = '<p style="color:var(--muted);font-size:12px;">No open-market insider transactions.</p>';
    } else {
-    h = '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid #1a2030;"><div>Insider</div><div>Activity</div><div style="text-align:right;">Shares</div></div>';
+    h = '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:11px;color:var(--muted);padding:6px 0;border-bottom:1px solid #101620;"><div>Insider</div><div>Activity</div><div style="text-align:right;">Shares</div></div>';
     txns.forEach((x) => {
      const isBuy = x.type === "buy";
-     const col = isBuy ? "#00C805" : "#FF5000";
-     h += '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:12px;padding:8px 0;border-bottom:1px solid #141a28;align-items:center;">' +
-      '<div><div style="font-weight:700;color:#e8ecf1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">' + esc(x.insider || "") + '</div>' +
+     const col = isBuy ? "#4dd2aa" : "#FF5000";
+     h += '<div style="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:12px;padding:8px 0;border-bottom:1px solid #101620;align-items:center;">' +
+      '<div><div style="font-weight:700;color:#dbe5f1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">' + esc(x.insider || "") + '</div>' +
       '<div style="font-size:10px;color:var(--muted);">' + esc(x.title || "") + " · " + esc(x.date || "") + '</div></div>' +
       '<div style="color:' + col + ';font-weight:700;">' + (isBuy ? "Buy" : "Sell") + '</div>' +
-      '<div style="text-align:right;font-weight:700;color:#e8ecf1;">' + (x.shares || 0).toLocaleString() + '</div></div>';
+      '<div style="text-align:right;font-weight:700;color:#dbe5f1;">' + (x.shares || 0).toLocaleString() + '</div></div>';
     });
    }
   }
@@ -1899,7 +1900,7 @@ function bindZoomHandlers() {
   document.querySelectorAll('[data-trends-chart="' + chartId + '"]').forEach((b) => {
    const active = b.getAttribute("data-trends-tab") === tab;
    b.style.background = active ? "#2c2c2e" : "transparent";
-   b.style.color = active ? "#fff" : "#8b8fa3";
+   b.style.color = active ? "#f5f7fa" : "#647184";
   });
   drawTrendsChart(chartId);
  });
@@ -1907,14 +1908,14 @@ function bindZoomHandlers() {
 
  function tickerGexHtml(tk, d) {
   const isPos = d.regime === "positive";
-  const regimeColor = isPos ? "#3fb950" : "#f85149";
+  const regimeColor = isPos ? "#4dd2aa" : "#f37d83";
   const regimeLabel = isPos ? "POSITIVE, volatility dampener" : "NEGATIVE, volatility amplifier";
   const regimeIcon = isPos ? "🟢" : "🔴";
   const unit = d.gex_unit || "M";
   const spotVsZG = d.zero_gamma != null
    ? (d.spot >= d.zero_gamma
-    ? '<span style="color:#3fb950">above</span> zero gamma, dealers dampening moves'
-    : '<span style="color:#f85149">below</span> zero gamma, dealers amplifying moves')
+    ? '<span style="color:#4dd2aa">above</span> zero gamma, dealers dampening moves'
+    : '<span style="color:#f37d83">below</span> zero gamma, dealers amplifying moves')
    : " - ";
   // Interactive GEX bar: visual split of call vs put gamma
   const total = Math.abs(d.call_gex) + Math.abs(d.put_gex);
@@ -1922,42 +1923,42 @@ function bindZoomHandlers() {
   const putPct = total > 0 ? (Math.abs(d.put_gex) / total * 100).toFixed(1) : 50;
   return '<div style="position:relative;margin-bottom:8px;">' +
    '<div style="display:flex;height:28px;border-radius:6px;overflow:hidden;margin:12px 0;" title="Call GEX vs Put GEX">' +
-   '<div style="width:' + callPct + '%;background:#3fb950;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0a0f0a;" title="Call GEX: +' + d.call_gex.toFixed(2) + unit + '">+' + d.call_gex.toFixed(1) + unit + '</div>' +
-   '<div style="width:' + putPct + '%;background:#f85149;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;" title="Put GEX: ' + d.put_gex.toFixed(2) + unit + '">' + d.put_gex.toFixed(1) + unit + '</div>' +
+   '<div style="width:' + callPct + '%;background:#4dd2aa;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0a0f0a;" title="Call GEX: +' + d.call_gex.toFixed(2) + unit + '">+' + d.call_gex.toFixed(1) + unit + '</div>' +
+   '<div style="width:' + putPct + '%;background:#f37d83;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#f5f7fa;" title="Put GEX: ' + d.put_gex.toFixed(2) + unit + '">' + d.put_gex.toFixed(1) + unit + '</div>' +
    "</div>" +
    "</div>" +
    '<div style="text-align:center;margin-bottom:12px;"><span style="font-size:13px;color:' + regimeColor + ';font-weight:700;">' + regimeIcon + " " + regimeLabel + "</span></div>" +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-   '<div><div style="font-size:11px;color:#e8ecf1;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
-   '<div><div style="font-size:11px;color:#e8ecf1;">NET GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
+   '<div><div style="font-size:11px;color:#dbe5f1;">SPOT</div><div style="font-size:20px;font-weight:700;color:#dbe5f1;">$' + d.spot.toFixed(2) + "</div></div>" +
+   '<div><div style="font-size:11px;color:#dbe5f1;">NET GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
    (d.total_gex >= 0 ? "+" : "") + d.total_gex.toFixed(2) + unit + "</div></div>" +
-   '<div><div style="font-size:11px;color:#e8ecf1;">ZERO GAMMA</div><div style="font-size:15px;font-weight:600;color:#e8ecf1;">' +
+   '<div><div style="font-size:11px;color:#dbe5f1;">ZERO GAMMA</div><div style="font-size:15px;font-weight:600;color:#dbe5f1;">' +
    (d.zero_gamma != null ? "$" + d.zero_gamma.toFixed(2) : " - ") + "</div>" +
-   '<div style="font-size:12px;color:#e8ecf1;">Spot ' + spotVsZG + "</div></div>" +
-   '<div><div style="font-size:11px;color:#e8ecf1;">WALLS</div><div style="font-size:15px;font-weight:600;">' +
-   '<span style="color:#3fb950;" title="Call wall (resistance)">C $' + (d.call_wall != null ? d.call_wall.toFixed(0) : " - ") + "</span>" +
-   ' <span style="color:#e8ecf1;">/</span> ' +
-   '<span style="color:#f85149;" title="Put wall (support)">P $' + (d.put_wall != null ? d.put_wall.toFixed(0) : " - ") + "</span></div></div>" +
+   '<div style="font-size:12px;color:#dbe5f1;">Spot ' + spotVsZG + "</div></div>" +
+   '<div><div style="font-size:11px;color:#dbe5f1;">WALLS</div><div style="font-size:15px;font-weight:600;">' +
+   '<span style="color:#4dd2aa;" title="Call wall (resistance)">C $' + (d.call_wall != null ? d.call_wall.toFixed(0) : " - ") + "</span>" +
+   ' <span style="color:#dbe5f1;">/</span> ' +
+   '<span style="color:#f37d83;" title="Put wall (support)">P $' + (d.put_wall != null ? d.put_wall.toFixed(0) : " - ") + "</span></div></div>" +
    "</div>" +
    '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
    "<p><b>What is this?</b> Gamma exposure measures how options dealers will hedge as " + esc(tk) + " moves. " +
    "Dealers who sold options must buy/sell shares to stay neutral, their hedging pushes the stock.</p>" +
    (isPos
-    ? "<p><b style='color:#3fb950'>Positive GEX</b>, dealers buy dips and sell rips, <i>dampening</i> volatility. Expect choppy, range-bound action. Favor mean-reversion: buy support, sell resistance quickly.</p>"
-    : "<p><b style='color:#f85149'>Negative GEX</b>, dealers sell into declines and buy into rallies, <i>amplifying</i> moves. Expect wider swings and trending action. Favor momentum/breakouts; widen stops and reduce size.</p>") +
+    ? "<p><b style='color:#4dd2aa'>Positive GEX</b>, dealers buy dips and sell rips, <i>dampening</i> volatility. Expect choppy, range-bound action. Favor mean-reversion: buy support, sell resistance quickly.</p>"
+    : "<p><b style='color:#f37d83'>Negative GEX</b>, dealers sell into declines and buy into rallies, <i>amplifying</i> moves. Expect wider swings and trending action. Favor momentum/breakouts; widen stops and reduce size.</p>") +
    "<p><b>Zero gamma ($" + (d.zero_gamma != null ? d.zero_gamma.toFixed(2) : " - ") + ")</b> is the flip point, above it dealers stabilize, below it they accelerate. " +
-   "The <b style='color:#3fb950'>call wall</b> acts as resistance and the <b style='color:#f85149'>put wall</b> as support.</p>" +
+   "The <b style='color:#4dd2aa'>call wall</b> acts as resistance and the <b style='color:#f37d83'>put wall</b> as support.</p>" +
    "</div>" +
-   '<div style="font-size:12px;color:#e8ecf1;">' + d.contracts_analyzed.toLocaleString() + " contracts analyzed</div>" +
+   '<div style="font-size:12px;color:#dbe5f1;">' + d.contracts_analyzed.toLocaleString() + " contracts analyzed</div>" +
    '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
  }
 
  function tickerSkewHtml(tk, d) {
   const regimeColors = {
-   extreme_fear: "#f85149", elevated_fear: "#d29922",
-   normal: "#58a6ff", complacent: "#3fb950",
+   extreme_fear: "#f37d83", elevated_fear: "#e0aa46",
+   normal: "#58a6ff", complacent: "#4dd2aa",
   };
-  const rc = regimeColors[d.regime] || "#e8ecf1";
+  const rc = regimeColors[d.regime] || "#dbe5f1";
   const trendIcon = d.trend === "steepening" ? "📈" : d.trend === "flattening" ? "📉" : "➡️";
   const trendText = d.trend === "steepening" ? "Steepening, fear rising" :
    d.trend === "flattening" ? "Flattening, fear fading" : "Stable";
@@ -1967,33 +1968,33 @@ function bindZoomHandlers() {
   return '<div style="position:relative;margin-bottom:8px;">' +
    '<div style="margin:12px 0;">' +
    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-   '<span style="font-size:11px;color:#e8ecf1;width:70px;">Put IV</span>' +
-   '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
-   '<div style="width:' + putPct + '%;height:100%;background:#f85149;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#fff;">' + d.put_iv.toFixed(1) + "%</div></div></div>" +
+   '<span style="font-size:11px;color:#dbe5f1;width:70px;">Put IV</span>' +
+   '<div style="flex:1;height:22px;background:#101620;border-radius:4px;overflow:hidden;">' +
+   '<div style="width:' + putPct + '%;height:100%;background:#f37d83;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#f5f7fa;">' + d.put_iv.toFixed(1) + "%</div></div></div>" +
    '<div style="display:flex;align-items:center;gap:8px;">' +
-   '<span style="font-size:11px;color:#e8ecf1;width:70px;">Call IV</span>' +
-   '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
-   '<div style="width:' + callPct + '%;height:100%;background:#3fb950;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#0a0f0a;">' + d.call_iv.toFixed(1) + "%</div></div></div>" +
+   '<span style="font-size:11px;color:#dbe5f1;width:70px;">Call IV</span>' +
+   '<div style="flex:1;height:22px;background:#101620;border-radius:4px;overflow:hidden;">' +
+   '<div style="width:' + callPct + '%;height:100%;background:#4dd2aa;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#0a0f0a;">' + d.call_iv.toFixed(1) + "%</div></div></div>" +
    "</div>" +
    "</div>" +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-   '<div><div style="font-size:11px;color:#e8ecf1;">SKEW</div>' +
+   '<div><div style="font-size:11px;color:#dbe5f1;">SKEW</div>' +
    '<div style="font-size:20px;font-weight:700;color:' + rc + ';">' + (d.skew >= 0 ? "+" : "") + d.skew.toFixed(1) + " vp</div>" +
    '<div style="font-size:12px;color:' + rc + ';">' + esc(d.regime_label || "") + "</div></div>" +
-   '<div><div style="font-size:11px;color:#e8ecf1;">TREND</div>' +
-   '<div style="font-size:14px;font-weight:600;color:#e8ecf1;">' + trendIcon + " " + trendText + "</div>" +
-   (d.skew_change != null ? '<div style="font-size:11px;color:#e8ecf1;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs prior</div>" : "") + "</div>" +
+   '<div><div style="font-size:11px;color:#dbe5f1;">TREND</div>' +
+   '<div style="font-size:14px;font-weight:600;color:#dbe5f1;">' + trendIcon + " " + trendText + "</div>" +
+   (d.skew_change != null ? '<div style="font-size:11px;color:#dbe5f1;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs prior</div>" : "") + "</div>" +
    "</div>" +
    '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
    "<p><b>What is this?</b> Volatility skew compares what investors pay for downside puts versus upside calls on " + esc(tk) + ". " +
    "A high skew means puts are expensive, institutions are aggressively hedging.</p>" +
    (d.regime === "extreme_fear" || d.regime === "elevated_fear"
-    ? "<p><b style='color:#f85149'>Steep skew</b>, fear is elevated. If you're bullish, consider selling put spreads to collect inflated premium. Capitulation bottoms often form when skew peaks.</p>"
+    ? "<p><b style='color:#f37d83'>Steep skew</b>, fear is elevated. If you're bullish, consider selling put spreads to collect inflated premium. Capitulation bottoms often form when skew peaks.</p>"
     : d.regime === "complacent"
-    ? "<p><b style='color:#3fb950'>Flat skew</b>, complacency. Downside protection is cheap, good time to hedge if bearish. But extreme flatness can signal euphoric tops.</p>"
+    ? "<p><b style='color:#4dd2aa'>Flat skew</b>, complacency. Downside protection is cheap, good time to hedge if bearish. But extreme flatness can signal euphoric tops.</p>"
     : "<p>Skew is in the normal range for equities. No extreme positioning to fade.</p>") +
    "</div>" +
-   '<div style="font-size:12px;color:#e8ecf1;">Put $' + d.put_strike.toFixed(2) + " / Call $" + d.call_strike.toFixed(2) + " · " + d.dte + " DTE</div>" +
+   '<div style="font-size:12px;color:#dbe5f1;">Put $' + d.put_strike.toFixed(2) + " / Call $" + d.call_strike.toFixed(2) + " · " + d.dte + " DTE</div>" +
    '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div>";
  }
 
@@ -2004,41 +2005,41 @@ function bindZoomHandlers() {
   const d = tickers[tk];
   if (!d) return '<p style="color:var(--muted)">No dark pool data for this ticker.</p>';
   const sentimentColors = {
-   "BULLISH ACCUMULATION": "#3fb950",
+   "BULLISH ACCUMULATION": "#4dd2aa",
    "MODERATE BUY BIAS": "#58a6ff",
-   "INSTITUTIONAL DISTRIBUTION": "#f85149",
-   "BEARISH FADE": "#d29922",
-   "NEUTRAL / BALANCED": "#8b949e",
+   "INSTITUTIONAL DISTRIBUTION": "#f37d83",
+   "BEARISH FADE": "#e0aa46",
+   "NEUTRAL / BALANCED": "#8d99aa",
   };
-  const sc = sentimentColors[d.sentiment] || "#e8ecf1";
+  const sc = sentimentColors[d.sentiment] || "#dbe5f1";
   const flowM = d.net_dark_flow_usd / 1e6;
   const flowStr = (flowM >= 0 ? "+$" : "-$") + Math.abs(flowM).toFixed(1) + "M";
   const zStr = (d.z_score >= 0 ? "+" : "") + d.z_score.toFixed(2);
   let h = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">' +
-   '<div><div style="font-size:11px;color:#8b949e;">DARK SHORT RATIO</div>' +
+   '<div><div style="font-size:11px;color:#8d99aa;">DARK SHORT RATIO</div>' +
    '<div style="font-size:20px;font-weight:700;color:' + sc + ';">' + d.dpsr.toFixed(1) + '%</div>' +
-   '<div style="font-size:11px;color:#8b949e;">' + (d.dpsr >= 50 ? "Dealers shorting to fill buys" : d.dpsr < 40 ? "Dealers absorbing sells" : "Balanced") + "</div></div>" +
-   '<div><div style="font-size:11px;color:#8b949e;">PARTICIPATION</div>' +
-   '<div style="font-size:20px;font-weight:700;color:#e8ecf1;">' + d.dpr.toFixed(1) + '%</div>' +
-   '<div style="font-size:11px;color:#8b949e;">of volume off-exchange</div></div>' +
-   '<div><div style="font-size:11px;color:#8b949e;">NET DARK FLOW</div>' +
-   '<div style="font-size:20px;font-weight:700;color:' + (flowM >= 0 ? "#3fb950" : "#f85149") + ';">' + flowStr + "</div>" +
-   '<div style="font-size:11px;color:#8b949e;">Z-score ' + zStr + "</div></div>" +
+   '<div style="font-size:11px;color:#8d99aa;">' + (d.dpsr >= 50 ? "Dealers shorting to fill buys" : d.dpsr < 40 ? "Dealers absorbing sells" : "Balanced") + "</div></div>" +
+   '<div><div style="font-size:11px;color:#8d99aa;">PARTICIPATION</div>' +
+   '<div style="font-size:20px;font-weight:700;color:#dbe5f1;">' + d.dpr.toFixed(1) + '%</div>' +
+   '<div style="font-size:11px;color:#8d99aa;">of volume off-exchange</div></div>' +
+   '<div><div style="font-size:11px;color:#8d99aa;">NET DARK FLOW</div>' +
+   '<div style="font-size:20px;font-weight:700;color:' + (flowM >= 0 ? "#4dd2aa" : "#f37d83") + ';">' + flowStr + "</div>" +
+   '<div style="font-size:11px;color:#8d99aa;">Z-score ' + zStr + "</div></div>" +
    "</div>" +
    '<div style="margin:12px 0;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border-left:3px solid ' + sc + ';">' +
    '<div style="font-size:13px;font-weight:700;color:' + sc + ';">' + esc(d.sentiment) + "</div>" +
-   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">High dark short ratio (&gt;50%) means wholesale dealers are selling short from inventory to satisfy aggressive institutional buy orders. Low ratio (&lt;40%) means dealers are absorbing institutional sell tickets.</div>' +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">High dark short ratio (&gt;50%) means wholesale dealers are selling short from inventory to satisfy aggressive institutional buy orders. Low ratio (&lt;40%) means dealers are absorbing institutional sell tickets.</div>' +
    "</div>";
   // 10-day DPSR history bars
   if (d.history && d.history.length > 1) {
    const hist = d.history.slice(-10);
    const maxDpsr = Math.max(...hist.map(x => x.dpsr * 100), 60);
-   h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#8b949e;margin-bottom:6px;">DARK SHORT RATIO, LAST 10 SESSIONS</div>' +
+   h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#8d99aa;margin-bottom:6px;">DARK SHORT RATIO, LAST 10 SESSIONS</div>' +
     '<div style="display:flex;align-items:flex-end;gap:3px;height:60px;">' +
     hist.map(x => {
      const v = x.dpsr * 100;
      const ht = Math.max(4, (v / maxDpsr * 56));
-     const c = v >= 55 ? "#3fb950" : v >= 50 ? "#58a6ff" : v < 40 ? "#f85149" : "#8b949e";
+     const c = v >= 55 ? "#4dd2aa" : v >= 50 ? "#58a6ff" : v < 40 ? "#f37d83" : "#8d99aa";
      return '<div title="' + x.date + ": " + v.toFixed(1) + '%" style="flex:1;background:' + c + ";height:" + ht + 'px;border-radius:2px;min-width:8px;"></div>';
     }).join("") +
     "</div></div>";
@@ -2054,20 +2055,20 @@ function bindZoomHandlers() {
  function trendGaugesHtml(tk) {
   const sig = ((D.trend_signals || {}).tickers || {})[tk];
   if (!sig) return "";
-  const tc = sig.trendScore >= 60 ? "#3fb950" : sig.trendScore >= 30 ? "#d29922" : "#8b949e";
-  const ec = sig.exhaustionScore >= 60 ? "#f85149" : sig.exhaustionScore >= 30 ? "#d29922" : "#3fb950";
+  const tc = sig.trendScore >= 60 ? "#4dd2aa" : sig.trendScore >= 30 ? "#e0aa46" : "#8d99aa";
+  const ec = sig.exhaustionScore >= 60 ? "#f37d83" : sig.exhaustionScore >= 30 ? "#e0aa46" : "#4dd2aa";
   const flags = (sig.reversalFlags || []).map((f) =>
-   '<div style="font-size:11px;color:' + (f.indexOf("No exhaustion") === 0 ? "#8b949e" : "#f85149") + ';margin-top:4px;">' + esc(f) + "</div>").join("");
+   '<div style="font-size:11px;color:' + (f.indexOf("No exhaustion") === 0 ? "#8d99aa" : "#f37d83") + ';margin-top:4px;">' + esc(f) + "</div>").join("");
   return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
-   '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
-   '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">TREND CONVICTION</div>' +
-   '<div style="font-size:28px;font-weight:800;color:' + tc + ';">' + sig.trendScore + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
-   '<div style="font-size:11px;color:#e8ecf1;margin-top:2px;">' + esc(sig.alignment) + " · ADX " + sig.adx + " · " + esc(sig.trendDirection) + "</div>" +
-   '<div style="font-size:11px;color:#6b7280;margin-top:4px;">High RSI alone does not kill a trend. Conviction above 60 means the trend is structurally sound.</div></div>' +
-   '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
-   '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">EXHAUSTION / REVERSAL RISK</div>' +
-   '<div style="font-size:28px;font-weight:800;color:' + ec + ';">' + sig.exhaustionScore + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
-   '<div style="font-size:11px;color:#e8ecf1;margin-top:2px;">RSI ' + sig.rsi + "</div>" + flags +
+   '<div style="background:#101620;border-radius:10px;padding:12px;">' +
+   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">TREND CONVICTION</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + tc + ';">' + sig.trendScore + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
+   '<div style="font-size:11px;color:#dbe5f1;margin-top:2px;">' + esc(sig.alignment) + " · ADX " + sig.adx + " · " + esc(sig.trendDirection) + "</div>" +
+   '<div style="font-size:11px;color:#647184;margin-top:4px;">High RSI alone does not kill a trend. Conviction above 60 means the trend is structurally sound.</div></div>' +
+   '<div style="background:#101620;border-radius:10px;padding:12px;">' +
+   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">EXHAUSTION / REVERSAL RISK</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + ec + ';">' + sig.exhaustionScore + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
+   '<div style="font-size:11px;color:#dbe5f1;margin-top:2px;">RSI ' + sig.rsi + "</div>" + flags +
    "</div></div>";
  }
 
@@ -2076,18 +2077,18 @@ function bindZoomHandlers() {
   const ta = (D.technical_analysis || {})[tk];
   if (!ta) return '<div class="card"><p style="color:var(--muted)">Technical analysis not available for ' + esc(tk) + '.</p></div>';
 
-  const biasColor = { BULLISH: "#3fb950", BEARISH: "#f85149", NEUTRAL: "#d29922" };
-  const bc = biasColor[ta.confluence.overallBias] || "#e8ecf1";
+  const biasColor = { BULLISH: "#4dd2aa", BEARISH: "#f37d83", NEUTRAL: "#e0aa46" };
+  const bc = biasColor[ta.confluence.overallBias] || "#dbe5f1";
 
   const tfCard = (name, tf) => {
-   const tc = biasColor[tf.trend] || "#e8ecf1";
-   return '<div style="background:#161b26;border-radius:10px;padding:14px;flex:1;min-width:200px;">' +
-    '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">' + name + ' <span style="color:' + tc + ';">' + tf.trend + "</span></div>" +
-    '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">RSI(14): <b>' + (tf.rsi.value == null ? "N/A" : tf.rsi.value.toFixed(1)) + "</b> (" + (tf.rsi.status === "INSUFFICIENT_DATA" ? "Insufficient data" : tf.rsi.status) + ")</div>" +
-    '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">MACD: ' + esc(tf.macd.signal) + "</div>" +
-    '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">EMA50 vs EMA200: ' + esc(tf.movingAverages.ema50VsEma200) + "</div>" +
-    (tf.keyPattern ? '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">Pattern: ' + esc(tf.keyPattern) + "</div>" : "") +
-    '<div style="font-size:12px;color:#a0a8b8;">' + esc(tf.summary) + "</div>" +
+   const tc = biasColor[tf.trend] || "#dbe5f1";
+   return '<div style="background:#101620;border-radius:10px;padding:14px;flex:1;min-width:200px;">' +
+    '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:8px;">' + name + ' <span style="color:' + tc + ';">' + tf.trend + "</span></div>" +
+    '<div style="font-size:12px;color:#dbe5f1;margin-bottom:4px;">RSI(14): <b>' + (tf.rsi.value == null ? "N/A" : tf.rsi.value.toFixed(1)) + "</b> (" + (tf.rsi.status === "INSUFFICIENT_DATA" ? "Insufficient data" : tf.rsi.status) + ")</div>" +
+    '<div style="font-size:12px;color:#dbe5f1;margin-bottom:4px;">MACD: ' + esc(tf.macd.signal) + "</div>" +
+    '<div style="font-size:12px;color:#dbe5f1;margin-bottom:4px;">EMA50 vs EMA200: ' + esc(tf.movingAverages.ema50VsEma200) + "</div>" +
+    (tf.keyPattern ? '<div style="font-size:12px;color:#dbe5f1;margin-bottom:4px;">Pattern: ' + esc(tf.keyPattern) + "</div>" : "") +
+    '<div style="font-size:12px;color:#8d99aa;">' + esc(tf.summary) + "</div>" +
     "</div>";
   };
 
@@ -2098,23 +2099,23 @@ function bindZoomHandlers() {
   return '<div class="card">' +
    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">' +
    '<div style="font-size:15px;font-weight:700;">Overall: <span style="color:' + bc + ';">' + ta.confluence.overallBias + "</span></div>" +
-   '<div style="font-size:13px;color:#e8ecf1;">Confidence: <b>' + ta.confluence.confidenceScore + '%</b></div>' +
-   '<div style="font-size:12px;color:#a0a8b8;">' + ta.confluence.timeframeAlignment.replace(/_/g, " ") + "</div>" +
+   '<div style="font-size:13px;color:#dbe5f1;">Confidence: <b>' + ta.confluence.confidenceScore + '%</b></div>' +
+   '<div style="font-size:12px;color:#8d99aa;">' + ta.confluence.timeframeAlignment.replace(/_/g, " ") + "</div>" +
    "</div>" +
    trendGaugesHtml(tk) +
    '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' +
    tfCard("Daily", ta.timeframes.daily) + tfCard("Weekly", ta.timeframes.weekly) + tfCard("Monthly", ta.timeframes.monthly) +
    "</div>" +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">' +
-   '<div><div style="font-size:13px;font-weight:700;color:#3fb950;margin-bottom:6px;">Support</div><div style="font-size:13px;color:#e8ecf1;">' + supHtml + "</div></div>" +
-   '<div><div style="font-size:13px;font-weight:700;color:#f85149;margin-bottom:6px;">Resistance</div><div style="font-size:13px;color:#e8ecf1;">' + resHtml + "</div></div>" +
+   '<div><div style="font-size:13px;font-weight:700;color:#4dd2aa;margin-bottom:6px;">Support</div><div style="font-size:13px;color:#dbe5f1;">' + supHtml + "</div></div>" +
+   '<div><div style="font-size:13px;font-weight:700;color:#f37d83;margin-bottom:6px;">Resistance</div><div style="font-size:13px;color:#dbe5f1;">' + resHtml + "</div></div>" +
    "</div>" +
-   '<div style="font-size:13px;color:#e8ecf1;margin-bottom:8px;">Entry Zone: <b>' + esc(kl.suggestedEntryZone) + "</b> · Stop: <b>$" + kl.stopLoss.toFixed(2) + "</b> · Target: <b>$" + kl.targetPrice.toFixed(2) + "</b></div>" +
+   '<div style="font-size:13px;color:#dbe5f1;margin-bottom:8px;">Entry Zone: <b>' + esc(kl.suggestedEntryZone) + "</b> · Stop: <b>$" + kl.stopLoss.toFixed(2) + "</b> · Target: <b>$" + kl.targetPrice.toFixed(2) + "</b></div>" +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
-   '<div style="background:#0f2818;border-radius:8px;padding:12px;"><div style="font-size:12px;font-weight:700;color:#3fb950;margin-bottom:4px;">Bullish Case</div><div style="font-size:12px;color:#e8ecf1;">' + esc(ta.scenarios.bullishCase) + "</div></div>" +
-   '<div style="background:#2a1215;border-radius:8px;padding:12px;"><div style="font-size:12px;font-weight:700;color:#f85149;margin-bottom:4px;">Bearish Case</div><div style="font-size:12px;color:#e8ecf1;">' + esc(ta.scenarios.bearishCase) + "</div></div>" +
+   '<div style="background:#0f2818;border-radius:8px;padding:12px;"><div style="font-size:12px;font-weight:700;color:#4dd2aa;margin-bottom:4px;">Bullish Case</div><div style="font-size:12px;color:#dbe5f1;">' + esc(ta.scenarios.bullishCase) + "</div></div>" +
+   '<div style="background:#2a1215;border-radius:8px;padding:12px;"><div style="font-size:12px;font-weight:700;color:#f37d83;margin-bottom:4px;">Bearish Case</div><div style="font-size:12px;color:#dbe5f1;">' + esc(ta.scenarios.bearishCase) + "</div></div>" +
    "</div>" +
-   '<div style="font-size:12px;color:#a0a8b8;margin-top:8px;">Risk/Reward: <b>' + esc(ta.scenarios.riskRewardRatio) + "</b> · As of " + esc(ta.asOfDate) + "</div>" +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:8px;">Risk/Reward: <b>' + esc(ta.scenarios.riskRewardRatio) + "</b> · As of " + esc(ta.asOfDate) + "</div>" +
    "</div>";
  }
 
@@ -2127,7 +2128,7 @@ function bindZoomHandlers() {
  const gexStrikeChartData = {};
  const trendsData = {};
  function gexStrikeChartHtml(tk, d, chartId) {
-  if (!d.strikes || !d.strikes.length) return '<p style="color:#e8ecf1">Strike-level data unavailable.</p>';
+  if (!d.strikes || !d.strikes.length) return '<p style="color:#dbe5f1">Strike-level data unavailable.</p>';
   const unit = d.gex_unit || "M";
   // Store data for later drawing
   gexStrikeChartData[chartId] = {
@@ -2141,12 +2142,12 @@ function bindZoomHandlers() {
   };
   return '<div class="zoomable-chart" style="position:relative;margin:12px 0;cursor:zoom-in;" title="Click to zoom">' +
    '<canvas id="' + chartId + '" style="max-height:380px;"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
-   '<div style="font-size:12px;color:#e8ecf1;text-align:center;margin-bottom:8px;">' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+   '<div style="font-size:12px;color:#dbe5f1;text-align:center;margin-bottom:8px;">' +
    '<span style="color:#2f6fed;">■</span> Net GEX by strike &nbsp; ' +
    '<span style="color:#58a6ff;"> - </span> Aggregate GEX &nbsp; ' +
-   '<span style="color:#3fb950;"> - </span> Spot $' + d.spot.toFixed(2) + ' &nbsp; ' +
-   '<span style="color:#f85149;"> - </span> Gamma flip $' + (d.zero_gamma != null ? d.zero_gamma.toFixed(2) : " - ") +
+   '<span style="color:#4dd2aa;"> - </span> Spot $' + d.spot.toFixed(2) + ' &nbsp; ' +
+   '<span style="color:#f37d83;"> - </span> Gamma flip $' + (d.zero_gamma != null ? d.zero_gamma.toFixed(2) : " - ") +
    "</div>";
  }
 
@@ -2246,7 +2247,7 @@ function bindZoomHandlers() {
      key = null;
     }
     if (!key) {
-     el.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">Visual unavailable.</p>';
+     el.innerHTML = '<p style="color:#dbe5f1;opacity:0.6;">Visual unavailable.</p>';
      return;
     }
     renderVisual(el, key);
@@ -2269,7 +2270,7 @@ function bindZoomHandlers() {
   const series = [
    { key: "cpi_yoy", label: "CPI YoY %", color: "#7dd3fc" },
    { key: "ppi_yoy", label: "PPI YoY %", color: "#a5b4fc" },
-   { key: "retail_mom", label: "Retail MoM %", color: "#22c55e" },
+   { key: "retail_mom", label: "Retail MoM %", color: "#4dd2aa" },
    { key: "pmi", label: "PMI", color: "#a3e635" },
   ];
   new Chart(cv, {
@@ -2287,10 +2288,10 @@ function bindZoomHandlers() {
    options: {
     responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    plugins: { legend: { labels: { color: "#e8ecf1", boxWidth: 12, font: { size: 11 } } } },
+    plugins: { legend: { labels: { color: "#dbe5f1", boxWidth: 12, font: { size: 11 } } } },
     scales: {
-     x: { ticks: { color: "#e8ecf1", maxTicksLimit: 8 }, grid: { color: "rgba(255,255,255,0.06)" } },
-     y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(255,255,255,0.06)" } },
+     x: { ticks: { color: "#dbe5f1", maxTicksLimit: 8 }, grid: { color: "rgba(255,255,255,0.06)" } },
+     y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(255,255,255,0.06)" } },
     },
    },
   });
@@ -2312,10 +2313,10 @@ function bindZoomHandlers() {
    d.agg.forEach((a) => { aggMap[a.strike] = a.agg_gex; });
    const aggData = labels.map((k) => aggMap[k] !== undefined ? aggMap[k] : null);
    const ann = {};
-   if (d.spot != null) ann.spot = { type: "line", xMin: d.spot, xMax: d.spot, borderColor: "#3fb950", borderWidth: 2, label: { display: true, content: "Spot", position: "start", color: "#3fb950", font: { size: 10 } } };
-   if (d.zero_gamma != null) ann.flip = { type: "line", xMin: d.zero_gamma, xMax: d.zero_gamma, borderColor: "#f85149", borderWidth: 2, borderDash: [6, 4], label: { display: true, content: "Flip", position: "start", color: "#f85149", font: { size: 10 } } };
-   if (d.call_wall != null) ann.cwall = { type: "line", xMin: d.call_wall, xMax: d.call_wall, borderColor: "#3fb950", borderWidth: 1, borderDash: [3, 3], label: { display: true, content: "C wall", position: "end", color: "#3fb950", font: { size: 9 } } };
-   if (d.put_wall != null) ann.pwall = { type: "line", xMin: d.put_wall, xMax: d.put_wall, borderColor: "#f85149", borderWidth: 1, borderDash: [3, 3], label: { display: true, content: "P wall", position: "end", color: "#f85149", font: { size: 9 } } };
+   if (d.spot != null) ann.spot = { type: "line", xMin: d.spot, xMax: d.spot, borderColor: "#4dd2aa", borderWidth: 2, label: { display: true, content: "Spot", position: "start", color: "#4dd2aa", font: { size: 10 } } };
+   if (d.zero_gamma != null) ann.flip = { type: "line", xMin: d.zero_gamma, xMax: d.zero_gamma, borderColor: "#f37d83", borderWidth: 2, borderDash: [6, 4], label: { display: true, content: "Flip", position: "start", color: "#f37d83", font: { size: 10 } } };
+   if (d.call_wall != null) ann.cwall = { type: "line", xMin: d.call_wall, xMax: d.call_wall, borderColor: "#4dd2aa", borderWidth: 1, borderDash: [3, 3], label: { display: true, content: "C wall", position: "end", color: "#4dd2aa", font: { size: 9 } } };
+   if (d.put_wall != null) ann.pwall = { type: "line", xMin: d.put_wall, xMax: d.put_wall, borderColor: "#f37d83", borderWidth: 1, borderDash: [3, 3], label: { display: true, content: "P wall", position: "end", color: "#f37d83", font: { size: 9 } } };
    new Chart(ctx, {
     type: "bar",
     data: { labels: labels, datasets: [
@@ -2325,7 +2326,7 @@ function bindZoomHandlers() {
     options: {
      responsive: true, maintainAspectRatio: true, interaction: { mode: "index", intersect: false },
      plugins: {
-      legend: { labels: { color: "#e8ecf1", boxWidth: 12, font: { size: 11 } } },
+      legend: { labels: { color: "#dbe5f1", boxWidth: 12, font: { size: 11 } } },
       tooltip: { callbacks: { label: (c) => {
        const s = d.strikes[c.dataIndex];
        if (!s) return "";
@@ -2334,8 +2335,8 @@ function bindZoomHandlers() {
       annotation: { annotations: ann },
      },
      scales: {
-      x: { title: { display: true, text: "Strike Price", color: "#e8ecf1" }, ticks: { color: "#e8ecf1", maxTicksLimit: 12 }, grid: { color: "rgba(255,255,255,0.06)" } },
-      y: { title: { display: true, text: "Net GEX (" + d.unit + ")", color: "#e8ecf1" }, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(255,255,255,0.06)" } },
+      x: { title: { display: true, text: "Strike Price", color: "#dbe5f1" }, ticks: { color: "#dbe5f1", maxTicksLimit: 12 }, grid: { color: "rgba(255,255,255,0.06)" } },
+      y: { title: { display: true, text: "Net GEX (" + d.unit + ")", color: "#dbe5f1" }, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(255,255,255,0.06)" } },
       y1: { position: "right", title: { display: true, text: "Aggregate (" + d.unit + ")", color: "#58a6ff" }, ticks: { color: "#58a6ff" }, grid: { drawOnChartArea: false } },
      },
     },
@@ -2523,7 +2524,7 @@ function bindZoomHandlers() {
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Top ' + d.leaders.length + ' leaders from ' + (d.universe_size || "S&P 500") + ' stocks · As of ' + esc((d.as_of || "").slice(0, 10)) + '</div>';
   const leadChartH = Math.max(240, d.leaders.length * 42 + 80);
   h += '<div class="zoomable-chart" data-chart="leadership" style="position:relative;height:' + leadChartH + 'px;margin-bottom:12px;cursor:zoom-in;" title="Click to zoom"><canvas id="leadership-chart"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="table-wrap"><table class="coverage"><thead><tr>' +
    '<th>Ticker</th><th>Name</th><th>Sector</th><th>MLS</th><th title="Relative Strength percentile vs S&P 500 (0-100)">RS Pctl</th><th>Trend</th><th>Price</th><th>vs 50-day</th>' +
    '</tr></thead><tbody>';
@@ -2575,21 +2576,21 @@ function bindZoomHandlers() {
     labels: leaders.map((l) => l.ticker),
     datasets: [
      { label: "Relative Strength (50%)", data: leaders.map((l) => +(l.rs_score * 0.50).toFixed(1)), backgroundColor: "#58a6ff", borderWidth: 0 },
-     { label: "Trend Efficiency (30%)", data: leaders.map((l) => +(l.trend_score * 0.30).toFixed(1)), backgroundColor: "#d29922", borderWidth: 0 },
-     { label: "Institutional Volume (20%)", data: leaders.map((l) => +(l.vol_score * 0.20).toFixed(1)), backgroundColor: "#3fb950", borderWidth: 0 },
+     { label: "Trend Efficiency (30%)", data: leaders.map((l) => +(l.trend_score * 0.30).toFixed(1)), backgroundColor: "#e0aa46", borderWidth: 0 },
+     { label: "Institutional Volume (20%)", data: leaders.map((l) => +(l.vol_score * 0.20).toFixed(1)), backgroundColor: "#4dd2aa", borderWidth: 0 },
     ],
    },
    options: { indexAxis: "y", responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
-     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12,
+    plugins: { legend: { labels: { color: "#dbe5f1", boxWidth: 12 } },
+     tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#f5f7fa", bodyColor: "#dbe5f1", padding: 12,
       callbacks: { afterBody: (items) => {
        const l = leaders[items[0].dataIndex];
        return "MLS: " + l.mls.toFixed(1) + "  |  " + l.sector + "  |  $" + l.price.toFixed(2);
       } } } },
     scales: {
-     x: { stacked: true, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "MLS (0-100)", color: "#e8ecf1" } },
-     y: { stacked: true, ticks: { color: "#fff", font: { size: 14, weight: "bold" } }, grid: { display: false } } } }
+     x: { stacked: true, max: 100, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "MLS (0-100)", color: "#dbe5f1" } },
+     y: { stacked: true, ticks: { color: "#f5f7fa", font: { size: 14, weight: "bold" } }, grid: { display: false } } } }
   });
  }
 
@@ -2656,32 +2657,32 @@ function bindZoomHandlers() {
   ".monitor-anchor{scroll-margin-top:88px;}" +
   ".monitor-anchor-panel{margin-bottom:16px;}" +
   ".monitor-flash{animation:monitorFlash 1.8s ease-out;}" +
-  "@keyframes monitorFlash{0%{box-shadow:0 0 0 2px #c9a961,0 0 24px rgba(201,169,97,0.5);}100%{box-shadow:0 0 0 0 rgba(201,169,97,0);}}" +
-  ".monitor-toc{background:#0d1522;border:1px solid #1c2b3e;border-radius:12px;padding:18px;margin:14px 0 6px;}" +
+  "@keyframes monitorFlash{0%{box-shadow:0 0 0 2px #d9a441,0 0 24px rgba(217,164,65,0.5);}100%{box-shadow:0 0 0 0 rgba(217,164,65,0);}}" +
+  ".monitor-toc{background:#0a0e17;border:1px solid #253142;border-radius:12px;padding:18px;margin:14px 0 6px;}" +
   ".monitor-toc-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}" +
-  ".monitor-toc-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#c9a961;}" +
-  ".monitor-toc-meta{font-size:12px;color:#8b949e;}" +
+  ".monitor-toc-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#d9a441;}" +
+  ".monitor-toc-meta{font-size:12px;color:#8d99aa;}" +
   ".monitor-toc-btns{display:flex;gap:10px;flex-wrap:wrap;}" +
   ".monitor-toc-cat{position:relative;flex:1 1 200px;min-width:180px;}" +
   ".monitor-toc-cat.open{z-index:60;}" +
-  ".monitor-toc-btn{width:100%;display:flex;align-items:center;gap:10px;background:#121d2d;border:1px solid #1c2b3e;border-left:3px solid #1c2b3e;border-radius:10px;padding:12px 14px;cursor:pointer;color:#e8ecf1;font-family:inherit;text-align:left;transition:border-color .2s ease,box-shadow .2s ease;}" +
-  ".monitor-toc-btn:hover{border-color:#c9a961;border-left-color:#c9a961;}" +
-  ".monitor-toc-cat.open .monitor-toc-btn{border-color:#c9a961;border-left-color:#dfb76c;box-shadow:inset 0 -2px 0 #c9a961;}" +
-  ".monitor-toc-num{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;color:#c9a961;}" +
+  ".monitor-toc-btn{width:100%;display:flex;align-items:center;gap:10px;background:#151d29;border:1px solid #253142;border-left:3px solid #253142;border-radius:10px;padding:12px 14px;cursor:pointer;color:#dbe5f1;font-family:inherit;text-align:left;transition:border-color .2s ease,box-shadow .2s ease;}" +
+  ".monitor-toc-btn:hover{border-color:#d9a441;border-left-color:#d9a441;}" +
+  ".monitor-toc-cat.open .monitor-toc-btn{border-color:#d9a441;border-left-color:#d9a441;box-shadow:inset 0 -2px 0 #d9a441;}" +
+  ".monitor-toc-num{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;color:#d9a441;}" +
   ".monitor-toc-btnname{font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap;}" +
-  ".monitor-toc-count{margin-left:auto;font-size:11px;color:#8b949e;white-space:nowrap;}" +
-  ".monitor-toc-chev{display:inline-block;color:#c9a961;font-size:12px;line-height:1;transition:transform .25s ease;}" +
+  ".monitor-toc-count{margin-left:auto;font-size:11px;color:#8d99aa;white-space:nowrap;}" +
+  ".monitor-toc-chev{display:inline-block;color:#d9a441;font-size:12px;line-height:1;transition:transform .25s ease;}" +
   ".monitor-toc-cat.open .monitor-toc-chev{transform:rotate(180deg);}" +
-  ".monitor-toc-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0d1522;border:1px solid #1c2b3e;border-top:2px solid #c9a961;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,0.5);max-height:0;opacity:0;overflow:hidden;pointer-events:none;transform:translateY(-4px);transition:max-height .3s ease,opacity .25s ease,transform .25s ease;}" +
+  ".monitor-toc-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0a0e17;border:1px solid #253142;border-top:2px solid #d9a441;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,0.5);max-height:0;opacity:0;overflow:hidden;pointer-events:none;transform:translateY(-4px);transition:max-height .3s ease,opacity .25s ease,transform .25s ease;}" +
   ".monitor-toc-cat.open .monitor-toc-drop{max-height:70vh;opacity:1;pointer-events:auto;transform:none;overflow-y:auto;}" +
-  ".monitor-toc-link{display:block;width:100%;background:none;border:0;border-left:3px solid transparent;border-bottom:1px solid #1c2b3e;padding:10px 14px;color:#c8d0dc;font-size:13px;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s ease,color .15s ease,border-color .15s ease;}" +
+  ".monitor-toc-link{display:block;width:100%;background:none;border:0;border-left:3px solid transparent;border-bottom:1px solid #253142;padding:10px 14px;color:#dbe5f1;font-size:13px;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s ease,color .15s ease,border-color .15s ease;}" +
   ".monitor-toc-link:last-child{border-bottom:0;}" +
-  ".monitor-toc-link:hover{background:#121d2d;color:#fff;border-left-color:#c9a961;}" +
-  ".monitor-cat-band{display:flex;align-items:center;gap:14px;background:#0d1522;border:1px solid #1c2b3e;border-left:3px solid #c9a961;border-radius:10px;padding:16px 18px;margin:42px 0 2px;}" +
-  ".monitor-cat-num{font-family:var(--mono);font-size:22px;font-weight:800;color:#c9a961;line-height:1;}" +
-  ".monitor-cat-name{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;}" +
-  ".monitor-cat-sub{font-size:12.5px;color:#8b949e;margin-top:3px;line-height:1.45;}" +
-  ".monitor-cat-count{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#c9a961;white-space:nowrap;}" +
+  ".monitor-toc-link:hover{background:#151d29;color:#f5f7fa;border-left-color:#d9a441;}" +
+  ".monitor-cat-band{display:flex;align-items:center;gap:14px;background:#0a0e17;border:1px solid #253142;border-left:3px solid #d9a441;border-radius:10px;padding:16px 18px;margin:42px 0 2px;}" +
+  ".monitor-cat-num{font-family:var(--mono);font-size:22px;font-weight:800;color:#d9a441;line-height:1;}" +
+  ".monitor-cat-name{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#f5f7fa;}" +
+  ".monitor-cat-sub{font-size:12.5px;color:#8d99aa;margin-top:3px;line-height:1.45;}" +
+  ".monitor-cat-count{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#d9a441;white-space:nowrap;}" +
   "@media (max-width:640px){.monitor-toc-btns{flex-direction:column;}.monitor-toc-cat{flex:1 1 auto;width:100%;min-width:0;}.monitor-cat-band{flex-wrap:wrap;}.monitor-cat-count{margin-left:0;}}";
  // availableKeys: the bucket keys that actually rendered this page load.
  // Index entries for sections with no data are skipped so every dropdown
@@ -2853,41 +2854,41 @@ function bindZoomHandlers() {
     let chartHtml = "";
     if (/volatility divergence/i.test(p.name) && D.vol_div_history && (D.vol_div_history.history || []).length) {
      chartHtml = '<div class="zoomable-chart" data-chart="voldiv" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="voldiv-chart"></canvas>' +
-      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
     } else if (/alligator/i.test(p.name) && D.jaw_history && (D.jaw_history.history || []).length) {
      chartHtml = '<div class="zoomable-chart" data-chart="jaw" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="jaw-chart"></canvas>' +
-      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
     } else if (/theme rotation/i.test(p.name) && D.theme_rot_history && (D.theme_rot_history.history || []).length) {
      chartHtml = '<div class="zoomable-chart" data-chart="themerot" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="themerot-chart"></canvas>' +
-      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
     } else if (/small.*mid|mid.*cap/i.test(p.name) && p.chart) {
      // Detailed Discord visual: distance-from-200d bars + XLY/XLP rotation chart
      chartHtml = '<img class="panel-chart" src="' + esc(p.chart) + '" alt="' + esc(p.name) + '" loading="lazy" style="width:100%;border-radius:8px;margin-bottom:12px;">';
     } else if (/credit spread/i.test(p.name) && D.credit_vol_history && (D.credit_vol_history.history || []).length) {
      chartHtml = '<div class="zoomable-chart" data-chart="creditvol" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="creditvol-chart"></canvas>' +
-      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
     } else if (/market breadth/i.test(p.name) && D.breadth_history && (D.breadth_history.history || []).length) {
      chartHtml = '<div class="zoomable-chart" data-chart="breadth" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="breadth-chart"></canvas>' +
-      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
      // 52-week highs/lows: 10d, 21d (1mo), 63d (3mo), trend view
      const bh = D.breadth_history;
      if (bh && bh.current && bh.current.new_highs_10d != null) {
       const cur = bh.current;
       const row = (label, nh, nl, net) => {
-       const netColor = net >= 0 ? "#3fb950" : "#f85149";
+       const netColor = net >= 0 ? "#4dd2aa" : "#f37d83";
        const total = nh + nl;
        const nhPct = total > 0 ? (nh / total * 100).toFixed(0) : 50;
        return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">' +
-        '<span style="font-size:11px;color:#e8ecf1;width:70px;">' + label + "</span>" +
-        '<div style="flex:1;height:20px;border-radius:4px;overflow:hidden;display:flex;border:1px solid #2a3448;">' +
-        '<div style="width:' + nhPct + '%;background:#3fb950;"></div>' +
-        '<div style="flex:1;background:#f85149;"></div></div>' +
-        '<span style="font-size:12px;color:#3fb950;min-width:52px;text-align:right;">' + nh + "H</span>" +
-        '<span style="font-size:12px;color:#f85149;min-width:52px;text-align:right;">' + nl + "L</span>" +
+        '<span style="font-size:11px;color:#dbe5f1;width:70px;">' + label + "</span>" +
+        '<div style="flex:1;height:20px;border-radius:4px;overflow:hidden;display:flex;border:1px solid #253142;">' +
+        '<div style="width:' + nhPct + '%;background:#4dd2aa;"></div>' +
+        '<div style="flex:1;background:#f37d83;"></div></div>' +
+        '<span style="font-size:12px;color:#4dd2aa;min-width:52px;text-align:right;">' + nh + "H</span>" +
+        '<span style="font-size:12px;color:#f37d83;min-width:52px;text-align:right;">' + nl + "L</span>" +
         '<span style="font-size:13px;font-weight:700;color:' + netColor + ';min-width:56px;text-align:right;">' + (net >= 0 ? "+" : "") + net + "</span></div>";
       };
-      chartHtml += '<div style="margin:8px 0;padding:10px;background:#1a2030;border-radius:8px;">' +
-       '<div style="font-size:11px;color:#e8ecf1;margin-bottom:8px;">52-WEEK HIGHS vs LOWS <span style="opacity:0.6;"> - trend across timeframes</span></div>' +
+      chartHtml += '<div style="margin:8px 0;padding:10px;background:#101620;border-radius:8px;">' +
+       '<div style="font-size:11px;color:#dbe5f1;margin-bottom:8px;">52-WEEK HIGHS vs LOWS <span style="opacity:0.6;"> - trend across timeframes</span></div>' +
        row("10-day", cur.new_highs_10d, cur.new_lows_10d, cur.hl_net_10d) +
        row("1-month", cur.new_highs_21d, cur.new_lows_21d, cur.hl_net_21d) +
        row("3-month", cur.new_highs_63d, cur.new_lows_63d, cur.hl_net_63d) +
@@ -2917,7 +2918,7 @@ function bindZoomHandlers() {
     return gated(p.name, teaserDesc, panelHtml);
    } catch (panelErr) {
     console.error("Panel render failed:", p.name, panelErr);
-    return '<div class="card"><p style="color:#f85149;">Failed to load ' + esc(p.name) + '</p></div>';
+    return '<div class="card"><p style="color:#f37d83;">Failed to load ' + esc(p.name) + '</p></div>';
    }
    });
   panels.forEach((p, i) => {
@@ -2932,33 +2933,33 @@ function bindZoomHandlers() {
   function liquidityHtml() {
    const L = D.liquidity || {};
    if (!L.total_score && L.total_score !== 0) return '<p style="color:var(--muted)">Liquidity data unavailable.</p>';
-   const colorMap = { green: "#3fb950", amber: "#d29922", red: "#f85149" };
-   const c = colorMap[L.color] || "#e8ecf1";
+   const colorMap = { green: "#4dd2aa", amber: "#e0aa46", red: "#f37d83" };
+   const c = colorMap[L.color] || "#dbe5f1";
    const m = L.metrics || {};
-   let h = '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
-    '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + L.total_score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+   let h = '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
+    '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + L.total_score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
     '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(L.regime || "") + "</div>" +
-    '<div style="font-size:12px;color:#8b949e;margin-top:4px;">Net liquidity $' + (m.net_liquidity_b != null ? m.net_liquidity_b.toLocaleString() : "-") + "B" +
+    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Net liquidity $' + (m.net_liquidity_b != null ? m.net_liquidity_b.toLocaleString() : "-") + "B" +
     (m.net_liquidity_4w_change_b != null ? ' (' + (m.net_liquidity_4w_change_b >= 0 ? "+" : "") + m.net_liquidity_4w_change_b + "B 4W)" : "") + "</div></div>" +
     "</div>";
    // 4-factor breakdown
    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
    (L.score_breakdown || []).forEach((b) => {
-    const bc = b.points > 0 ? "#3fb950" : "#f85149";
-    h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
-     '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + esc(b.metric) + "</div>" +
+    const bc = b.points > 0 ? "#4dd2aa" : "#f37d83";
+    h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
+     '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.metric) + "</div>" +
      '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + " (" + b.points + " pts)</div>" +
-     '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(b.value) + "</div>" +
-     (b.detail ? '<div style="font-size:11px;color:#8b949e;margin-top:2px;font-style:italic;">' + esc(b.detail) + "</div>" : "") +
+     '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.value) + "</div>" +
+     (b.detail ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;font-style:italic;">' + esc(b.detail) + "</div>" : "") +
      "</div>";
    });
    h += "</div>";
    // Fed balance sheet decomposition
    h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">' +
-    '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">FED ASSETS</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">$' + (m.fed_assets_b != null ? m.fed_assets_b.toLocaleString() : "-") + "B</div></div>" +
-    '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">TGA</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">$' + (m.tga_b != null ? m.tga_b.toLocaleString() : "-") + "B</div></div>" +
-    '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">REVERSE REPO</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">$' + (m.rrp_b != null ? m.rrp_b.toLocaleString() : "-") + "B</div></div>" +
+    '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">FED ASSETS</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">$' + (m.fed_assets_b != null ? m.fed_assets_b.toLocaleString() : "-") + "B</div></div>" +
+    '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">TGA</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">$' + (m.tga_b != null ? m.tga_b.toLocaleString() : "-") + "B</div></div>" +
+    '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">REVERSE REPO</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">$' + (m.rrp_b != null ? m.rrp_b.toLocaleString() : "-") + "B</div></div>" +
     "</div>";
    // Global central bank balance sheets in USD (Fed + ECB + BOJ)
    const G = L.global || null;
@@ -2966,47 +2967,47 @@ function bindZoomHandlers() {
     const MONTHS_L = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const fmtD = (iso) => { if (!iso) return "-"; const p = String(iso).split("-"); return MONTHS_L[Number(p[1]) - 1] + " " + Number(p[2]) + ", " + p[0]; };
     const fmtB0 = (v) => v != null ? "$" + Number(v).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B" : "N/A";
-    const bankColors = { fed: "#58a6ff", ecb: "#d29922", boj: "#a371f7" };
+    const bankColors = { fed: "#58a6ff", ecb: "#e0aa46", boj: "#a371f7" };
     const bankOrder = ["fed", "ecb", "boj"];
     const totChg = G.change_4w_usd_b;
-    const totCol = totChg == null ? "#8b949e" : (totChg >= 0 ? "#3fb950" : "#f85149");
-    h += '<div style="margin:18px 0 8px;font-size:11px;color:#8b949e;letter-spacing:0.5px;">GLOBAL CENTRAL BANK BALANCE SHEETS (USD)</div>';
-    h += '<div style="display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-     '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">GLOBAL TOTAL (FED + ECB + BOJ)</div>' +
-     '<div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + fmtB0(G.total_usd_b) + "</div></div>" +
+    const totCol = totChg == null ? "#8d99aa" : (totChg >= 0 ? "#4dd2aa" : "#f37d83");
+    h += '<div style="margin:18px 0 8px;font-size:11px;color:#8d99aa;letter-spacing:0.5px;">GLOBAL CENTRAL BANK BALANCE SHEETS (USD)</div>';
+    h += '<div style="display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+     '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">GLOBAL TOTAL (FED + ECB + BOJ)</div>' +
+     '<div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + fmtB0(G.total_usd_b) + "</div></div>" +
      (totChg != null ? '<div style="font-size:12px;color:' + totCol + ';font-weight:600;">' + (totChg >= 0 ? "+" : "-") + "$" + Math.abs(totChg).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B (" + (G.change_4w_pct >= 0 ? "+" : "") + G.change_4w_pct + "%) over 4 weeks</div>" : "") +
      "</div>";
     if (G.partial) {
      const missing = bankOrder.filter((k) => !G.banks[k]).map((k) => ({ fed: "Fed", ecb: "ECB", boj: "Bank of Japan" })[k]).join(" and ");
-     h += '<div style="font-size:11px;color:#d29922;margin-top:6px;">' + esc(missing) + " data is unavailable in the latest run, so the total covers the remaining balance sheets.</div>";
+     h += '<div style="font-size:11px;color:#e0aa46;margin-top:6px;">' + esc(missing) + " data is unavailable in the latest run, so the total covers the remaining balance sheets.</div>";
     }
     if (G.stale_banks && G.stale_banks.length) {
      const staleNames = G.stale_banks.map((k) => ({ fed: "Fed", ecb: "ECB", boj: "Bank of Japan" })[k] || k).join(" and ");
-     h += '<div style="font-size:11px;color:#d29922;margin-top:6px;">' + esc(staleNames) + " figures are carried from the prior run while the feed is down.</div>";
+     h += '<div style="font-size:11px;color:#e0aa46;margin-top:6px;">' + esc(staleNames) + " figures are carried from the prior run while the feed is down.</div>";
     }
     h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
     bankOrder.forEach((k) => {
      const b = G.banks[k];
      const col = bankColors[k];
      if (!b) {
-      h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-top:3px solid ' + col + ';">' +
-       '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + ({ fed: "Federal Reserve", ecb: "European Central Bank", boj: "Bank of Japan" })[k] + "</div>" +
-       '<div style="font-size:16px;font-weight:700;color:#8b949e;margin-top:6px;">N/A</div>' +
-       '<div style="font-size:11px;color:#8b949e;margin-top:2px;">Series unavailable in the latest run</div></div>';
+      h += '<div style="background:#101620;border-radius:10px;padding:12px;border-top:3px solid ' + col + ';">' +
+       '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + ({ fed: "Federal Reserve", ecb: "European Central Bank", boj: "Bank of Japan" })[k] + "</div>" +
+       '<div style="font-size:16px;font-weight:700;color:#8d99aa;margin-top:6px;">N/A</div>' +
+       '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">Series unavailable in the latest run</div></div>';
       return;
      }
-     const chgCol = b.change_usd_b == null ? "#8b949e" : (b.change_usd_b >= 0 ? "#3fb950" : "#f85149");
+     const chgCol = b.change_usd_b == null ? "#8d99aa" : (b.change_usd_b >= 0 ? "#4dd2aa" : "#f37d83");
      const chgTxt = b.change_usd_b == null ? "" :
       '<div style="font-size:11px;color:' + chgCol + ';margin-top:4px;font-weight:600;">' + (b.change_usd_b >= 0 ? "+" : "-") + "$" + Math.abs(b.change_usd_b).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B" + (b.change_pct != null ? " (" + (b.change_pct >= 0 ? "+" : "") + b.change_pct + "%)" : "") + " " + esc(b.change_label || "") + "</div>";
      const localTxt = k === "fed" ? "" :
-      '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(b.currency) + " " + Number(b.level_local_b).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B at " + (k === "ecb" ? b.fx_rate + " USD per EUR" : b.fx_rate + " JPY per USD") + " (" + fmtD(b.fx_date) + ")</div>";
-     h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-top:3px solid ' + col + ';">' +
-      '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + esc(b.label) + "</div>" +
-      '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + (b.cadence === "monthly" ? "Monthly, print dated " : "Weekly, ") + fmtD(b.obs_date) + "</div>" +
-      '<div style="font-size:18px;font-weight:700;color:#e8ecf1;margin-top:6px;">' + fmtB0(b.level_usd_b) + "</div>" +
-      (b.share_pct != null ? '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + b.share_pct + "% of global total</div>" : "") +
+      '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.currency) + " " + Number(b.level_local_b).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B at " + (k === "ecb" ? b.fx_rate + " USD per EUR" : b.fx_rate + " JPY per USD") + " (" + fmtD(b.fx_date) + ")</div>";
+     h += '<div style="background:#101620;border-radius:10px;padding:12px;border-top:3px solid ' + col + ';">' +
+      '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.label) + "</div>" +
+      '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + (b.cadence === "monthly" ? "Monthly, print dated " : "Weekly, ") + fmtD(b.obs_date) + "</div>" +
+      '<div style="font-size:18px;font-weight:700;color:#dbe5f1;margin-top:6px;">' + fmtB0(b.level_usd_b) + "</div>" +
+      (b.share_pct != null ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + b.share_pct + "% of global total</div>" : "") +
       localTxt + chgTxt +
-      (b.carried_over ? '<div style="font-size:11px;color:#d29922;margin-top:4px;">Carried from the prior run</div>' : "") +
+      (b.carried_over ? '<div style="font-size:11px;color:#e0aa46;margin-top:4px;">Carried from the prior run</div>' : "") +
       "</div>";
     });
     h += "</div>";
@@ -3014,9 +3015,9 @@ function bindZoomHandlers() {
     const gh = (G.history || []).filter((r) => r && r.global_usd_b != null);
     if (gh.length > 5) {
      const series = [
-      { key: "global_usd_b", label: "Global total", color: "#3fb950", w: 2.5 },
+      { key: "global_usd_b", label: "Global total", color: "#4dd2aa", w: 2.5 },
       { key: "fed_usd_b", label: "Fed", color: "#58a6ff", w: 1.5 },
-      { key: "ecb_usd_b", label: "ECB", color: "#d29922", w: 1.5 },
+      { key: "ecb_usd_b", label: "ECB", color: "#e0aa46", w: 1.5 },
       { key: "boj_usd_b", label: "BOJ", color: "#a371f7", w: 1.5 }
      ];
      let mn = Infinity, mx = -Infinity;
@@ -3027,23 +3028,23 @@ function bindZoomHandlers() {
      const Y = (v) => PT + (H - PT - PB) * (1 - (v - mn) / (mx - mn));
      const fmtAxis = (v) => "$" + Math.round(v).toLocaleString() + "B";
      let svg = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:auto;display:block;" role="img">';
-     svg += '<line x1="' + PL + '" y1="' + Y(mx - padV) + '" x2="' + (W - PR) + '" y2="' + Y(mx - padV) + '" stroke="#2a3448" stroke-width="1"/>';
-     svg += '<line x1="' + PL + '" y1="' + Y(mn + padV) + '" x2="' + (W - PR) + '" y2="' + Y(mn + padV) + '" stroke="#2a3448" stroke-width="1"/>';
-     svg += '<text x="2" y="' + (Y(mx - padV) + 4) + '" fill="#8b949e" font-size="11">' + fmtAxis(mx - padV) + "</text>";
-     svg += '<text x="2" y="' + (Y(mn + padV) + 4) + '" fill="#8b949e" font-size="11">' + fmtAxis(mn + padV) + "</text>";
+     svg += '<line x1="' + PL + '" y1="' + Y(mx - padV) + '" x2="' + (W - PR) + '" y2="' + Y(mx - padV) + '" stroke="#253142" stroke-width="1"/>';
+     svg += '<line x1="' + PL + '" y1="' + Y(mn + padV) + '" x2="' + (W - PR) + '" y2="' + Y(mn + padV) + '" stroke="#253142" stroke-width="1"/>';
+     svg += '<text x="2" y="' + (Y(mx - padV) + 4) + '" fill="#8d99aa" font-size="11">' + fmtAxis(mx - padV) + "</text>";
+     svg += '<text x="2" y="' + (Y(mn + padV) + 4) + '" fill="#8d99aa" font-size="11">' + fmtAxis(mn + padV) + "</text>";
      series.forEach((s) => {
       const pts = [];
       gh.forEach((r, i) => { if (r[s.key] != null) pts.push(X(i).toFixed(1) + "," + Y(r[s.key]).toFixed(1)); });
       if (pts.length > 1) svg += '<polyline fill="none" stroke="' + s.color + '" stroke-width="' + s.w + '" points="' + pts.join(" ") + '"/>';
      });
      const fd = gh[0].date.split("-"), ld = gh[gh.length - 1].date.split("-");
-     svg += '<text x="' + PL + '" y="' + (H - 6) + '" fill="#8b949e" font-size="11">' + MONTHS_L[Number(fd[1]) - 1] + " " + Number(fd[2]) + "</text>";
-     svg += '<text x="' + (W - PR) + '" y="' + (H - 6) + '" fill="#8b949e" font-size="11" text-anchor="end">' + MONTHS_L[Number(ld[1]) - 1] + " " + Number(ld[2]) + "</text>";
+     svg += '<text x="' + PL + '" y="' + (H - 6) + '" fill="#8d99aa" font-size="11">' + MONTHS_L[Number(fd[1]) - 1] + " " + Number(fd[2]) + "</text>";
+     svg += '<text x="' + (W - PR) + '" y="' + (H - 6) + '" fill="#8d99aa" font-size="11" text-anchor="end">' + MONTHS_L[Number(ld[1]) - 1] + " " + Number(ld[2]) + "</text>";
      svg += "</svg>";
      h += '<div style="margin:12px 0;"><div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;">' +
-      series.map((s) => '<span style="font-size:11px;color:#8b949e;"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:' + s.color + ';margin-right:5px;"></span>' + s.label + "</span>").join("") +
-      '</div><div style="background:#0d1420;border:1px solid #2a3448;border-radius:10px;padding:8px;">' + svg + "</div>" +
-      '<div style="font-size:11px;color:#8b949e;margin-top:6px;">The Bank of Japan prints monthly, so its line steps between release dates and every point carries the print in effect, most recently ' + fmtD(gh[gh.length - 1].boj_obs_date) + '. The Fed and ECB print weekly. Dollar totals move with exchange rates as well as with the balance sheets themselves.</div></div>';
+      series.map((s) => '<span style="font-size:11px;color:#8d99aa;"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:' + s.color + ';margin-right:5px;"></span>' + s.label + "</span>").join("") +
+      '</div><div style="background:#0d1420;border:1px solid #253142;border-radius:10px;padding:8px;">' + svg + "</div>" +
+      '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">The Bank of Japan prints monthly, so its line steps between release dates and every point carries the print in effect, most recently ' + fmtD(gh[gh.length - 1].boj_obs_date) + '. The Fed and ECB print weekly. Dollar totals move with exchange rates as well as with the balance sheets themselves.</div></div>';
     }
    }
    // Net liquidity history chart (simple bars)
@@ -3051,7 +3052,7 @@ function bindZoomHandlers() {
     const hist = L.history.slice(-60);
     const vals = hist.map(x => x.net_liquidity_b);
     const mn = Math.min(...vals), mx = Math.max(...vals);
-    h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#8b949e;margin-bottom:6px;">NET US LIQUIDITY, LAST 60 SESSIONS ($B)</div>' +
+    h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#8d99aa;margin-bottom:6px;">NET US LIQUIDITY, LAST 60 SESSIONS ($B)</div>' +
      '<div style="display:flex;align-items:flex-end;gap:1px;height:70px;">' +
      hist.map(x => {
       const ht = 8 + ((x.net_liquidity_b - mn) / Math.max(1, mx - mn) * 58);
@@ -3060,16 +3061,16 @@ function bindZoomHandlers() {
    }
    // Explainer card: why liquidity matters
    h += '<div class="panel-about" style="text-align:left;max-width:none;margin:16px 0;">' +
-    '<div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">Why global liquidity matters</div>' +
-    '<div style="font-size:12px;color:#8b949e;line-height:1.6;">' +
+    '<div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">Why global liquidity matters</div>' +
+    '<div style="font-size:12px;color:#8d99aa;line-height:1.6;">' +
     '<p style="margin:0 0 8px;">On an institutional desk, the saying goes: earnings drive single stocks, but liquidity drives the market. Since 2008, asset prices have tracked central bank balance sheets more than fundamentals.</p>' +
-    '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">The multiple expansion engine:</b> abundant liquidity means cheap capital. Institutions lever up and push cash out the risk curve, expanding P/E multiples across the board.</p>' +
-    '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">The dollar wrecking ball:</b> the world runs on dollars. A strong DXY tightens financial conditions globally, choking emerging markets and multinationals on expensive USD debt.</p>' +
-    '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">Stealth QE:</b> true net US liquidity = Fed assets minus the Treasury General Account minus reverse repo. Even during QT, a draining TGA or RRP can push net liquidity higher, sparking stealth bull markets.</p>' +
+    '<p style="margin:0 0 8px;"><b style="color:#dbe5f1;">The multiple expansion engine:</b> abundant liquidity means cheap capital. Institutions lever up and push cash out the risk curve, expanding P/E multiples across the board.</p>' +
+    '<p style="margin:0 0 8px;"><b style="color:#dbe5f1;">The dollar wrecking ball:</b> the world runs on dollars. A strong DXY tightens financial conditions globally, choking emerging markets and multinationals on expensive USD debt.</p>' +
+    '<p style="margin:0 0 8px;"><b style="color:#dbe5f1;">Stealth QE:</b> true net US liquidity = Fed assets minus the Treasury General Account minus reverse repo. Even during QT, a draining TGA or RRP can push net liquidity higher, sparking stealth bull markets.</p>' +
     '<p style="margin:0 0 8px;">The global aggregate above adds the European Central Bank and the Bank of Japan to the Fed, each converted into dollars at the exchange rate in effect on the date its balance sheet was struck. Together the three banks set the global supply of reserve assets, and their combined balance sheet has tracked risk asset valuations more closely than any single domestic series.</p>' +
     '<p style="margin:0 0 8px;">Read the dollar totals with care. A rising aggregate does not always mean fresh money creation, because a weaker dollar mechanically inflates the translated value of the ECB and Bank of Japan balance sheets even when both are flat or shrinking in local terms. The local currency figures on each card separate genuine balance sheet change from the currency translation effect.</p>' +
     '<p style="margin:0 0 8px;">Cadence differs by bank. The Fed and the ECB report weekly while the Bank of Japan reports monthly, so the Japanese contribution moves in monthly steps and lags the other two by design.</p>' +
-    '<p style="margin:0;"><b style="color:#e8ecf1;">Desk rule of thumb:</b> scores of 75+ mean structural tailwinds favor risk assets (expand exposure, buy dips). Scores of 25 or below mean contraction (tighten stops, favor defensives, hold cash).</p>' +
+    '<p style="margin:0;"><b style="color:#dbe5f1;">Desk rule of thumb:</b> scores of 75+ mean structural tailwinds favor risk assets (expand exposure, buy dips). Scores of 25 or below mean contraction (tighten stops, favor defensives, hold cash).</p>' +
     "</div></div>";
    h += '<div class="panel-asof">As of ' + esc(L.as_of || "") + " · Sources: FRED (WALCL, WTREGEN, RRPONTSYD, ECBASSETSW, JPNASSETS, DEXUSEU, DEXJPUS), Yahoo Finance (DXY, VIX, HYG, IEF)</div>";
    return h;
@@ -3109,24 +3110,24 @@ function bindZoomHandlers() {
     : esc(s || "");
    const latestDate = rows.map((r) => r.date || "").sort().slice(-1)[0] || "";
    const sentimentColors = {
-    "BULLISH ACCUMULATION": "#3fb950",
+    "BULLISH ACCUMULATION": "#4dd2aa",
     "MODERATE BUY BIAS": "#58a6ff",
-    "INSTITUTIONAL DISTRIBUTION": "#f85149",
-    "BEARISH FADE": "#d29922",
-    "NEUTRAL / BALANCED": "#8b949e",
+    "INSTITUTIONAL DISTRIBUTION": "#f37d83",
+    "BEARISH FADE": "#e0aa46",
+    "NEUTRAL / BALANCED": "#8d99aa",
    };
    // Sentiment breadth across the universe
    const sentCounts = {};
    rows.forEach((r) => { sentCounts[r.sentiment] = (sentCounts[r.sentiment] || 0) + 1; });
    const sentOrder = ["BULLISH ACCUMULATION", "MODERATE BUY BIAS", "NEUTRAL / BALANCED", "BEARISH FADE", "INSTITUTIONAL DISTRIBUTION"];
    const breadth = sentOrder.filter((s) => sentCounts[s]).map((s) =>
-    '<span style="color:' + (sentimentColors[s] || "#8b949e") + ';font-weight:600;">' + sentCounts[s] + " " + esc(s.toLowerCase()) + "</span>").join(" · ");
+    '<span style="color:' + (sentimentColors[s] || "#8d99aa") + ';font-weight:600;">' + sentCounts[s] + " " + esc(s.toLowerCase()) + "</span>").join(" · ");
    // Stat cards (visuals first)
    const card = (label, value, sub, color) =>
-    '<div style="background:#161b26;border-radius:10px;padding:14px;flex:1;min-width:160px;">' +
-    '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + label + "</div>" +
-    '<div style="font-size:24px;font-weight:800;color:' + (color || "#e8ecf1") + ';margin:4px 0;">' + value + "</div>" +
-    '<div style="font-size:11px;color:#8b949e;">' + sub + "</div></div>";
+    '<div style="background:#101620;border-radius:10px;padding:14px;flex:1;min-width:160px;">' +
+    '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + "</div>" +
+    '<div style="font-size:24px;font-weight:800;color:' + (color || "#dbe5f1") + ';margin:4px 0;">' + value + "</div>" +
+    '<div style="font-size:11px;color:#8d99aa;">' + sub + "</div></div>";
    let h = '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;">';
    if (macro.dix != null) {
     const dixChg = macro.dix_change != null ? (macro.dix_change * 100) : null;
@@ -3139,12 +3140,12 @@ function bindZoomHandlers() {
    h += card("AVG DARK SHORT RATIO (DPSR)", avgDpsr.toFixed(1) + "%",
     avgDpsr >= 50 ? "Dealers shorting to fill institutional buys" : avgDpsr < 40 ? "Dealers absorbing institutional sells" : "Balanced dealer positioning");
    h += card("NET DARK FLOW, LATEST SESSION", fmtUsd(totNet),
-    "summed across all coverage names", totNet >= 0 ? "#3fb950" : "#f85149");
+    "summed across all coverage names", totNet >= 0 ? "#4dd2aa" : "#f37d83");
    h += card("CUMULATIVE DARK FLOW", fmtUsd(totCum),
-    "trailing window, summed across all coverage names", totCum >= 0 ? "#3fb950" : "#f85149");
+    "trailing window, summed across all coverage names", totCum >= 0 ? "#4dd2aa" : "#f37d83");
    h += "</div>";
    if (breadth) {
-    h += '<div style="font-size:12px;color:#8b949e;margin:4px 0 8px;">Sentiment breadth across the coverage universe · ' + breadth + "</div>";
+    h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0 8px;">Sentiment breadth across the coverage universe · ' + breadth + "</div>";
    }
    // 10-session trend of the coverage averages, from per-ticker histories
    const byDate = {};
@@ -3160,7 +3161,7 @@ function bindZoomHandlers() {
     if (trend.length < 2) return "";
     const vals = trend.map(pick);
     const mn = Math.min(...vals), mx = Math.max(...vals);
-    return '<div style="margin:12px 0;"><div style="font-size:11px;color:#8b949e;margin-bottom:6px;">' + label + "</div>" +
+    return '<div style="margin:12px 0;"><div style="font-size:11px;color:#8d99aa;margin-bottom:6px;">' + label + "</div>" +
      '<div style="display:flex;align-items:flex-end;gap:3px;height:60px;">' +
      trend.map((t) => {
       const v = pick(t);
@@ -3171,38 +3172,38 @@ function bindZoomHandlers() {
    h += barStrip("COVERAGE-AVERAGE PARTICIPATION (DPR), LAST " + trend.length + " SESSIONS",
     (t) => t.dpr, () => "#58a6ff");
    h += barStrip("COVERAGE-AVERAGE DARK SHORT RATIO (DPSR), LAST " + trend.length + " SESSIONS",
-    (t) => t.dpsr, (v) => v >= 55 ? "#3fb950" : v >= 50 ? "#58a6ff" : v < 40 ? "#f85149" : "#8b949e");
+    (t) => t.dpsr, (v) => v >= 55 ? "#4dd2aa" : v >= 50 ? "#58a6ff" : v < 40 ? "#f37d83" : "#8d99aa");
    // Per-ticker ranking by participation
    const ranked = rows.slice().sort((a, b) => b.dpr - a.dpr);
-   const flowCell = (v) => '<span style="color:' + (v >= 0 ? "#3fb950" : "#f85149") + ';font-weight:600;">' + fmtUsd(v) + "</span>";
-   const th = (label, right) => '<th style="padding:8px 10px;text-align:' + (right ? "right" : "left") + ';color:#8b949e;font-size:11px;letter-spacing:0.5px;">' + label + "</th>";
+   const flowCell = (v) => '<span style="color:' + (v >= 0 ? "#4dd2aa" : "#f37d83") + ';font-weight:600;">' + fmtUsd(v) + "</span>";
+   const th = (label, right) => '<th style="padding:8px 10px;text-align:' + (right ? "right" : "left") + ';color:#8d99aa;font-size:11px;letter-spacing:0.5px;">' + label + "</th>";
    h += '<div style="overflow:auto;max-height:520px;margin:12px 0;"><table style="width:100%;border-collapse:collapse;min-width:780px;">' +
     "<thead><tr style=\"border-bottom:2px solid rgba(255,255,255,0.1);\">" +
     th("#") + th("TICKER") + th("PRICE", 1) + th("PARTICIPATION", 1) + th("DARK SHORT RATIO", 1) +
     th("NET DARK FLOW", 1) + th("CUM. DARK FLOW", 1) + th("Z-SCORE", 1) + th("SENTIMENT") +
     "</tr></thead><tbody>" +
     ranked.map((r, i) => {
-     const sc = sentimentColors[r.sentiment] || "#e8ecf1";
+     const sc = sentimentColors[r.sentiment] || "#dbe5f1";
      const z = Number(r.z_score) || 0;
      return '<tr style="border-bottom:1px solid rgba(255,255,255,0.06);">' +
-      '<td style="padding:7px 10px;color:#8b949e;font-size:12px;">' + (i + 1) + "</td>" +
+      '<td style="padding:7px 10px;color:#8d99aa;font-size:12px;">' + (i + 1) + "</td>" +
       '<td style="padding:7px 10px;">' + tickerLink(r.ticker) + "</td>" +
-      '<td style="padding:7px 10px;text-align:right;color:#e8ecf1;font-size:13px;">$' + (Number(r.price) || 0).toFixed(2) + "</td>" +
-      '<td style="padding:7px 10px;text-align:right;color:#e8ecf1;font-size:13px;font-weight:700;">' + r.dpr.toFixed(1) + "%</td>" +
-      '<td style="padding:7px 10px;text-align:right;color:#e8ecf1;font-size:13px;">' + r.dpsr.toFixed(1) + "%</td>" +
+      '<td style="padding:7px 10px;text-align:right;color:#dbe5f1;font-size:13px;">$' + (Number(r.price) || 0).toFixed(2) + "</td>" +
+      '<td style="padding:7px 10px;text-align:right;color:#dbe5f1;font-size:13px;font-weight:700;">' + r.dpr.toFixed(1) + "%</td>" +
+      '<td style="padding:7px 10px;text-align:right;color:#dbe5f1;font-size:13px;">' + r.dpsr.toFixed(1) + "%</td>" +
       '<td style="padding:7px 10px;text-align:right;font-size:13px;">' + flowCell(r.net_dark_flow_usd) + "</td>" +
       '<td style="padding:7px 10px;text-align:right;font-size:13px;">' + flowCell(r.cum_dark_flow_usd) + "</td>" +
-      '<td style="padding:7px 10px;text-align:right;color:#e8ecf1;font-size:13px;">' + (z >= 0 ? "+" : "") + z.toFixed(2) + "</td>" +
+      '<td style="padding:7px 10px;text-align:right;color:#dbe5f1;font-size:13px;">' + (z >= 0 ? "+" : "") + z.toFixed(2) + "</td>" +
       '<td style="padding:7px 10px;font-size:11px;font-weight:700;color:' + sc + ';">' + esc(r.sentiment) + "</td></tr>";
     }).join("") +
     "</tbody></table></div>";
    // Explainer card: visuals first, explanation after
    h += '<div class="panel-about" style="text-align:left;max-width:none;margin:16px 0;">' +
-    '<div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">How to read dark pool flow</div>' +
-    '<div style="font-size:12px;color:#8b949e;line-height:1.6;">' +
+    '<div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">How to read dark pool flow</div>' +
+    '<div style="font-size:12px;color:#8d99aa;line-height:1.6;">' +
     '<p style="margin:0 0 8px;">Dark pools and other off-exchange venues execute a large share of US equity volume away from the public exchanges. FINRA publishes the off-exchange volume, reported to a Trade Reporting Facility, for every name each day, and this panel aggregates those prints across the coverage universe.</p>' +
-    '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">Participation</b> is the share of a name\u2019s consolidated volume that printed off-exchange. Higher participation means more block flow is being worked away from the lit book. <b style="color:#e8ecf1;">Dark short ratio</b> is the short share of that off-exchange volume. Above 50% it usually means wholesale dealers are selling short from inventory to fill aggressive institutional buy orders, which reads as accumulation. Below 40% it usually means dealers are absorbing institutional sell tickets.</p>' +
-    '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">Net dark flow</b> converts the imbalance into dollars, and the cumulative figure tracks the running total over the trailing window. The S&P 500 Dark Pool Index (DIX) from SqueezeMetrics gives the market-wide context for the coverage averages. Averages here are equal-weighted across the ' + n + ' coverage names with data, and the flow totals are sums of the per-ticker estimates.</p>' +
+    '<p style="margin:0 0 8px;"><b style="color:#dbe5f1;">Participation</b> is the share of a name\u2019s consolidated volume that printed off-exchange. Higher participation means more block flow is being worked away from the lit book. <b style="color:#dbe5f1;">Dark short ratio</b> is the short share of that off-exchange volume. Above 50% it usually means wholesale dealers are selling short from inventory to fill aggressive institutional buy orders, which reads as accumulation. Below 40% it usually means dealers are absorbing institutional sell tickets.</p>' +
+    '<p style="margin:0 0 8px;"><b style="color:#dbe5f1;">Net dark flow</b> converts the imbalance into dollars, and the cumulative figure tracks the running total over the trailing window. The S&P 500 Dark Pool Index (DIX) from SqueezeMetrics gives the market-wide context for the coverage averages. Averages here are equal-weighted across the ' + n + ' coverage names with data, and the flow totals are sums of the per-ticker estimates.</p>' +
     '<p style="margin:0;">Open any name in the table to see its own dark pool history and sentiment read on its ticker page.</p>' +
     "</div></div>";
    h += '<div class="panel-asof">As of ' + esc(dp.as_of || "") + " · Session " + fmtDate(latestDate) +
@@ -3224,26 +3225,26 @@ function bindZoomHandlers() {
     { key: "ppi_yoy", label: "PPI (Producer Price)", value: latest.ppi_yoy != null ? "+" + latest.ppi_yoy.toFixed(1) + "%" : " - ",
      tag: "Leading", color: "#a5b4fc", raw: latest.ppi_yoy },
     { key: "retail_mom", label: "Retail Sales", value: latest.retail_mom != null ? (latest.retail_mom >= 0 ? "+" : "") + latest.retail_mom.toFixed(1) + "%" : " - ",
-     tag: "Coincident", color: "#22c55e", raw: latest.retail_mom },
+     tag: "Coincident", color: "#4dd2aa", raw: latest.retail_mom },
     { key: "cpi_yoy", label: "CPI (Consumer Price)", value: latest.cpi_yoy != null ? "+" + latest.cpi_yoy.toFixed(1) + "%" : " - ",
      tag: "Lagging", color: "#7dd3fc", raw: latest.cpi_yoy },
     { key: "wti_crude", label: "WTI Crude", value: latest.wti_crude != null ? "$" + latest.wti_crude.toFixed(0) : " - ",
-     tag: "Energy", color: "#f5a623", raw: latest.wti_crude },
+     tag: "Energy", color: "#e0aa46", raw: latest.wti_crude },
     { key: "gasoline_retail", label: "Gasoline (Retail)", value: latest.gasoline_retail != null ? "$" + latest.gasoline_retail.toFixed(2) : " - ",
-     tag: "Energy", color: "#ff6b6b", raw: latest.gasoline_retail },
+     tag: "Energy", color: "#f37d83", raw: latest.gasoline_retail },
     { key: "diesel_retail", label: "Diesel (Retail)", value: latest.diesel_retail != null ? "$" + latest.diesel_retail.toFixed(2) : " - ",
      tag: "Energy", color: "#c44dff", raw: latest.diesel_retail },
    ];
    const cardsHtml = metrics.map((m) =>
-    '<div style="background:#161b26;border-radius:10px;padding:14px;flex:1;min-width:140px;">' +
-    '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#e8ecf1;">' + esc(m.label) +
+    '<div style="background:#101620;border-radius:10px;padding:14px;flex:1;min-width:140px;">' +
+    '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#dbe5f1;">' + esc(m.label) +
     '<span style="width:8px;height:8px;border-radius:50%;background:' + m.color + ';display:inline-block;"></span></div>' +
-    '<div style="font-size:22px;font-weight:700;color:#fff;margin:4px 0;">' + m.value + "</div>" +
-    '<div style="font-size:11px;color:#e8ecf1;opacity:0.6;">' + latestLabel + ' • ' + m.tag + "</div></div>"
+    '<div style="font-size:22px;font-weight:700;color:#f5f7fa;margin:4px 0;">' + m.value + "</div>" +
+    '<div style="font-size:11px;color:#dbe5f1;opacity:0.6;">' + latestLabel + ' • ' + m.tag + "</div></div>"
    ).join("");
    // Toggle pills
    const pillsHtml = metrics.map((m, i) =>
-    '<button data-macro-idx="' + i + '" style="display:inline-flex;align-items:center;gap:8px;background:#1e3a5f;border:1px solid #2a4a73;color:#e8ecf1;' +
+    '<button data-macro-idx="' + i + '" style="display:inline-flex;align-items:center;gap:8px;background:#253142;border:1px solid #253142;color:#dbe5f1;' +
     'border-radius:20px;padding:8px 16px;margin:4px;font-size:13px;cursor:pointer;">' +
     '<span style="width:22px;height:22px;border-radius:50%;background:' + m.color + ';display:inline-block;"></span>' +
     esc(m.label) + "</button>"
@@ -3257,46 +3258,46 @@ function bindZoomHandlers() {
    ).join("");
    const reportSectionsHtml = (latestReport.report && latestReport.report.sections || []).map((s) =>
     '<div style="margin-bottom:14px;">' +
-    '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">' + esc(s.heading) + "</div>" +
-    '<div style="font-size:13px;color:#e8ecf1;opacity:0.85;line-height:1.6;">' + s.body + "</div></div>"
+    '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:6px;">' + esc(s.heading) + "</div>" +
+    '<div style="font-size:13px;color:#dbe5f1;opacity:0.85;line-height:1.6;">' + s.body + "</div></div>"
    ).join("");
    const reportHtml =
-    '<div style="background:#161b26;border-radius:12px;padding:20px;display:flex;flex-direction:column;max-height:640px;">' +    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
+    '<div style="background:#101620;border-radius:12px;padding:20px;display:flex;flex-direction:column;max-height:640px;">' +    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
     '<span style="font-size:14px;">📊</span>' +
-    '<span style="font-size:15px;font-weight:700;color:#fff;">Macro Analyst Report</span></div>' +
+    '<span style="font-size:15px;font-weight:700;color:#f5f7fa;">Macro Analyst Report</span></div>' +
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
-    '<span style="font-size:12px;color:#e8ecf1;opacity:0.7;">Report date:</span>' +
-    '<select id="macro-report-date" style="background:#0f1420;color:#e8ecf1;border:1px solid #2a4a73;border-radius:6px;' +
+    '<span style="font-size:12px;color:#dbe5f1;opacity:0.7;">Report date:</span>' +
+    '<select id="macro-report-date" style="background:#0d131d;color:#dbe5f1;border:1px solid #253142;border-radius:6px;' +
     'padding:4px 8px;font-size:12px;cursor:pointer;max-width:200px;">' + reportOpts + "</select></div>" +
     '<div id="macro-report-body" style="overflow-y:auto;flex:1;padding-right:6px;">' +
-    '<div id="macro-report-date-label" style="font-size:11px;color:#e8ecf1;opacity:0.6;margin-bottom:12px;">' +
+    '<div id="macro-report-date-label" style="font-size:11px;color:#dbe5f1;opacity:0.6;margin-bottom:12px;">' +
     esc(latestReport.date || "") + (latestReport.data_through ? ", " + esc(latestReport.data_through) : "") + "</div>" +
     '<div id="macro-report-sections">' + reportSectionsHtml + "</div>" +
     "</div></div>";
    window.__macroReportHistory = reportHistory;
    return '<div style="margin-bottom:12px;">' +
-    '<h2 style="color:#fff;font-size:20px;margin:0 0 4px;">Economic Trends & Macro Indicators</h2>' +
-    '<p style="color:#e8ecf1;opacity:0.6;font-size:13px;margin:0 0 16px;">Compare trends across CPI, PPI, Retail Sales & PMI to detect leading vs. lagging signals.</p>' +
+    '<h2 style="color:#f5f7fa;font-size:20px;margin:0 0 4px;">Economic Trends & Macro Indicators</h2>' +
+    '<p style="color:#dbe5f1;opacity:0.6;font-size:13px;margin:0 0 16px;">Compare trends across CPI, PPI, Retail Sales & PMI to detect leading vs. lagging signals.</p>' +
     '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' + cardsHtml + "</div>" +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">' +
-    '<div style="background:#161b26;border-radius:12px;padding:20px;min-width:0;">' +
-    '<div style="font-size:13px;color:#e8ecf1;margin-bottom:8px;">Metrics</div>' +
+    '<div style="background:#101620;border-radius:12px;padding:20px;min-width:0;">' +
+    '<div style="font-size:13px;color:#dbe5f1;margin-bottom:8px;">Metrics</div>' +
     '<div style="margin-bottom:16px;">' + pillsHtml + "</div>" +
     '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">' +
-    '<span style="font-size:13px;color:#e8ecf1;">Scaling Mode</span>' +
-    '<div style="margin-left:auto;display:flex;background:#0f1420;border-radius:20px;padding:3px;">' +
-    '<button id="macro-norm-btn" style="background:#1e3a5f;color:#fff;border:0;border-radius:17px;padding:6px 16px;font-size:12px;cursor:pointer;">Normalized (0–100%)</button>' +
-    '<button id="macro-raw-btn" style="background:transparent;color:#e8ecf1;opacity:0.6;border:0;border-radius:17px;padding:6px 16px;font-size:12px;cursor:pointer;">Raw Prints</button>' +
+    '<span style="font-size:13px;color:#dbe5f1;">Scaling Mode</span>' +
+    '<div style="margin-left:auto;display:flex;background:#0d131d;border-radius:20px;padding:3px;">' +
+    '<button id="macro-norm-btn" style="background:#253142;color:#f5f7fa;border:0;border-radius:17px;padding:6px 16px;font-size:12px;cursor:pointer;">Normalized (0–100%)</button>' +
+    '<button id="macro-raw-btn" style="background:transparent;color:#dbe5f1;opacity:0.6;border:0;border-radius:17px;padding:6px 16px;font-size:12px;cursor:pointer;">Raw Prints</button>' +
     "</div></div>" +
     '<div class="zoomable-chart" data-chart="macro" style="position:relative;height:320px;cursor:zoom-in;" title="Click to zoom"><canvas id="macro-chart"></canvas>' +
-    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
     '<div id="macro-legend" style="display:flex;justify-content:center;gap:20px;margin-top:12px;flex-wrap:wrap;"></div>' +
     "</div>" +
     reportHtml +
     "</div>" +
-    '<div style="background:#161b26;border-radius:8px;padding:14px;margin-top:12px;">' +
-    '<span style="font-size:13px;font-weight:700;color:#fff;">Leading Signal: </span>' +
-    '<span style="font-size:13px;color:#e8ecf1;opacity:0.8;">Producer Price Inflation (PPI) peaked in June (2.6%) prior to the decelerating ' +
+    '<div style="background:#101620;border-radius:8px;padding:14px;margin-top:12px;">' +
+    '<span style="font-size:13px;font-weight:700;color:#f5f7fa;">Leading Signal: </span>' +
+    '<span style="font-size:13px;color:#dbe5f1;opacity:0.8;">Producer Price Inflation (PPI) peaked in June (2.6%) prior to the decelerating ' +
     'Consumer Price Inflation (CPI) downward trend, illustrating the classical pipeline transmission lag.</span>' +
     "</div></div>";
   }
@@ -3317,22 +3318,22 @@ function bindZoomHandlers() {
       const w = Math.min(pct * 4, 100); // scale for visibility
       const dir = grp.net >= 0 ? "long" : "short";
       return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-       '<span style="font-size:11px;color:#e8ecf1;width:110px;">' + label + '</span>' +
-       '<div style="flex:1;height:20px;background:#1a2030;border-radius:4px;position:relative;overflow:hidden;">' +
-       '<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#363c4e;"></div>' +
+       '<span style="font-size:11px;color:#dbe5f1;width:110px;">' + label + '</span>' +
+       '<div style="flex:1;height:20px;background:#101620;border-radius:4px;position:relative;overflow:hidden;">' +
+       '<div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:#253142;"></div>' +
        '<div style="position:absolute;top:0;bottom:0;' +
        (grp.net >= 0 ? "left:50%;width:" + (w / 2) + "%;" : "right:50%;width:" + (w / 2) + "%;") +
        'background:' + color + ';display:flex;align-items:center;' +
        (grp.net >= 0 ? "justify-content:flex-start;padding-left:6px;" : "justify-content:flex-end;padding-right:6px;") +
-       'font-size:10px;font-weight:700;color:#fff;white-space:nowrap;">' + fmt(grp.net) + "</div></div>" +
-       '<span style="font-size:10px;color:#e8ecf1;width:70px;text-align:right;">net ' + dir + "</span></div>";
+       'font-size:10px;font-weight:700;color:#f5f7fa;white-space:nowrap;">' + fmt(grp.net) + "</div></div>" +
+       '<span style="font-size:10px;color:#dbe5f1;width:70px;text-align:right;">net ' + dir + "</span></div>";
      };
      // Extreme badges
      const extBadge = (grp) => {
       const e = grp.extreme || "";
-      if (e === "extreme_long") return ' <span style="font-size:10px;background:#f85149;color:#fff;padding:1px 6px;border-radius:3px;">EXTREME LONG</span>';
-      if (e === "extreme_short") return ' <span style="font-size:10px;background:#f85149;color:#fff;padding:1px 6px;border-radius:3px;">EXTREME SHORT</span>';
-      if (e === "elevated_long" || e === "elevated_short") return ' <span style="font-size:10px;background:#d29922;color:#000;padding:1px 6px;border-radius:3px;">ELEVATED</span>';
+      if (e === "extreme_long") return ' <span style="font-size:10px;background:#f37d83;color:#f5f7fa;padding:1px 6px;border-radius:3px;">EXTREME LONG</span>';
+      if (e === "extreme_short") return ' <span style="font-size:10px;background:#f37d83;color:#f5f7fa;padding:1px 6px;border-radius:3px;">EXTREME SHORT</span>';
+      if (e === "elevated_long" || e === "elevated_short") return ' <span style="font-size:10px;background:#e0aa46;color:#000;padding:1px 6px;border-radius:3px;">ELEVATED</span>';
       return "";
      };
      // Smart money read
@@ -3342,7 +3343,7 @@ function bindZoomHandlers() {
      } else if (l.net > 0 && c.net > 0) {
       read = "Both commercials and large specs net long, institutional conviction is bullish.";
      } else if (l.extreme === "extreme_long" || l.extreme === "extreme_short") {
-      read = "<b style='color:#f85149'>Large specs at extreme positioning</b>, crowded trade, reversal risk elevated.";
+      read = "<b style='color:#f37d83'>Large specs at extreme positioning</b>, crowded trade, reversal risk elevated.";
      } else {
       read = "Positioning is mixed, no strong structural signal this week.";
      }
@@ -3350,23 +3351,23 @@ function bindZoomHandlers() {
       '<div style="margin:12px 0;">' +
       bar("Commercials 🏦", c, "#58a6ff") +
       bar("Large Specs 📊", l, "#c678dd") +
-      bar("Small Specs 👥", s, "#d29922") +
+      bar("Small Specs 👥", s, "#e0aa46") +
       "</div>" +
-      '<div style="font-size:12px;color:#c8d0dc;margin:8px 0;">' + read + "</div>" +
-      '<div style="font-size:11px;color:#e8ecf1;">' +
+      '<div style="font-size:12px;color:#dbe5f1;margin:8px 0;">' + read + "</div>" +
+      '<div style="font-size:11px;color:#dbe5f1;">' +
       "Commercials" + extBadge(c) + " · Large Specs" + extBadge(l) + " · Small Specs" + extBadge(s) + "</div>" +
       '<div class="panel-asof">CFTC data as of ' + esc(d.report_date || "") + " (published Friday, 3-day lag)</div></div>";
     }).join("");
    return '<div class="card" style="margin-bottom:16px;"><h3>Commitments of Traders (COT) ' + FREE_BADGE + '</h3>' +
     '<div class="section-sub">Where is institutional capital positioned? Weekly CFTC futures data.</div>' +
     '<div class="zoomable-chart" data-chart="cot" style="position:relative;height:240px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="cot-chart"></canvas>' +
-    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
     cards +
     '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
     "<p><b>What is this?</b> The CFTC's weekly Commitments of Traders report reveals how three groups are positioned in futures: " +
     "<b style='color:#58a6ff'>Commercials</b> (hedgers, the \"smart money\", contrarian), " +
     "<b style='color:#c678dd'>Large Speculators</b> (hedge funds, trend followers), " +
-    "<b style='color:#d29922'>Small Speculators</b> (retail, often wrong at turning points).</p>" +
+    "<b style='color:#e0aa46'>Small Speculators</b> (retail, often wrong at turning points).</p>" +
     "<p><b>How swing traders use it.</b> When Large Specs hit multi-year extremes, the trend is crowded and ripe for reversal. " +
     "When Commercials quietly build extreme positions against the trend, they're front-running the turn. " +
     "Divergences (price makes new highs but specs reduce longs) signal a trap.</p>" +
@@ -3378,37 +3379,37 @@ function bindZoomHandlers() {
   /* ---------- 10Y Breakeven Inflation HTML (FREE) ---------- */
   function breakevenHtml(d) {
    const latest = d.latest, chg = d.change_bps || 0;
-   const chgCls = chg > 0 ? "#3fb950" : chg < 0 ? "#f85149" : "#8b949e";
+   const chgCls = chg > 0 ? "#4dd2aa" : chg < 0 ? "#f37d83" : "#8d99aa";
    const chgTxt = (chg >= 0 ? "+" : "") + chg.toFixed(1) + " bps";
    const cid = "breakeven-chart";
    // Reading: above 2.5% = elevated expectations, below 2% = disinflation fears
    const read = latest >= 2.5 ? "Elevated" : latest < 2.0 ? "Subdued" : "Anchored";
-   const readCls = latest >= 2.5 ? "#f85149" : latest < 2.0 ? "#58a6ff" : "#3fb950";
+   const readCls = latest >= 2.5 ? "#f37d83" : latest < 2.0 ? "#58a6ff" : "#4dd2aa";
    let h = '<div class="section"><div class="section-title">10Y Breakeven Inflation ' + FREE_BADGE + '</div>';
    h += '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">' +
-    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">LATEST READING</div>' +
-    '<div style="font-size:36px;font-weight:700;color:#fff;font-family:monospace;">' + latest.toFixed(2) + '%</div></div>' +
-    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">DAY CHANGE</div>' +
+    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">LATEST READING</div>' +
+    '<div style="font-size:36px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + latest.toFixed(2) + '%</div></div>' +
+    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">DAY CHANGE</div>' +
     '<div style="font-size:20px;font-weight:700;color:' + chgCls + ';font-family:monospace;">' + chgTxt + '</div></div>' +
-    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">READING</div>' +
+    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">READING</div>' +
     '<div style="font-size:20px;font-weight:700;color:' + readCls + ';">' + read + '</div></div>' +
-    '<div style="font-size:11px;color:#8b949e;">As of ' + esc(d.as_of || "") + ' · FRED T10YIE</div></div>' +
+    '<div style="font-size:11px;color:#8d99aa;">As of ' + esc(d.as_of || "") + ' · FRED T10YIE</div></div>' +
     '<div class="zoomable-chart" data-chart="breakeven" style="position:relative;height:300px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + cid + '"></canvas>' +
-    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
    // Explanation card
-   h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;">' +
-    '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">What is this?</div>' +
-    '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;">' +
+   h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;margin-top:12px;">' +
+    '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:8px;">What is this?</div>' +
+    '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' +
     'The <b>10-year breakeven inflation rate</b> is the market\'s implied average annual inflation expectation over the next 10 years. ' +
     'It is calculated as the 10-year nominal Treasury yield minus the 10-year TIPS (inflation-protected) real yield. ' +
     'When investors demand more compensation for expected inflation, the breakeven rate rises.</div>' +
-    '<div style="font-size:13px;font-weight:700;color:#fff;margin:12px 0 8px;">Why it matters</div>' +
-    '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;">' +
+    '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin:12px 0 8px;">Why it matters</div>' +
+    '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' +
     'Rising breakevens signal the bond market expects hotter inflation, which typically pressures growth-stock multiples and supports commodities, energy, and value. ' +
     'Falling breakevens signal disinflation fears, which favors long-duration growth. The Fed watches this closely: ' +
     'a breakeven persistently above 2.5% argues against rate cuts, while one sliding toward 2% or below gives the Fed room to ease. ' +
     'For equity positioning, compare the trend here against CPI prints: when breakevens lead CPI higher, inflation trades have room to run.</div>' +
-    '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Source: Federal Reserve Bank of St. Louis (FRED series T10YIE), updated every trading morning.</div></div>';
+    '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Source: Federal Reserve Bank of St. Louis (FRED series T10YIE), updated every trading morning.</div></div>';
    h += '</div></div>';
    return h;
   }
@@ -3418,44 +3419,44 @@ function bindZoomHandlers() {
    const erpPct = (erp * 100).toFixed(2);
    // Reading: ERP vs history
    const read = erp >= 0.045 ? "Elevated" : erp < 0.03 ? "Compressed" : "Normal";
-   const readCls = erp >= 0.045 ? "#f85149" : erp < 0.03 ? "#58a6ff" : "#3fb950";
+   const readCls = erp >= 0.045 ? "#f37d83" : erp < 0.03 ? "#58a6ff" : "#4dd2aa";
    const cid = "erp-chart";
    let h = '<div class="section"><div class="section-title">Implied Equity Risk Premium ' + FREE_BADGE + '</div>';
    h += '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">' +
-    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">IMPLIED ERP</div>' +
-    '<div style="font-size:36px;font-weight:700;color:#fff;font-family:monospace;">' + erpPct + '%</div></div>' +
-    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">S&P 500</div>' +
-    '<div style="font-size:20px;font-weight:700;color:#fff;font-family:monospace;">' + spx.toLocaleString() + '</div></div>' +
-    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">10Y YIELD</div>' +
-    '<div style="font-size:20px;font-weight:700;color:#fff;font-family:monospace;">' + (tenY * 100).toFixed(2) + '%</div></div>' +
-    '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">READING</div>' +
+    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">IMPLIED ERP</div>' +
+    '<div style="font-size:36px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + erpPct + '%</div></div>' +
+    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">S&P 500</div>' +
+    '<div style="font-size:20px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + spx.toLocaleString() + '</div></div>' +
+    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">10Y YIELD</div>' +
+    '<div style="font-size:20px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + (tenY * 100).toFixed(2) + '%</div></div>' +
+    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">READING</div>' +
     '<div style="font-size:20px;font-weight:700;color:' + readCls + ';">' + read + '</div></div>' +
-    '<div style="font-size:11px;color:#8b949e;">As of ' + esc(d.as_of || "") + ' · Live from DCF model</div></div>' +
+    '<div style="font-size:11px;color:#8d99aa;">As of ' + esc(d.as_of || "") + ' · Live from DCF model</div></div>' +
     '<div class="zoomable-chart" data-chart="erp" style="position:relative;height:300px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + cid + '"></canvas>' +
-    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
    if (isPro) {
-    h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;">' +
-     '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">What this tells you</div>' +
-     '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;">' +
+    h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;margin-top:12px;">' +
+     '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:8px;">What this tells you</div>' +
+     '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' +
      'The <b>implied equity risk premium</b> is the extra return investors demand for holding stocks over risk-free Treasuries, solved live from market prices via a Damodaran-style dividend discount model. ' +
      'It is the single most important input to every DCF on this site: a higher ERP means a higher discount rate and lower valuations across the board.</div>' +
-     '<div style="font-size:13px;font-weight:700;color:#fff;margin:12px 0 8px;">How to read it</div>' +
-     '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;">' +
+     '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin:12px 0 8px;">How to read it</div>' +
+     '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' +
      'An <b>elevated ERP (above 4.5%)</b> means the market is pricing significant risk into equities. This is typically a contrarian bullish signal for long-term buyers, as long as earnings hold up. ' +
      'A <b>compressed ERP (below 3.0%)</b> means investors are accepting thin compensation for equity risk, often late in a bull market when complacency runs high. ' +
      'Watch the ERP against the 10Y: when the 10Y rises faster than the ERP, the equity discount rate climbs and growth multiples compress. ' +
      'The current 10Y at ' + (tenY * 100).toFixed(2) + '% is doing most of the work in today\'s discount rates.</div>' +
-     '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Source: Live DCF model ERP tab (GOOGLEFINANCE + Damodaran DDM solver), updated daily.</div></div>';
+     '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Source: Live DCF model ERP tab (GOOGLEFINANCE + Damodaran DDM solver), updated daily.</div></div>';
    } else {
-    h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;text-align:center;">' +
-     '<div style="font-size:13px;color:#e8ecf1;margin-bottom:8px;">The full analysis of what this ERP reading means for positioning is a Pro feature.</div>' +
+    h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;margin-top:12px;text-align:center;">' +
+     '<div style="font-size:13px;color:#dbe5f1;margin-bottom:8px;">The full analysis of what this ERP reading means for positioning is a Pro feature.</div>' +
      '<button class="btn" id="teaser-pricing">See Pro Plans</button></div>';
    }
    h += '</div></div>';
    return h;
   }
   function fedFundsHtml(d) {
-   if (!d || !d.available) return '<p style="color:#e8ecf1">Fed funds futures data unavailable.</p>';
+   if (!d || !d.available) return '<p style="color:#dbe5f1">Fed funds futures data unavailable.</p>';
    const meetings = (d.meetings || []).slice(0, 6);
    // Build probability table
    const rows = meetings.map((m) => {
@@ -3467,7 +3468,7 @@ function bindZoomHandlers() {
      const isTop = range === top[0];
      const bg = isTop ? "background:rgba(47,111,237,0.25);" : "";
      const fw = isTop ? "font-weight:700;" : "";
-     return '<td style="padding:8px 12px;text-align:center;' + bg + fw + 'color:#e8ecf1;font-size:13px;">' +
+     return '<td style="padding:8px 12px;text-align:center;' + bg + fw + 'color:#dbe5f1;font-size:13px;">' +
       esc(range) + '<br><span style="font-size:15px;">' + pct.toFixed(1) + '%</span></td>';
     }).join("");
     // Format date
@@ -3477,7 +3478,7 @@ function bindZoomHandlers() {
      dateStr = dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     } catch (e) {}
     return '<tr style="border-bottom:1px solid rgba(255,255,255,0.06);">' +
-     '<td style="padding:8px 12px;color:#fff;font-weight:600;font-size:13px;white-space:nowrap;">' + esc(dateStr) + "</td>" + cells + "</tr>";
+     '<td style="padding:8px 12px;color:#f5f7fa;font-weight:600;font-size:13px;white-space:nowrap;">' + esc(dateStr) + "</td>" + cells + "</tr>";
    }).join("");
 
    // Collect all unique ranges for header
@@ -3493,14 +3494,14 @@ function bindZoomHandlers() {
    return '<div class="section" style="max-width:none;"><div class="section-title">FOMC Fed Funds Futures ' + FREE_BADGE + '</div>' +
     '<div class="section-sub">What the futures market is pricing for upcoming FOMC meetings. Updates every morning.</div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
-    '<div class="card" style="padding:16px;"><div style="font-size:11px;color:#e8ecf1;margin-bottom:4px;">EFFECTIVE FED FUNDS RATE</div>' +
-    '<div style="font-size:28px;font-weight:800;color:#fff;">' + (d.effr != null ? d.effr.toFixed(2) + "%" : " - ") + "</div></div>" +
-    '<div class="card" style="padding:16px;"><div style="font-size:11px;color:#e8ecf1;margin-bottom:4px;">CURRENT TARGET RANGE</div>' +
-    '<div style="font-size:28px;font-weight:800;color:#fff;">' + esc(d.current_target || " - ") + "</div></div></div>" +
+    '<div class="card" style="padding:16px;"><div style="font-size:11px;color:#dbe5f1;margin-bottom:4px;">EFFECTIVE FED FUNDS RATE</div>' +
+    '<div style="font-size:28px;font-weight:800;color:#f5f7fa;">' + (d.effr != null ? d.effr.toFixed(2) + "%" : " - ") + "</div></div>" +
+    '<div class="card" style="padding:16px;"><div style="font-size:11px;color:#dbe5f1;margin-bottom:4px;">CURRENT TARGET RANGE</div>' +
+    '<div style="font-size:28px;font-weight:800;color:#f5f7fa;">' + esc(d.current_target || " - ") + "</div></div></div>" +
     '<div style="overflow-x:auto;margin-bottom:12px;"><table style="width:100%;border-collapse:collapse;min-width:600px;">' +
     '<thead><tr style="border-bottom:2px solid rgba(255,255,255,0.1);">' +
-    '<th style="padding:8px 12px;text-align:left;color:#e8ecf1;font-size:12px;">FOMC Meeting</th>' +
-    allRanges.map((r) => '<th style="padding:8px 12px;text-align:center;color:#e8ecf1;font-size:12px;">' + esc(r) + "</th>").join("") +
+    '<th style="padding:8px 12px;text-align:left;color:#dbe5f1;font-size:12px;">FOMC Meeting</th>' +
+    allRanges.map((r) => '<th style="padding:8px 12px;text-align:center;color:#dbe5f1;font-size:12px;">' + esc(r) + "</th>").join("") +
     "</tr></thead><tbody>" + rows + "</tbody></table></div>" +
     '<div class="panel-about" style="text-align:left;max-width:none;">' +
     "<p><b>What is this?</b> The CME FedWatch tool translates 30-Day Fed Funds futures prices into probabilities for each possible target range at upcoming FOMC meetings. " +
@@ -3516,14 +3517,14 @@ function bindZoomHandlers() {
   function aaiiSentimentHtml(d) {
    const b = d.bullish, n = d.neutral, br = d.bearish;
    const spread = d.bull_bear_spread;
-   const spreadColor = spread >= 0 ? "#3fb950" : "#f85149";
+   const spreadColor = spread >= 0 ? "#4dd2aa" : "#f37d83";
    const avg = d.historical_avg || {};
    // Contrarian read
    let contrarian;
    if (br >= 45) {
-    contrarian = "<b style='color:#3fb950'>Contrarian bullish:</b> extreme fear often marks bottoms, the crowd is already positioned for a drop.";
+    contrarian = "<b style='color:#4dd2aa'>Contrarian bullish:</b> extreme fear often marks bottoms, the crowd is already positioned for a drop.";
    } else if (b >= 50) {
-    contrarian = "<b style='color:#f85149'>Contrarian bearish:</b> extreme greed often marks tops, the crowd is all-in.";
+    contrarian = "<b style='color:#f37d83'>Contrarian bearish:</b> extreme greed often marks tops, the crowd is all-in.";
    } else if (Math.abs(spread) < 5) {
     contrarian = "Bulls and bears are evenly split, no strong contrarian signal.";
    } else if (spread > 0) {
@@ -3531,24 +3532,24 @@ function bindZoomHandlers() {
    } else {
     contrarian = "Bears outnumber bulls, mild contrarian optimism.";
    }
-   const chg = (v) => v != null ? ' <span style="font-size:11px;color:' + (v >= 0 ? "#3fb950" : "#f85149") + ';">(' + (v >= 0 ? "+" : "") + v.toFixed(1) + "pt)</span>" : "";
+   const chg = (v) => v != null ? ' <span style="font-size:11px;color:' + (v >= 0 ? "#4dd2aa" : "#f37d83") + ';">(' + (v >= 0 ? "+" : "") + v.toFixed(1) + "pt)</span>" : "";
    return '<div class="card" style="margin-bottom:16px;"><h3>AAII Investor Sentiment ' + FREE_BADGE + '</h3>' +
     '<div class="section-sub">Weekly survey of individual investors, are they bullish or bearish on stocks over the next 6 months?</div>' +
     '<div class="zoomable-chart" data-chart="aaii" style="position:relative;height:220px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="aaii-chart"></canvas>' +
-    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;text-align:center;">' +
-    '<div><div style="font-size:11px;color:#e8ecf1;">🐂 BULLISH</div>' +
-    '<div style="font-size:22px;font-weight:700;color:#3fb950;">' + b.toFixed(1) + "%" + "</div>" +
-    '<div style="font-size:11px;color:#e8ecf1;">avg ' + (avg.bullish != null ? avg.bullish.toFixed(1) : " - ") + "%" + chg(d.bullish_change) + "</div></div>" +
-    '<div><div style="font-size:11px;color:#e8ecf1;">➖ NEUTRAL</div>' +
-    '<div style="font-size:22px;font-weight:700;color:#c8d0dc;">' + n.toFixed(1) + "%" + "</div>" +
-    '<div style="font-size:11px;color:#e8ecf1;">avg ' + (avg.neutral != null ? avg.neutral.toFixed(1) : " - ") + "%</div></div>" +
-    '<div><div style="font-size:11px;color:#e8ecf1;">🐻 BEARISH</div>' +
-    '<div style="font-size:22px;font-weight:700;color:#f85149;">' + br.toFixed(1) + "%" + "</div>" +
-    '<div style="font-size:11px;color:#e8ecf1;">avg ' + (avg.bearish != null ? avg.bearish.toFixed(1) : " - ") + "%" + chg(d.bearish_change) + "</div></div>" +
+    '<div><div style="font-size:11px;color:#dbe5f1;">🐂 BULLISH</div>' +
+    '<div style="font-size:22px;font-weight:700;color:#4dd2aa;">' + b.toFixed(1) + "%" + "</div>" +
+    '<div style="font-size:11px;color:#dbe5f1;">avg ' + (avg.bullish != null ? avg.bullish.toFixed(1) : " - ") + "%" + chg(d.bullish_change) + "</div></div>" +
+    '<div><div style="font-size:11px;color:#dbe5f1;">➖ NEUTRAL</div>' +
+    '<div style="font-size:22px;font-weight:700;color:#dbe5f1;">' + n.toFixed(1) + "%" + "</div>" +
+    '<div style="font-size:11px;color:#dbe5f1;">avg ' + (avg.neutral != null ? avg.neutral.toFixed(1) : " - ") + "%</div></div>" +
+    '<div><div style="font-size:11px;color:#dbe5f1;">🐻 BEARISH</div>' +
+    '<div style="font-size:22px;font-weight:700;color:#f37d83;">' + br.toFixed(1) + "%" + "</div>" +
+    '<div style="font-size:11px;color:#dbe5f1;">avg ' + (avg.bearish != null ? avg.bearish.toFixed(1) : " - ") + "%" + chg(d.bearish_change) + "</div></div>" +
     "</div>" +
     '<div style="text-align:center;margin:8px 0;">' +
-    '<span style="font-size:13px;color:#e8ecf1;">Bull-Bear Spread: </span>' +
+    '<span style="font-size:13px;color:#dbe5f1;">Bull-Bear Spread: </span>' +
     '<span style="font-size:16px;font-weight:700;color:' + spreadColor + ';">' + (spread >= 0 ? "+" : "") + spread.toFixed(1) + "%</span></div>" +
     '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
     "<p><b>What is this?</b> Every week, the American Association of Individual Investors asks its members: " +
@@ -3581,8 +3582,8 @@ function bindZoomHandlers() {
    const nh = cur.new_highs, nl = cur.new_lows;
 
    const fmtDelta = (d) => {
-    if (d == null || isNaN(d)) return '<span style="color:#5c6b7d;">N/A</span>';
-    const cls = d >= 0 ? "#3fb950" : "#f85149";
+    if (d == null || isNaN(d)) return '<span style="color:#647184;">N/A</span>';
+    const cls = d >= 0 ? "#4dd2aa" : "#f37d83";
     return '<span style="color:' + cls + ';">' + (d >= 0 ? "+" : "") + d.toFixed(1) + " pts</span>";
    };
    const d50 = (pct50 != null && prev && prev.pct_above_50d != null) ? pct50 - prev.pct_above_50d : null;
@@ -3591,9 +3592,9 @@ function bindZoomHandlers() {
 
    const bar = (label, val, delta, isSpread) => {
     const v = val != null ? val : 0;
-    let fillColor = "#c9a961", valColor = "#e8ecf1", valText;
+    let fillColor = "#d9a441", valColor = "#dbe5f1", valText;
     if (isSpread) {
-     fillColor = v < -1 ? "#f85149" : (v > 1 ? "#3fb950" : "#c9a961");
+     fillColor = v < -1 ? "#f37d83" : (v > 1 ? "#4dd2aa" : "#d9a441");
      valColor = fillColor;
      valText = (v >= 0 ? "+" : "") + v.toFixed(1) + "pp";
     } else {
@@ -3603,7 +3604,7 @@ function bindZoomHandlers() {
     const w = isSpread ? Math.min(100, Math.max(0, 50 + v * 2)) : Math.min(100, Math.max(0, v));
     return '<div style="margin-bottom:18px;">' +
      '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">' +
-     '<span style="font-size:14px;color:#c8d0da;">' + label + "</span>" +
+     '<span style="font-size:14px;color:#dbe5f1;">' + label + "</span>" +
      '<span style="display:flex;gap:16px;align-items:baseline;">' +
      '<span style="font-weight:700;font-size:15px;color:' + valColor + ';font-family:monospace;">' + valText + "</span>" +
      '<span style="font-size:13px;font-family:monospace;">' + fmtDelta(delta) + "</span></span></div>" +
@@ -3616,11 +3617,11 @@ function bindZoomHandlers() {
    const asOf = (p.as_of || "").slice(0, 10);
    let h = '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">' +
     '<div style="display:flex;align-items:center;gap:14px;">' +
-    '<div style="width:40px;height:40px;background:#c9a961;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#080d14;font-family:monospace;">01</div>' +
+    '<div style="width:40px;height:40px;background:#d9a441;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#0a0e17;font-family:monospace;">01</div>' +
     '<h3 style="font-size:28px;font-weight:700;letter-spacing:-0.5px;margin:0;">Market Breadth</h3> ' + PRO_BADGE + '</div>' +
-    '<div style="font-size:12px;color:#8b949e;border:1px solid #1c2b3e;padding:6px 14px;border-radius:20px;white-space:nowrap;font-family:monospace;">Snapshot &middot; ' + esc(asOf) + "</div></div>";
-   h += '<p style="color:#8b949e;font-size:15px;margin:4px 0 0 54px;line-height:1.5;">Breadth measures the degree of participation behind an index move. Broad advancer dominance with a high percentage of constituents above their moving averages confirms a healthy advance. When the index rises on narrow leadership while the median stock lags its 52-week high, the move lacks confirmation and corrective risk increases.</p>';
-   h += '<p style="color:#5c6b7d;font-size:13px;margin:20px 0 24px 0;">503 S&amp;P 500 constituents &middot; change vs the prior close</p>';
+    '<div style="font-size:12px;color:#8d99aa;border:1px solid #253142;padding:6px 14px;border-radius:20px;white-space:nowrap;font-family:monospace;">Snapshot &middot; ' + esc(asOf) + "</div></div>";
+   h += '<p style="color:#8d99aa;font-size:15px;margin:4px 0 0 54px;line-height:1.5;">Breadth measures the degree of participation behind an index move. Broad advancer dominance with a high percentage of constituents above their moving averages confirms a healthy advance. When the index rises on narrow leadership while the median stock lags its 52-week high, the move lacks confirmation and corrective risk increases.</p>';
+   h += '<p style="color:#647184;font-size:13px;margin:20px 0 24px 0;">503 S&amp;P 500 constituents &middot; change vs the prior close</p>';
 
    h += bar("Above 50-day", pct50, d50, false);
    h += bar("Above 200-day", pct200, d200, false);
@@ -3629,18 +3630,18 @@ function bindZoomHandlers() {
    // stat cards
    const cardVal = (v) => v != null ? v : "N/A";
    h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:28px 0;">';
-   h += '<div style="background:#0d1522;border:1px solid #1c2b3e;border-radius:14px;padding:18px;">' +
-    '<div style="font-size:11px;letter-spacing:1.5px;color:#5c6b7d;margin-bottom:10px;font-weight:600;">NEW HIGHS / LOWS</div>' +
-    '<div style="font-size:22px;font-weight:700;font-family:monospace;"><span style="color:#3fb950;">' + cardVal(nh) + '</span> <span style="color:#5c6b7d;font-size:16px;">/</span> <span style="color:#f85149;">' + cardVal(nl) + "</span></div>" +
-    '<div style="font-size:13px;color:#8b949e;margin-top:4px;">52-week extremes</div></div>';
-   h += '<div style="background:#0d1522;border:1px solid #1c2b3e;border-radius:14px;padding:18px;">' +
-    '<div style="font-size:11px;letter-spacing:1.5px;color:#5c6b7d;margin-bottom:10px;font-weight:600;">MEDIAN VS 52WK HIGH</div>' +
-    '<div style="font-size:22px;font-weight:700;font-family:monospace;color:' + (medDist != null && medDist < -5 ? "#f85149" : "#e8ecf1") + ';">' + (medDist != null ? medDist.toFixed(1) + "%" : "N/A") + "</div>" +
-    '<div style="font-size:13px;color:#8b949e;margin-top:4px;">median stock drawdown</div></div>';
-   h += '<div style="background:#0d1522;border:1px solid #1c2b3e;border-radius:14px;padding:18px;">' +
-    '<div style="font-size:11px;letter-spacing:1.5px;color:#5c6b7d;margin-bottom:10px;font-weight:600;">ADVANCERS / DECLINERS</div>' +
-    '<div style="font-size:22px;font-weight:700;font-family:monospace;"><span style="color:#3fb950;">' + cardVal(adv) + '</span> <span style="color:#5c6b7d;font-size:16px;">/</span> <span style="color:#f85149;">' + cardVal(dec) + "</span></div>" +
-    '<div style="font-size:13px;color:#8b949e;margin-top:4px;">A/D ratio ' + (adRatio != null ? adRatio.toFixed(2) : "N/A") + "</div></div>";
+   h += '<div style="background:#0a0e17;border:1px solid #253142;border-radius:14px;padding:18px;">' +
+    '<div style="font-size:11px;letter-spacing:1.5px;color:#647184;margin-bottom:10px;font-weight:600;">NEW HIGHS / LOWS</div>' +
+    '<div style="font-size:22px;font-weight:700;font-family:monospace;"><span style="color:#4dd2aa;">' + cardVal(nh) + '</span> <span style="color:#647184;font-size:16px;">/</span> <span style="color:#f37d83;">' + cardVal(nl) + "</span></div>" +
+    '<div style="font-size:13px;color:#8d99aa;margin-top:4px;">52-week extremes</div></div>';
+   h += '<div style="background:#0a0e17;border:1px solid #253142;border-radius:14px;padding:18px;">' +
+    '<div style="font-size:11px;letter-spacing:1.5px;color:#647184;margin-bottom:10px;font-weight:600;">MEDIAN VS 52WK HIGH</div>' +
+    '<div style="font-size:22px;font-weight:700;font-family:monospace;color:' + (medDist != null && medDist < -5 ? "#f37d83" : "#dbe5f1") + ';">' + (medDist != null ? medDist.toFixed(1) + "%" : "N/A") + "</div>" +
+    '<div style="font-size:13px;color:#8d99aa;margin-top:4px;">median stock drawdown</div></div>';
+   h += '<div style="background:#0a0e17;border:1px solid #253142;border-radius:14px;padding:18px;">' +
+    '<div style="font-size:11px;letter-spacing:1.5px;color:#647184;margin-bottom:10px;font-weight:600;">ADVANCERS / DECLINERS</div>' +
+    '<div style="font-size:22px;font-weight:700;font-family:monospace;"><span style="color:#4dd2aa;">' + cardVal(adv) + '</span> <span style="color:#647184;font-size:16px;">/</span> <span style="color:#f37d83;">' + cardVal(dec) + "</span></div>" +
+    '<div style="font-size:13px;color:#8d99aa;margin-top:4px;">A/D ratio ' + (adRatio != null ? adRatio.toFixed(2) : "N/A") + "</div></div>";
    h += "</div>";
 
    // sector section
@@ -3648,12 +3649,12 @@ function bindZoomHandlers() {
    if (sectors.length >= 8) {
     const strong = sectors.slice(0, 4), weak = sectors.slice(-4).reverse();
     h += '<div style="font-size:15px;font-weight:600;margin:8px 0 4px 0;">% above 50-day by sector</div>';
-    h += '<div style="font-size:12px;color:#5c6b7d;margin-bottom:18px;">sectors with 8+ names &middot; strongest 4 and weakest 4</div>';
+    h += '<div style="font-size:12px;color:#647184;margin-bottom:18px;">sectors with 8+ names &middot; strongest 4 and weakest 4</div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 32px;margin-bottom:28px;">';
     const srow = (s) => {
-     const col = s.pct_above_50d >= 50 ? "#3fb950" : "#f85149";
+     const col = s.pct_above_50d >= 50 ? "#4dd2aa" : "#f37d83";
      return '<div style="display:grid;grid-template-columns:1fr 120px 48px;align-items:center;gap:12px;font-size:13px;padding:5px 0;">' +
-      '<span style="color:#c8d0da;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(s.name) + '<span style="color:#5c6b7d;font-size:11px;margin-left:4px;">' + s.count + "</span></span>" +
+      '<span style="color:#dbe5f1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(s.name) + '<span style="color:#647184;font-size:11px;margin-left:4px;">' + s.count + "</span></span>" +
       '<div style="height:6px;background:#141d2b;border-radius:4px;overflow:hidden;"><div style="height:100%;border-radius:4px;background:' + col + ";width:" + s.pct_above_50d.toFixed(0) + '%;"></div></div>' +
       '<span style="text-align:right;font-family:monospace;font-weight:600;">' + s.pct_above_50d.toFixed(0) + "%</span></div>";
     };
@@ -3688,13 +3689,13 @@ function bindZoomHandlers() {
    let summaryText = sumParts.length
     ? sumParts[0].charAt(0).toUpperCase() + sumParts[0].slice(1) + ". " + sumParts.slice(1).join(". ") + "."
     : (p.summary || "");
-   h += '<div style="background:#0e1a2b;border:1px solid #1e3a5f;border-radius:14px;padding:20px 22px;display:flex;gap:14px;">' +
-    '<div style="color:#c9a961;font-size:12px;font-weight:700;letter-spacing:1.5px;white-space:nowrap;padding-top:2px;">SUMMARY</div>' +
-    '<div style="font-size:14px;line-height:1.65;color:#c8d0da;">' + esc(summaryText) + "</div></div>";
+   h += '<div style="background:#0e1a2b;border:1px solid #253142;border-radius:14px;padding:20px 22px;display:flex;gap:14px;">' +
+    '<div style="color:#d9a441;font-size:12px;font-weight:700;letter-spacing:1.5px;white-space:nowrap;padding-top:2px;">SUMMARY</div>' +
+    '<div style="font-size:14px;line-height:1.65;color:#dbe5f1;">' + esc(summaryText) + "</div></div>";
 
    // history chart (keep the existing interactive chart below the new UI)
    h += '<div class="zoomable-chart" data-chart="breadth" style="position:relative;height:280px;margin-top:16px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="breadth-chart"></canvas>' +
-    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
 
    if (p.about) h += '<div class="panel-about">' + esc(p.about) + "</div>";
    h += '<div class="panel-asof">As of ' + esc(asOf) + (p.frequency ? " · updated " + esc(p.frequency) : "") + (p.stale ? " · stale" : "") + "</div>";
@@ -3706,11 +3707,11 @@ function bindZoomHandlers() {
    // OPEX calendar strip
    let h = '<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;margin-bottom:16px;">';
    (opexData.opex_calendar || []).slice(0, 6).forEach((o) => {
-    const bg = o.triple_witching ? "border-color:#c9a961;" : "";
-    h += '<div style="min-width:140px;background:#161b26;border:1px solid #2a3142;border-radius:8px;padding:12px;' + bg + '">';
-    h += '<div style="font-size:11px;color:#8b949e;">' + (o.triple_witching ? '<span style="color:#c9a961;font-weight:700;">TRIPLE WITCHING</span>' : 'MONTHLY OPEX') + '</div>';
-    h += '<div style="font-size:14px;font-weight:700;color:#fff;margin:4px 0;">' + esc(o.label.split(",")[0] + "," + o.label.split(",")[1]) + '</div>';
-    h += '<div style="font-size:12px;color:#8b949e;">' + o.days_away + ' days away</div>';
+    const bg = o.triple_witching ? "border-color:#d9a441;" : "";
+    h += '<div style="min-width:140px;background:#101620;border:1px solid #253142;border-radius:8px;padding:12px;' + bg + '">';
+    h += '<div style="font-size:11px;color:#8d99aa;">' + (o.triple_witching ? '<span style="color:#d9a441;font-weight:700;">TRIPLE WITCHING</span>' : 'MONTHLY OPEX') + '</div>';
+    h += '<div style="font-size:14px;font-weight:700;color:#f5f7fa;margin:4px 0;">' + esc(o.label.split(",")[0] + "," + o.label.split(",")[1]) + '</div>';
+    h += '<div style="font-size:12px;color:#8d99aa;">' + o.days_away + ' days away</div>';
     h += '</div>';
    });
    h += '</div>';
@@ -3721,35 +3722,35 @@ function bindZoomHandlers() {
    tickers.forEach((tk) => {
     const t = opexData.tickers[tk];
     const pcr = t.put_call_ratio;
-    const pcrColor = pcr > 1.2 ? "#f85149" : (pcr < 0.8 ? "#3fb950" : "#e8ecf1");
-    const distColor = t.max_pain_distance_pct != null && Math.abs(t.max_pain_distance_pct) < 2 ? "#c9a961" : "#8b949e";
-    h += '<div style="background:#161b26;border:1px solid #2a3142;border-radius:8px;padding:16px;">';
+    const pcrColor = pcr > 1.2 ? "#f37d83" : (pcr < 0.8 ? "#4dd2aa" : "#dbe5f1");
+    const distColor = t.max_pain_distance_pct != null && Math.abs(t.max_pain_distance_pct) < 2 ? "#d9a441" : "#8d99aa";
+    h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;">';
     h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
-    h += '<span style="font-size:18px;font-weight:800;color:#fff;">' + esc(tk) + '</span>';
-    h += '<span style="font-size:12px;color:#8b949e;">$' + (t.spot != null ? t.spot.toFixed(2) : "-") + '</span>';
+    h += '<span style="font-size:18px;font-weight:800;color:#f5f7fa;">' + esc(tk) + '</span>';
+    h += '<span style="font-size:12px;color:#8d99aa;">$' + (t.spot != null ? t.spot.toFixed(2) : "-") + '</span>';
     h += '</div>';
     h += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
-    h += '<span style="font-size:12px;color:#8b949e;">Max Pain</span>';
-    h += '<span style="font-size:14px;font-weight:700;color:#c9a961;">$' + (t.max_pain != null ? t.max_pain.toFixed(0) : "-") + '</span>';
+    h += '<span style="font-size:12px;color:#8d99aa;">Max Pain</span>';
+    h += '<span style="font-size:14px;font-weight:700;color:#d9a441;">$' + (t.max_pain != null ? t.max_pain.toFixed(0) : "-") + '</span>';
     h += '</div>';
     if (t.max_pain_distance_pct != null) {
      h += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
-     h += '<span style="font-size:12px;color:#8b949e;">Distance to Max Pain</span>';
+     h += '<span style="font-size:12px;color:#8d99aa;">Distance to Max Pain</span>';
      h += '<span style="font-size:13px;font-weight:600;color:' + distColor + ';">' + (t.max_pain_distance_pct > 0 ? "+" : "") + t.max_pain_distance_pct.toFixed(1) + '%</span>';
      h += '</div>';
     }
     h += '<div style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin:8px 0;">';
     const total = (t.call_oi || 0) + (t.put_oi || 0);
     const callPct = total ? (t.call_oi / total * 100) : 50;
-    h += '<div style="width:' + callPct + '%;background:#3fb950;"></div>';
-    h += '<div style="width:' + (100 - callPct) + '%;background:#f85149;"></div>';
+    h += '<div style="width:' + callPct + '%;background:#4dd2aa;"></div>';
+    h += '<div style="width:' + (100 - callPct) + '%;background:#f37d83;"></div>';
     h += '</div>';
     h += '<div style="display:flex;justify-content:space-between;font-size:12px;">';
-    h += '<span style="color:#8b949e;">P/C Ratio</span>';
+    h += '<span style="color:#8d99aa;">P/C Ratio</span>';
     h += '<span style="font-weight:700;color:' + pcrColor + ';">' + (pcr != null ? pcr.toFixed(2) : "-") + '</span>';
     h += '</div>';
     if (t.call_wall || t.put_wall) {
-     h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #2a3142;font-size:11px;color:#8b949e;">';
+     h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #253142;font-size:11px;color:#8d99aa;">';
      if (t.call_wall) h += 'Call wall: $' + t.call_wall.toFixed(0) + ' &nbsp; ';
      if (t.put_wall) h += 'Put wall: $' + t.put_wall.toFixed(0);
      h += '</div>';
@@ -3757,7 +3758,7 @@ function bindZoomHandlers() {
     h += '</div>';
    });
    h += '</div>';
-   h += '<div style="font-size:11px;color:#8b949e;margin-top:12px;">As of ' + esc(opexData.as_of || "") + ' &middot; CBOE delayed chains</div>';
+   h += '<div style="font-size:11px;color:#8d99aa;margin-top:12px;">As of ' + esc(opexData.as_of || "") + ' &middot; CBOE delayed chains</div>';
    return h;
   }
 
@@ -3769,10 +3770,10 @@ function bindZoomHandlers() {
     .filter((d) => d && d.available)
     .map((d) => {
      const regimeColors = {
-      extreme_fear: "#f85149", elevated_fear: "#d29922",
-      normal: "#58a6ff", complacent: "#3fb950",
+      extreme_fear: "#f37d83", elevated_fear: "#e0aa46",
+      normal: "#58a6ff", complacent: "#4dd2aa",
      };
-     const rc = regimeColors[d.regime] || "#e8ecf1";
+     const rc = regimeColors[d.regime] || "#dbe5f1";
      const trendIcon = d.trend === "steepening" ? "📈" : d.trend === "flattening" ? "📉" : "➡️";
      const trendLabel = d.trend === "steepening" ? "Steepening (fear rising)" :
       d.trend === "flattening" ? "Flattening (fear fading)" : "Stable";
@@ -3783,22 +3784,22 @@ function bindZoomHandlers() {
       ' <span style="font-size:12px;color:' + rc + ';">' + esc(d.regime_label || "") + "</span></h3>" +
       '<div style="margin:12px 0;">' +
       '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-      '<span style="font-size:11px;color:#e8ecf1;width:70px;">Put IV</span>' +
-      '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
-      '<div style="width:' + putPct + '%;height:100%;background:#f85149;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#fff;">' + d.put_iv.toFixed(1) + "%</div></div></div>" +
+      '<span style="font-size:11px;color:#dbe5f1;width:70px;">Put IV</span>' +
+      '<div style="flex:1;height:22px;background:#101620;border-radius:4px;overflow:hidden;">' +
+      '<div style="width:' + putPct + '%;height:100%;background:#f37d83;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#f5f7fa;">' + d.put_iv.toFixed(1) + "%</div></div></div>" +
       '<div style="display:flex;align-items:center;gap:8px;">' +
-      '<span style="font-size:11px;color:#e8ecf1;width:70px;">Call IV</span>' +
-      '<div style="flex:1;height:22px;background:#1a2030;border-radius:4px;overflow:hidden;">' +
-      '<div style="width:' + callPct + '%;height:100%;background:#3fb950;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#0a0f0a;">' + d.call_iv.toFixed(1) + "%</div></div></div>" +
+      '<span style="font-size:11px;color:#dbe5f1;width:70px;">Call IV</span>' +
+      '<div style="flex:1;height:22px;background:#101620;border-radius:4px;overflow:hidden;">' +
+      '<div style="width:' + callPct + '%;height:100%;background:#4dd2aa;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:11px;font-weight:700;color:#0a0f0a;">' + d.call_iv.toFixed(1) + "%</div></div></div>" +
       "</div>" +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-      '<div><div style="font-size:11px;color:#e8ecf1;">SKEW</div>' +
+      '<div><div style="font-size:11px;color:#dbe5f1;">SKEW</div>' +
       '<div style="font-size:20px;font-weight:700;color:' + rc + ';">' + (d.skew >= 0 ? "+" : "") + d.skew.toFixed(1) + " vp</div></div>" +
-      '<div><div style="font-size:11px;color:#e8ecf1;">TREND</div>' +
-      '<div style="font-size:14px;font-weight:600;color:#e8ecf1;">' + trendIcon + " " + trendLabel + "</div>" +
-      (d.skew_change != null ? '<div style="font-size:11px;color:#e8ecf1;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs 5d avg</div>" : "") + "</div>" +
+      '<div><div style="font-size:11px;color:#dbe5f1;">TREND</div>' +
+      '<div style="font-size:14px;font-weight:600;color:#dbe5f1;">' + trendIcon + " " + trendLabel + "</div>" +
+      (d.skew_change != null ? '<div style="font-size:11px;color:#dbe5f1;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs 5d avg</div>" : "") + "</div>" +
       "</div>" +
-      '<div style="font-size:12px;color:#e8ecf1;">Put $' + d.put_strike.toFixed(0) + " / Call $" + d.call_strike.toFixed(0) + " · " + d.dte + " DTE</div>" +
+      '<div style="font-size:12px;color:#dbe5f1;">Put $' + d.put_strike.toFixed(0) + " / Call $" + d.call_strike.toFixed(0) + " · " + d.dte + " DTE</div>" +
       '<div class="panel-asof">As of ' + esc((d.as_of || "").slice(0, 16).replace("T", " ")) + "</div></div>";
     }).join("");
    return cards || '<p style="color:var(--muted)">Skew data unavailable.</p>';
@@ -3814,13 +3815,13 @@ function bindZoomHandlers() {
     .filter((d) => d && d.available)
     .map((d) => {
      const isPos = d.regime === "positive";
-     const regimeColor = isPos ? "#3fb950" : "#f85149";
+     const regimeColor = isPos ? "#4dd2aa" : "#f37d83";
      const regimeLabel = isPos ? "POSITIVE, volatility dampener" : "NEGATIVE, volatility amplifier";
      const regimeIcon = isPos ? "🟢" : "🔴";
      const spotVsZG = d.zero_gamma != null
       ? (d.spot >= d.zero_gamma
-       ? '<span style="color:#3fb950">above</span>'
-       : '<span style="color:#f85149">below</span>')
+       ? '<span style="color:#4dd2aa">above</span>'
+       : '<span style="color:#f37d83">below</span>')
       : " - ";
      const chartId = "gex-chart-" + d.symbol.toLowerCase();
      const strikeChartId = "gex-strike-" + d.symbol.toLowerCase();
@@ -3829,18 +3830,18 @@ function bindZoomHandlers() {
      return '<div class="card" style="margin-bottom:12px;"><h3>' + esc(d.symbol) +
       ' <span style="font-size:12px;color:' + regimeColor + ';">' + regimeIcon + " " + regimeLabel + "</span></h3>" +
       '<div class="zoomable-chart" data-chart="gex-index" data-symbol="' + esc(d.symbol) + '" style="position:relative;height:200px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + chartId + '"></canvas>' +
-      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-      '<div><div style="font-size:11px;color:#e8ecf1;">SPOT</div><div style="font-size:20px;font-weight:700;color:#e8ecf1;">$' + d.spot.toFixed(2) + "</div></div>" +
-      '<div><div style="font-size:11px;color:#e8ecf1;">TOTAL GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
+      '<div><div style="font-size:11px;color:#dbe5f1;">SPOT</div><div style="font-size:20px;font-weight:700;color:#dbe5f1;">$' + d.spot.toFixed(2) + "</div></div>" +
+      '<div><div style="font-size:11px;color:#dbe5f1;">TOTAL GEX</div><div style="font-size:20px;font-weight:700;color:' + regimeColor + ';">' +
       (d.total_gex >= 0 ? "+" : "") + d.total_gex.toFixed(2) + "B</div></div>" +
-      '<div><div style="font-size:11px;color:#e8ecf1;">ZERO GAMMA</div><div style="font-size:16px;font-weight:600;color:#e8ecf1;">' +
-      (d.zero_gamma != null ? "$" + d.zero_gamma.toFixed(2) + " <span style='font-size:12px;color:#e8ecf1;'>(spot " + spotVsZG + ")</span>" : " - ") + "</div></div>" +
-      '<div><div style="font-size:11px;color:#e8ecf1;">CALL WALL / PUT WALL</div><div style="font-size:16px;font-weight:600;color:#e8ecf1;">' +
-      (d.call_wall != null ? "$" + d.call_wall.toFixed(0) : " - ") + ' <span style="color:#e8ecf1;">/</span> ' +
+      '<div><div style="font-size:11px;color:#dbe5f1;">ZERO GAMMA</div><div style="font-size:16px;font-weight:600;color:#dbe5f1;">' +
+      (d.zero_gamma != null ? "$" + d.zero_gamma.toFixed(2) + " <span style='font-size:12px;color:#dbe5f1;'>(spot " + spotVsZG + ")</span>" : " - ") + "</div></div>" +
+      '<div><div style="font-size:11px;color:#dbe5f1;">CALL WALL / PUT WALL</div><div style="font-size:16px;font-weight:600;color:#dbe5f1;">' +
+      (d.call_wall != null ? "$" + d.call_wall.toFixed(0) : " - ") + ' <span style="color:#dbe5f1;">/</span> ' +
       (d.put_wall != null ? "$" + d.put_wall.toFixed(0) : " - ") + "</div></div>" +
       "</div>" +
-      '<div style="font-size:12px;color:#e8ecf1;margin-top:8px;">Call GEX +' + d.call_gex.toFixed(2) + "B · Put GEX " + d.put_gex.toFixed(2) + "B · " +
+      '<div style="font-size:12px;color:#dbe5f1;margin-top:8px;">Call GEX +' + d.call_gex.toFixed(2) + "B · Put GEX " + d.put_gex.toFixed(2) + "B · " +
       d.contracts_analyzed.toLocaleString() + " contracts</div>" +
       '<div class="section-title" style="margin-top:12px;">GEX by Strike</div>' +
       gexStrikeChartHtml(d.symbol, dWithUnit, strikeChartId) +
@@ -3880,7 +3881,7 @@ function bindZoomHandlers() {
     const open = cur.jaw_open;
     return wrap(
      "<p><b>What am I looking at?</b> This chart plots two lines: the <b style='color:#ffd60a'>S&P 500 price</b> (yellow, left axis) " +
-     "and <b style='color:#00e676'>forward 12-month earnings estimates</b> (green, right axis), what analysts expect S&P 500 companies to earn over the next year. " +
+     "and <b style='color:#4dd2aa'>forward 12-month earnings estimates</b> (green, right axis), what analysts expect S&P 500 companies to earn over the next year. " +
      "In a healthy market, these two move together: prices rise because earnings are expected to rise.</p>" +
      "<p><b>What is the \u2018jaw\u2019?</b> The jaw <b>opens</b> when prices keep climbing to new highs <i>while</i> earnings estimates are being cut. " +
      "Picture an alligator opening its mouth: the top jaw (price) rises while the bottom jaw (earnings) drops. " +
@@ -3969,10 +3970,10 @@ function bindZoomHandlers() {
      "<p><b>What am I looking at?</b> Each dot is a market theme (AI &amp; semiconductors, energy, cybersecurity, etc.). " +
      "The <b>horizontal axis</b> shows how the theme is doing versus the S&amp;P 500 over a longer window, right means outperforming. " +
      "The <b>vertical axis</b> shows its recent momentum, up means accelerating.</p>" +
-     "<p><b>The four quadrants.</b> <b style='color:#3fb950'>LEADING</b> (top-right): beating the market and accelerating, the current winners. " +
+     "<p><b>The four quadrants.</b> <b style='color:#4dd2aa'>LEADING</b> (top-right): beating the market and accelerating, the current winners. " +
      "<b style='color:#c678dd'>IMPROVING</b> (top-left): still behind but turning up, potential future leaders. " +
-     "<b style='color:#d29922'>WEAKENING</b> (bottom-right): ahead but fading, take profits here. " +
-     "<b style='color:#f85149'>LAGGING</b> (bottom-left): behind and getting worse, avoid.</p>" +
+     "<b style='color:#e0aa46'>WEAKENING</b> (bottom-right): ahead but fading, take profits here. " +
+     "<b style='color:#f37d83'>LAGGING</b> (bottom-left): behind and getting worse, avoid.</p>" +
      "<p><b>Where things stand today.</b> Leading: <b>" + esc(fmtQ("Leading")) + "</b>. " +
      "Improving: <b>" + esc(fmtQ("Improving")) + "</b>. " +
      "Weakening: <b>" + esc(fmtQ("Weakening")) + "</b>. " +
@@ -4030,10 +4031,10 @@ function bindZoomHandlers() {
     (parseFloat(rsiVal) > 70 ? 'Cyclicals are running hot, the market is aggressively risk-on, and history says a cooling rotation toward defensives becomes more likely from here. Consider whether your portfolio has enough defensive ballast.'
     : parseFloat(rsiVal) < 30 ? 'Fear is extreme, money has fled to safety at a pace that rarely lasts. Cyclicals are unusually cheap versus defensives, which has historically been a good time to add risk selectively.'
     : 'No extreme in either direction. Sector rotation is proceeding at a normal pace, which means this indicator is not flashing a warning or an opportunity right now, it is simply confirming a balanced market.') + '</p>' +
-    '<p style="color:#e8ecf1;font-size:12px;"><b>One caveat:</b> defensive stocks (especially utilities and staples) are sensitive to interest rates, they behave a bit like bonds. A sudden spike in rates can crush defensives and make the ratio jump even when the economy is not actually accelerating. Always check this signal against the broader market internals above.</p>' +
+    '<p style="color:#dbe5f1;font-size:12px;"><b>One caveat:</b> defensive stocks (especially utilities and staples) are sensitive to interest rates, they behave a bit like bonds. A sudden spike in rates can crush defensives and make the ratio jump even when the economy is not actually accelerating. Always check this signal against the broader market internals above.</p>' +
     '</div>';
    const rsiHtml = '<div class="zoomable-chart" data-chart="rsicd" style="position:relative;height:280px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="rsicd-chart"></canvas>' +
-    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
     '<div class="panel-summary">XLY ÷ XLP ratio with 14-period RSI. Current RSI ' + rsiVal +
     ' (' + rsiSignal + '). Ratio ' + ratioVal +
     ' vs 50-day MA ' + maVal + '.</div>' +
@@ -4057,9 +4058,9 @@ function bindZoomHandlers() {
     '<p><b>What am I looking at?</b> Gamma exposure (GEX) estimates how much market makers will be forced to buy or sell ' +
     'as prices move. Market makers take the opposite side of options trades and must hedge to stay delta-neutral. ' +
     'GEX tells you which direction their hedging will push the market.</p>' +
-    '<p><b>The two regimes.</b> <b style="color:#3fb950">Positive GEX</b> (green) means dealers are long gamma, ' +
+    '<p><b>The two regimes.</b> <b style="color:#4dd2aa">Positive GEX</b> (green) means dealers are long gamma, ' +
     'they buy dips and sell rips, dampening volatility. Breakouts tend to fail; mean-reversion works. ' +
-    '<b style="color:#f85149">Negative GEX</b> (red) means dealers are short gamma, they sell into declines and buy into rallies, ' +
+    '<b style="color:#f37d83">Negative GEX</b> (red) means dealers are short gamma, they sell into declines and buy into rallies, ' +
     'amplifying moves. Trends run further; breakouts are more likely to stick. Widen stops and reduce size.</p>' +
     '<p><b>Key levels.</b> <b>Zero Gamma</b> is the price where GEX flips sign, crossing it often marks a regime change. ' +
     '<b>Call Wall</b> (resistance) and <b>Put Wall</b> (support) are strikes with the heaviest gamma concentration, ' +
@@ -4090,8 +4091,8 @@ function bindZoomHandlers() {
     '<p><b>What am I looking at?</b> Volatility skew measures how much more investors pay for downside protection ' +
     '(OTM puts) versus upside speculation (OTM calls). We compare the implied volatility of ~7% OTM puts and calls, ' +
     '~30 days to expiration. A positive number means puts are pricier, the market is paying up for crash insurance.</p>' +
-    '<p><b>How to read it.</b> <b style="color:#f85149">Steep skew (8+ vol points)</b> = heavy hedging demand, ' +
-    'institutions bracing for a drop, bearish signal. <b style="color:#3fb950">Flat skew (under 5)</b> = complacency, ' +
+    '<p><b>How to read it.</b> <b style="color:#f37d83">Steep skew (8+ vol points)</b> = heavy hedging demand, ' +
+    'institutions bracing for a drop, bearish signal. <b style="color:#4dd2aa">Flat skew (under 5)</b> = complacency, ' +
     'cheap downside protection, often bullish, but extreme flatness can mark euphoric tops.</p>' +
     '<p><b>For swing traders.</b> When skew is steep, downside puts are overpriced, consider selling put credit spreads ' +
     'if bullish. When skew is flat, puts are cheap, buying protection is capital-efficient. ' +
@@ -4121,7 +4122,7 @@ function bindZoomHandlers() {
     '<div class="panel-about" style="text-align:left;max-width:none;margin:0 0 12px;">' +
     '<p><b>What am I looking at?</b> Options expiration (OPEX) cycles drive mechanical, forced buying and selling ' +
     'as dealers hedge their books. When massive gamma expires, the market unpins and volatility often expands the following week.</p>' +
-    '<p><b>How to read it.</b> <b style="color:#c9a961">Max pain</b> is the strike where option buyers lose the most, ' +
+    '<p><b>How to read it.</b> <b style="color:#d9a441">Max pain</b> is the strike where option buyers lose the most, ' +
     'dealers often pin price there into expiration. A high <b>put/call ratio</b> signals hedging demand. ' +
     '<b>Triple witching</b> months (Mar/Jun/Sep/Dec) see the heaviest flows.</p>' +
     '<p><b>For swing traders.</b> The week into OPEX is typically range-bound (dealers suppress volatility). ' +
@@ -4163,7 +4164,7 @@ function bindZoomHandlers() {
     new Chart(cv, {
      type: "line",
      data: { labels, datasets: [
-      { label: "Divergence (MOVE z − VIX z)", data: div, borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)",
+      { label: "Divergence (MOVE z − VIX z)", data: div, borderColor: "#f37d83", backgroundColor: "rgba(242,54,69,0.1)",
        borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true, order: 1 },
       { label: "MOVE z-score", data: mz, borderColor: "#ff9800", borderWidth: 1.5,
        pointRadius: 0, tension: 0.1, borderDash: [5, 3], order: 2 },
@@ -4174,17 +4175,17 @@ function bindZoomHandlers() {
           animation: false, responsive: true, maintainAspectRatio: false,
       interaction: { mode: "index", intersect: false },
       plugins: {
-       legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
-       tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-        titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+       legend: { labels: { color: "#dbe5f1", boxWidth: 20, font: { size: 11 } } },
+       tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+        titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10,
         callbacks: {
          label: (c) => " " + c.dataset.label + ": " + (c.parsed.y != null ? c.parsed.y.toFixed(2) : " - ")
         } }
       },
       scales: {
-       x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-       y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
-        title: { display: true, text: "z-score", color: "#e8ecf1", font: { size: 11 } } }
+       x: { ticks: { color: "#dbe5f1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+       y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" },
+        title: { display: true, text: "z-score", color: "#dbe5f1", font: { size: 11 } } }
       } }
     });
    } catch (e) { console.error("VolDiv chart error", e); }
@@ -4205,16 +4206,16 @@ function bindZoomHandlers() {
       data: { labels, datasets: [
        { label: "S&P 500", data: prices, borderColor: "#ffd60a", borderWidth: 2,
         pointRadius: 0, tension: 0.1, yAxisID: "y", order: 1 },
-       { label: "Forward 12m EPS", data: eps, borderColor: "#00e676", borderWidth: 2,
+       { label: "Forward 12m EPS", data: eps, borderColor: "#4dd2aa", borderWidth: 2,
         pointRadius: 0, tension: 0.1, yAxisID: "y1", order: 1 },
       ]},
       options: {
           animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
-        legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
-        tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+        legend: { labels: { color: "#dbe5f1", boxWidth: 20, font: { size: 11 } } },
+        tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10,
          callbacks: {
           label: (c) => {
            const r = hist[c.dataIndex];
@@ -4226,11 +4227,11 @@ function bindZoomHandlers() {
          } }
        },
        scales: {
-        x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
         y: { type: "linear", position: "left", ticks: { color: "#ffd60a" }, grid: { color: "rgba(42,46,57,0.4)" },
          title: { display: true, text: "S&P 500", color: "#ffd60a", font: { size: 11 } } },
-        y1: { type: "linear", position: "right", ticks: { color: "#00e676" }, grid: { display: false },
-         title: { display: true, text: "Fwd EPS ($)", color: "#00e676", font: { size: 11 } } }
+        y1: { type: "linear", position: "right", ticks: { color: "#4dd2aa" }, grid: { display: false },
+         title: { display: true, text: "Fwd EPS ($)", color: "#4dd2aa", font: { size: 11 } } }
        } }
      });
     } catch (e) { console.error("Jaw chart error", e); }
@@ -4244,7 +4245,7 @@ function bindZoomHandlers() {
     try {
      const latest = trh.history[trh.history.length - 1];
      const themes = latest.themes || {};
-     const qColors = { Leading: "#3fb950", Improving: "#c678dd", Weakening: "#d29922", Lagging: "#f85149" };
+     const qColors = { Leading: "#4dd2aa", Improving: "#c678dd", Weakening: "#e0aa46", Lagging: "#f37d83" };
      // symmetric axis range so all four quadrants always show
      const xs = Object.values(themes).map((v) => v.x), ys = Object.values(themes).map((v) => v.y);
      const maxAbs = Math.max(Math.abs(Math.min(...xs)), Math.abs(Math.max(...xs)), Math.abs(Math.min(...ys)), Math.abs(Math.max(...ys)), 5);
@@ -4252,7 +4253,7 @@ function bindZoomHandlers() {
      const datasets = Object.entries(themes).map(([name, vals]) => ({
       label: name,
       data: [{ x: vals.x, y: vals.y }],
-      backgroundColor: qColors[vals.q] || "#e8ecf1",
+      backgroundColor: qColors[vals.q] || "#dbe5f1",
       pointRadius: 7, pointHoverRadius: 10,
      }));
      new Chart(trc, {
@@ -4262,18 +4263,18 @@ function bindZoomHandlers() {
           animation: false, responsive: true, maintainAspectRatio: false,
        plugins: {
         legend: { display: false },
-        tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+        tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10,
          callbacks: {
           title: (items) => items[0].dataset.label + " (" + (themes[items[0].dataset.label] || {}).q + ")",
           label: (c) => " RS vs 70d avg: " + c.parsed.x.toFixed(1) + "%, 20d momentum: " + c.parsed.y.toFixed(1) + "%"
          } }
        },
        scales: {
-        x: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
-         title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#e8ecf1", font: { size: 11 } } },
-        y: { min: -pad, max: pad, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
-         title: { display: true, text: "20d momentum (%) →", color: "#e8ecf1", font: { size: 11 } } }
+        x: { min: -pad, max: pad, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" },
+         title: { display: true, text: "Relative strength vs 70d avg (%) →", color: "#dbe5f1", font: { size: 11 } } },
+        y: { min: -pad, max: pad, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" },
+         title: { display: true, text: "20d momentum (%) →", color: "#dbe5f1", font: { size: 11 } } }
        } },
       plugins: [quadBg, themeLabels]
      });
@@ -4288,20 +4289,20 @@ function bindZoomHandlers() {
      new Chart(smc, {
       type: "line",
       data: { labels: hist.map((r) => r.date), datasets: [
-       { label: "RUT vs 200d (%)", data: hist.map((r) => r.rut_vs_200d), borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+       { label: "RUT vs 200d (%)", data: hist.map((r) => r.rut_vs_200d), borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.1 },
        { label: "MID vs 200d (%)", data: hist.map((r) => r.mid_vs_200d), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1 },
       ]},
       options: {
           animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
-        legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
-        tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 }
+        legend: { labels: { color: "#dbe5f1", boxWidth: 20, font: { size: 11 } } },
+        tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10 }
        },
        scales: {
-        x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-        y: { ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
+        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+        y: { ticks: { color: "#dbe5f1", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
        } }
      });
     } catch (e) { console.error("SmCap chart error", e); }
@@ -4315,18 +4316,18 @@ function bindZoomHandlers() {
      new Chart(cvc, {
       type: "line",
       data: { labels: hist.map((r) => r.date), datasets: [
-       { label: "Spread − VIX z-diff", data: hist.map((r) => r.diff), borderColor: "#f23645", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
+       { label: "Spread − VIX z-diff", data: hist.map((r) => r.diff), borderColor: "#f37d83", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
        { label: "Spread z", data: hist.map((r) => r.spread_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
        { label: "VIX z", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
       ]},
       options: {
           animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
-       plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
-        tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 } },
+       plugins: { legend: { labels: { color: "#dbe5f1", boxWidth: 20, font: { size: 11 } } },
+        tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10 } },
        scales: {
-        x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-        y: { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#e8ecf1", font: { size: 11 } } } } }
+        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+        y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#dbe5f1", font: { size: 11 } } } } }
      });
     } catch (e) { console.error("CreditVol chart error", e); }
    }
@@ -4341,17 +4342,17 @@ function bindZoomHandlers() {
       data: { labels: hist.map((r) => r.date), datasets: [
        { label: "Breadth spread (pp)", data: hist.map((r) => r.breadth_spread), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
        { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
-       { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+       { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#e0aa46", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
       ]},
       options: {
           animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
-       plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
-        tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10 } },
+       plugins: { legend: { labels: { color: "#dbe5f1", boxWidth: 20, font: { size: 11 } } },
+        tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10 } },
        scales: {
-        x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
         y: { position: "left", ticks: { color: "#58a6ff" }, grid: { color: "rgba(42,46,57,0.4)" } },
-        y1: { position: "right", ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
+        y1: { position: "right", ticks: { color: "#dbe5f1", callback: (v) => v.toFixed(0) + "%" }, grid: { display: false } } } }
      });
     } catch (e) { console.error("Breadth chart error", e); }
    }
@@ -4366,16 +4367,16 @@ function bindZoomHandlers() {
       type: "line",
       data: { labels: hist.map((r) => r.date), datasets: [
        { label: "RSI (14)", data: hist.map((r) => r.rsi), borderColor: "#c678dd", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
-       { label: "Overbought (70)", data: hist.map(() => 70), borderColor: "#f85149", borderWidth: 1, pointRadius: 0, borderDash: [5, 3], yAxisID: "y" },
-       { label: "Oversold (30)", data: hist.map(() => 30), borderColor: "#3fb950", borderWidth: 1, pointRadius: 0, borderDash: [5, 3], yAxisID: "y" },
+       { label: "Overbought (70)", data: hist.map(() => 70), borderColor: "#f37d83", borderWidth: 1, pointRadius: 0, borderDash: [5, 3], yAxisID: "y" },
+       { label: "Oversold (30)", data: hist.map(() => 30), borderColor: "#4dd2aa", borderWidth: 1, pointRadius: 0, borderDash: [5, 3], yAxisID: "y" },
       ]},
       options: {
           animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
-        legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
-        tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+        legend: { labels: { color: "#dbe5f1", boxWidth: 20, font: { size: 11 } } },
+        tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10,
          callbacks: {
           label: (c) => {
            if (c.dataset.label === "RSI (14)") {
@@ -4387,9 +4388,9 @@ function bindZoomHandlers() {
          } }
        },
        scales: {
-        x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-        y: { min: 0, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" },
-         title: { display: true, text: "RSI", color: "#e8ecf1", font: { size: 11 } } }
+        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+        y: { min: 0, max: 100, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" },
+         title: { display: true, text: "RSI", color: "#dbe5f1", font: { size: 11 } } }
        } }
      });
     } catch (e) { console.error("RSICD chart error", e); }
@@ -4403,23 +4404,23 @@ function bindZoomHandlers() {
      new Chart(aaiiCv, {
       type: "line",
       data: { labels: hist.map((r) => r.week_ending), datasets: [
-       { label: "Bullish %", data: hist.map((r) => r.bullish), borderColor: "#3fb950", borderWidth: 2, pointRadius: 0, tension: 0.1 },
-       { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#c8d0dc", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-       { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+       { label: "Bullish %", data: hist.map((r) => r.bullish), borderColor: "#4dd2aa", borderWidth: 2, pointRadius: 0, tension: 0.1 },
+       { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#dbe5f1", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+       { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.1 },
       ]},
       options: {
           animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
-        legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
-        tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+        legend: { labels: { color: "#dbe5f1", boxWidth: 20, font: { size: 11 } } },
+        tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10,
          callbacks: { label: (c) => " " + c.dataset.label + ": " + c.parsed.y.toFixed(1) + "%" } }
        },
        scales: {
-        x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-        y: { ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
-         title: { display: true, text: "Sentiment %", color: "#e8ecf1", font: { size: 11 } } }
+        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+        y: { ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+         title: { display: true, text: "Sentiment %", color: "#dbe5f1", font: { size: 11 } } }
        } }
      });
     } catch (e) { console.error("AAII chart error", e); }
@@ -4443,12 +4444,12 @@ function bindZoomHandlers() {
       options: { animation: false, responsive: true, maintainAspectRatio: false,
        interaction: {mode: "index", intersect: false},
        plugins: {legend: {display: false},
-        tooltip: {backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+        tooltip: {backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
          callbacks: {label: (c) => " " + c.parsed.y.toFixed(2) + "%"}}},
        scales: {
-        x: {ticks: {color: "#6b7280", maxTicksLimit: 6, maxRotation: 0}, grid: {display: false}},
-        y: {position: "right", ticks: {color: "#6b7280", callback: (v) => v.toFixed(1) + "%"}, grid: {color: "rgba(42,46,57,0.4)"}}}}
+        x: {ticks: {color: "#647184", maxTicksLimit: 6, maxRotation: 0}, grid: {display: false}},
+        y: {position: "right", ticks: {color: "#647184", callback: (v) => v.toFixed(1) + "%"}, grid: {color: "rgba(42,46,57,0.4)"}}}}
      });
     } catch (e) { console.error("Breakeven chart error", e); }
    }
@@ -4460,23 +4461,23 @@ function bindZoomHandlers() {
      const hist = erpD.history.slice(-365);
      const ctx0 = erpCv.getContext("2d");
      const grad = ctx0.createLinearGradient(0, 0, 0, 300);
-     grad.addColorStop(0, "rgba(201,169,97,0.35)");
-     grad.addColorStop(1, "rgba(201,169,97,0)");
+     grad.addColorStop(0, "rgba(217,164,65,0.35)");
+     grad.addColorStop(1, "rgba(217,164,65,0)");
      new Chart(erpCv, {
       type: "line",
       data: { labels: hist.map((r) => r.date),
        datasets: [{label: "Implied ERP (%)", data: hist.map((r) => r.erp * 100),
-        borderColor: "#c9a961", borderWidth: 1.5, backgroundColor: grad, fill: true,
+        borderColor: "#d9a441", borderWidth: 1.5, backgroundColor: grad, fill: true,
         pointRadius: 0, pointHoverRadius: 4, tension: 0.1}]},
       options: { animation: false, responsive: true, maintainAspectRatio: false,
        interaction: {mode: "index", intersect: false},
        plugins: {legend: {display: false},
-        tooltip: {backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+        tooltip: {backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
          callbacks: {label: (c) => " " + c.parsed.y.toFixed(2) + "%"}}},
        scales: {
-        x: {ticks: {color: "#6b7280", maxTicksLimit: 6, maxRotation: 0}, grid: {display: false}},
-        y: {position: "right", ticks: {color: "#6b7280", callback: (v) => v.toFixed(1) + "%"}, grid: {color: "rgba(42,46,57,0.4)"}}}}
+        x: {ticks: {color: "#647184", maxTicksLimit: 6, maxRotation: 0}, grid: {display: false}},
+        y: {position: "right", ticks: {color: "#647184", callback: (v) => v.toFixed(1) + "%"}, grid: {color: "rgba(42,46,57,0.4)"}}}}
      });
     } catch (e) { console.error("ERP chart error", e); }
    }
@@ -4493,21 +4494,21 @@ function bindZoomHandlers() {
       data: { labels: hist.map((r) => r.report_date), datasets: [
        { label: "Commercials net", data: hist.map((r) => (r.markets[mkey] || {}).commercials?.net), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1 },
        { label: "Large Specs net", data: hist.map((r) => (r.markets[mkey] || {}).large_specs?.net), borderColor: "#c678dd", borderWidth: 2, pointRadius: 0, tension: 0.1 },
-       { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#d29922", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+       { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#e0aa46", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
       ]},
       options: {
           animation: false, responsive: true, maintainAspectRatio: false,
        interaction: { mode: "index", intersect: false },
        plugins: {
-        legend: { labels: { color: "#c8d0dc", boxWidth: 20, font: { size: 11 } } },
-        tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+        legend: { labels: { color: "#dbe5f1", boxWidth: 20, font: { size: 11 } } },
+        tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10,
          callbacks: { label: (c) => " " + c.dataset.label + ": " + (c.parsed.y >= 0 ? "+" : "") + Math.round(c.parsed.y).toLocaleString() + " contracts" } }
        },
        scales: {
-        x: { ticks: { color: "#e8ecf1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-        y: { ticks: { color: "#e8ecf1", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
-         title: { display: true, text: "Net contracts", color: "#e8ecf1", font: { size: 11 } } }
+        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+        y: { ticks: { color: "#dbe5f1", callback: (v) => (v / 1000) + "k" }, grid: { color: "rgba(42,46,57,0.4)" },
+         title: { display: true, text: "Net contracts", color: "#dbe5f1", font: { size: 11 } } }
        } }
      });
     } catch (e) { console.error("COT chart error", e); }
@@ -4526,10 +4527,10 @@ function bindZoomHandlers() {
      const series = [
       { key: "pmi", label: "Manufacturing PMI", color: "#a3e635" },
       { key: "ppi_yoy", label: "PPI (Producer Price)", color: "#a5b4fc" },
-      { key: "retail_mom", label: "Retail Sales", color: "#22c55e" },
+      { key: "retail_mom", label: "Retail Sales", color: "#4dd2aa" },
       { key: "cpi_yoy", label: "CPI (Consumer Price)", color: "#7dd3fc" },
-      { key: "wti_crude", label: "WTI Crude ($)", color: "#f5a623" },
-      { key: "gasoline_retail", label: "Gasoline Retail ($/gal)", color: "#ff6b6b" },
+      { key: "wti_crude", label: "WTI Crude ($)", color: "#e0aa46" },
+      { key: "gasoline_retail", label: "Gasoline Retail ($/gal)", color: "#f37d83" },
       { key: "diesel_retail", label: "Diesel Retail ($/gal)", color: "#c44dff" },
      ];
      // Normalize each series to 0-100% based on its min/max
@@ -4560,8 +4561,8 @@ function bindZoomHandlers() {
        interaction: { mode: "index", intersect: false },
        plugins: {
         legend: { display: false },
-        tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+        tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10,
          callbacks: {
           label: (c) => {
            if (normalizedMode) return " " + c.dataset.label + ": " + c.parsed.y.toFixed(0) + "%";
@@ -4573,17 +4574,17 @@ function bindZoomHandlers() {
          } }
        },
        scales: {
-        x: { ticks: { color: "#e8ecf1", maxTicksLimit: 9, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
+        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 9, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
         y: normalizedMode
-         ? { min: -50, max: 150, ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
-         : { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" } },
+         ? { min: -50, max: 150, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
+         : { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" } },
        } }
      });
      // Bottom legend
      const legendEl = document.getElementById("macro-legend");
      if (legendEl) {
       legendEl.innerHTML = series.map((s) =>
-       '<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#e8ecf1;">' +
+       '<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#dbe5f1;">' +
        '<span style="width:14px;height:14px;border-radius:50%;background:' + s.color + ';display:inline-block;"></span>' +
        esc(s.label) + "</span>"
       ).join("");
@@ -4595,13 +4596,13 @@ function bindZoomHandlers() {
       normalizedMode = norm;
       chart.data.datasets = buildDatasets();
       chart.options.scales.y = norm
-       ? { min: -50, max: 150, ticks: { color: "#e8ecf1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
-       : { ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" } };
+       ? { min: -50, max: 150, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
+       : { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" } };
       chart.update();
       if (normBtn && rawBtn) {
-       normBtn.style.background = norm ? "#1e3a5f" : "transparent";
+       normBtn.style.background = norm ? "#253142" : "transparent";
        normBtn.style.opacity = norm ? "1" : "0.6";
-       rawBtn.style.background = norm ? "transparent" : "#1e3a5f";
+       rawBtn.style.background = norm ? "transparent" : "#253142";
        rawBtn.style.opacity = norm ? "0.6" : "1";
       }
      };
@@ -4622,8 +4623,8 @@ function bindZoomHandlers() {
        if (sections && r.report && r.report.sections) {
         sections.innerHTML = r.report.sections.map((s) =>
          '<div style="margin-bottom:14px;">' +
-         '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:6px;">' + s.heading.replace(/</g, "&lt;") + "</div>" +
-         '<div style="font-size:13px;color:#e8ecf1;opacity:0.85;line-height:1.6;">' + s.body + "</div></div>"
+         '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:6px;">' + s.heading.replace(/</g, "&lt;") + "</div>" +
+         '<div style="font-size:13px;color:#dbe5f1;opacity:0.85;line-height:1.6;">' + s.body + "</div></div>"
         ).join("");
        }
        if (body) body.scrollTop = 0;
@@ -4656,10 +4657,10 @@ function bindZoomHandlers() {
      try {
       // Price level chart: show put wall, spot, zero gamma, call wall
       const levels = [];
-      if (d.put_wall != null) levels.push({ label: "Put Wall", value: d.put_wall, color: "#f85149" });
-      levels.push({ label: "Spot", value: d.spot, color: "#e8ecf1" });
+      if (d.put_wall != null) levels.push({ label: "Put Wall", value: d.put_wall, color: "#f37d83" });
+      levels.push({ label: "Spot", value: d.spot, color: "#dbe5f1" });
       if (d.zero_gamma != null) levels.push({ label: "Zero Gamma", value: d.zero_gamma, color: "#c678dd" });
-      if (d.call_wall != null) levels.push({ label: "Call Wall", value: d.call_wall, color: "#3fb950" });
+      if (d.call_wall != null) levels.push({ label: "Call Wall", value: d.call_wall, color: "#4dd2aa" });
       // Sort by price for the bar chart
       levels.sort((a, b) => a.value - b.value);
       new Chart(cv, {
@@ -4678,13 +4679,13 @@ function bindZoomHandlers() {
         responsive: true, maintainAspectRatio: false,
         plugins: {
          legend: { display: false },
-         tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-          titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10,
+         tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+          titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10,
           callbacks: { label: (c) => " $" + c.parsed.x.toFixed(2) } },
         },
         scales: {
-         x: { ticks: { color: "#e8ecf1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
-         y: { ticks: { color: "#c8d0dc", font: { size: 11 } }, grid: { display: false } },
+         x: { ticks: { color: "#dbe5f1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
+         y: { ticks: { color: "#dbe5f1", font: { size: 11 } }, grid: { display: false } },
         },
        },
       });
@@ -4734,7 +4735,7 @@ function bindZoomHandlers() {
   try { drawLeadershipChart(); } catch (e) { console.error("Leadership chart failed:", e); }
   } catch (routeErr) {
    console.error("Monitor route failed:", routeErr);
-   app.innerHTML = '<div class="card"><h3>Market Internals</h3><p style="color:#f85149;">Failed to load: ' + esc(routeErr.message) + '</p><p>Please refresh the page.</p></div>';
+   app.innerHTML = '<div class="card"><h3>Market Internals</h3><p style="color:#f37d83;">Failed to load: ' + esc(routeErr.message) + '</p><p>Please refresh the page.</p></div>';
   }
  });
 
@@ -4779,12 +4780,12 @@ function bindZoomHandlers() {
   const fmtPrice = (p) => p >= 100 ? p.toFixed(2) : p.toFixed(2);
   const cell = (ticker, d) => {
    const chg = d.change_pct || 0;
-   const col = chg > 0 ? "#3fb950" : (chg < 0 ? "#f85149" : "#8b8fa3");
+   const col = chg > 0 ? "#4dd2aa" : (chg < 0 ? "#f37d83" : "#647184");
    const arrow = chg > 0 ? "▲" : (chg < 0 ? "▼" : "–");
    const qt = d.quote_time ? '<div style="font-size:10px;color:var(--muted);margin-top:3px;">' + esc(d.quote_time) + '</div>' : '';
-   return '<div style="background:#161b26;border-radius:8px;padding:10px 12px;">' +
+   return '<div style="background:#101620;border-radius:8px;padding:10px 12px;">' +
     '<div style="font-size:10px;color:var(--muted);margin-bottom:2px;">' + esc(d.name || ticker) + '</div>' +
-    '<div style="font-size:15px;font-weight:700;color:#e8ecf1;">' + fmtPrice(d.price) + '</div>' +
+    '<div style="font-size:15px;font-weight:700;color:#dbe5f1;">' + fmtPrice(d.price) + '</div>' +
     '<div style="font-size:12px;font-weight:700;color:' + col + ';">' + arrow + " " + (chg > 0 ? "+" : "") + chg.toFixed(2) + "%</div>" + qt + "</div>";
   };
   let h = '<div class="section" style="max-width:none;"><div class="section-title">Pre-Market Snapshot</div>';
@@ -4793,17 +4794,17 @@ function bindZoomHandlers() {
    const tickers = pm.data[cat];
    const keys = Object.keys(tickers);
    if (!keys.length) return;
-   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:14px 0 8px;letter-spacing:0.5px;">' + esc(cat.toUpperCase()) + '</div>';
+   h += '<div style="font-size:12px;font-weight:700;color:#dbe5f1;margin:14px 0 8px;letter-spacing:0.5px;">' + esc(cat.toUpperCase()) + '</div>';
    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;">';
    keys.forEach((tk) => { h += cell(tk, tickers[tk]); });
    h += '</div>';
   });
   if (pm.insights && pm.insights.length) {
-   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">WHAT IT MEANS</div>';
+   h += '<div style="font-size:12px;font-weight:700;color:#dbe5f1;margin:16px 0 8px;letter-spacing:0.5px;">WHAT IT MEANS</div>';
    h += '<div class="card" style="padding:16px 20px;">';
    pm.insights.forEach((ins) => {
-    h += '<div style="display:flex;gap:10px;margin-bottom:10px;font-size:13px;line-height:1.6;color:#e8ecf1;">' +
-     '<span style="color:#d4a017;flex-shrink:0;">▸</span><span>' + esc(ins) + '</span></div>';
+    h += '<div style="display:flex;gap:10px;margin-bottom:10px;font-size:13px;line-height:1.6;color:#dbe5f1;">' +
+     '<span style="color:#d9a441;flex-shrink:0;">▸</span><span>' + esc(ins) + '</span></div>';
    });
    h += '</div>';
   }
@@ -4819,7 +4820,7 @@ function bindZoomHandlers() {
   }
   const intel = ro.desk_intel || {};
   const fmtPct = (v) => {
-   const col = v > 0 ? "#3fb950" : (v < 0 ? "#f85149" : "#8b8fa3");
+   const col = v > 0 ? "#4dd2aa" : (v < 0 ? "#f37d83" : "#647184");
    return '<span style="color:' + col + ';font-weight:700;">' + (v > 0 ? "+" : "") + v.toFixed(2) + "%</span>";
   };
   let h = '<div class="section" style="max-width:none;"><div class="section-title">Rotation & Pairs Matrix ' + PRO_BADGE + '</div>';
@@ -4828,7 +4829,7 @@ function bindZoomHandlers() {
   // Regime cards
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:12px;">';
   h += '<div class="card" style="padding:16px;"><div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">MACRO REGIME</div>' +
-   '<div style="font-size:18px;font-weight:800;color:#e8ecf1;">' + esc(intel.regime || "N/A") + '</div></div>';
+   '<div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + esc(intel.regime || "N/A") + '</div></div>';
   h += '<div class="card" style="padding:16px;"><div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">CYCLICALS VS DEFENSIVES (1D)</div>' +
    '<div style="font-size:18px;">' + fmtPct(intel.cyc_def_spread_1d || 0) + '</div></div>';
   h += '<div class="card" style="padding:16px;"><div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">HIGH BETA VS LOW VOL (1D)</div>' +
@@ -4840,26 +4841,26 @@ function bindZoomHandlers() {
    h += '<div class="card" style="padding:16px 20px;margin-bottom:16px;border-left:3px solid #2979FF;">' +
     '<div style="font-size:11px;font-weight:700;color:#2979FF;letter-spacing:1px;margin-bottom:8px;">DESK NOTES</div>';
    intel.commentary.forEach((n) => {
-    h += '<div style="display:flex;gap:10px;margin-bottom:8px;font-size:13px;line-height:1.6;color:#e8ecf1;">' +
+    h += '<div style="display:flex;gap:10px;margin-bottom:8px;font-size:13px;line-height:1.6;color:#dbe5f1;">' +
      '<span style="color:#2979FF;flex-shrink:0;">›</span><span>' + esc(n) + '</span></div>';
    });
    h += '</div>';
   }
 
   // Pairs book
-  h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:0 0 8px;letter-spacing:0.5px;">SYSTEMATIC LONG/SHORT PAIRS BOOK ' + PRO_BADGE + '</div>';
+  h += '<div style="font-size:12px;font-weight:700;color:#dbe5f1;margin:0 0 8px;letter-spacing:0.5px;">SYSTEMATIC LONG/SHORT PAIRS BOOK ' + PRO_BADGE + '</div>';
   h += '<div style="overflow-x:auto;margin-bottom:16px;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
-  h += '<thead><tr style="border-bottom:1px solid #2a3242;color:var(--muted);font-size:10px;letter-spacing:0.5px;">' +
+  h += '<thead><tr style="border-bottom:1px solid #253142;color:var(--muted);font-size:10px;letter-spacing:0.5px;">' +
    '<th style="text-align:left;padding:8px;">PAIR</th><th style="text-align:left;padding:8px;">THESIS</th>' +
    '<th style="text-align:right;padding:8px;">1D SPREAD</th><th style="text-align:right;padding:8px;">5D SPREAD</th>' +
    '<th style="text-align:center;padding:8px;">20D Z</th><th style="text-align:right;padding:8px;">SIGNAL</th></tr></thead><tbody>';
   (ro.pairs_trading_book || []).forEach((p) => {
    const z = p.z_score || 0;
-   const zc = z >= 2 ? "#f85149" : (z <= -2 ? "#3fb950" : "#8b8fa3");
-   const bc = p.bias === "short" ? "#f85149" : (p.bias === "long" ? "#3fb950" : (p.bias.indexOf("momentum") === 0 ? "#2979FF" : "#8b8fa3"));
-   h += '<tr style="border-bottom:1px solid #1c2330;">' +
-    '<td style="padding:10px 8px;"><span style="color:#3fb950;font-weight:700;">' + esc(p.long_leg) + '</span>' +
-    '<span style="color:var(--muted);"> / </span><span style="color:#f85149;font-weight:700;">' + esc(p.short_leg) + '</span>' +
+   const zc = z >= 2 ? "#f37d83" : (z <= -2 ? "#4dd2aa" : "#647184");
+   const bc = p.bias === "short" ? "#f37d83" : (p.bias === "long" ? "#4dd2aa" : (p.bias.indexOf("momentum") === 0 ? "#2979FF" : "#647184"));
+   h += '<tr style="border-bottom:1px solid #101620;">' +
+    '<td style="padding:10px 8px;"><span style="color:#4dd2aa;font-weight:700;">' + esc(p.long_leg) + '</span>' +
+    '<span style="color:var(--muted);"> / </span><span style="color:#f37d83;font-weight:700;">' + esc(p.short_leg) + '</span>' +
     '<div style="font-size:10px;color:var(--muted);margin-top:2px;">' + esc(p.name) + '</div></td>' +
     '<td style="padding:10px 8px;font-size:11px;color:var(--muted);max-width:220px;">' + esc(p.thesis) + '</td>' +
     '<td style="padding:10px 8px;text-align:right;">' + fmtPct(p.spread_1d || 0) + '</td>' +
@@ -4871,27 +4872,27 @@ function bindZoomHandlers() {
 
   // Sectors + globals
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;">';
-  h += '<div><div style="font-size:12px;font-weight:700;color:#e8ecf1;margin-bottom:8px;letter-spacing:0.5px;">SECTORS & SUB-INDUSTRIES</div>';
+  h += '<div><div style="font-size:12px;font-weight:700;color:#dbe5f1;margin-bottom:8px;letter-spacing:0.5px;">SECTORS & SUB-INDUSTRIES</div>';
   h += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
-  h += '<thead><tr style="border-bottom:1px solid #2a3242;color:var(--muted);font-size:10px;">' +
+  h += '<thead><tr style="border-bottom:1px solid #253142;color:var(--muted);font-size:10px;">' +
    '<th style="text-align:left;padding:6px;">SECTOR</th><th style="text-align:left;padding:6px;">GROUP</th>' +
    '<th style="text-align:right;padding:6px;">1D</th><th style="text-align:right;padding:6px;">5D</th><th style="text-align:right;padding:6px;">20D</th></tr></thead><tbody>';
   (ro.sectors || []).forEach((s) => {
-   h += '<tr style="border-bottom:1px solid #1c2330;"><td style="padding:6px;"><b style="color:#e8ecf1;">' + esc(s.symbol) + '</b> <span style="font-size:10px;color:var(--muted);">' + esc(s.name) + '</span></td>' +
+   h += '<tr style="border-bottom:1px solid #101620;"><td style="padding:6px;"><b style="color:#dbe5f1;">' + esc(s.symbol) + '</b> <span style="font-size:10px;color:var(--muted);">' + esc(s.name) + '</span></td>' +
     '<td style="padding:6px;font-size:10px;color:var(--muted);">' + esc(s.group) + '</td>' +
     '<td style="padding:6px;text-align:right;">' + fmtPct(s.chg_1d || 0) + '</td>' +
     '<td style="padding:6px;text-align:right;">' + fmtPct(s.chg_5d || 0) + '</td>' +
     '<td style="padding:6px;text-align:right;">' + fmtPct(s.chg_20d || 0) + '</td></tr>';
   });
   h += '</tbody></table></div></div>';
-  h += '<div><div style="font-size:12px;font-weight:700;color:#e8ecf1;margin-bottom:8px;letter-spacing:0.5px;">GLOBAL INDICES</div>';
+  h += '<div><div style="font-size:12px;font-weight:700;color:#dbe5f1;margin-bottom:8px;letter-spacing:0.5px;">GLOBAL INDICES</div>';
   h += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
-  h += '<thead><tr style="border-bottom:1px solid #2a3242;color:var(--muted);font-size:10px;">' +
+  h += '<thead><tr style="border-bottom:1px solid #253142;color:var(--muted);font-size:10px;">' +
    '<th style="text-align:left;padding:6px;">INDEX</th><th style="text-align:right;padding:6px;">PRICE</th>' +
    '<th style="text-align:right;padding:6px;">1D</th><th style="text-align:right;padding:6px;">5D</th><th style="text-align:right;padding:6px;">20D</th></tr></thead><tbody>';
   (ro.global_indices || []).forEach((g) => {
-   h += '<tr style="border-bottom:1px solid #1c2330;"><td style="padding:6px;"><b style="color:#e8ecf1;">' + esc(g.symbol) + '</b> <span style="font-size:10px;color:var(--muted);">' + esc(g.name) + '</span></td>' +
-    '<td style="padding:6px;text-align:right;color:#e8ecf1;">' + g.price.toFixed(2) + '</td>' +
+   h += '<tr style="border-bottom:1px solid #101620;"><td style="padding:6px;"><b style="color:#dbe5f1;">' + esc(g.symbol) + '</b> <span style="font-size:10px;color:var(--muted);">' + esc(g.name) + '</span></td>' +
+    '<td style="padding:6px;text-align:right;color:#dbe5f1;">' + g.price.toFixed(2) + '</td>' +
     '<td style="padding:6px;text-align:right;">' + fmtPct(g.chg_1d || 0) + '</td>' +
     '<td style="padding:6px;text-align:right;">' + fmtPct(g.chg_5d || 0) + '</td>' +
     '<td style="padding:6px;text-align:right;">' + fmtPct(g.chg_20d || 0) + '</td></tr>';
@@ -4909,7 +4910,7 @@ function bindZoomHandlers() {
   }
   const score = fi.fear_index;
   const label = fi.sentiment || "";
-  const color = score >= 75 ? "#f85149" : (score >= 55 ? "#ff7b1c" : (score >= 45 ? "#d4a017" : "#3fb950"));
+  const color = score >= 75 ? "#f37d83" : (score >= 55 ? "#ff7b1c" : (score >= 45 ? "#d9a441" : "#4dd2aa"));
   const canvasId = "fear-hist-" + Math.random().toString(36).slice(2, 8);
   let h = '<div class="section" style="max-width:none;"><div class="section-title">Quantitative Fear Index ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">A quantitative Fear Index combines fixed-strike downside option skew, volatility term structure backwardation, credit spread stress, safe-haven capital rotation, and market momentum into a single daily 0-100 gauge (0 = Extreme Complacency, 100 = Extreme Panic). Computed every trading morning. As of ' + esc(fi.timestamp || "") + '.</div>';
@@ -4920,9 +4921,9 @@ function bindZoomHandlers() {
   h += '<div style="font-size:14px;font-weight:700;color:' + color + ';margin-top:6px;letter-spacing:1px;">' + esc(label).toUpperCase() + '</div>';
   // Meter bar
   h += '<div style="display:flex;height:10px;border-radius:5px;overflow:hidden;margin:16px auto 4px;max-width:520px;">' +
-   '<div style="flex:25;background:#3fb950;"></div><div style="flex:20;background:#7bbf3f;"></div>' +
-   '<div style="flex:10;background:#d4a017;"></div><div style="flex:20;background:#ff7b1c;"></div>' +
-   '<div style="flex:25;background:#f85149;"></div></div>';
+   '<div style="flex:25;background:#4dd2aa;"></div><div style="flex:20;background:#7bbf3f;"></div>' +
+   '<div style="flex:10;background:#d9a441;"></div><div style="flex:20;background:#ff7b1c;"></div>' +
+   '<div style="flex:25;background:#f37d83;"></div></div>';
   h += '<div style="display:flex;justify-content:space-between;max-width:520px;margin:0 auto;font-size:10px;color:var(--muted);">' +
    '<span>COMPLACENCY</span><span>NEUTRAL</span><span>EXTREME FEAR</span></div>';
   h += '</div>';
@@ -4930,13 +4931,13 @@ function bindZoomHandlers() {
   const inds = fi.indicators || {};
   const keys = Object.keys(inds);
   if (keys.length) {
-   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">MODEL COMPONENTS</div>';
+   h += '<div style="font-size:12px;font-weight:700;color:#dbe5f1;margin:16px 0 8px;letter-spacing:0.5px;">MODEL COMPONENTS</div>';
    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;">';
    keys.forEach((k) => {
     const c = inds[k];
     const cs = c.score || 0;
-    const cc = cs > 60 ? "#ff7b1c" : (cs < 40 ? "#3fb950" : "#e8ecf1");
-    h += '<div style="background:#161b26;border-radius:8px;padding:12px;">' +
+    const cc = cs > 60 ? "#ff7b1c" : (cs < 40 ? "#4dd2aa" : "#dbe5f1");
+    h += '<div style="background:#101620;border-radius:8px;padding:12px;">' +
      '<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">' + esc(c.name) + '</div>' +
      '<div style="font-size:20px;font-weight:700;color:' + cc + ';">' + cs + '</div>' +
      '<div style="font-size:11px;color:var(--muted);margin-top:2px;">' + esc(c.details) + '</div></div>';
@@ -4944,7 +4945,7 @@ function bindZoomHandlers() {
    h += '</div>';
   }
   if (fi.history && fi.history.length > 1) {
-   h += '<div style="font-size:12px;font-weight:700;color:#e8ecf1;margin:16px 0 8px;letter-spacing:0.5px;">30-DAY HISTORY</div>';
+   h += '<div style="font-size:12px;font-weight:700;color:#dbe5f1;margin:16px 0 8px;letter-spacing:0.5px;">30-DAY HISTORY</div>';
    h += '<div class="card" style="padding:16px;"><div style="height:180px;"><canvas id="' + canvasId + '"></canvas></div></div>';
    const histData = fi.history.map((p) => ({ x: p.date, y: p.score }));
    const histLabel = histData.map((p) => {
@@ -4985,7 +4986,7 @@ function bindZoomHandlers() {
   if (r && r.available) {
    h += '<div class="section" style="max-width:none;">' +
     '<div class="section-sub">Published ' + esc((r.as_of || "").slice(0, 16).replace("T", " ")) + " ET</div>" +
-    '<div class="card" style="padding:28px;line-height:1.7;font-size:15px;color:#e8ecf1;">' +
+    '<div class="card" style="padding:28px;line-height:1.7;font-size:15px;color:#dbe5f1;">' +
     r.html +
     "</div></div>";
    // Previous reports dropdown (identical style to macro analysis section)
@@ -4996,8 +4997,8 @@ function bindZoomHandlers() {
      ).join("");
     h += '<div class="section"><div class="section-title">Previous Briefings</div>' +
      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
-     '<span style="font-size:12px;color:#e8ecf1;opacity:0.7;">Select date:</span>' +
-     '<select id="briefing-date" style="background:#0f1420;color:#e8ecf1;border:1px solid #2a4a73;border-radius:6px;' +
+     '<span style="font-size:12px;color:#dbe5f1;opacity:0.7;">Select date:</span>' +
+     '<select id="briefing-date" style="background:#0d131d;color:#dbe5f1;border:1px solid #253142;border-radius:6px;' +
      'padding:4px 8px;font-size:12px;cursor:pointer;max-width:300px;">' + briefingOpts + "</select></div>" +
      '<div id="briefing-body">' +
      '<div id="briefing-content">' + r.html + "</div>" +
@@ -5006,7 +5007,7 @@ function bindZoomHandlers() {
     window.__briefingHistory = [{ date: r.as_of, headline: r.headline, html: r.html }].concat(r.previous);
    }
   } else {
-   h += '<div class="card"><p style="color:#e8ecf1;">The morning briefing has not been generated yet. Check back after the morning refresh.</p></div>';
+   h += '<div class="card"><p style="color:#dbe5f1;">The morning briefing has not been generated yet. Check back after the morning refresh.</p></div>';
   }
   app.innerHTML = h;
   // Wire briefing date dropdown (identical to macro analysis section)
@@ -5787,8 +5788,8 @@ function renderAcademyFormulas() {
 /* --- small SVG builders for the interactive visuals (fictional example data) --- */
 function acadSvgOpen(w, h) { return '<svg viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:auto;display:block;" role="img">'; }
 function acadAxes(w, h, pad) {
- return '<line x1="' + pad + '" y1="' + (h - pad) + '" x2="' + (w - 8) + '" y2="' + (h - pad) + '" stroke="#2d435e" stroke-width="1"/>' +
-  '<line x1="' + pad + '" y1="8" x2="' + pad + '" y2="' + (h - pad) + '" stroke="#2d435e" stroke-width="1"/>';
+ return '<line x1="' + pad + '" y1="' + (h - pad) + '" x2="' + (w - 8) + '" y2="' + (h - pad) + '" stroke="#1d2938" stroke-width="1"/>' +
+  '<line x1="' + pad + '" y1="8" x2="' + pad + '" y2="' + (h - pad) + '" stroke="#1d2938" stroke-width="1"/>';
 }
 function acadPath(pts, color, width, dash) {
  const d = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
@@ -5796,12 +5797,12 @@ function acadPath(pts, color, width, dash) {
 }
 
 function academyInteractiveHtml(kind) {
- const wrap = (inner) => '<div class="card" style="margin-top:14px;"><div style="font-size:11px;letter-spacing:1px;color:#c9a961;font-weight:700;margin-bottom:10px;">INTERACTIVE EXAMPLE · FICTIONAL DATA</div>' + inner + '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Illustrative only. Numbers are fictional and not market data.</div></div>';
+ const wrap = (inner) => '<div class="card" style="margin-top:14px;"><div style="font-size:11px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:10px;">INTERACTIVE EXAMPLE · FICTIONAL DATA</div>' + inner + '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Illustrative only. Numbers are fictional and not market data.</div></div>';
  if (kind === "netliq") {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["nl-a", "Fed Assets ($T)", 8.5, 5, 10], ["nl-t", "TGA ($T)", 0.8, 0, 2], ["nl-r", "RRP ($T)", 1.9, 0, 3]].map((s) =>
-    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2].toFixed(1) + '</b></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2].toFixed(1) + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="0.1" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="nl-out"></div>');
  }
@@ -5809,56 +5810,56 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">' +
    [["yc-bf", "Bear Flattening"], ["yc-bs", "Bear Steepening"], ["yc-us", "Bull Steepening"]].map((b, i) =>
-    '<button class="btn secondary acad-yc" data-m="' + b[0] + '" style="' + (i === 0 ? "border-color:#c9a961;color:#c9a961;" : "") + '">' + b[1] + "</button>").join("") +
-   '</div><div id="yc-out"></div><div id="yc-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+    '<button class="btn secondary acad-yc" data-m="' + b[0] + '" style="' + (i === 0 ? "border-color:#d9a441;color:#d9a441;" : "") + '">' + b[1] + "</button>").join("") +
+   '</div><div id="yc-out"></div><div id="yc-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
  }
  if (kind === "roic") {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["roic-r", "ROIC (%)", 14, 2, 25], ["roic-w", "WACC (%)", 9, 4, 15]].map((s) =>
-    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="0.5" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="roic-out"></div>');
  }
  if (kind === "dupont") {
   const items = [["dp-tb", "Tax Burden", 0.75, 0.5, 1], ["dp-ib", "Interest Burden", 0.9, 0.5, 1], ["dp-om", "Operating Margin", 0.22, 0.05, 0.4], ["dp-at", "Asset Turnover", 0.8, 0.2, 2], ["dp-fl", "Leverage", 2.2, 1, 4]];
   return wrap('<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
-   items.map((s) => '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+   items.map((s) => '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="0.01" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="dupont-out" style="font-size:14px;"></div>');
  }
  if (kind === "payoff") {
   return wrap(
    '<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">' +
-   '<button class="btn secondary acad-po" data-m="call" style="border-color:#c9a961;color:#c9a961;">Long Call</button>' +
+   '<button class="btn secondary acad-po" data-m="call" style="border-color:#d9a441;color:#d9a441;">Long Call</button>' +
    '<button class="btn secondary acad-po" data-m="put">Long Put</button>' +
-   '<div style="margin-left:8px;font-size:12px;color:#8b949e;">Strike: <b id="po-k-v" style="color:#e8ecf1;">100</b></div>' +
+   '<div style="margin-left:8px;font-size:12px;color:#8d99aa;">Strike: <b id="po-k-v" style="color:#dbe5f1;">100</b></div>' +
    '<input type="range" id="po-k" min="70" max="130" step="1" value="100" style="width:160px;" class="acad-slider"></div>' +
    '<div id="po-out"></div>');
  }
  if (kind === "gamma") {
   return wrap(
-   '<div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Spot price: <b id="gm-s-v" style="color:#e8ecf1;">100</b></div>' +
+   '<div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Spot price: <b id="gm-s-v" style="color:#dbe5f1;">100</b></div>' +
    '<input type="range" id="gm-s" min="80" max="120" step="0.5" value="100" style="width:100%;max-width:420px;" class="acad-slider">' +
    '<div id="gm-out" style="margin-top:8px;"></div>');
  }
  if (kind === "skew") {
   return wrap(
    '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
-   '<button class="btn secondary acad-sk" data-m="normal" style="border-color:#c9a961;color:#c9a961;">Normal Skew</button>' +
+   '<button class="btn secondary acad-sk" data-m="normal" style="border-color:#d9a441;color:#d9a441;">Normal Skew</button>' +
    '<button class="btn secondary acad-sk" data-m="inverted">Inverted Skew</button></div>' +
-   '<div id="sk-out"></div><div id="sk-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+   '<div id="sk-out"></div><div id="sk-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
  }
  if (kind === "termstruct") {
   return wrap(
    '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
-   '<button class="btn secondary acad-ts" data-m="contango" style="border-color:#c9a961;color:#c9a961;">Contango</button>' +
+   '<button class="btn secondary acad-ts" data-m="contango" style="border-color:#d9a441;color:#d9a441;">Contango</button>' +
    '<button class="btn secondary acad-ts" data-m="backward">Backwardation</button></div>' +
-   '<div id="ts-out"></div><div id="ts-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+   '<div id="ts-out"></div><div id="ts-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
  }
  if (kind === "gex") {
   return wrap(
-   '<div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Index level: <b id="gx-s-v" style="color:#e8ecf1;">5000</b> <span style="color:#5b6b82;">(fictional gamma flip: 4950)</span></div>' +
+   '<div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Index level: <b id="gx-s-v" style="color:#dbe5f1;">5000</b> <span style="color:#5b6b82;">(fictional gamma flip: 4950)</span></div>' +
    '<input type="range" id="gx-s" min="4800" max="5150" step="5" value="5000" style="width:100%;max-width:420px;" class="acad-slider">' +
    '<div id="gx-out" style="margin-top:10px;"></div>');
  }
@@ -5866,7 +5867,7 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["slr-t1", "Tier 1 Capital ($B)", 250, 50, 600, 5], ["slr-on", "On-Balance Assets ($B)", 4000, 1000, 6000, 50], ["slr-off", "Off-Balance Exposures ($B)", 1200, 200, 2500, 25]].map((s) =>
-    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="slr-out"></div>');
  }
@@ -5874,7 +5875,7 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["wc-e", "Market Value of Equity ($M)", 80000, 5000, 300000, 5000], ["wc-d", "Market Value of Debt ($M)", 20000, 0, 150000, 2500], ["wc-re", "Cost of Equity (%)", 9.5, 4, 20, 0.1], ["wc-rd", "Pre-Tax Cost of Debt (%)", 5.5, 2, 12, 0.1], ["wc-t", "Marginal Tax Rate (%)", 21, 0, 35, 1]].map((s) =>
-    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="wacc-out"></div>');
  }
@@ -5883,15 +5884,15 @@ function academyInteractiveHtml(kind) {
    '<div id="be-metrics" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;"></div>' +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["be-n10", "10Y Nominal Yield (%)", 4.25, 2, 7, 0.05], ["be-t10", "10Y TIPS Real Yield (%)", 1.90, -1, 4, 0.05], ["be-n5", "5Y Nominal Yield (%)", 4.00, 2, 7, 0.05], ["be-t5", "5Y TIPS Real Yield (%)", 1.65, -1, 4, 0.05], ["be-lam", "TIPS Liquidity Premium (%)", 0.15, 0, 0.6, 0.02], ["be-dur", "Equity Duration (years)", 18, 8, 30, 1]].map((s) =>
-    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
-   '</div><div id="be-out"></div><div id="be-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+   '</div><div id="be-out"></div><div id="be-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
  }
  if (kind === "oas") {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["oas-ty", "10Y Treasury Yield (%)", 4.25, 2, 7, 0.05], ["oas-oas", "Corporate OAS (bps)", 380, 100, 900, 10], ["oas-rr", "Recovery Rate (%)", 40, 10, 70, 5]].map((s) =>
-    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="oas-out"></div>');
  }
@@ -5899,13 +5900,13 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["vt-tv", "Target Vol (%)", 10, 8, 15, 1], ["vt-rv", "Realized Vol (%)", 18, 6, 30, 1], ["vt-aum", "Fund AUM ($B)", 50, 10, 200, 5]].map((s) =>
-    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="vt-out"></div>');
  }
  if (kind === "cotz") {
   return wrap(
-   '<div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Speculative Net Positioning Z-Score: <b id="cot-z-v" style="color:#e8ecf1;">2.2</b></div>' +
+   '<div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Speculative Net Positioning Z-Score: <b id="cot-z-v" style="color:#dbe5f1;">2.2</b></div>' +
    '<input type="range" id="cot-z" min="-3" max="3" step="0.1" value="2.2" style="width:100%;max-width:420px;" class="acad-slider">' +
    '<div id="cot-out" style="margin-top:8px;"></div>');
  }
@@ -5913,13 +5914,13 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["br-spy", "SPY 60-Day Return (%)", 6.5, -10, 15, 0.5], ["br-rsp", "RSP 60-Day Return (%)", -1.2, -10, 15, 0.5]].map((s) =>
-    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="br-out"></div>');
  }
  if (kind === "fxcarry") {
   return wrap(
-   '<div style="font-size:12px;color:#8b949e;margin-bottom:4px;">USD/JPY 5-Day Move (%): <b id="fx-jpy-v" style="color:#e8ecf1;">-3.5</b></div>' +
+   '<div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">USD/JPY 5-Day Move (%): <b id="fx-jpy-v" style="color:#dbe5f1;">-3.5</b></div>' +
    '<input type="range" id="fx-jpy" min="-6" max="3" step="0.1" value="-3.5" style="width:100%;max-width:420px;" class="acad-slider">' +
    '<div id="fx-out" style="margin-top:8px;"></div>');
  }
@@ -5927,44 +5928,44 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["bd-fee", "Annual Borrow Fee (%)", 18, 1, 100, 1], ["bd-days", "Holding Days", 45, 7, 180, 1], ["bd-move", "Stock Move (%)", -12, -40, 40, 1]].map((s) =>
-    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="bd-out"></div>');
  }
  if (kind === "singleleg") {
   return wrap(
    '<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">' +
-   '<button class="btn secondary acad-sl" data-m="long_call" style="border-color:#c9a961;color:#c9a961;">Long Call</button>' +
+   '<button class="btn secondary acad-sl" data-m="long_call" style="border-color:#d9a441;color:#d9a441;">Long Call</button>' +
    '<button class="btn secondary acad-sl" data-m="short_call">Short Call</button>' +
    '<button class="btn secondary acad-sl" data-m="long_put">Long Put</button>' +
    '<button class="btn secondary acad-sl" data-m="short_put">Short Put</button></div>' +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
-   '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Strike: <b id="sl-k-v" style="color:#e8ecf1;">100</b></div>' +
+   '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Strike: <b id="sl-k-v" style="color:#dbe5f1;">100</b></div>' +
    '<input type="range" id="sl-k" min="70" max="130" step="1" value="100" style="width:100%;" class="acad-slider"></div>' +
-   '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Premium: <b id="sl-p-v" style="color:#e8ecf1;">$4.50</b></div>' +
+   '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Premium: <b id="sl-p-v" style="color:#dbe5f1;">$4.50</b></div>' +
    '<input type="range" id="sl-p" min="0.5" max="15" step="0.25" value="4.5" style="width:100%;" class="acad-slider"></div></div>' +
-   '<div id="sl-out"></div><div id="sl-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+   '<div id="sl-out"></div><div id="sl-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
  }
  if (kind === "multileg") {
   return wrap(
    '<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">' +
-   '<button class="btn secondary acad-ml" data-m="iron_condor" style="border-color:#c9a961;color:#c9a961;">Iron Condor</button>' +
+   '<button class="btn secondary acad-ml" data-m="iron_condor" style="border-color:#d9a441;color:#d9a441;">Iron Condor</button>' +
    '<button class="btn secondary acad-ml" data-m="bull_call">Bull Call Spread</button>' +
    '<button class="btn secondary acad-ml" data-m="straddle">Long Straddle</button></div>' +
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
-   '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Spot: <b id="ml-s-v" style="color:#e8ecf1;">100</b></div>' +
+   '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Spot: <b id="ml-s-v" style="color:#dbe5f1;">100</b></div>' +
    '<input type="range" id="ml-s" min="70" max="130" step="1" value="100" style="width:100%;" class="acad-slider"></div>' +
-   '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Wing width: <b id="ml-w-v" style="color:#e8ecf1;">10</b></div>' +
+   '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Wing width: <b id="ml-w-v" style="color:#dbe5f1;">10</b></div>' +
    '<input type="range" id="ml-w" min="5" max="25" step="1" value="10" style="width:100%;" class="acad-slider"></div>' +
-   '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">Net credit / cost: <b id="ml-c-v" style="color:#e8ecf1;">$3.20</b></div>' +
+   '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Net credit / cost: <b id="ml-c-v" style="color:#dbe5f1;">$3.20</b></div>' +
    '<input type="range" id="ml-c" min="0.5" max="8" step="0.1" value="3.2" style="width:100%;" class="acad-slider"></div></div>' +
-   '<div id="ml-out"></div><div id="ml-note" style="font-size:12px;color:#8b949e;margin-top:8px;"></div>');
+   '<div id="ml-out"></div><div id="ml-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
  }
  if (kind === "straddle") {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["st-px", "Stock Price ($)", 200, 50, 500, 5], ["st-cost", "Straddle Cost ($)", 16, 5, 40, 1], ["st-move", "Realized 1-Day Move (%)", 5, -15, 15, 0.5]].map((s) =>
-    '<div><div style="font-size:12px;color:#8b949e;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#e8ecf1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="st-out"></div>');
  }
@@ -5983,10 +5984,10 @@ function wireAcademyInteractive(kind) {
    const maxV = 10;
    const bx = (v) => pad + (v / maxV) * (w - pad - 16);
    $("nl-out").innerHTML = acadSvgOpen(w, h) +
-    [["Fed Assets", a, "#c9a961", 18], ["TGA", t, "#f85149", 52], ["RRP", r, "#f85149", 86]].map((b) =>
-     '<text x="4" y="' + (b[3] + 5) + '" fill="#8b949e" font-size="11">' + b[0] + '</text>' +
+    [["Fed Assets", a, "#d9a441", 18], ["TGA", t, "#f37d83", 52], ["RRP", r, "#f37d83", 86]].map((b) =>
+     '<text x="4" y="' + (b[3] + 5) + '" fill="#8d99aa" font-size="11">' + b[0] + '</text>' +
      '<rect x="' + pad + '" y="' + (b[3] - 8) + '" width="' + Math.max(2, bx(b[1]) - pad) + '" height="14" rx="3" fill="' + b[2] + '" opacity="0.85"/>').join("") +
-    '<text x="' + pad + '" y="' + (h - 6) + '" fill="#e8ecf1" font-size="12" font-weight="700">Net Liquidity = $' + nl.toFixed(1) + 'T (fictional)</text>' + "</svg>";
+    '<text x="' + pad + '" y="' + (h - 6) + '" fill="#dbe5f1" font-size="12" font-weight="700">Net Liquidity = $' + nl.toFixed(1) + 'T (fictional)</text>' + "</svg>";
   };
   ["nl-a", "nl-t", "nl-r"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6002,10 +6003,10 @@ function wireAcademyInteractive(kind) {
    const x = (v) => pad + ((v - 2) / 8) * (w - pad - 16);
    const y = (v) => h - pad - ((v - 2) / 3.6) * (h - pad - 24);
    const pts = modes[m].pts.map((p) => [x(p[0]), y(p[1])]);
-   $("yc-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#c9a961", 2.5) +
-    pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="#c9a961"/><text x="' + p[0] + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="middle">' + xs[i] + 'Y</text><text x="' + (p[0] + 8) + '" y="' + (p[1] - 8) + '" fill="#e8ecf1" font-size="11">' + ys[i].toFixed(1) + '%</text>').join("") + "</svg>";
+   $("yc-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#d9a441", 2.5) +
+    pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="#d9a441"/><text x="' + p[0] + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="middle">' + xs[i] + 'Y</text><text x="' + (p[0] + 8) + '" y="' + (p[1] - 8) + '" fill="#dbe5f1" font-size="11">' + ys[i].toFixed(1) + '%</text>').join("") + "</svg>";
    $("yc-note").textContent = modes[m].note;
-   document.querySelectorAll(".acad-yc").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === m) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+   document.querySelectorAll(".acad-yc").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === m) { b.style.borderColor = "#d9a441"; b.style.color = "#d9a441"; } });
   };
   document.querySelectorAll(".acad-yc").forEach((b) => b.addEventListener("click", () => draw(b.dataset.m)));
   draw("yc-bf");
@@ -6015,16 +6016,16 @@ function wireAcademyInteractive(kind) {
    const r = +$("roic-r").value, wacc = +$("roic-w").value;
    $("roic-r-v").textContent = r.toFixed(1); $("roic-w-v").textContent = wacc.toFixed(1);
    const spread = r - wacc;
-   const col = spread >= 0 ? "#3fb950" : "#f85149";
+   const col = spread >= 0 ? "#4dd2aa" : "#f37d83";
    const w = 560, h = 90, pad = 8;
    const cx = w / 2, scale = (w - pad * 2 - 40) / 2 / 12;
    $("roic-out").innerHTML = acadSvgOpen(w, h) +
-    '<line x1="' + cx + '" y1="10" x2="' + cx + '" y2="60" stroke="#2d435e"/>' +
+    '<line x1="' + cx + '" y1="10" x2="' + cx + '" y2="60" stroke="#1d2938"/>' +
     '<rect x="' + Math.min(cx, cx + spread * scale) + '" y="24" width="' + Math.abs(spread * scale) + '" height="22" rx="4" fill="' + col + '" opacity="0.85"/>' +
-    '<text x="' + cx + '" y="76" fill="#8b949e" font-size="11" text-anchor="middle">0</text>' +
-    '<text x="10" y="76" fill="#8b949e" font-size="11">value destruction</text>' +
-    '<text x="' + (w - 10) + '" y="76" fill="#8b949e" font-size="11" text-anchor="end">value creation</text>' +
-    '<text x="' + (w / 2) + '" y="14" fill="#e8ecf1" font-size="13" font-weight="700" text-anchor="middle">Spread: ' + (spread >= 0 ? "+" : "") + spread.toFixed(1) + 'pp ' + (spread >= 0 ? "· creating value" : "· destroying value") + '</text></svg>';
+    '<text x="' + cx + '" y="76" fill="#8d99aa" font-size="11" text-anchor="middle">0</text>' +
+    '<text x="10" y="76" fill="#8d99aa" font-size="11">value destruction</text>' +
+    '<text x="' + (w - 10) + '" y="76" fill="#8d99aa" font-size="11" text-anchor="end">value creation</text>' +
+    '<text x="' + (w / 2) + '" y="14" fill="#dbe5f1" font-size="13" font-weight="700" text-anchor="middle">Spread: ' + (spread >= 0 ? "+" : "") + spread.toFixed(1) + 'pp ' + (spread >= 0 ? "· creating value" : "· destroying value") + '</text></svg>';
   };
   ["roic-r", "roic-w"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6034,7 +6035,7 @@ function wireAcademyInteractive(kind) {
    const vs = ids.map((id) => +$(id).value);
    ids.forEach((id, i) => { $(id + "-v").textContent = vs[i].toFixed(2); });
    const roe = vs.reduce((a, b) => a * b, 1) * 100;
-   $("dupont-out").innerHTML = 'Implied ROE = <b style="color:#c9a961;font-size:18px;">' + roe.toFixed(1) + '%</b> <span style="color:#8b949e;font-size:12px;">(fictional inputs)</span>';
+   $("dupont-out").innerHTML = 'Implied ROE = <b style="color:#d9a441;font-size:18px;">' + roe.toFixed(1) + '%</b> <span style="color:#8d99aa;font-size:12px;">(fictional inputs)</span>';
   };
   ids.forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6053,13 +6054,13 @@ function wireAcademyInteractive(kind) {
    const pts = [];
    for (let s = lo; s <= hi; s += 1) pts.push([x(s), y(payoff(s))]);
    $("po-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) +
-    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#2d435e" stroke-dasharray="4"/>' +
-    acadPath(pts, mode === "call" ? "#3fb950" : "#f85149", 2.5) +
-    '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#c9a961" stroke-dasharray="4"/>' +
-    '<text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#c9a961" font-size="11" text-anchor="middle">Strike ' + k + '</text>' +
-    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="end">Spot at expiry →</text>' +
-    '<text x="8" y="16" fill="#8b949e" font-size="11">Profit / loss (fictional $' + prem + ' premium)</text></svg>';
-   document.querySelectorAll(".acad-po").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#1d2938" stroke-dasharray="4"/>' +
+    acadPath(pts, mode === "call" ? "#4dd2aa" : "#f37d83", 2.5) +
+    '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#d9a441" stroke-dasharray="4"/>' +
+    '<text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#d9a441" font-size="11" text-anchor="middle">Strike ' + k + '</text>' +
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="end">Spot at expiry →</text>' +
+    '<text x="8" y="16" fill="#8d99aa" font-size="11">Profit / loss (fictional $' + prem + ' premium)</text></svg>';
+   document.querySelectorAll(".acad-po").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#d9a441"; b.style.color = "#d9a441"; } });
   };
   document.querySelectorAll(".acad-po").forEach((b) => b.addEventListener("click", () => { mode = b.dataset.m; draw(); }));
   on("po-k", "input", draw); draw();
@@ -6075,10 +6076,10 @@ function wireAcademyInteractive(kind) {
    const pts = [];
    for (let st = 80; st <= 120; st += 0.5) pts.push([x(st), y(g(st))]);
    const nearK = Math.abs(s - k) < 4;
-   $("gm-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#c9a961", 2.5) +
-    '<line x1="' + x(s) + '" y1="8" x2="' + x(s) + '" y2="' + (h - pad) + '" stroke="#3fb950" stroke-width="2"/>' +
-    '<text x="' + x(s) + '" y="' + (h - pad + 16) + '" fill="#3fb950" font-size="11" text-anchor="middle">Spot ' + s.toFixed(0) + '</text>' +
-    '<text x="8" y="16" fill="#8b949e" font-size="11">Gamma by strike (fictional) — ' + (nearK ? "spot near the strike: gamma risk is highest here" : "spot away from the strike: gamma risk is muted") + '</text></svg>';
+   $("gm-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#d9a441", 2.5) +
+    '<line x1="' + x(s) + '" y1="8" x2="' + x(s) + '" y2="' + (h - pad) + '" stroke="#4dd2aa" stroke-width="2"/>' +
+    '<text x="' + x(s) + '" y="' + (h - pad + 16) + '" fill="#4dd2aa" font-size="11" text-anchor="middle">Spot ' + s.toFixed(0) + '</text>' +
+    '<text x="8" y="16" fill="#8d99aa" font-size="11">Gamma by strike (fictional) — ' + (nearK ? "spot near the strike: gamma risk is highest here" : "spot away from the strike: gamma risk is muted") + '</text></svg>';
   };
   on("gm-s", "input", draw); draw();
  }
@@ -6090,14 +6091,14 @@ function wireAcademyInteractive(kind) {
    const y = (v) => h - pad - ((v - 14) / 22) * (h - pad - 24);
    const pts = [];
    for (let d = 5; d <= 50; d += 1) pts.push([x(d), y(iv(d))]);
-   $("sk-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#c9a961", 2.5) +
-    '<text x="' + x(12) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="middle">25Δ Put</text>' +
-    '<text x="' + x(50) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="middle">25Δ Call</text>' +
-    '<text x="8" y="16" fill="#8b949e" font-size="11">Implied volatility by delta (fictional)</text></svg>';
+   $("sk-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#d9a441", 2.5) +
+    '<text x="' + x(12) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="middle">25Δ Put</text>' +
+    '<text x="' + x(50) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="middle">25Δ Call</text>' +
+    '<text x="8" y="16" fill="#8d99aa" font-size="11">Implied volatility by delta (fictional)</text></svg>';
    $("sk-note").textContent = m === "normal"
     ? "Normal equity skew. Downside puts carry higher implied volatility because portfolio insurance demand is structural."
     : "Inverted skew. Calls bid over puts. This usually marks speculative call chasing and often arrives near short-term tops.";
-   document.querySelectorAll(".acad-sk").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === m) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+   document.querySelectorAll(".acad-sk").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === m) { b.style.borderColor = "#d9a441"; b.style.color = "#d9a441"; } });
   };
   document.querySelectorAll(".acad-sk").forEach((b) => b.addEventListener("click", () => draw(b.dataset.m)));
   draw("normal");
@@ -6110,13 +6111,13 @@ function wireAcademyInteractive(kind) {
    const x = (i) => pad + (i / 4) * (w - pad - 16);
    const y = (v) => h - pad - ((v - 14) / 24) * (h - pad - 24);
    const pts = ivs.map((v, i) => [x(i), y(v)]);
-   $("ts-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, m === "contango" ? "#3fb950" : "#f85149", 2.5) +
-    pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="' + (m === "contango" ? "#3fb950" : "#f85149") + '"/><text x="' + p[0] + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="middle">' + tenors[i] + '</text>').join("") +
-    '<text x="8" y="16" fill="#8b949e" font-size="11">ATM implied volatility by tenor (fictional)</text></svg>';
+   $("ts-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, m === "contango" ? "#4dd2aa" : "#f37d83", 2.5) +
+    pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="' + (m === "contango" ? "#4dd2aa" : "#f37d83") + '"/><text x="' + p[0] + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="middle">' + tenors[i] + '</text>').join("") +
+    '<text x="8" y="16" fill="#8d99aa" font-size="11">ATM implied volatility by tenor (fictional)</text></svg>';
    $("ts-note").textContent = m === "contango"
     ? "Contango. Distant uncertainty costs more than near-term calm. Roll decay favors short-volatility carry."
     : "Backwardation. Near-term insurance costs more than distant insurance. This panic pricing has historically coincided with selling climaxes.";
-   document.querySelectorAll(".acad-ts").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === m) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+   document.querySelectorAll(".acad-ts").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === m) { b.style.borderColor = "#d9a441"; b.style.color = "#d9a441"; } });
   };
   document.querySelectorAll(".acad-ts").forEach((b) => b.addEventListener("click", () => draw(b.dataset.m)));
   draw("contango");
@@ -6127,10 +6128,10 @@ function wireAcademyInteractive(kind) {
    const s = +$("gx-s").value;
    $("gx-s-v").textContent = s;
    const pos = s >= flip;
-   const col = pos ? "#3fb950" : "#f85149";
+   const col = pos ? "#4dd2aa" : "#f37d83";
    $("gx-out").innerHTML = '<div style="display:flex;align-items:center;gap:14px;padding:14px;border:1px solid ' + col + ';border-radius:10px;background:rgba(255,255,255,0.02);">' +
     '<div style="font-size:15px;font-weight:800;color:' + col + ';">' + (pos ? "LONG GAMMA" : "SHORT GAMMA") + '</div>' +
-    '<div style="font-size:12px;color:#8b949e;max-width:520px;">' + (pos
+    '<div style="font-size:12px;color:#8d99aa;max-width:520px;">' + (pos
      ? "Index above the fictional flip level. Dealers buy dips and sell rips to stay neutral, which damps realized volatility."
      : "Index below the fictional flip level. Dealers sell weakness and buy strength to stay hedged, which amplifies moves both ways.") + "</div></div>";
   };
@@ -6144,12 +6145,12 @@ function wireAcademyInteractive(kind) {
    const tle = ob + off;
    const slr = tle > 0 ? (t1 / tle) * 100 : 0;
    const ok = slr >= 5.0;
-   const col = ok ? "#3fb950" : "#f85149";
+   const col = ok ? "#4dd2aa" : "#f37d83";
    $("slr-out").innerHTML = '<div style="display:flex;align-items:center;gap:14px;padding:14px;border:1px solid ' + col + ';border-radius:10px;background:rgba(255,255,255,0.02);flex-wrap:wrap;">' +
-    '<div><div style="font-size:11px;color:#8b949e;">SUPPLEMENTARY LEVERAGE RATIO</div>' +
+    '<div><div style="font-size:11px;color:#8d99aa;">SUPPLEMENTARY LEVERAGE RATIO</div>' +
     '<div style="font-size:28px;font-weight:800;color:' + col + ';">' + slr.toFixed(2) + '%</div></div>' +
     '<div style="font-size:12px;font-weight:700;color:' + col + ';padding:6px 12px;border:1px solid ' + col + ';border-radius:8px;">' + (ok ? "COMPLIANT (≥ 5.0%)" : "BINDING CONSTRAINT (< 5.0%)") + "</div>" +
-    '<div style="font-size:12px;color:#8b949e;">Total Leverage Exposure: <b style="color:#e8ecf1;">$' + tle.toLocaleString() + 'B</b> (fictional)</div></div>';
+    '<div style="font-size:12px;color:#8d99aa;">Total Leverage Exposure: <b style="color:#dbe5f1;">$' + tle.toLocaleString() + 'B</b> (fictional)</div></div>';
   };
   ids.forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6165,13 +6166,13 @@ function wireAcademyInteractive(kind) {
    const W = 560, H = 96;
    const barW = (W - 16);
    $("wacc-out").innerHTML =
-    '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;"><span style="font-size:26px;font-weight:800;color:#c9a961;">' + wacc.toFixed(2) + '%</span><span style="font-size:12px;color:#8b949e;">WACC (fictional inputs)</span></div>' +
+    '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;"><span style="font-size:26px;font-weight:800;color:#d9a441;">' + wacc.toFixed(2) + '%</span><span style="font-size:12px;color:#8d99aa;">WACC (fictional inputs)</span></div>' +
     '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block;" role="img">' +
-    '<rect x="8" y="18" width="' + (barW * wE).toFixed(1) + '" height="20" rx="4" fill="#c9a961" opacity="0.9"/>' +
+    '<rect x="8" y="18" width="' + (barW * wE).toFixed(1) + '" height="20" rx="4" fill="#d9a441" opacity="0.9"/>' +
     '<rect x="' + (8 + barW * wE).toFixed(1) + '" y="18" width="' + (barW * wD).toFixed(1) + '" height="20" rx="4" fill="#38bdf8" opacity="0.9"/>' +
-    '<text x="8" y="12" fill="#8b949e" font-size="11">Equity ' + (wE * 100).toFixed(1) + '% @ ' + re.toFixed(1) + '%</text>' +
-    '<text x="' + W - 8 + '" y="12" fill="#8b949e" font-size="11" text-anchor="end">Debt ' + (wD * 100).toFixed(1) + '% @ ' + afterRd.toFixed(2) + '% after tax</text>' +
-    '<text x="8" y="58" fill="#8b949e" font-size="11">After-tax cost of debt: ' + afterRd.toFixed(2) + '% · E/V ' + (wE * 100).toFixed(1) + '% · D/V ' + (wD * 100).toFixed(1) + '%</text></svg>';
+    '<text x="8" y="12" fill="#8d99aa" font-size="11">Equity ' + (wE * 100).toFixed(1) + '% @ ' + re.toFixed(1) + '%</text>' +
+    '<text x="' + W - 8 + '" y="12" fill="#8d99aa" font-size="11" text-anchor="end">Debt ' + (wD * 100).toFixed(1) + '% @ ' + afterRd.toFixed(2) + '% after tax</text>' +
+    '<text x="8" y="58" fill="#8d99aa" font-size="11">After-tax cost of debt: ' + afterRd.toFixed(2) + '% · E/V ' + (wE * 100).toFixed(1) + '% · D/V ' + (wD * 100).toFixed(1) + '%</text></svg>';
   };
   ids.forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6185,13 +6186,13 @@ function wireAcademyInteractive(kind) {
    const adjBe = be10 + lam;
    const peDrift = -(dur * (t10 - 1.0));
    const shape = be5 > be10 ? "INVERTED" : "UPWARD SLOPING";
-   const shapeCol = be5 > be10 ? "#f85149" : "#3fb950";
-   const card = (label, val, col, sub) => '<div style="background:#0b1119;border:1px solid #2a3448;border-radius:10px;padding:10px;"><div style="font-size:10px;color:#8b949e;letter-spacing:0.5px;">' + label + '</div><div style="font-size:22px;font-weight:800;color:' + col + ';margin:2px 0;">' + val + '</div><div style="font-size:10px;color:#8b949e;">' + sub + "</div></div>";
+   const shapeCol = be5 > be10 ? "#f37d83" : "#4dd2aa";
+   const card = (label, val, col, sub) => '<div style="background:#0b1119;border:1px solid #253142;border-radius:10px;padding:10px;"><div style="font-size:10px;color:#8d99aa;letter-spacing:0.5px;">' + label + '</div><div style="font-size:22px;font-weight:800;color:' + col + ';margin:2px 0;">' + val + '</div><div style="font-size:10px;color:#8d99aa;">' + sub + "</div></div>";
    $("be-metrics").innerHTML =
-    card("10Y BREAKEVEN", be10.toFixed(2) + "%", "#e8ecf1", "liquidity-adjusted " + adjBe.toFixed(2) + "%") +
-    card("5Y5Y FORWARD", fwd.toFixed(2) + "%", "#c9a961", "Fed credibility anchor") +
+    card("10Y BREAKEVEN", be10.toFixed(2) + "%", "#dbe5f1", "liquidity-adjusted " + adjBe.toFixed(2) + "%") +
+    card("5Y5Y FORWARD", fwd.toFixed(2) + "%", "#d9a441", "Fed credibility anchor") +
     card("10Y REAL YIELD", t10.toFixed(2) + "%", "#38bdf8", "equity hurdle base") +
-    card("P/E DRIFT", (peDrift >= 0 ? "+" : "") + peDrift.toFixed(1) + "%", peDrift >= 0 ? "#3fb950" : "#f85149", "vs 1.0% real baseline");
+    card("P/E DRIFT", (peDrift >= 0 ? "+" : "") + peDrift.toFixed(1) + "%", peDrift >= 0 ? "#4dd2aa" : "#f37d83", "vs 1.0% real baseline");
    const W = 560, H = 210, pad = 40;
    const tenors = ["2Y", "5Y", "10Y", "30Y"];
    const nom = [n5 - 0.15, n5, n10, n10 + 0.35];
@@ -6203,11 +6204,11 @@ function wireAcademyInteractive(kind) {
    const line = (vals, col, dash) => acadPath(vals.map((v, i) => [x(i), y(v)]), col, 2.5, dash);
    const dots = (vals, col) => vals.map((v, i) => '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="4" fill="' + col + '"/>').join("");
    $("be-out").innerHTML = acadSvgOpen(W, H) + acadAxes(W, H, pad) +
-    line(nom, "#c9a961") + dots(nom, "#c9a961") +
+    line(nom, "#d9a441") + dots(nom, "#d9a441") +
     line(tips, "#38bdf8") + dots(tips, "#38bdf8") +
-    line(be, "#3fb950", "5 4") + dots(be, "#3fb950") +
-    tenors.map((t, i) => '<text x="' + x(i).toFixed(1) + '" y="' + (H - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="middle">' + t + "</text>").join("") +
-    '<text x="8" y="16" fill="#8b949e" font-size="11">Gold nominal · Blue TIPS · Green dashed breakeven (fictional)</text></svg>';
+    line(be, "#4dd2aa", "5 4") + dots(be, "#4dd2aa") +
+    tenors.map((t, i) => '<text x="' + x(i).toFixed(1) + '" y="' + (H - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="middle">' + t + "</text>").join("") +
+    '<text x="8" y="16" fill="#8d99aa" font-size="11">Gold nominal · Blue TIPS · Green dashed breakeven (fictional)</text></svg>';
    $("be-note").innerHTML = 'Breakeven curve: <b style="color:' + shapeCol + ';">' + shape + "</b> — " + (be5 > be10 ? "near-term shock the market expects policy to extinguish." : "normal expansion regime with compounding expectations.");
   };
   ids.forEach((id) => on(id, "input", draw)); draw();
@@ -6221,21 +6222,21 @@ function wireAcademyInteractive(kind) {
    const defProb = (1 - Math.exp(-hazard * 5)) * 100;
    const totalY = ty + oas / 100;
    const stress = oas > 450 ? "CRITICAL STRESS" : oas > 300 ? "ELEVATED" : "NORMAL";
-   const sCol = oas > 450 ? "#f85149" : oas > 300 ? "#f0a35e" : "#3fb950";
+   const sCol = oas > 450 ? "#f37d83" : oas > 300 ? "#f0a35e" : "#4dd2aa";
    const w = 560, h = 150, pad = 40;
    const lo = 100, hi = 900;
    const x = (v) => pad + ((v - lo) / (hi - lo)) * (w - pad - 16);
    const zone = (a, b, c) => '<rect x="' + x(a) + '" y="34" width="' + (x(b) - x(a)) + '" height="18" rx="4" fill="' + c + '" opacity="0.25"/>';
    $("oas-out").innerHTML = acadSvgOpen(w, h) +
-    zone(100, 300, "#3fb950") + zone(300, 450, "#f0a35e") + zone(450, 900, "#f85149") +
-    '<line x1="' + x(oas) + '" y1="26" x2="' + x(oas) + '" y2="60" stroke="#c9a961" stroke-width="3"/>' +
-    '<text x="' + x(oas) + '" y="20" fill="#c9a961" font-size="12" font-weight="700" text-anchor="middle">' + oas + ' bps</text>' +
-    '<text x="' + pad + '" y="72" fill="#8b949e" font-size="11">Normal</text>' +
-    '<text x="' + x(375) + '" y="72" fill="#8b949e" font-size="11" text-anchor="middle">Elevated</text>' +
-    '<text x="' + (w - 16) + '" y="72" fill="#8b949e" font-size="11" text-anchor="end">Critical</text>' +
-    '<text x="' + pad + '" y="100" fill="#e8ecf1" font-size="13" font-weight="700">Corporate yield ' + totalY.toFixed(2) + '%</text>' +
-    '<text x="' + pad + '" y="122" fill="#e8ecf1" font-size="13">Implied 5Y default prob <tspan font-weight="700" fill="' + (defProb > 25 ? "#f85149" : "#3fb950") + '">' + defProb.toFixed(1) + '%</tspan> <tspan fill="' + sCol + '" font-weight="700">· ' + stress + '</tspan></text>' +
-    '<text x="' + pad + '" y="142" fill="#8b949e" font-size="10">Merton hazard rate from OAS and recovery rate (fictional inputs)</text></svg>';
+    zone(100, 300, "#4dd2aa") + zone(300, 450, "#f0a35e") + zone(450, 900, "#f37d83") +
+    '<line x1="' + x(oas) + '" y1="26" x2="' + x(oas) + '" y2="60" stroke="#d9a441" stroke-width="3"/>' +
+    '<text x="' + x(oas) + '" y="20" fill="#d9a441" font-size="12" font-weight="700" text-anchor="middle">' + oas + ' bps</text>' +
+    '<text x="' + pad + '" y="72" fill="#8d99aa" font-size="11">Normal</text>' +
+    '<text x="' + x(375) + '" y="72" fill="#8d99aa" font-size="11" text-anchor="middle">Elevated</text>' +
+    '<text x="' + (w - 16) + '" y="72" fill="#8d99aa" font-size="11" text-anchor="end">Critical</text>' +
+    '<text x="' + pad + '" y="100" fill="#dbe5f1" font-size="13" font-weight="700">Corporate yield ' + totalY.toFixed(2) + '%</text>' +
+    '<text x="' + pad + '" y="122" fill="#dbe5f1" font-size="13">Implied 5Y default prob <tspan font-weight="700" fill="' + (defProb > 25 ? "#f37d83" : "#4dd2aa") + '">' + defProb.toFixed(1) + '%</tspan> <tspan fill="' + sCol + '" font-weight="700">· ' + stress + '</tspan></text>' +
+    '<text x="' + pad + '" y="142" fill="#8d99aa" font-size="10">Merton hazard rate from OAS and recovery rate (fictional inputs)</text></svg>';
   };
   ["oas-ty", "oas-oas", "oas-rr"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6250,14 +6251,14 @@ function wireAcademyInteractive(kind) {
    const w = 560, h = 150, pad = 40;
    const pct = alloc * 100;
    const barW = Math.min(100, pct / 150 * 100);
-   const col = pct < 70 ? "#f85149" : "#3fb950";
+   const col = pct < 70 ? "#f37d83" : "#4dd2aa";
    $("vt-out").innerHTML = acadSvgOpen(w, h) +
     '<rect x="' + pad + '" y="30" width="' + (w - pad - 16) + '" height="20" rx="5" fill="#1a2433"/>' +
     '<rect x="' + pad + '" y="30" width="' + ((w - pad - 16) * barW / 100) + '" height="20" rx="5" fill="' + col + '" opacity="0.9"/>' +
-    '<text x="' + pad + '" y="20" fill="#e8ecf1" font-size="13" font-weight="700">Systematic allocation: ' + pct.toFixed(0) + '% of capital</text>' +
-    '<text x="' + pad + '" y="72" fill="#8b949e" font-size="12">Equity exposure: <tspan fill="#e8ecf1" font-weight="700">$' + exposure.toFixed(1) + 'B</tspan></text>' +
-    '<text x="' + pad + '" y="94" fill="#8b949e" font-size="12">Mechanical selling: <tspan fill="' + (forced > 0.05 ? "#f85149" : "#3fb950") + '" font-weight="700">$' + forced.toFixed(1) + 'B liquidation</tspan></text>' +
-    '<text x="' + pad + '" y="124" fill="#8b949e" font-size="10">Doubling realized vol roughly halves the allocation (fictional inputs)</text></svg>';
+    '<text x="' + pad + '" y="20" fill="#dbe5f1" font-size="13" font-weight="700">Systematic allocation: ' + pct.toFixed(0) + '% of capital</text>' +
+    '<text x="' + pad + '" y="72" fill="#8d99aa" font-size="12">Equity exposure: <tspan fill="#dbe5f1" font-weight="700">$' + exposure.toFixed(1) + 'B</tspan></text>' +
+    '<text x="' + pad + '" y="94" fill="#8d99aa" font-size="12">Mechanical selling: <tspan fill="' + (forced > 0.05 ? "#f37d83" : "#4dd2aa") + '" font-weight="700">$' + forced.toFixed(1) + 'B liquidation</tspan></text>' +
+    '<text x="' + pad + '" y="124" fill="#8d99aa" font-size="10">Doubling realized vol roughly halves the allocation (fictional inputs)</text></svg>';
   };
   ["vt-tv", "vt-rv", "vt-aum"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6266,19 +6267,19 @@ function wireAcademyInteractive(kind) {
    const z = +$("cot-z").value;
    $("cot-z-v").textContent = (z > 0 ? "+" : "") + z.toFixed(1);
    const label = z >= 2.0 ? "MAX CROWDED LONG · EXTREME FLUSH RISK" : z <= -1.5 ? "SHORT CLIMAX · SQUEEZE TAILWIND" : "BALANCED POSITIONING FLOW";
-   const lCol = z >= 2.0 ? "#f85149" : z <= -1.5 ? "#3fb950" : "#e8ecf1";
+   const lCol = z >= 2.0 ? "#f37d83" : z <= -1.5 ? "#4dd2aa" : "#dbe5f1";
    const w = 560, h = 140, pad = 40;
    const x = (v) => pad + ((v + 3) / 6) * (w - pad - 16);
    $("cot-out").innerHTML = acadSvgOpen(w, h) +
-    '<rect x="' + x(-3) + '" y="40" width="' + (x(-1.5) - x(-3)) + '" height="16" rx="4" fill="#3fb950" opacity="0.25"/>' +
-    '<rect x="' + x(-1.5) + '" y="40" width="' + (x(2) - x(-1.5)) + '" height="16" rx="4" fill="#2d435e" opacity="0.5"/>' +
-    '<rect x="' + x(2) + '" y="40" width="' + (x(3) - x(2)) + '" height="16" rx="4" fill="#f85149" opacity="0.25"/>' +
-    '<line x1="' + x(0) + '" y1="34" x2="' + x(0) + '" y2="62" stroke="#2d435e"/>' +
-    '<line x1="' + x(z) + '" y1="28" x2="' + x(z) + '" y2="68" stroke="#c9a961" stroke-width="3"/>' +
-    '<text x="' + x(z) + '" y="20" fill="#c9a961" font-size="12" font-weight="700" text-anchor="middle">' + (z > 0 ? "+" : "") + z.toFixed(1) + 'σ</text>' +
-    [[-3, "-3"], [-1.5, "-1.5"], [0, "0"], [2, "+2"], [3, "+3"]].map((t) => '<text x="' + x(t[0]) + '" y="80" fill="#8b949e" font-size="11" text-anchor="middle">' + t[1] + '</text>').join("") +
+    '<rect x="' + x(-3) + '" y="40" width="' + (x(-1.5) - x(-3)) + '" height="16" rx="4" fill="#4dd2aa" opacity="0.25"/>' +
+    '<rect x="' + x(-1.5) + '" y="40" width="' + (x(2) - x(-1.5)) + '" height="16" rx="4" fill="#1d2938" opacity="0.5"/>' +
+    '<rect x="' + x(2) + '" y="40" width="' + (x(3) - x(2)) + '" height="16" rx="4" fill="#f37d83" opacity="0.25"/>' +
+    '<line x1="' + x(0) + '" y1="34" x2="' + x(0) + '" y2="62" stroke="#1d2938"/>' +
+    '<line x1="' + x(z) + '" y1="28" x2="' + x(z) + '" y2="68" stroke="#d9a441" stroke-width="3"/>' +
+    '<text x="' + x(z) + '" y="20" fill="#d9a441" font-size="12" font-weight="700" text-anchor="middle">' + (z > 0 ? "+" : "") + z.toFixed(1) + 'σ</text>' +
+    [[-3, "-3"], [-1.5, "-1.5"], [0, "0"], [2, "+2"], [3, "+3"]].map((t) => '<text x="' + x(t[0]) + '" y="80" fill="#8d99aa" font-size="11" text-anchor="middle">' + t[1] + '</text>').join("") +
     '<text x="' + pad + '" y="106" fill="' + lCol + '" font-size="13" font-weight="700">' + label + '</text>' +
-    '<text x="' + pad + '" y="126" fill="#8b949e" font-size="10">3-year rolling Z-score of speculative net positioning (fictional)</text></svg>';
+    '<text x="' + pad + '" y="126" fill="#8d99aa" font-size="10">3-year rolling Z-score of speculative net positioning (fictional)</text></svg>';
   };
   on("cot-z", "input", draw); draw();
  }
@@ -6290,19 +6291,19 @@ function wireAcademyInteractive(kind) {
    const spread = spy - rsp;
    const healthy = spread <= 5.0;
    const label = healthy ? "HEALTHY BREADTH" : "DANGEROUS HOLLOW ADVANCE";
-   const lCol = healthy ? "#3fb950" : "#f85149";
+   const lCol = healthy ? "#4dd2aa" : "#f37d83";
    const w = 560, h = 150, pad = 40;
    const lo = -10, hi = 15;
    const bx = (v) => pad + ((v - lo) / (hi - lo)) * (w - pad - 16);
    const bar = (v, y, c, name) =>
-    '<text x="4" y="' + (y + 5) + '" fill="#8b949e" font-size="11">' + name + '</text>' +
+    '<text x="4" y="' + (y + 5) + '" fill="#8d99aa" font-size="11">' + name + '</text>' +
     '<rect x="' + Math.min(bx(0), bx(v)) + '" y="' + (y - 8) + '" width="' + Math.abs(bx(v) - bx(0)) + '" height="14" rx="3" fill="' + c + '" opacity="0.85"/>' +
-    '<text x="' + (Math.max(bx(0), bx(v)) + 6) + '" y="' + (y + 5) + '" fill="#e8ecf1" font-size="11">' + (v > 0 ? "+" : "") + v.toFixed(1) + '%</text>';
+    '<text x="' + (Math.max(bx(0), bx(v)) + 6) + '" y="' + (y + 5) + '" fill="#dbe5f1" font-size="11">' + (v > 0 ? "+" : "") + v.toFixed(1) + '%</text>';
    $("br-out").innerHTML = acadSvgOpen(w, h) +
     acadAxes(w, h, pad) +
-    bar(spy, 34, "#38bdf8", "SPY") + bar(rsp, 64, "#c9a961", "RSP") +
-    '<text x="' + pad + '" y="100" fill="#e8ecf1" font-size="13">Dispersion spread: <tspan font-weight="700" fill="' + lCol + '">' + (spread > 0 ? "+" : "") + spread.toFixed(1) + '% · ' + label + '</tspan></text>' +
-    '<text x="' + pad + '" y="122" fill="#8b949e" font-size="10">Cap-weighted minus equal-weighted 60-day returns (fictional inputs)</text></svg>';
+    bar(spy, 34, "#38bdf8", "SPY") + bar(rsp, 64, "#d9a441", "RSP") +
+    '<text x="' + pad + '" y="100" fill="#dbe5f1" font-size="13">Dispersion spread: <tspan font-weight="700" fill="' + lCol + '">' + (spread > 0 ? "+" : "") + spread.toFixed(1) + '% · ' + label + '</tspan></text>' +
+    '<text x="' + pad + '" y="122" fill="#8d99aa" font-size="10">Cap-weighted minus equal-weighted 60-day returns (fictional inputs)</text></svg>';
   };
   ["br-spy", "br-rsp"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6311,19 +6312,19 @@ function wireAcademyInteractive(kind) {
    const jpy = +$("fx-jpy").value;
    $("fx-jpy-v").textContent = jpy.toFixed(1);
    const label = jpy < -3.0 ? "CRITICAL CARRY LIQUIDATION · HIGH SPILLOVER" : jpy < -1.5 ? "ELEVATED FX VOLATILITY" : "STABLE TRANQUIL FLOWS";
-   const lCol = jpy < -3.0 ? "#f85149" : jpy < -1.5 ? "#f0a35e" : "#3fb950";
+   const lCol = jpy < -3.0 ? "#f37d83" : jpy < -1.5 ? "#f0a35e" : "#4dd2aa";
    const w = 560, h = 140, pad = 40;
    const x = (v) => pad + ((v + 6) / 9) * (w - pad - 16);
    $("fx-out").innerHTML = acadSvgOpen(w, h) +
-    '<rect x="' + x(-6) + '" y="40" width="' + (x(-3) - x(-6)) + '" height="16" rx="4" fill="#f85149" opacity="0.25"/>' +
+    '<rect x="' + x(-6) + '" y="40" width="' + (x(-3) - x(-6)) + '" height="16" rx="4" fill="#f37d83" opacity="0.25"/>' +
     '<rect x="' + x(-3) + '" y="40" width="' + (x(-1.5) - x(-3)) + '" height="16" rx="4" fill="#f0a35e" opacity="0.25"/>' +
-    '<rect x="' + x(-1.5) + '" y="40" width="' + (x(3) - x(-1.5)) + '" height="16" rx="4" fill="#3fb950" opacity="0.2"/>' +
-    '<line x1="' + x(0) + '" y1="34" x2="' + x(0) + '" y2="62" stroke="#2d435e"/>' +
-    '<line x1="' + x(jpy) + '" y1="28" x2="' + x(jpy) + '" y2="68" stroke="#c9a961" stroke-width="3"/>' +
-    '<text x="' + x(jpy) + '" y="20" fill="#c9a961" font-size="12" font-weight="700" text-anchor="middle">' + jpy.toFixed(1) + '%</text>' +
-    [[-6, "-6%"], [-3, "-3%"], [0, "0"], [3, "+3%"]].map((t) => '<text x="' + x(t[0]) + '" y="80" fill="#8b949e" font-size="11" text-anchor="middle">' + t[1] + '</text>').join("") +
+    '<rect x="' + x(-1.5) + '" y="40" width="' + (x(3) - x(-1.5)) + '" height="16" rx="4" fill="#4dd2aa" opacity="0.2"/>' +
+    '<line x1="' + x(0) + '" y1="34" x2="' + x(0) + '" y2="62" stroke="#1d2938"/>' +
+    '<line x1="' + x(jpy) + '" y1="28" x2="' + x(jpy) + '" y2="68" stroke="#d9a441" stroke-width="3"/>' +
+    '<text x="' + x(jpy) + '" y="20" fill="#d9a441" font-size="12" font-weight="700" text-anchor="middle">' + jpy.toFixed(1) + '%</text>' +
+    [[-6, "-6%"], [-3, "-3%"], [0, "0"], [3, "+3%"]].map((t) => '<text x="' + x(t[0]) + '" y="80" fill="#8d99aa" font-size="11" text-anchor="middle">' + t[1] + '</text>').join("") +
     '<text x="' + pad + '" y="106" fill="' + lCol + '" font-size="13" font-weight="700">' + label + '</text>' +
-    '<text x="' + pad + '" y="126" fill="#8b949e" font-size="10">FX vol transmits to rates (MOVE), then equities (VIX) (fictional)</text></svg>';
+    '<text x="' + pad + '" y="126" fill="#8d99aa" font-size="10">FX vol transmits to rates (MOVE), then equities (VIX) (fictional)</text></svg>';
   };
   on("fx-jpy", "input", draw); draw();
  }
@@ -6337,11 +6338,11 @@ function wireAcademyInteractive(kind) {
    const maxD = 50;
    const bx = (v) => pad + (Math.min(v, maxD) / maxD) * (w - pad - 16);
    $("bd-out").innerHTML = acadSvgOpen(w, h) +
-    '<text x="4" y="39" fill="#8b949e" font-size="11">Drag</text>' +
-    '<rect x="' + pad + '" y="26" width="' + Math.max(2, bx(drag) - pad) + '" height="14" rx="3" fill="#f85149" opacity="0.85"/>' +
-    '<text x="' + (bx(drag) + 6) + '" y="39" fill="#e8ecf1" font-size="11">-' + drag.toFixed(2) + '%</text>' +
-    '<text x="' + pad + '" y="70" fill="#8b949e" font-size="12">Net short P&amp;L: <tspan fill="' + (netShort >= 0 ? "#3fb950" : "#f85149") + '" font-weight="700">' + (netShort >= 0 ? "+" : "") + netShort.toFixed(2) + '%</tspan> <tspan fill="#8b949e">(price move ' + (move > 0 ? "+" : "") + move + '% minus borrow drag)</tspan></text>' +
-    '<text x="' + pad + '" y="96" fill="#8b949e" font-size="10">Borrow cost bleeds the short thesis daily, even when the call is right (fictional)</text></svg>';
+    '<text x="4" y="39" fill="#8d99aa" font-size="11">Drag</text>' +
+    '<rect x="' + pad + '" y="26" width="' + Math.max(2, bx(drag) - pad) + '" height="14" rx="3" fill="#f37d83" opacity="0.85"/>' +
+    '<text x="' + (bx(drag) + 6) + '" y="39" fill="#dbe5f1" font-size="11">-' + drag.toFixed(2) + '%</text>' +
+    '<text x="' + pad + '" y="70" fill="#8d99aa" font-size="12">Net short P&amp;L: <tspan fill="' + (netShort >= 0 ? "#4dd2aa" : "#f37d83") + '" font-weight="700">' + (netShort >= 0 ? "+" : "") + netShort.toFixed(2) + '%</tspan> <tspan fill="#8d99aa">(price move ' + (move > 0 ? "+" : "") + move + '% minus borrow drag)</tspan></text>' +
+    '<text x="' + pad + '" y="96" fill="#8d99aa" font-size="10">Borrow cost bleeds the short thesis daily, even when the call is right (fictional)</text></svg>';
   };
   ["bd-fee", "bd-days", "bd-move"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6365,19 +6366,19 @@ function wireAcademyInteractive(kind) {
    const y = (v) => h - pad - ((v - yMin) / (yMax - yMin)) * (h - pad - 24);
    const pts = [];
    for (let s = lo; s <= hi; s += 1) pts.push([x(s), y(Math.max(yMin, Math.min(yMax, payoff(s))))]);
-   const col = mode.indexOf("long") === 0 ? "#3fb950" : "#f85149";
+   const col = mode.indexOf("long") === 0 ? "#4dd2aa" : "#f37d83";
    const maxRisk = mode.indexOf("long") === 0 ? "$" + (prem * 100).toFixed(0) : (mode === "short_call" ? "uncapped" : "$" + ((k - prem) * 100).toFixed(0));
    $("sl-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) +
-    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#2d435e" stroke-dasharray="4"/>' +
+    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#1d2938" stroke-dasharray="4"/>' +
     acadPath(pts, col, 2.5) +
-    '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#c9a961" stroke-dasharray="4"/>' +
-    '<text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#c9a961" font-size="11" text-anchor="middle">Strike ' + k + '</text>' +
+    '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#d9a441" stroke-dasharray="4"/>' +
+    '<text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#d9a441" font-size="11" text-anchor="middle">Strike ' + k + '</text>' +
     '<line x1="' + x(be) + '" y1="8" x2="' + x(be) + '" y2="' + (h - pad) + '" stroke="#38bdf8" stroke-dasharray="4"/>' +
     '<text x="' + x(be) + '" y="22" fill="#38bdf8" font-size="11" text-anchor="middle">Breakeven ' + be.toFixed(2) + '</text>' +
-    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="end">Spot at expiry →</text>' +
-    '<text x="8" y="16" fill="#8b949e" font-size="11">' + names[mode] + ' P&L at expiry (fictional)</text></svg>';
-   $("sl-note").innerHTML = 'Max risk: <b style="color:#e8ecf1;">' + maxRisk + '</b> <span style="color:#5b6b82;">per contract</span>';
-   document.querySelectorAll(".acad-sl").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="end">Spot at expiry →</text>' +
+    '<text x="8" y="16" fill="#8d99aa" font-size="11">' + names[mode] + ' P&L at expiry (fictional)</text></svg>';
+   $("sl-note").innerHTML = 'Max risk: <b style="color:#dbe5f1;">' + maxRisk + '</b> <span style="color:#5b6b82;">per contract</span>';
+   document.querySelectorAll(".acad-sl").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#d9a441"; b.style.color = "#d9a441"; } });
   };
   document.querySelectorAll(".acad-sl").forEach((b) => b.addEventListener("click", () => { mode = b.dataset.m; draw(); }));
   on("sl-k", "input", draw); on("sl-p", "input", draw); draw();
@@ -6410,15 +6411,15 @@ function wireAcademyInteractive(kind) {
    for (let s = lo; s <= hi; s += 0.5) pts.push([x(s), y(Math.max(yMin, Math.min(yMax, payoff(s))))]);
    let strikeMarks = "";
    if (mode === "iron_condor") {
-    strikeMarks = [k2, k3].map((k) => '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#3fb950" stroke-dasharray="4"/><text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#3fb950" font-size="10" text-anchor="middle">short ' + k.toFixed(0) + '</text>').join("");
+    strikeMarks = [k2, k3].map((k) => '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#4dd2aa" stroke-dasharray="4"/><text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#4dd2aa" font-size="10" text-anchor="middle">short ' + k.toFixed(0) + '</text>').join("");
    }
    $("ml-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) +
-    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#2d435e" stroke-dasharray="4"/>' +
-    acadPath(pts, "#c9a961", 2.5) + strikeMarks +
-    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="end">Spot at expiry →</text>' +
-    '<text x="8" y="16" fill="#8b949e" font-size="11">' + names[mode] + ' P&L at expiry (fictional)</text></svg>';
-   $("ml-note").innerHTML = 'Max gain: <b style="color:#3fb950;">' + maxGain + '</b> · Max loss: <b style="color:#f85149;">' + maxLoss + '</b> · <span style="color:#8b949e;">' + vega + '</span>';
-   document.querySelectorAll(".acad-ml").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#c9a961"; b.style.color = "#c9a961"; } });
+    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#1d2938" stroke-dasharray="4"/>' +
+    acadPath(pts, "#d9a441", 2.5) + strikeMarks +
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="end">Spot at expiry →</text>' +
+    '<text x="8" y="16" fill="#8d99aa" font-size="11">' + names[mode] + ' P&L at expiry (fictional)</text></svg>';
+   $("ml-note").innerHTML = 'Max gain: <b style="color:#4dd2aa;">' + maxGain + '</b> · Max loss: <b style="color:#f37d83;">' + maxLoss + '</b> · <span style="color:#8d99aa;">' + vega + '</span>';
+   document.querySelectorAll(".acad-ml").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#d9a441"; b.style.color = "#d9a441"; } });
   };
   document.querySelectorAll(".acad-ml").forEach((b) => b.addEventListener("click", () => { mode = b.dataset.m; draw(); }));
   ["ml-s", "ml-w", "ml-c"].forEach((id) => on(id, "input", draw)); draw();
@@ -6440,15 +6441,15 @@ function wireAcademyInteractive(kind) {
    const pts = [];
    for (let m = lo; m <= hi; m += 0.5) pts.push([x(m), y(Math.abs(px * m / 100) - cost)]);
    $("st-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) +
-    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#2d435e" stroke-dasharray="4"/>' +
-    acadPath(pts, "#c9a961", 2.5) +
+    '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#1d2938" stroke-dasharray="4"/>' +
+    acadPath(pts, "#d9a441", 2.5) +
     '<line x1="' + x(mv) + '" y1="8" x2="' + x(mv) + '" y2="' + (h - pad) + '" stroke="#38bdf8" stroke-dasharray="4"/>' +
     '<text x="' + x(mv) + '" y="14" fill="#38bdf8" font-size="11" text-anchor="middle">realized ' + (mv > 0 ? "+" : "") + mv + '%</text>' +
-    '<line x1="' + x(-implPct) + '" y1="8" x2="' + x(-implPct) + '" y2="' + (h - pad) + '" stroke="#2d435e" stroke-dasharray="3"/>' +
-    '<line x1="' + x(implPct) + '" y1="8" x2="' + x(implPct) + '" y2="' + (h - pad) + '" stroke="#2d435e" stroke-dasharray="3"/>' +
-    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8b949e" font-size="11" text-anchor="end">1-day move % →</text>' +
-    '<text x="8" y="16" fill="#8b949e" font-size="11">Straddle P&amp;L at expiry (fictional $' + cost + ' premium)</text>' +
-    '<text x="' + pad + '" y="' + (h - 6) + '" fill="#e8ecf1" font-size="12">Implied ±' + implPct.toFixed(1) + '% · P&amp;L <tspan font-weight="700" fill="' + (pnl >= 0 ? "#3fb950" : "#f85149") + '">' + (pnl >= 0 ? "+$" : "-$") + Math.abs(pnl).toFixed(2) + ' (' + (pnlPct >= 0 ? "+" : "") + pnlPct.toFixed(0) + '%)</tspan></text></svg>';
+    '<line x1="' + x(-implPct) + '" y1="8" x2="' + x(-implPct) + '" y2="' + (h - pad) + '" stroke="#1d2938" stroke-dasharray="3"/>' +
+    '<line x1="' + x(implPct) + '" y1="8" x2="' + x(implPct) + '" y2="' + (h - pad) + '" stroke="#1d2938" stroke-dasharray="3"/>' +
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="end">1-day move % →</text>' +
+    '<text x="8" y="16" fill="#8d99aa" font-size="11">Straddle P&amp;L at expiry (fictional $' + cost + ' premium)</text>' +
+    '<text x="' + pad + '" y="' + (h - 6) + '" fill="#dbe5f1" font-size="12">Implied ±' + implPct.toFixed(1) + '% · P&amp;L <tspan font-weight="700" fill="' + (pnl >= 0 ? "#4dd2aa" : "#f37d83") + '">' + (pnl >= 0 ? "+$" : "-$") + Math.abs(pnl).toFixed(2) + ' (' + (pnlPct >= 0 ? "+" : "") + pnlPct.toFixed(0) + '%)</tspan></text></svg>';
   };
   ["st-px", "st-cost", "st-move"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6456,15 +6457,15 @@ function wireAcademyInteractive(kind) {
 
 function academySectionHtml(sec, idx) {
  let h = '<section style="margin-bottom:36px;">' +
-  '<h2 style="font-size:18px;font-weight:700;color:#e8ecf1;margin-bottom:10px;"><span style="color:#c9a961;font-family:monospace;font-size:14px;margin-right:8px;">' + (idx + 1) + '.0</span>' + esc(sec.heading) + "</h2>" +
-  '<div style="font-size:14px;color:#c3ccd8;line-height:1.75;margin-bottom:12px;">' + esc(sec.body) + "</div>";
+  '<h2 style="font-size:18px;font-weight:700;color:#dbe5f1;margin-bottom:10px;"><span style="color:#d9a441;font-family:monospace;font-size:14px;margin-right:8px;">' + (idx + 1) + '.0</span>' + esc(sec.heading) + "</h2>" +
+  '<div style="font-size:14px;color:#dbe5f1;line-height:1.75;margin-bottom:12px;">' + esc(sec.body) + "</div>";
  if (sec.formula) {
-  h += '<div class="card" style="margin:12px 0;overflow-x:auto;"><div style="font-size:10px;letter-spacing:1px;color:#c9a961;font-weight:700;margin-bottom:8px;">FORMULA</div>' +
-   '<div class="acad-formula" data-tex="' + esc(sec.formula) + '" style="color:#e8ecf1;text-align:center;padding:6px 0;">' + esc(sec.formula) + "</div></div>";
+  h += '<div class="card" style="margin:12px 0;overflow-x:auto;"><div style="font-size:10px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:8px;">FORMULA</div>' +
+   '<div class="acad-formula" data-tex="' + esc(sec.formula) + '" style="color:#dbe5f1;text-align:center;padding:6px 0;">' + esc(sec.formula) + "</div></div>";
  }
  if (sec.interactive) { h += '<div id="acad-int-' + sec.interactive + '">' + academyInteractiveHtml(sec.interactive) + "</div>"; }
  if (sec.takeaways) {
-  h += '<div class="card" style="margin-top:12px;border-left:3px solid #3fb950;"><div style="font-size:11px;letter-spacing:1px;color:#3fb950;font-weight:700;margin-bottom:8px;">DESK TAKEAWAYS</div><ul style="margin:0;padding-left:18px;font-size:13px;color:#c3ccd8;line-height:1.7;">' +
+  h += '<div class="card" style="margin-top:12px;border-left:3px solid #4dd2aa;"><div style="font-size:11px;letter-spacing:1px;color:#4dd2aa;font-weight:700;margin-bottom:8px;">DESK TAKEAWAYS</div><ul style="margin:0;padding-left:18px;font-size:13px;color:#dbe5f1;line-height:1.7;">' +
    sec.takeaways.map((t) => "<li style='margin-bottom:6px;'>" + esc(t) + "</li>").join("") + "</ul></div>";
  }
  return h + "</section>";
@@ -6480,33 +6481,33 @@ route("primer", function () {
  let h = '<div class="crumb">FREE · EDUCATION</div>' +
   '<div class="hero"><div><h1 class="hero-h">Cascadia Primer</h1>' +
   '<p class="hero-sub">Institutional trading and research concepts, taught plainly. ' + ACADEMY_MODULES.length + ' modules across ' + (function(){var c=[],seen={};ACADEMY_MODULES.forEach(function(m){var k=(m.category||'').toLowerCase();if(k&&!seen[k]){seen[k]=1;c.push(k);}});return c.length>1?c.slice(0,-1).join(', ')+', and '+c[c.length-1]:c.join('');})() + '.</p></div></div>' +
-  '<div class="card" style="border-left:3px solid #c9a961;margin-bottom:20px;"><div style="font-size:12px;color:#c9a961;font-weight:700;letter-spacing:1px;margin-bottom:6px;">PLEASE READ</div>' +
-  '<div style="font-size:13px;color:#c3ccd8;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div></div>" +
+  '<div class="card" style="border-left:3px solid #d9a441;margin-bottom:20px;"><div style="font-size:12px;color:#d9a441;font-weight:700;letter-spacing:1px;margin-bottom:6px;">PLEASE READ</div>' +
+  '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div></div>" +
   '<div style="display:flex;gap:20px;align-items:flex-start;">' +
   '<aside style="width:280px;flex-shrink:0;position:sticky;top:16px;">' +
-  '<div class="card"><div style="font-size:11px;letter-spacing:1px;color:#c9a961;font-weight:700;margin-bottom:10px;">CURRICULUM · FREE</div>' +
-  '<input id="acad-search" type="text" placeholder="Search topics, Greeks, models..." value="' + esc(_academyQuery) + '" style="width:100%;margin-bottom:10px;padding:8px 10px;border-radius:8px;border:1px solid #2a3448;background:#0b1119;color:#e8ecf1;font-size:13px;">' +
+  '<div class="card"><div style="font-size:11px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:10px;">CURRICULUM · FREE</div>' +
+  '<input id="acad-search" type="text" placeholder="Search topics, Greeks, models..." value="' + esc(_academyQuery) + '" style="width:100%;margin-bottom:10px;padding:8px 10px;border-radius:8px;border:1px solid #253142;background:#0b1119;color:#dbe5f1;font-size:13px;">' +
   '<nav>' + filtered.map((m) => {
    const active = m.id === mod.id;
-   return '<button data-acad="' + m.id + '" style="display:block;width:100%;text-align:left;padding:10px 12px;border-radius:10px;margin-bottom:6px;border:1px solid ' + (active ? "#c9a961" : "#2a3448") + ';background:' + (active ? "rgba(201,169,97,0.08)" : "transparent") + ';cursor:pointer;">' +
-    '<div style="font-size:11px;font-family:monospace;color:' + (active ? "#c9a961" : "#8b949e") + ';font-weight:700;">' + m.number + '</div>' +
-    '<div style="font-size:13px;font-weight:600;color:' + (active ? "#fff" : "#c3ccd8") + ';line-height:1.4;">' + esc(m.title) + "</div>" +
-    '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(m.category) + " · " + esc(m.readTime) + "</div></button>";
+   return '<button data-acad="' + m.id + '" style="display:block;width:100%;text-align:left;padding:10px 12px;border-radius:10px;margin-bottom:6px;border:1px solid ' + (active ? "#d9a441" : "#253142") + ';background:' + (active ? "rgba(217,164,65,0.08)" : "transparent") + ';cursor:pointer;">' +
+    '<div style="font-size:11px;font-family:monospace;color:' + (active ? "#d9a441" : "#8d99aa") + ';font-weight:700;">' + m.number + '</div>' +
+    '<div style="font-size:13px;font-weight:600;color:' + (active ? "#f5f7fa" : "#dbe5f1") + ';line-height:1.4;">' + esc(m.title) + "</div>" +
+    '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(m.category) + " · " + esc(m.readTime) + "</div></button>";
   }).join("") + "</nav></div>" +
-  '<div class="card" style="margin-top:12px;"><div style="font-size:11px;letter-spacing:1px;color:#c9a961;font-weight:700;margin-bottom:8px;">HOUSE PRINCIPLE</div>' +
-  '<div style="font-size:12px;color:#8b949e;line-height:1.6;">Price action is evaluated through liquidity plumbing, capital efficiency spreads, and derivatives positioning, not through lagging retail indicators.</div></div>' +
+  '<div class="card" style="margin-top:12px;"><div style="font-size:11px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:8px;">HOUSE PRINCIPLE</div>' +
+  '<div style="font-size:12px;color:#8d99aa;line-height:1.6;">Price action is evaluated through liquidity plumbing, capital efficiency spreads, and derivatives positioning, not through lagging retail indicators.</div></div>' +
   "</aside>" +
   '<main class="card" style="flex:1;min-width:0;" id="acad-main">' +
-  '<div style="border-bottom:1px solid #2a3448;padding-bottom:14px;margin-bottom:20px;">' +
-  '<div style="font-size:11px;font-family:monospace;color:#c9a961;font-weight:700;">' + mod.number + " // " + esc(mod.category).toUpperCase() + '</div>' +
-  '<h2 style="font-size:24px;font-weight:800;color:#e8ecf1;margin:6px 0;">' + esc(mod.title) + "</h2>" +
-  '<div style="font-size:13px;color:#8b949e;">' + esc(mod.summary) + " · " + esc(mod.readTime) + "</div></div>" +
+  '<div style="border-bottom:1px solid #253142;padding-bottom:14px;margin-bottom:20px;">' +
+  '<div style="font-size:11px;font-family:monospace;color:#d9a441;font-weight:700;">' + mod.number + " // " + esc(mod.category).toUpperCase() + '</div>' +
+  '<h2 style="font-size:24px;font-weight:800;color:#dbe5f1;margin:6px 0;">' + esc(mod.title) + "</h2>" +
+  '<div style="font-size:13px;color:#8d99aa;">' + esc(mod.summary) + " · " + esc(mod.readTime) + "</div></div>" +
   '<div id="acad-sections">' + mod.sections.map(academySectionHtml).join("") + "</div>" +
-  '<div style="display:flex;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:1px solid #2a3448;">' +
+  '<div style="display:flex;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:1px solid #253142;">' +
   (ACADEMY_MODULES.indexOf(mod) > 0 ? '<button class="btn secondary" id="acad-prev">← Previous Module</button>' : "<span></span>") +
-  (ACADEMY_MODULES.indexOf(mod) < ACADEMY_MODULES.length - 1 ? '<button class="btn secondary" id="acad-next" style="border-color:#c9a961;color:#c9a961;">Next Module →</button>' : "<span></span>") +
+  (ACADEMY_MODULES.indexOf(mod) < ACADEMY_MODULES.length - 1 ? '<button class="btn secondary" id="acad-next" style="border-color:#d9a441;color:#d9a441;">Next Module →</button>' : "<span></span>") +
   "</div>" +
-  '<div style="margin-top:20px;padding-top:14px;border-top:1px solid #2a3448;font-size:11px;color:#8b949e;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div>" +
+  '<div style="margin-top:20px;padding-top:14px;border-top:1px solid #253142;font-size:11px;color:#8d99aa;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div>" +
   "</main></div>";
 
  app.innerHTML = h;
@@ -6547,40 +6548,40 @@ route("alerts", function () {
   h += '<div class="section"><div class="section-title">Your Alert Subscriptions</div>' +
    '<div class="section-sub">We\'ll email you at ' + esc(authUser ? authUser.email : "") + ' when these update.</div>' +
    '<div id="alerts-list" style="display:flex;flex-direction:column;gap:12px;">' +
-   '<p style="color:#e8ecf1;">Loading your subscriptions...</p></div></div>' +
+   '<p style="color:#dbe5f1;">Loading your subscriptions...</p></div></div>' +
    '<div class="section"><div class="section-title">Moving Average Cross Alerts</div>' +
    '<div class="section-sub">Get notified when a stock or index crosses its moving average. Works for all current and future coverage tickers.</div>' +
-   '<div style="background:#161b26;border-radius:10px;padding:16px;margin-bottom:12px;">' +
+   '<div style="background:#101620;border-radius:10px;padding:16px;margin-bottom:12px;">' +
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">' +
-   '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">Symbol</label>' +
-   '<select id="ma-symbol" style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;"></select></div>' +
-   '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">MA Period</label>' +
-   '<select id="ma-period" style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;">' +
+   '<div><label style="font-size:12px;color:#dbe5f1;display:block;margin-bottom:4px;">Symbol</label>' +
+   '<select id="ma-symbol" style="width:100%;padding:8px;border-radius:6px;background:#0d131d;color:#f5f7fa;border:1px solid #253142;"></select></div>' +
+   '<div><label style="font-size:12px;color:#dbe5f1;display:block;margin-bottom:4px;">MA Period</label>' +
+   '<select id="ma-period" style="width:100%;padding:8px;border-radius:6px;background:#0d131d;color:#f5f7fa;border:1px solid #253142;">' +
    '<option value="10">10-day</option><option value="20">20-day</option>' +
    '<option value="50" selected>50-day</option><option value="100">100-day</option>' +
    '<option value="200">200-day</option></select></div>' +
-   '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">Direction</label>' +
-   '<select id="ma-direction" style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;">' +
+   '<div><label style="font-size:12px;color:#dbe5f1;display:block;margin-bottom:4px;">Direction</label>' +
+   '<select id="ma-direction" style="width:100%;padding:8px;border-radius:6px;background:#0d131d;color:#f5f7fa;border:1px solid #253142;">' +
    '<option value="either" selected>Either direction</option>' +
    '<option value="above">Cross above (bullish)</option>' +
    '<option value="below">Cross below (bearish)</option></select></div></div>' +
    '<button id="ma-add-btn" class="btn-gold" style="padding:8px 20px;">Add MA Alert</button></div>' +
-   '<div id="ma-alerts-list" style="display:flex;flex-direction:column;gap:8px;"><p style="color:#e8ecf1;">Loading...</p></div></div>' +
+   '<div id="ma-alerts-list" style="display:flex;flex-direction:column;gap:8px;"><p style="color:#dbe5f1;">Loading...</p></div></div>' +
    '<div class="section"><div class="section-title">Custom Price Alerts</div>' +
    '<div class="section-sub">Get notified when a covered stock hits your target price.</div>' +
-   '<div style="background:#161b26;border-radius:10px;padding:16px;margin-bottom:12px;">' +
+   '<div style="background:#101620;border-radius:10px;padding:16px;margin-bottom:12px;">' +
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">' +
-   '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">Ticker</label>' +
-   '<select id="price-ticker" style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;"></select></div>' +
-   '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">Target Price ($)</label>' +
+   '<div><label style="font-size:12px;color:#dbe5f1;display:block;margin-bottom:4px;">Ticker</label>' +
+   '<select id="price-ticker" style="width:100%;padding:8px;border-radius:6px;background:#0d131d;color:#f5f7fa;border:1px solid #253142;"></select></div>' +
+   '<div><label style="font-size:12px;color:#dbe5f1;display:block;margin-bottom:4px;">Target Price ($)</label>' +
    '<input id="price-target" type="number" step="0.01" min="0" placeholder="e.g. 450.00" ' +
-   'style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;"></div>' +
-   '<div><label style="font-size:12px;color:#e8ecf1;display:block;margin-bottom:4px;">Trigger When</label>' +
-   '<select id="price-direction" style="width:100%;padding:8px;border-radius:6px;background:#0f1420;color:#fff;border:1px solid #2a3448;">' +
+   'style="width:100%;padding:8px;border-radius:6px;background:#0d131d;color:#f5f7fa;border:1px solid #253142;"></div>' +
+   '<div><label style="font-size:12px;color:#dbe5f1;display:block;margin-bottom:4px;">Trigger When</label>' +
+   '<select id="price-direction" style="width:100%;padding:8px;border-radius:6px;background:#0d131d;color:#f5f7fa;border:1px solid #253142;">' +
    '<option value="above" selected>Price rises above target</option>' +
    '<option value="below">Price falls below target</option></select></div></div>' +
    '<button id="price-add-btn" class="btn-gold" style="padding:8px 20px;">Add Price Alert</button></div>' +
-   '<div id="price-alerts-list" style="display:flex;flex-direction:column;gap:8px;"><p style="color:#e8ecf1;">Loading...</p></div></div>';
+   '<div id="price-alerts-list" style="display:flex;flex-direction:column;gap:8px;"><p style="color:#dbe5f1;">Loading...</p></div></div>';
 
   app.innerHTML = h;
 
@@ -6620,9 +6621,9 @@ route("alerts", function () {
    renderPriceAlerts(pRes.data || []);
   } catch (err) {
    console.error("Failed to load alerts:", err);
-   listEl.innerHTML = '<p style="color:#f85149;">Failed to load subscriptions. Please try again.</p>';
-   maListEl.innerHTML = '<p style="color:#f85149;">Failed to load MA alerts.</p>';
-   priceListEl.innerHTML = '<p style="color:#f85149;">Failed to load price alerts.</p>';
+   listEl.innerHTML = '<p style="color:#f37d83;">Failed to load subscriptions. Please try again.</p>';
+   maListEl.innerHTML = '<p style="color:#f37d83;">Failed to load MA alerts.</p>';
+   priceListEl.innerHTML = '<p style="color:#f37d83;">Failed to load price alerts.</p>';
   }
  }
 
@@ -6636,14 +6637,14 @@ route("alerts", function () {
   if (!listEl) return;
   listEl.innerHTML = ALERT_TRACKERS.map((t) => {
     const isOn = activeMap[t.key] === true;
-    return '<div style="background:#161b26;border-radius:10px;padding:16px;display:flex;align-items:center;gap:16px;">' +
+    return '<div style="background:#101620;border-radius:10px;padding:16px;display:flex;align-items:center;gap:16px;">' +
      '<div style="flex:1;">' +
-     '<div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;">' + esc(t.name) + "</div>" +
-     '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;">' + esc(t.desc) + "</div></div>" +
+     '<div style="font-size:15px;font-weight:700;color:#f5f7fa;margin-bottom:4px;">' + esc(t.name) + "</div>" +
+     '<div style="font-size:13px;color:#dbe5f1;opacity:0.7;">' + esc(t.desc) + "</div></div>" +
      '<label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer;flex-shrink:0;">' +
      '<input type="checkbox" data-tracker="' + t.key + '" ' + (isOn ? "checked" : "") +
      ' style="opacity:0;width:0;height:0;" class="alert-toggle">' +
-     '<span style="position:absolute;top:0;left:0;right:0;bottom:0;background:' + (isOn ? "#3fb950" : "#2a2f3a") +
+     '<span style="position:absolute;top:0;left:0;right:0;bottom:0;background:' + (isOn ? "#4dd2aa" : "#2a2f3a") +
      ';border-radius:28px;transition:0.2s;"></span>' +
      '<span style="position:absolute;top:3px;left:' + (isOn ? "27px" : "3px") + ';width:22px;height:22px;background:#fff;' +
      'border-radius:50%;transition:0.2s;"></span>' +
@@ -6659,7 +6660,7 @@ route("alerts", function () {
      // Update visual
      const slider = e.target.nextElementSibling;
      const knob = slider.nextElementSibling;
-     if (slider) slider.style.background = isActive ? "#3fb950" : "#2a2f3a";
+     if (slider) slider.style.background = isActive ? "#4dd2aa" : "#2a2f3a";
      if (knob) knob.style.left = isActive ? "27px" : "3px";
     });
    });
@@ -6716,14 +6717,14 @@ route("alerts", function () {
   if (!listEl) return;
   {
    if (!data || !data.length) {
-    listEl.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">No MA cross alerts yet. Add one above.</p>';
+    listEl.innerHTML = '<p style="color:#dbe5f1;opacity:0.6;">No MA cross alerts yet. Add one above.</p>';
    } else {
     listEl.innerHTML = data.map((s) => {
      const dirLabel = s.ma_direction === "above" ? "cross above" : s.ma_direction === "below" ? "cross below" : "cross either way";
-     return '<div style="background:#161b26;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
-      '<div style="flex:1;font-size:14px;color:#fff;"><b>' + esc(s.ticker) + "</b> " + dirLabel +
+     return '<div style="background:#101620;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+      '<div style="flex:1;font-size:14px;color:#f5f7fa;"><b>' + esc(s.ticker) + "</b> " + dirLabel +
       ' <b>' + s.ma_period + "-day MA</b></div>" +
-      '<button data-ma-del="' + s.id + '" style="background:#f85149;border:0;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Remove</button></div>';
+      '<button data-ma-del="' + s.id + '" style="background:#f37d83;border:0;color:#f5f7fa;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Remove</button></div>';
     }).join("");
     listEl.querySelectorAll("[data-ma-del]").forEach((btn) => {
      btn.addEventListener("click", async () => {
@@ -6786,14 +6787,14 @@ route("alerts", function () {
   if (!listEl) return;
   {
    if (!data || !data.length) {
-    listEl.innerHTML = '<p style="color:#e8ecf1;opacity:0.6;">No price alerts yet. Add one above.</p>';
+    listEl.innerHTML = '<p style="color:#dbe5f1;opacity:0.6;">No price alerts yet. Add one above.</p>';
    } else {
     listEl.innerHTML = data.map((s) => {
      const dirLabel = s.price_direction === "above" ? "rises above" : "falls below";
-     return '<div style="background:#161b26;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
-      '<div style="flex:1;font-size:14px;color:#fff;"><b>' + esc(s.ticker) + "</b> " + dirLabel +
+     return '<div style="background:#101620;border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+      '<div style="flex:1;font-size:14px;color:#f5f7fa;"><b>' + esc(s.ticker) + "</b> " + dirLabel +
       ' <b>$' + parseFloat(s.target_price).toFixed(2) + "</b></div>" +
-      '<button data-price-del="' + s.id + '" style="background:#f85149;border:0;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Remove</button></div>';
+      '<button data-price-del="' + s.id + '" style="background:#f37d83;border:0;color:#f5f7fa;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;">Remove</button></div>';
     }).join("");
     listEl.querySelectorAll("[data-price-del]").forEach((btn) => {
      btn.addEventListener("click", async () => {
@@ -6847,10 +6848,10 @@ route("alerts", function () {
   if (isPro()) {
     h += '<div class="tkx-scores">';
     if (score != null) {
-      h += '<div style="text-align:center;"><span class="score-badge" style="border:2px solid #c9a961;color:#c9a961;" title="' + esc(scoreTooltip(t)) + '">' + score + '</span><div style="font-size:10px;color:#c9a961;margin-top:4px;letter-spacing:0.5px;font-weight:600;">CASCADIA</div></div>';
+      h += '<div style="text-align:center;"><span class="score-badge" style="border:2px solid #d9a441;color:#d9a441;" title="' + esc(scoreTooltip(t)) + '">' + score + '</span><div style="font-size:10px;color:#d9a441;margin-top:4px;letter-spacing:0.5px;font-weight:600;">CASCADIA</div></div>';
     }
     if (attrScore != null) {
-      h += '<div style="text-align:center;"><span class="score-badge ' + scoreClass(attrScore) + '" style="border:2px solid #c9a961;" title="Investment Scorecard: ' + attrBand + ' (Pro)">' + attrScore + '</span><div style="font-size:10px;color:#c9a961;margin-top:4px;letter-spacing:0.5px;font-weight:600;">GROWTH &amp; VALUE INDEX</div></div>';
+      h += '<div style="text-align:center;"><span class="score-badge ' + scoreClass(attrScore) + '" style="border:2px solid #d9a441;" title="Investment Scorecard: ' + attrBand + ' (Pro)">' + attrScore + '</span><div style="font-size:10px;color:#d9a441;margin-top:4px;letter-spacing:0.5px;font-weight:600;">GROWTH &amp; VALUE INDEX</div></div>';
     }
     h += '</div>';
   }
@@ -6973,7 +6974,7 @@ route("alerts", function () {
   // Catalyst Compass (Pro) - click to generate, AI quota friendly
   h += '<div class="section"><div class="section-title">Catalyst Compass ' + PRO_BADGE + '</div>';
   h += gated("Catalyst Compass, Pro", "Probabilistic scenario matrix for " + tk + ": Bull/Base/Bear outcomes with assigned probabilities on options-implied bounds.",
-   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Catalyst Compass</button></div>' +
+   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#d9a441;color:#0a0e17;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Catalyst Compass</button></div>' +
    '<input id="e360-input-' + tk + '" type="hidden" value="' + esc(tk) + '" />' +
    '<div id="e360-' + tk + '"><p style="color:var(--muted);font-size:13px;">Options-implied Bull/Base/Bear scenario matrix with assigned probabilities, plus macro, fundamental, tone, and positioning context. Each generation takes about 20-30 seconds.</p></div>');
   h += "</div>";
@@ -7038,7 +7039,7 @@ route("alerts", function () {
    h += '<div class="section"><div class="section-title">Macro Takes</div><div class="card">';
    // 12-month indicator trends first (structural macro context, free)
    if (indTakes.length) {
-    h += '<div style="font-size:12px;font-weight:700;color:#c9a961;margin-bottom:8px;">12-MONTH INDICATOR TRENDS</div>';
+    h += '<div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">12-MONTH INDICATOR TRENDS</div>';
     h += indTakes.map((m) => '<div class="news-item">' +
      '<div class="news-headline">' + esc(m.headline) + "</div>" +
      '<div class="panel-summary">' + esc(m.take || "") + "</div>" +
@@ -7046,12 +7047,12 @@ route("alerts", function () {
    }
    // Recent news takes: headlines + links free, analysis Pro-gated
    if (takes.length) {
-    h += '<div style="font-size:12px;font-weight:700;color:#c9a961;margin:12px 0 8px;">RECENT MACRO NEWS</div>';
+    h += '<div style="font-size:12px;font-weight:700;color:#d9a441;margin:12px 0 8px;">RECENT MACRO NEWS</div>';
     h += displayTakes.map((m) => '<div class="news-item">' +
      (m.url ? '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" class="news-h" style="text-decoration:none;color:inherit;"><div class="news-headline">' + esc(m.headline) + "</div></a>"
       : '<div class="news-headline">' + esc(m.headline) + "</div>") +
      (isPro() && m.take ? '<div class="panel-summary">' + esc(m.take) + "</div>"
-      : '<div style="font-size:12px;color:var(--muted);font-style:italic;">Pro analysis available. <a href="#/pricing" style="color:#c9a961;">Upgrade to Pro</a></div>') +
+      : '<div style="font-size:12px;color:var(--muted);font-style:italic;">Pro analysis available. <a href="#/pricing" style="color:#d9a441;">Upgrade to Pro</a></div>') +
      '<div class="news-meta"><span>' + timeAgo(m.timestamp) + (m.source ? " · " + esc(m.source) : "") + "</span></div></div>").join("");
    }
    h += "</div></div>";
@@ -7157,7 +7158,7 @@ route("alerts", function () {
    }
   }
   } catch (err) {
-   app.innerHTML = '<div class="card"><h3>Error loading ' + esc(tk) + '</h3><p style="color:#ff6b6b;">' + esc(err.message) + '</p><p><a href="#/">Back home</a></p></div>';
+   app.innerHTML = '<div class="card"><h3>Error loading ' + esc(tk) + '</h3><p style="color:#f37d83;">' + esc(err.message) + '</p><p><a href="#/">Back home</a></p></div>';
    console.error("Ticker render error for " + tk + ":", err);
   }
  });
@@ -7187,19 +7188,19 @@ route("alerts", function () {
    const dot = (v, color) =>
     '<div style="position:absolute;left:' + pct(v) + '%;top:-4px;bottom:-4px;width:2px;background:' + color + ';" title="' + fmt$(v) + '"></div>';
    const bandLo = Math.min(t.bear, t.bull), bandHi = Math.max(t.bear, t.bull);
-   const legend = [["Bear", t.bear, "#f87171", false], ["Current", t.price, "#fff", true],
-    ["Base", t.base, "#c9a961", false], ["Bull", t.bull, "#6a9a6a", false]
+   const legend = [["Bear", t.bear, "#f37d83", false], ["Current", t.price, "#f5f7fa", true],
+    ["Base", t.base, "#d9a441", false], ["Bull", t.bull, "#4dd2aa", false]
    ].slice().sort((a, b) => a[1] - b[1]);
    h += '<div style="margin:20px 0 12px;">' +
-    '<div style="font-size:13px;color:#c8d0dc;margin-bottom:12px;font-weight:600;">Price vs targets</div>' +
+    '<div style="font-size:13px;color:#dbe5f1;margin-bottom:12px;font-weight:600;">Price vs targets</div>' +
     '<div style="position:relative;height:10px;background:#1c2536;border-radius:5px;margin:0 12px;">' +
-    '<div style="position:absolute;left:' + pct(bandLo) + '%;width:' + (pct(bandHi) - pct(bandLo)).toFixed(1) + '%;top:0;bottom:0;background:#2a3448;border-radius:5px;" title="Bear to Bull target range"></div>' +
-    dot(t.bear, "#f87171") + dot(t.base, "#c9a961") + dot(t.bull, "#6a9a6a") +
+    '<div style="position:absolute;left:' + pct(bandLo) + '%;width:' + (pct(bandHi) - pct(bandLo)).toFixed(1) + '%;top:0;bottom:0;background:#253142;border-radius:5px;" title="Bear to Bull target range"></div>' +
+    dot(t.bear, "#f37d83") + dot(t.base, "#d9a441") + dot(t.bull, "#4dd2aa") +
     '<div style="position:absolute;left:' + pct(t.price) + '%;top:-7px;width:14px;height:24px;background:#fff;border-radius:3px;transform:translateX(-50%);box-shadow:0 0 8px rgba(255,255,255,0.4);" title="Current: ' + fmt$(t.price) + '"></div>' +
     "</div>" +
     '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:10px;padding:0 4px;">' +
     legend.map((e) =>
-     '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + e[2] + ';margin-right:6px;"></span><span style="color:#e8ecf1;' + (e[3] ? "font-weight:700;" : "") + '">' + e[0] + " " + fmt$(e[1]) + "</span></div>"
+     '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + e[2] + ';margin-right:6px;"></span><span style="color:#dbe5f1;' + (e[3] ? "font-weight:700;" : "") + '">' + e[0] + " " + fmt$(e[1]) + "</span></div>"
     ).join("") +
     "</div></div>";
   }
@@ -7210,13 +7211,13 @@ route("alerts", function () {
   const rdcf = t.reverse_dcf;
   if (rdcf && rdcf.implied_cagr != null) {
    const cagrPct = (rdcf.implied_cagr * 100).toFixed(1);
-   h += '<div style="margin-top:20px;padding:14px;background:#16191f;border:1px solid #232833;border-radius:12px;">' +
-    '<div style="font-size:13px;color:#c8d0dc;font-weight:600;margin-bottom:8px;">Market-implied revenue CAGR</div>' +
-    '<div style="font-size:28px;font-weight:800;color:#c7af7f;">' + cagrPct + '%</div>';
+   h += '<div style="margin-top:20px;padding:14px;background:#101620;border:1px solid #101620;border-radius:12px;">' +
+    '<div style="font-size:13px;color:#dbe5f1;font-weight:600;margin-bottom:8px;">Market-implied revenue CAGR</div>' +
+    '<div style="font-size:28px;font-weight:800;color:#d9a441;">' + cagrPct + '%</div>';
    if (rdcf.verdict && typeof rdcf.verdict === "string" && rdcf.verdict.length > 2)
-    h += '<div style="font-size:13px;color:#9ba3af;margin-top:6px;">' + esc(rdcf.verdict) + "</div>";
+    h += '<div style="font-size:13px;color:#8d99aa;margin-top:6px;">' + esc(rdcf.verdict) + "</div>";
    if (rdcf.fcf_margin != null)
-    h += '<div style="font-size:12px;color:#8b93a7;margin-top:6px;">Base-case FCF margin: ' + (rdcf.fcf_margin * 100).toFixed(1) + '% (held flat)</div>';
+    h += '<div style="font-size:12px;color:#647184;margin-top:6px;">Base-case FCF margin: ' + (rdcf.fcf_margin * 100).toFixed(1) + '% (held flat)</div>';
    h += "</div>";
    const tbl = rdcf.table || [];
    if (tbl.length) {
@@ -7241,14 +7242,14 @@ route("alerts", function () {
     if (implRow && !picked.includes(implRow)) picked.push(implRow);
     picked.sort((a, b) => a[0] - b[0]);
     const rows = picked.slice(0, 14);
-    h += '<div style="margin-top:16px;"><div style="font-size:13px;color:#c8d0dc;margin-bottom:10px;font-weight:600;">Implied price by revenue CAGR (from DCF model)</div>' +
-     '<div class="table-wrap"><table class="coverage ma-table" style="color:#e8ecf1;"><thead><tr><th style="color:#a8b0bc;">CAGR</th><th style="color:#a8b0bc;">Implied price</th><th style="color:#a8b0bc;">vs current</th></tr></thead><tbody>' +
+    h += '<div style="margin-top:16px;"><div style="font-size:13px;color:#dbe5f1;margin-bottom:10px;font-weight:600;">Implied price by revenue CAGR (from DCF model)</div>' +
+     '<div class="table-wrap"><table class="coverage ma-table" style="color:#dbe5f1;"><thead><tr><th style="color:#8d99aa;">CAGR</th><th style="color:#8d99aa;">Implied price</th><th style="color:#8d99aa;">vs current</th></tr></thead><tbody>' +
      rows.map((r) => {
       const g = r[0] * 100, p = r[2];
       if (p == null) return "";
       const isImpl = Math.abs(r[0] - rdcf.implied_cagr) < 0.015;
       const chg = t.price ? (p / t.price - 1) * 100 : null;
-      return "<tr" + (isImpl ? ' style="background:rgba(201,169,97,0.15);"' : "") + '><td style="color:#e8ecf1;">' + g.toFixed(1) + "%" + (isImpl ? " \u2190 market" : "") + '</td><td style="color:#e8ecf1;">' + fmt$(p) +
+      return "<tr" + (isImpl ? ' style="background:rgba(217,164,65,0.15);"' : "") + '><td style="color:#dbe5f1;">' + g.toFixed(1) + "%" + (isImpl ? " \u2190 market" : "") + '</td><td style="color:#dbe5f1;">' + fmt$(p) +
        '</td><td class="' + (chg == null ? "" : cls(chg)) + '">' + (chg == null ? "N/A" : fmtPct(chg)) + "</td></tr>";
      }).join("") + "</tbody></table></div></div>";
    }
@@ -7370,19 +7371,19 @@ route("alerts", function () {
   const uid = "inc-" + t.ticker;
   let h = '<div style="margin-bottom:20px;">' +
    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">' +
-   '<div style="font-size:14px;font-weight:700;color:#e8ecf1;">Revenue, Net Income & Margin</div>' +
-   '<div class="inc-toggle" id="' + uid + '-toggle" style="display:inline-flex;padding:3px;background:#0f1420;border-radius:8px;">' +
-   '<button data-mode="annual" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:transparent;color:#8b93a7;">Annual</button>' +
-   '<button data-mode="quarterly" class="active" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:#2a4a73;color:#fff;">Quarterly</button>' +
+   '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">Revenue, Net Income & Margin</div>' +
+   '<div class="inc-toggle" id="' + uid + '-toggle" style="display:inline-flex;padding:3px;background:#0d131d;border-radius:8px;">' +
+   '<button data-mode="annual" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:transparent;color:#647184;">Annual</button>' +
+   '<button data-mode="quarterly" class="active" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:#253142;color:#f5f7fa;">Quarterly</button>' +
    "</div></div>" +
    '<div class="zoomable-chart" data-chart="income" data-ticker="' + esc(t.ticker) + '" data-mode="quarterly" id="' + uid + '-wrap" style="position:relative;height:300px;cursor:zoom-in;" title="Click to zoom">' +
    '<canvas id="' + uid + '-canvas"></canvas></div>' +
-   '<div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:10px;font-size:12px;color:#c8d0dc;">' +
+   '<div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:10px;font-size:12px;color:#dbe5f1;">' +
    '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#3b82f6;display:inline-block;"></span>Revenue</span>' +
    '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#22d3ee;display:inline-block;"></span>Net income</span>' +
    '<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;border:2px solid #f97316;display:inline-block;"></span>Net margin %</span>' +
    "</div>" +
-   (ic.collected_at ? '<div style="font-size:11px;color:#8b93a7;margin-top:6px;text-align:right;">Updated ' + esc(ic.collected_at) + "</div>" : "") +
+   (ic.collected_at ? '<div style="font-size:11px;color:#647184;margin-top:6px;text-align:right;">Updated ' + esc(ic.collected_at) + "</div>" : "") +
    "</div>";
   return h;
  }
@@ -7417,7 +7418,7 @@ route("alerts", function () {
       data: records.map((r) => r.net_margin_pct),
       borderColor: "#f97316", backgroundColor: "#f97316",
       borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
-      pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+      pointBackgroundColor: "#0d131d", pointBorderColor: "#f97316", pointBorderWidth: 2,
       yAxisID: "yMargin", order: 1, tension: 0.15, spanGaps: true,
      },
      {
@@ -7443,8 +7444,8 @@ route("alerts", function () {
     plugins: {
      legend: { display: false },
      tooltip: {
-      backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-      titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+      backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+      titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
       callbacks: {
        label: (c) => {
         if (c.dataset.yAxisID === "yMargin")
@@ -7455,15 +7456,15 @@ route("alerts", function () {
      },
     },
     scales: {
-     x: { ticks: { color: "#e8ecf1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
+     x: { ticks: { color: "#dbe5f1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
      yMargin: {
       type: "linear", position: "left",
-      ticks: { color: "#a1a1aa", callback: (v) => v + "%", font: { size: 11 } },
-      grid: { color: (c) => c.tick.value === 0 ? "#52525b" : "rgba(42,46,57,0.35)" },
+      ticks: { color: "#8d99aa", callback: (v) => v + "%", font: { size: 11 } },
+      grid: { color: (c) => c.tick.value === 0 ? "#647184" : "rgba(42,46,57,0.35)" },
      },
      yAmount: {
       type: "linear", position: "right",
-      ticks: { color: "#a1a1aa", callback: fmtMoney, font: { size: 11 } },
+      ticks: { color: "#8d99aa", callback: fmtMoney, font: { size: 11 } },
       grid: { display: false },
      },
     },
@@ -7476,8 +7477,8 @@ route("alerts", function () {
   if (tog) tog.querySelectorAll("button").forEach((b) => {
    const active = b.dataset.mode === mode;
    b.classList.toggle("active", active);
-   b.style.background = active ? "#2a4a73" : "transparent";
-   b.style.color = active ? "#fff" : "#8b93a7";
+   b.style.background = active ? "#253142" : "transparent";
+   b.style.color = active ? "#f5f7fa" : "#647184";
   });
  }
 
@@ -7592,9 +7593,9 @@ route("alerts", function () {
    h += '<div class="card"><h3 style="text-transform:capitalize">' + tf + ' <span class="verdict ' +
     (String(d.signal || "").toLowerCase().includes("buy") ? "bullish" : String(d.signal || "").toLowerCase().includes("sell") ? "bearish" : "neutral") +
     '">' + esc(d.signal || "") + "</span></h3>" +
-    '<div style="position:relative;height:420px;margin-bottom:8px;background:#131722;border-radius:8px;"><canvas id="' + cid + '"></canvas></div>' +
-    '<div style="font-size:12px;color:#a8b0bc;margin-bottom:10px;">Overlays: ' +
-    '<b style="color:#f23645;">SMA 10</b> · <b style="color:#ff9800;">SMA 20</b> · ' +
+    '<div style="position:relative;height:420px;margin-bottom:8px;background:#0d131d;border-radius:8px;"><canvas id="' + cid + '"></canvas></div>' +
+    '<div style="font-size:12px;color:#8d99aa;margin-bottom:10px;">Overlays: ' +
+    '<b style="color:#f37d83;">SMA 10</b> · <b style="color:#ff9800;">SMA 20</b> · ' +
     '<b style="color:#2962ff;">SMA 50</b> · <b style="color:#00bcd4;">SMA 200</b> (simple moving averages)</div>' +
     '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
     ["10", "20", "30", "50", "100", "200"].map((p) =>
@@ -7671,7 +7672,7 @@ route("alerts", function () {
        { label: "Volume", data: vols, type: "bar",
         backgroundColor: up.map((u) => u ? "rgba(38,166,154,0.45)" : "rgba(239,83,80,0.45)"),
         borderWidth: 0, order: 3, yAxisID: "y1", barPercentage: 0.65, categoryPercentage: 0.9 },
-       smaDs("SMA 10", sma(10), "#f23645"),
+       smaDs("SMA 10", sma(10), "#f37d83"),
        smaDs("SMA 20", sma(20), "#ff9800"),
        smaDs("SMA 50", sma(50), "#2962ff"),
        ...(closes.length >= 100 ? [smaDs("SMA 200", sma(200), "#00bcd4")] : []),
@@ -7682,8 +7683,8 @@ route("alerts", function () {
        plugins: {
         legend: { display: false },
         tooltip: {
-         backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-         titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 10, displayColors: false,
+         backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10, displayColors: false,
          callbacks: {
           title: (items) => items.length ? labels[items[0].dataIndex] : "",
           label: (c) => {
@@ -7698,8 +7699,8 @@ route("alerts", function () {
         }
        },
        scales: {
-        x: { ticks: { color: "#e8ecf1", maxTicksLimit: 8, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.5)" } },
-        y: { position: "right", ticks: { color: "#e8ecf1", callback: (v) => v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.5)" } },
+        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 8, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.5)" } },
+        y: { position: "right", ticks: { color: "#dbe5f1", callback: (v) => v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.5)" } },
         y1: { position: "right", display: false, max: Math.max(...vols, 1) * 5, grid: { display: false } }
        }
       },
@@ -7752,25 +7753,25 @@ route("alerts", function () {
   const avg = (a) => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
   const avgs = rets.map(avg);
   const maxA = Math.max(...avgs.filter((v) => v != null).map(Math.abs), 1);
-  let h = '<div class="card"><div style="font-size:13px;color:#c8d0dc;margin-bottom:12px;">Average monthly return by calendar month (from available price history).</div>';
+  let h = '<div class="card"><div style="font-size:13px;color:#dbe5f1;margin-bottom:12px;">Average monthly return by calendar month (from available price history).</div>';
   h += '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;">';
   months.forEach((name, i) => {
    const v = avgs[i], n = rets[i].length;
    const barW = v == null ? 0 : Math.abs(v) / maxA * 100;
-   const col = v == null ? "#555" : v >= 0 ? "#6a9a6a" : "#f87171";
-   h += '<div style="background:#1a2332;border-radius:6px;padding:10px 8px;text-align:center;">' +
-    '<div style="font-size:12px;color:#a8b0bc;margin-bottom:4px;">' + name + '</div>' +
+   const col = v == null ? "#555" : v >= 0 ? "#4dd2aa" : "#f37d83";
+   h += '<div style="background:#101620;border-radius:6px;padding:10px 8px;text-align:center;">' +
+    '<div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + name + '</div>' +
     '<div style="font-size:16px;font-weight:700;color:' + col + ';">' + (v == null ? " - " : (v >= 0 ? "+" : "") + v.toFixed(1) + "%") + "</div>" +
-    '<div style="height:4px;background:#2a3448;border-radius:2px;margin-top:6px;overflow:hidden;">' +
+    '<div style="height:4px;background:#253142;border-radius:2px;margin-top:6px;overflow:hidden;">' +
     '<div style="height:100%;width:' + barW.toFixed(0) + '%;background:' + col + ';border-radius:2px;"></div></div>' +
-    '<div style="font-size:10px;color:#7a8494;margin-top:4px;">' + n + ' yrs</div></div>';
+    '<div style="font-size:10px;color:#647184;margin-top:4px;">' + n + ' yrs</div></div>';
   });
   h += "</div>";
   // best/worst months
   const ranked = avgs.map((v, i) => ({ v, i })).filter((x) => x.v != null).sort((a, b) => b.v - a.v);
   if (ranked.length) {
-   h += '<div class="panel-summary" style="margin-top:10px;color:#c8d0dc;">Strongest: <b style="color:#6a9a6a;">' + months[ranked[0].i] + " (" + (ranked[0].v >= 0 ? "+" : "") + ranked[0].v.toFixed(1) + "%)</b>" +
-    ' · Weakest: <b style="color:#f87171;">' + months[ranked[ranked.length - 1].i] + " (" + ranked[ranked.length - 1].v.toFixed(1) + "%)</b></div>";
+   h += '<div class="panel-summary" style="margin-top:10px;color:#dbe5f1;">Strongest: <b style="color:#4dd2aa;">' + months[ranked[0].i] + " (" + (ranked[0].v >= 0 ? "+" : "") + ranked[0].v.toFixed(1) + "%)</b>" +
+    ' · Weakest: <b style="color:#f37d83;">' + months[ranked[ranked.length - 1].i] + " (" + ranked[ranked.length - 1].v.toFixed(1) + "%)</b></div>";
   }
   return h + "</div>";
  }
@@ -7815,35 +7816,35 @@ route("alerts", function () {
     q.rev_consensus >= 1e6 ? "$" + (q.rev_consensus/1e6).toFixed(1) + "M" : "$" + q.rev_consensus.toFixed(0)) : "N/A";
   const whisper = est.whisper != null ? "$" + est.whisper.toFixed(2) : "—";
   const confirmed = est.earnings_date_confirmed ?
-   '<span style="display:inline-flex;align-items:center;gap:4px;color:#10b981;font-size:12px;"><span style="width:16px;height:16px;border-radius:50%;background:#122b1e;border:1px solid #1b5e3b;display:inline-flex;align-items:center;justify-content:center;font-size:10px;">✓</span>Confirmed</span>' : "";
+   '<span style="display:inline-flex;align-items:center;gap:4px;color:#4dd2aa;font-size:12px;"><span style="width:16px;height:16px;border-radius:50%;background:#122b1e;border:1px solid #1b5e3b;display:inline-flex;align-items:center;justify-content:center;font-size:10px;">✓</span>Confirmed</span>' : "";
   let h = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">';
   // Earnings Date card
-  h += '<div class="card" style="background:#14161d;border:1px solid #232733;border-radius:16px;padding:24px;">' +
+  h += '<div class="card" style="background:#101620;border:1px solid #253142;border-radius:16px;padding:24px;">' +
    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
    '<span style="color:#c99a6b;font-weight:600;font-size:13px;">Earnings Date</span>' + confirmed + "</div>" +
-   '<div style="color:#9ba1b0;font-size:13px;margin-bottom:12px;">' + esc(est.fiscal_period || "") + "</div>" +
-   '<div style="color:#fff;font-size:32px;font-weight:800;margin-bottom:4px;">' + fmtDate(est.earnings_date) + "</div>" +
-   '<div style="color:#9ba1b0;font-size:13px;">' + (est.as_of ? "Updated " + esc(est.as_of) : "") + "</div></div>";
+   '<div style="color:#8d99aa;font-size:13px;margin-bottom:12px;">' + esc(est.fiscal_period || "") + "</div>" +
+   '<div style="color:#f5f7fa;font-size:32px;font-weight:800;margin-bottom:4px;">' + fmtDate(est.earnings_date) + "</div>" +
+   '<div style="color:#8d99aa;font-size:13px;">' + (est.as_of ? "Updated " + esc(est.as_of) : "") + "</div></div>";
   // Whisper card
-  h += '<div class="card" style="background:#14161d;border:1px solid #232733;border-radius:16px;padding:24px;">' +
+  h += '<div class="card" style="background:#101620;border:1px solid #253142;border-radius:16px;padding:24px;">' +
    '<div style="color:#c99a6b;font-weight:600;font-size:13px;margin-bottom:6px;">Earnings Whisper</div>' +
-   '<div style="color:#fff;font-size:32px;font-weight:800;min-height:38px;display:flex;align-items:center;">' + whisper + "</div>" +
-   '<div style="color:#9ba1b0;font-size:13px;margin-top:8px;">vs ' + consensusEps + "</div>" +
-   '<div style="color:#9ba1b0;font-size:13px;">Rev est ' + revEst + "</div></div>";
+   '<div style="color:#f5f7fa;font-size:32px;font-weight:800;min-height:38px;display:flex;align-items:center;">' + whisper + "</div>" +
+   '<div style="color:#8d99aa;font-size:13px;margin-top:8px;">vs ' + consensusEps + "</div>" +
+   '<div style="color:#8d99aa;font-size:13px;">Rev est ' + revEst + "</div></div>";
   h += "</div>";
   // EPS bar chart (logo colors: gold for estimated, forest green for actual)
   const epsHist = est.eps_history || [];
   if (epsHist.length > 0) {
    const chartId = "eps-chart-" + tk.replace(/[^A-Z0-9]/gi, "");
-   h += '<div class="card" style="background:#14161d;border:1px solid #232733;border-radius:16px;padding:24px;margin-bottom:16px;">' +
-    '<div style="color:#fff;font-size:20px;font-weight:700;margin-bottom:12px;">Earnings</div>' +
-    '<div style="display:flex;gap:24px;margin-bottom:16px;font-size:13px;color:#9ba1b0;">' +
-    '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#c9a86a;margin-right:6px;"></span>Estimated EPS</span>' +
+   h += '<div class="card" style="background:#101620;border:1px solid #253142;border-radius:16px;padding:24px;margin-bottom:16px;">' +
+    '<div style="color:#f5f7fa;font-size:20px;font-weight:700;margin-bottom:12px;">Earnings</div>' +
+    '<div style="display:flex;gap:24px;margin-bottom:16px;font-size:13px;color:#8d99aa;">' +
+    '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d9a441;margin-right:6px;"></span>Estimated EPS</span>' +
     '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5a7d5a;margin-right:6px;"></span>Actual EPS</span></div>' +
     '<div style="position:relative;height:280px;"><canvas id="' + chartId + '"></canvas></div>';
    if (est.earnings_date) {
-    h += '<div style="margin-top:16px;padding:12px 16px;border:1px solid #2a2f3d;border-radius:12px;color:#c8d0dc;font-size:14px;">' +
-     '<b style="color:#fff;">Next earnings:</b> Expected on ' + fmtDate(est.earnings_date) + "</div>";
+    h += '<div style="margin-top:16px;padding:12px 16px;border:1px solid #2a2f3d;border-radius:12px;color:#dbe5f1;font-size:14px;">' +
+     '<b style="color:#f5f7fa;">Next earnings:</b> Expected on ' + fmtDate(est.earnings_date) + "</div>";
    }
    h += "</div>";
    // Store data for chart rendering
@@ -7877,7 +7878,7 @@ route("alerts", function () {
      {
       label: "Estimated EPS",
       data: hist.map((e) => e.estimated_eps),
-      backgroundColor: "#c9a86a",
+      backgroundColor: "#d9a441",
       borderRadius: 4,
      },
      {
@@ -7900,9 +7901,9 @@ route("alerts", function () {
      },
     },
     scales: {
-     x: { ticks: { color: "#9ba1b0" }, grid: { display: false } },
+     x: { ticks: { color: "#8d99aa" }, grid: { display: false } },
      y: {
-      ticks: { color: "#9ba1b0", callback: (v) => "$" + v.toFixed(2) },
+      ticks: { color: "#8d99aa", callback: (v) => "$" + v.toFixed(2) },
       grid: { color: "rgba(42,46,57,0.4)" },
      },
     },
@@ -7927,7 +7928,7 @@ route("alerts", function () {
    const drift = p.drift_90d_pct;
    const driftCls = drift == null ? "" : drift > 0.5 ? "bullish" : drift < -0.5 ? "bearish" : "neutral";
    const driftTxt = drift == null ? " - " : (drift >= 0 ? "+" : "") + drift.toFixed(1) + "%";
-   const rev = (u, d) => '<span style="color:#6a9a6a;">▲' + u + '</span> <span style="color:#f87171;">▼' + d + '</span>';
+   const rev = (u, d) => '<span style="color:#4dd2aa;">▲' + u + '</span> <span style="color:#f37d83;">▼' + d + '</span>';
    // Revenue consensus from earnings_estimates (matched by period label)
    let revCell = '<span style="color:var(--muted)">N/A</span>';
    if (est) {
@@ -7942,20 +7943,20 @@ route("alerts", function () {
     '<td class="' + driftCls + '">' + driftTxt + "</td></tr>";
   };
   const asOf = (r && r.as_of) || (est && est.as_of) || "";
-  return '<div class="card"><div style="font-size:13px;color:#c8d0dc;margin-bottom:10px;">Analyst EPS and revenue estimates, up/down counts and 90-day consensus drift.</div>' +
-   '<div class="table-wrap"><table class="coverage ma-table" style="color:#e8ecf1;"><thead><tr>' +
-   '<th style="color:#a8b0bc;">Period</th><th style="color:#a8b0bc;">Consensus EPS</th><th style="color:#a8b0bc;">Revenue Est.</th><th style="color:#a8b0bc;">7-day</th><th style="color:#a8b0bc;">30-day</th><th style="color:#a8b0bc;">90-day drift</th>' +
+  return '<div class="card"><div style="font-size:13px;color:#dbe5f1;margin-bottom:10px;">Analyst EPS and revenue estimates, up/down counts and 90-day consensus drift.</div>' +
+   '<div class="table-wrap"><table class="coverage ma-table" style="color:#dbe5f1;"><thead><tr>' +
+   '<th style="color:#8d99aa;">Period</th><th style="color:#8d99aa;">Consensus EPS</th><th style="color:#8d99aa;">Revenue Est.</th><th style="color:#8d99aa;">7-day</th><th style="color:#8d99aa;">30-day</th><th style="color:#8d99aa;">90-day drift</th>' +
    "</tr></thead><tbody>" +
    row("Upcoming quarter", r && r.quarter) + row("Full year", r && r.annual) +
-   '</tbody></table></div><div class="panel-asof" style="color:#a8b0bc;">As of ' + esc(asOf) + " · Source: Yahoo Finance</div></div>";
+   '</tbody></table></div><div class="panel-asof" style="color:#8d99aa;">As of ' + esc(asOf) + " · Source: Yahoo Finance</div></div>";
  }
 
  /* ---------- Earnings Call Tone (Pro, Gemini Flash NLP) ---------- */
  function toneHtml(tk, d) {
   if (!d || d.confidenceScore == null) return '<div class="card"><p style="color:var(--muted)">No transcript analysis available yet for this ticker.</p></div>';
-  const toneCls = d.netToneScore > 40 ? "#3fb950" : d.netToneScore >= 0 ? "#d29922" : "#f85149";
+  const toneCls = d.netToneScore > 40 ? "#4dd2aa" : d.netToneScore >= 0 ? "#e0aa46" : "#f37d83";
   const delta = d.toneShiftDelta || 0;
-  const deltaCls = delta >= 0 ? "#3fb950" : "#f85149";
+  const deltaCls = delta >= 0 ? "#4dd2aa" : "#f37d83";
   const deltaTxt = (delta >= 0 ? "▲ +" : "▼ ") + delta + " pts";
   const pillars = d.pillarBreakdown || {};
   const pillarNames = { demandEnvironment: "Demand Environment", pricingPower: "Pricing Power", marginOutlook: "Margin Outlook", capexAndAi: "CapEx & AI" };
@@ -7964,40 +7965,40 @@ route("alerts", function () {
    const p = pillars[k];
    if (!p) return;
    const sc = p.score || 0;
-   const scCls = sc >= 80 ? "#3fb950" : sc >= 60 ? "#58a6ff" : "#f85149";
-   pillarHtml += '<div style="background:#161b26;border-radius:8px;padding:12px;">' +
+   const scCls = sc >= 80 ? "#4dd2aa" : sc >= 60 ? "#58a6ff" : "#f37d83";
+   pillarHtml += '<div style="background:#101620;border-radius:8px;padding:12px;">' +
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
-    '<span style="font-size:12px;color:#e8ecf1;font-weight:600;">' + pillarNames[k] + '</span>' +
+    '<span style="font-size:12px;color:#dbe5f1;font-weight:600;">' + pillarNames[k] + '</span>' +
     '<span style="font-size:14px;font-weight:700;color:' + scCls + ';">' + sc + '</span></div>' +
-    '<div style="font-size:12px;color:#a8b0bc;line-height:1.5;">' + esc(p.assessment || "") + '</div></div>';
+    '<div style="font-size:12px;color:#8d99aa;line-height:1.5;">' + esc(p.assessment || "") + '</div></div>';
   });
   let qaHtml = "";
   (d.qaDeconstruction || []).forEach((q) => {
-   const convCls = q.defenseConviction === "High" ? "#3fb950" : q.defenseConviction === "Moderate" ? "#d29922" : "#f85149";
-   qaHtml += '<div style="background:#161b26;border-radius:8px;padding:14px;margin-bottom:10px;">' +
+   const convCls = q.defenseConviction === "High" ? "#4dd2aa" : q.defenseConviction === "Moderate" ? "#e0aa46" : "#f37d83";
+   qaHtml += '<div style="background:#101620;border-radius:8px;padding:14px;margin-bottom:10px;">' +
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">' +
-    '<span style="font-size:13px;font-weight:700;color:#fff;">' + esc(q.analyst || "Analyst") + '</span>' +
+    '<span style="font-size:13px;font-weight:700;color:#f5f7fa;">' + esc(q.analyst || "Analyst") + '</span>' +
     '<span style="font-size:11px;color:' + convCls + ';font-weight:600;">Conviction: ' + esc(q.defenseConviction || "") + '</span></div>' +
-    '<div style="font-size:11px;color:#8b949e;margin-bottom:4px;">' + esc(q.targetTheme || "") + '</div>' +
-    '<div style="font-size:12px;color:#e8ecf1;margin-bottom:6px;"><b style="color:#8b949e;">Q:</b> ' + esc(q.questionSummary || "") + '</div>' +
-    '<div style="font-size:12px;color:#e8ecf1;"><b style="color:#c9a961;">Defense:</b> ' + esc(q.managementDefense || "") + '</div></div>';
+    '<div style="font-size:11px;color:#8d99aa;margin-bottom:4px;">' + esc(q.targetTheme || "") + '</div>' +
+    '<div style="font-size:12px;color:#dbe5f1;margin-bottom:6px;"><b style="color:#8d99aa;">Q:</b> ' + esc(q.questionSummary || "") + '</div>' +
+    '<div style="font-size:12px;color:#dbe5f1;"><b style="color:#d9a441;">Defense:</b> ' + esc(q.managementDefense || "") + '</div></div>';
   });
   const kwHtml = (d.hedgingKeywordsFound || []).map((kw) =>
-   '<span style="background:#1a2332;border:1px solid #2a3448;color:#a8b0bc;padding:2px 8px;border-radius:4px;font-size:11px;">"' + esc(kw) + '"</span>').join(" ");
+   '<span style="background:#101620;border:1px solid #253142;color:#8d99aa;padding:2px 8px;border-radius:4px;font-size:11px;">"' + esc(kw) + '"</span>').join(" ");
   return '<div class="card">' +
    '<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:16px;">' +
-   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">CONFIDENCE</div>' +
-   '<div style="font-size:32px;font-weight:700;color:#fff;">' + d.confidenceScore + '<span style="font-size:14px;color:#8b949e;">/100</span></div></div>' +
-   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">TONE</div>' +
+   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">CONFIDENCE</div>' +
+   '<div style="font-size:32px;font-weight:700;color:#f5f7fa;">' + d.confidenceScore + '<span style="font-size:14px;color:#8d99aa;">/100</span></div></div>' +
+   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">TONE</div>' +
    '<div style="font-size:20px;font-weight:700;color:' + toneCls + ';">' + esc(d.toneClassification || "") + '</div></div>' +
-   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">QOQ SHIFT</div>' +
+   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">QOQ SHIFT</div>' +
    '<div style="font-size:20px;font-weight:700;color:' + deltaCls + ';">' + deltaTxt + '</div></div>' +
-   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">HEDGING</div>' +
-   '<div style="font-size:16px;font-weight:600;color:#e8ecf1;">' + esc(d.hedgingFrequency || "") + '</div></div></div>' +
-   '<div style="font-size:12px;color:#8b949e;margin-bottom:12px;">' + esc(d.quarter || "") + ' call · Net tone ' + (d.netToneScore >= 0 ? "+" : "") + d.netToneScore + ' · Keywords: ' + kwHtml + '</div>' +
-   '<div style="font-size:13px;font-weight:700;color:#fff;margin:14px 0 8px;">PILLAR BREAKDOWN</div>' +
+   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">HEDGING</div>' +
+   '<div style="font-size:16px;font-weight:600;color:#dbe5f1;">' + esc(d.hedgingFrequency || "") + '</div></div></div>' +
+   '<div style="font-size:12px;color:#8d99aa;margin-bottom:12px;">' + esc(d.quarter || "") + ' call · Net tone ' + (d.netToneScore >= 0 ? "+" : "") + d.netToneScore + ' · Keywords: ' + kwHtml + '</div>' +
+   '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin:14px 0 8px;">PILLAR BREAKDOWN</div>' +
    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:6px;">' + pillarHtml + '</div>' +
-   '<div style="font-size:13px;font-weight:700;color:#fff;margin:14px 0 8px;">Q&A DECONSTRUCTION</div>' + qaHtml +
+   '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin:14px 0 8px;">Q&A DECONSTRUCTION</div>' + qaHtml +
    '<div class="panel-asof">AI analysis via Gemini Flash · Source: earnings call transcript</div></div>';
  }
  function earningsHtml(tk) {
@@ -8023,7 +8024,7 @@ route("alerts", function () {
   const caseCol = (title, items, headerBg) => {
    if (!items || !items.length) return "";
    return '<div style="flex:1;min-width:280px;border:1px solid var(--border);border-radius:8px;overflow:hidden;">' +
-    '<div style="background:' + headerBg + ';color:#fff;font-weight:700;padding:10px 14px;font-size:14px;">' + title + "</div>" +
+    '<div style="background:' + headerBg + ';color:#f5f7fa;font-weight:700;padding:10px 14px;font-size:14px;">' + title + "</div>" +
     '<div style="padding:12px 14px;">' + items.map((c) =>
      '<div style="margin-bottom:12px;"><div style="font-size:13.5px;"><span style="color:' + headerBg + ';">●</span> <b>' + esc(c.title || "") + "</b></div>" +
      '<ul style="margin:6px 0 6px 18px;color:var(--muted);font-size:13.5px;">' +
@@ -8106,7 +8107,7 @@ route("alerts", function () {
  }
 
  // Valuation multiples section (free): market cap, EV, year switcher, multiple cards
- // Logo colors: forest green #46634d, gold #c7af7f
+ // Logo colors: forest green #46634d, gold #d9a441
  function valuationHtml(t) {
   const v = t.valuation;
   if (!v || !v.years || !v.years.length)
@@ -8125,22 +8126,22 @@ route("alerts", function () {
   const defIdx = v.years.findIndex((y) => y.is_estimate);
   const dIdx = defIdx >= 0 ? defIdx : 0;
   let h = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">' +
-   '<div style="background:#16191f;border:1px solid #232833;border-radius:12px;padding:16px;">' +
-   '<div style="font-size:12px;color:#9ba3af;margin-bottom:6px;">Market cap</div>' +
-   '<div style="font-size:24px;font-weight:800;color:#c7af7f;">' + fmtBig(v.market_cap) + "</div></div>" +
-   '<div style="background:#16191f;border:1px solid #232833;border-radius:12px;padding:16px;">' +
-   '<div style="font-size:12px;color:#9ba3af;margin-bottom:6px;">Enterprise value</div>' +
-   '<div style="font-size:24px;font-weight:800;color:#c7af7f;">' + fmtBig(v.enterprise_value) + "</div></div>" +
+   '<div style="background:#101620;border:1px solid #101620;border-radius:12px;padding:16px;">' +
+   '<div style="font-size:12px;color:#8d99aa;margin-bottom:6px;">Market cap</div>' +
+   '<div style="font-size:24px;font-weight:800;color:#d9a441;">' + fmtBig(v.market_cap) + "</div></div>" +
+   '<div style="background:#101620;border:1px solid #101620;border-radius:12px;padding:16px;">' +
+   '<div style="font-size:12px;color:#8d99aa;margin-bottom:6px;">Enterprise value</div>' +
+   '<div style="font-size:24px;font-weight:800;color:#d9a441;">' + fmtBig(v.enterprise_value) + "</div></div>" +
    "</div>";
   // Year switcher pills
   h += '<div id="' + uid + '-pills" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">' +
    v.years.map((y, i) =>
     '<button data-vyear="' + i + '" style="padding:6px 18px;font-size:13px;font-weight:700;border:0;border-radius:999px;cursor:pointer;' +
-    (i === dIdx ? "background:#c7af7f;color:#0d0f12;" : "background:#1c2028;color:#9ba3af;") + '">' +
+    (i === dIdx ? "background:#d9a441;color:#0d0f12;" : "background:#1c2028;color:#8d99aa;") + '">' +
     esc(y.label) + "</button>").join("") + "</div>";
   // Multiple cards grid (data embedded as JSON in data attribute)
   h += '<div id="' + uid + '-cards" data-years=\'' + JSON.stringify(v.years).replace(/'/g, "&#39;") + "'></div>";
-  h += '<div style="font-size:11px;color:#8b93a7;margin-top:10px;">' +
+  h += '<div style="font-size:11px;color:#647184;margin-top:10px;">' +
    "TTM figures from reported financials. Forward estimates from analyst consensus (Yahoo Finance). " +
    "EV/GP, EV/EBITDA, EV/EBIT and EV/FCF for estimate years hold TTM margins flat." +
    (v.collected_at ? " Updated " + esc(v.collected_at) + "." : "") + "</div>";
@@ -8166,16 +8167,16 @@ route("alerts", function () {
   ];
   el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">' +
    cards.map((c) =>
-    '<div style="background:#16191f;border:1px solid #232833;border-radius:12px;padding:14px;">' +
-    '<div style="font-size:12px;color:#9ba3af;margin-bottom:6px;">' + c[0] + "</div>" +
-    '<div style="font-size:22px;font-weight:800;color:' + (c[1] === "N/A" ? "#5a6270" : "#e8ecf1") + ';">' + c[1] + "</div></div>"
+    '<div style="background:#101620;border:1px solid #101620;border-radius:12px;padding:14px;">' +
+    '<div style="font-size:12px;color:#8d99aa;margin-bottom:6px;">' + c[0] + "</div>" +
+    '<div style="font-size:22px;font-weight:800;color:' + (c[1] === "N/A" ? "#5a6270" : "#dbe5f1") + ';">' + c[1] + "</div></div>"
    ).join("") + "</div>";
   // Update pill styles
   const pills = document.getElementById("val-" + tk + "-pills");
   if (pills) pills.querySelectorAll("button").forEach((b) => {
    const active = parseInt(b.dataset.vyear, 10) === yearIdx;
-   b.style.background = active ? "#c7af7f" : "#1c2028";
-   b.style.color = active ? "#0d0f12" : "#9ba3af";
+   b.style.background = active ? "#d9a441" : "#1c2028";
+   b.style.color = active ? "#0d0f12" : "#8d99aa";
   });
  }
 
@@ -8199,19 +8200,19 @@ route("alerts", function () {
   const uid = "bal-" + t.ticker;
   return '<div style="margin-bottom:20px;">' +
    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">' +
-   '<div style="font-size:14px;font-weight:700;color:#e8ecf1;">Balance Sheet Health & Liquidity</div>' +
-   '<div class="inc-toggle" id="' + uid + '-toggle" style="display:inline-flex;padding:3px;background:#0f1420;border-radius:8px;">' +
-   '<button data-mode="balance_annual" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:transparent;color:#8b93a7;">Annual</button>' +
-   '<button data-mode="balance_quarterly" class="active" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:#2a4a73;color:#fff;">Quarterly</button>' +
+   '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">Balance Sheet Health & Liquidity</div>' +
+   '<div class="inc-toggle" id="' + uid + '-toggle" style="display:inline-flex;padding:3px;background:#0d131d;border-radius:8px;">' +
+   '<button data-mode="balance_annual" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:transparent;color:#647184;">Annual</button>' +
+   '<button data-mode="balance_quarterly" class="active" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:#253142;color:#f5f7fa;">Quarterly</button>' +
    "</div></div>" +
    '<div class="zoomable-chart" data-chart="balance" data-ticker="' + esc(t.ticker) + '" data-mode="balance_quarterly" id="' + uid + '-wrap" style="position:relative;height:300px;cursor:zoom-in;" title="Click to zoom">' +
    '<canvas id="' + uid + '-canvas"></canvas></div>' +
-   '<div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:10px;font-size:12px;color:#c8d0dc;flex-wrap:wrap;">' +
-   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#3fb950;display:inline-block;"></span>Cash & equivalents</span>' +
-   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#f85149;display:inline-block;"></span>Total debt</span>' +
+   '<div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:10px;font-size:12px;color:#dbe5f1;flex-wrap:wrap;">' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#4dd2aa;display:inline-block;"></span>Cash & equivalents</span>' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#f37d83;display:inline-block;"></span>Total debt</span>' +
    '<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;border:2px solid #f97316;display:inline-block;"></span>Current ratio</span>' +
    "</div>" +
-   (ic.collected_at ? '<div style="font-size:11px;color:#8b93a7;margin-top:6px;text-align:right;">Updated ' + esc(ic.collected_at) + "</div>" : "") +
+   (ic.collected_at ? '<div style="font-size:11px;color:#647184;margin-top:6px;text-align:right;">Updated ' + esc(ic.collected_at) + "</div>" : "") +
    "</div>";
  }
 
@@ -8240,20 +8241,20 @@ route("alerts", function () {
     datasets: [
      { type: "line", label: "Current ratio", data: records.map((r) => r.current_ratio),
        borderColor: "#f97316", borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
-       pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+       pointBackgroundColor: "#0d131d", pointBorderColor: "#f97316", pointBorderWidth: 2,
        yAxisID: "yRatio", order: 1, tension: 0.15, spanGaps: true },
      { type: "bar", label: "Cash & equivalents", data: records.map((r) => r.cash),
-       backgroundColor: "#3fb950", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 2 },
+       backgroundColor: "#4dd2aa", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 2 },
      { type: "bar", label: "Total debt", data: records.map((r) => r.total_debt),
-       backgroundColor: "#f85149", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 3 },
+       backgroundColor: "#f37d83", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 3 },
     ],
    },
    options: {
     responsive: true, maintainAspectRatio: false, animation: false,
     interaction: { mode: "index", intersect: false },
     plugins: { legend: { display: false },
-     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-      titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+     tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+      titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
       callbacks: { label: (c) => {
        if (c.dataset.yAxisID === "yRatio")
         return " Current ratio: " + (c.parsed.y == null ? "N/A" : c.parsed.y.toFixed(2) + "x");
@@ -8265,12 +8266,12 @@ route("alerts", function () {
        return " " + c.dataset.label + ": " + fmtMoney(c.parsed.y) + extra;
       } } } },
     scales: {
-     x: { ticks: { color: "#e8ecf1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
+     x: { ticks: { color: "#dbe5f1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
      yRatio: { type: "linear", position: "left",
-      ticks: { color: "#a1a1aa", callback: (v) => v + "x", font: { size: 11 } },
-      grid: { color: (c) => c.tick.value === 0 ? "#52525b" : "rgba(42,46,57,0.35)" } },
+      ticks: { color: "#8d99aa", callback: (v) => v + "x", font: { size: 11 } },
+      grid: { color: (c) => c.tick.value === 0 ? "#647184" : "rgba(42,46,57,0.35)" } },
      yAmount: { type: "linear", position: "right",
-      ticks: { color: "#a1a1aa", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
+      ticks: { color: "#8d99aa", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
     },
    },
   });
@@ -8279,8 +8280,8 @@ route("alerts", function () {
   const tog = document.getElementById(uid + "-toggle");
   if (tog) tog.querySelectorAll("button").forEach((b) => {
    const active = b.dataset.mode === mode;
-   b.style.background = active ? "#2a4a73" : "transparent";
-   b.style.color = active ? "#fff" : "#8b93a7";
+   b.style.background = active ? "#253142" : "transparent";
+   b.style.color = active ? "#f5f7fa" : "#647184";
   });
  }
 
@@ -8291,20 +8292,20 @@ route("alerts", function () {
   const uid = "cf-" + t.ticker;
   return '<div style="margin-bottom:20px;">' +
    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">' +
-   '<div style="font-size:14px;font-weight:700;color:#e8ecf1;">Cash Flow & FCF Margin</div>' +
-   '<div class="inc-toggle" id="' + uid + '-toggle" style="display:inline-flex;padding:3px;background:#0f1420;border-radius:8px;">' +
-   '<button data-mode="cashflow_annual" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:transparent;color:#8b93a7;">Annual</button>' +
-   '<button data-mode="cashflow_quarterly" class="active" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:#2a4a73;color:#fff;">Quarterly</button>' +
+   '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">Cash Flow & FCF Margin</div>' +
+   '<div class="inc-toggle" id="' + uid + '-toggle" style="display:inline-flex;padding:3px;background:#0d131d;border-radius:8px;">' +
+   '<button data-mode="cashflow_annual" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:transparent;color:#647184;">Annual</button>' +
+   '<button data-mode="cashflow_quarterly" class="active" style="padding:5px 14px;font-size:12px;font-weight:600;border:0;border-radius:6px;cursor:pointer;background:#253142;color:#f5f7fa;">Quarterly</button>' +
    "</div></div>" +
    '<div class="zoomable-chart" data-chart="cashflow" data-ticker="' + esc(t.ticker) + '" data-mode="cashflow_quarterly" id="' + uid + '-wrap" style="position:relative;height:300px;cursor:zoom-in;" title="Click to zoom">' +
    '<canvas id="' + uid + '-canvas"></canvas></div>' +
-   '<div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:10px;font-size:12px;color:#c8d0dc;flex-wrap:wrap;">' +
+   '<div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-top:10px;font-size:12px;color:#dbe5f1;flex-wrap:wrap;">' +
    '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#3b82f6;display:inline-block;"></span>Operating cash flow</span>' +
-   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#f85149;display:inline-block;"></span>CapEx</span>' +
+   '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#f37d83;display:inline-block;"></span>CapEx</span>' +
    '<span style="display:flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:#22d3ee;display:inline-block;"></span>Free cash flow</span>' +
    '<span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;border:2px solid #f97316;display:inline-block;"></span>FCF margin %</span>' +
    "</div>" +
-   (ic.collected_at ? '<div style="font-size:11px;color:#8b93a7;margin-top:6px;text-align:right;">Updated ' + esc(ic.collected_at) + "</div>" : "") +
+   (ic.collected_at ? '<div style="font-size:11px;color:#647184;margin-top:6px;text-align:right;">Updated ' + esc(ic.collected_at) + "</div>" : "") +
    "</div>";
  }
 
@@ -8333,12 +8334,12 @@ route("alerts", function () {
     datasets: [
      { type: "line", label: "FCF margin %", data: records.map((r) => r.fcf_margin_pct),
        borderColor: "#f97316", borderWidth: 2, pointRadius: 4, pointHoverRadius: 6,
-       pointBackgroundColor: "#131722", pointBorderColor: "#f97316", pointBorderWidth: 2,
+       pointBackgroundColor: "#0d131d", pointBorderColor: "#f97316", pointBorderWidth: 2,
        yAxisID: "yMargin", order: 1, tension: 0.15, spanGaps: true },
      { type: "bar", label: "Operating cash flow", data: records.map((r) => r.operating_cash_flow),
        backgroundColor: "#3b82f6", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 2 },
      { type: "bar", label: "CapEx", data: records.map((r) => r.capex),
-       backgroundColor: "#f85149", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 3 },
+       backgroundColor: "#f37d83", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 3 },
      { type: "bar", label: "Free cash flow", data: records.map((r) => r.free_cash_flow),
        backgroundColor: "#22d3ee", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 4 },
     ],
@@ -8347,18 +8348,18 @@ route("alerts", function () {
     responsive: true, maintainAspectRatio: false, animation: false,
     interaction: { mode: "index", intersect: false },
     plugins: { legend: { display: false },
-     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1,
-      titleColor: "#d1d4dc", bodyColor: "#d1d4dc", padding: 12,
+     tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+      titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
       callbacks: { label: (c) => c.dataset.yAxisID === "yMargin"
        ? " FCF margin: " + (c.parsed.y == null ? "N/A" : c.parsed.y.toFixed(1) + "%")
        : " " + c.dataset.label + ": " + fmtMoney(c.parsed.y) } } },
     scales: {
-     x: { ticks: { color: "#e8ecf1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
+     x: { ticks: { color: "#dbe5f1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
      yMargin: { type: "linear", position: "left",
-      ticks: { color: "#a1a1aa", callback: (v) => v + "%", font: { size: 11 } },
-      grid: { color: (c) => c.tick.value === 0 ? "#52525b" : "rgba(42,46,57,0.35)" } },
+      ticks: { color: "#8d99aa", callback: (v) => v + "%", font: { size: 11 } },
+      grid: { color: (c) => c.tick.value === 0 ? "#647184" : "rgba(42,46,57,0.35)" } },
      yAmount: { type: "linear", position: "right",
-      ticks: { color: "#a1a1aa", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
+      ticks: { color: "#8d99aa", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
     },
    },
   });
@@ -8367,8 +8368,8 @@ route("alerts", function () {
   const tog = document.getElementById(uid + "-toggle");
   if (tog) tog.querySelectorAll("button").forEach((b) => {
    const active = b.dataset.mode === mode;
-   b.style.background = active ? "#2a4a73" : "transparent";
-   b.style.color = active ? "#fff" : "#8b93a7";
+   b.style.background = active ? "#253142" : "transparent";
+   b.style.color = active ? "#f5f7fa" : "#647184";
   });
  }
 
@@ -8410,7 +8411,7 @@ route("alerts", function () {
   if (hist.length && sampled[sampled.length - 1] !== hist[hist.length - 1]) sampled.push(hist[hist.length - 1]);
   const modelMs = Date.parse((D.models_as_of || t.price_date || "") + "T12:00:00Z");
   const paths = t.fv_paths || {};
-  const scen = [["bear", "Bear", "#f87171"], ["base", "Base", "#e8a33d"], ["bull", "Bull", "#34c47c"]];
+  const scen = [["bear", "Bear", "#f37d83"], ["base", "Base", "#e8a33d"], ["bull", "Bull", "#34c47c"]];
   const labelSet = new Set(sampled.map((p) => p[0]));
   const pathPts = {};
   scen.forEach(([k]) => {
@@ -8424,12 +8425,12 @@ route("alerts", function () {
   const labels = Array.from(labelSet).sort((a, b) => a - b);
   const align = (pts) => { const m = new Map(pts.map((p) => [p.x, p.y])); return labels.map((x) => (m.has(x) ? m.get(x) : null)); };
   const priceData = align(sampled.map((p) => ({ x: p[0], y: p[1] })));
-  const datasets = [{ label: "Price", data: priceData, borderColor: "#c9a961", backgroundColor: "rgba(201,169,97,0.08)",
-   fill: true, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: "#c9a961",
-   pointHoverBorderColor: "#fff", tension: 0.2, spanGaps: true }];
+  const datasets = [{ label: "Price", data: priceData, borderColor: "#d9a441", backgroundColor: "rgba(217,164,65,0.08)",
+   fill: true, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: "#d9a441",
+   pointHoverBorderColor: "#f5f7fa", tension: 0.2, spanGaps: true }];
   scen.forEach(([k, lbl, color]) => {
    if (!pathPts[k]) return;
-   datasets.push({ label: lbl, data: align(pathPts[k]), borderColor: color, backgroundColor: "#0a0f1a",
+   datasets.push({ label: lbl, data: align(pathPts[k]), borderColor: color, backgroundColor: "#0a0e17",
     fill: false, borderWidth: 2.5, pointRadius: 3, pointBorderColor: color, pointBorderWidth: 2,
     pointHoverRadius: 6, tension: 0.25, spanGaps: true });
   });
@@ -8437,8 +8438,8 @@ route("alerts", function () {
   const ann = {};
   if (hasPaths && !isNaN(modelMs)) {
    ann.modelDate = { type: "line", xMin: modelMs, xMax: modelMs, borderColor: "rgba(200,208,220,0.45)", borderWidth: 1, borderDash: [4, 5],
-    label: { display: true, content: "MODEL DATE", position: "start", color: "#8b949e", font: { size: 9 } } };
-   if (t.price != null) ann.spot = { type: "line", xMin: modelMs, yMin: t.price, yMax: t.price, borderColor: "rgba(201,169,97,0.45)", borderWidth: 1, borderDash: [2, 5] };
+    label: { display: true, content: "MODEL DATE", position: "start", color: "#8d99aa", font: { size: 9 } } };
+   if (t.price != null) ann.spot = { type: "line", xMin: modelMs, yMin: t.price, yMax: t.price, borderColor: "rgba(217,164,65,0.45)", borderWidth: 1, borderDash: [2, 5] };
   }
   return {
    type: "line",
@@ -8448,8 +8449,8 @@ route("alerts", function () {
     plugins: {
      legend: hasPaths ? { labels: { color: "#a8b0bd", boxWidth: 12, font: { size: 11 } } } : { display: false },
      annotation: { annotations: ann },
-     tooltip: { backgroundColor: "#253041", borderColor: "#c9a961", borderWidth: 1,
-      titleColor: "#ffffff", bodyColor: "#e8ecf1", padding: 12, displayColors: true,
+     tooltip: { backgroundColor: "#253041", borderColor: "#d9a441", borderWidth: 1,
+      titleColor: "#f5f7fa", bodyColor: "#dbe5f1", padding: 12, displayColors: true,
       filter: (item) => item.parsed.y != null,
       callbacks: {
        title: (items) => {
@@ -8472,8 +8473,8 @@ route("alerts", function () {
         return "";
        }
       } } },
-    scales: { x: { type: "time", time: { unit: "year" }, ticks: { color: "#7a8494", maxTicksLimit: 10, maxRotation: 0 }, grid: { display: false } },
-     y: { ticks: { color: "#7a8494", callback: (v) => "$" + v }, grid: { color: "#333f52" } } } }
+    scales: { x: { type: "time", time: { unit: "year" }, ticks: { color: "#647184", maxTicksLimit: 10, maxRotation: 0 }, grid: { display: false } },
+     y: { ticks: { color: "#647184", callback: (v) => "$" + v }, grid: { color: "#253142" } } } }
   };
  }
  function drawPriceChart(t) {
@@ -8487,7 +8488,7 @@ route("alerts", function () {
   if (!el || !fcf.base) return;
   const years = fcf.base.years || [];
   const ds = [];
-  const cfg = [["bear", "#f87171", "Bear"], ["base", "#c9a961", "Base"], ["bull", "#6a9a6a", "Bull"]];
+  const cfg = [["bear", "#f37d83", "Bear"], ["base", "#d9a441", "Base"], ["bull", "#4dd2aa", "Bull"]];
   cfg.forEach(([k, color, lbl]) => {
    if (fcf[k] && fcf[k].fcf_m) ds.push({ label: lbl, data: fcf[k].fcf_m, backgroundColor: color, borderRadius: 3 });
   });
@@ -8497,8 +8498,8 @@ route("alerts", function () {
    options: { responsive: true, maintainAspectRatio: false,
     plugins: { legend: { labels: { color: "#a8b0bd" } },
      tooltip: { callbacks: { label: (c) => " " + c.dataset.label + ": " + fmtM(c.parsed.y) } } },
-    scales: { x: { ticks: { color: "#7a8494" }, grid: { display: false } },
-     y: { ticks: { color: "#7a8494", callback: (v) => "$" + v + "M" }, grid: { color: "#333f52" } } } }
+    scales: { x: { ticks: { color: "#647184" }, grid: { display: false } },
+     y: { ticks: { color: "#647184", callback: (v) => "$" + v + "M" }, grid: { color: "#253142" } } } }
   });
  }
 
@@ -8577,23 +8578,23 @@ route("alerts", function () {
   sandboxChart = new Chart(ctx, {
    type: "line",
    data: { labels: [], datasets: [
-    { label: "Bull", borderColor: "#6a9a6a", backgroundColor: "rgba(106,154,106,0.12)", fill: true, tension: 0.3, pointRadius: 0, pointHoverRadius: 5, data: [] },
-    { label: "Base", borderColor: "#c9a961", backgroundColor: "rgba(201,169,97,0.12)", fill: true, tension: 0.3, pointRadius: 0, pointHoverRadius: 5, data: [] },
-    { label: "Bear", borderColor: "#f87171", backgroundColor: "rgba(248,113,113,0.10)", fill: true, tension: 0.3, pointRadius: 0, pointHoverRadius: 5, data: [] }
+    { label: "Bull", borderColor: "#4dd2aa", backgroundColor: "rgba(106,154,106,0.12)", fill: true, tension: 0.3, pointRadius: 0, pointHoverRadius: 5, data: [] },
+    { label: "Base", borderColor: "#d9a441", backgroundColor: "rgba(217,164,65,0.12)", fill: true, tension: 0.3, pointRadius: 0, pointHoverRadius: 5, data: [] },
+    { label: "Bear", borderColor: "#f37d83", backgroundColor: "rgba(248,113,113,0.10)", fill: true, tension: 0.3, pointRadius: 0, pointHoverRadius: 5, data: [] }
    ]},
    options: { responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
     plugins: { legend: { display: false },
      tooltip: {
-      titleColor: "#fff", bodyColor: "#dfe6ef", backgroundColor: "rgba(20,28,40,0.95)", borderColor: "#3a4658", borderWidth: 1,
+      titleColor: "#f5f7fa", bodyColor: "#dfe6ef", backgroundColor: "rgba(20,28,40,0.95)", borderColor: "#3a4658", borderWidth: 1,
       padding: 12, titleFont: { weight: "bold" },
       callbacks: {
        title: (items) => "Year " + items[0].label,
        label: (c) => " " + c.dataset.label + ": " + uFmt(c.parsed.y * uDiv)
       }
      } },
-    scales: { x: { title: { display: true, text: "Years", color: "#7a8494" }, ticks: { color: "#7a8494" }, grid: { display: false } },
-     y: { title: { display: true, text: "UFCF ($" + uSuf + ")", color: "#7a8494" }, ticks: { color: "#7a8494", callback: (v) => "$" + v + uSuf }, grid: { color: "#333f52" } } } }
+    scales: { x: { title: { display: true, text: "Years", color: "#647184" }, ticks: { color: "#647184" }, grid: { display: false } },
+     y: { title: { display: true, text: "UFCF ($" + uSuf + ")", color: "#647184" }, ticks: { color: "#647184", callback: (v) => "$" + v + uSuf }, grid: { color: "#253142" } } } }
   });
 
   function update() {
@@ -8641,8 +8642,8 @@ route("alerts", function () {
     '<span style="font-size:13px;color:' + color + ';font-weight:600;">' + label + '</span>' +
     '<span style="font-size:15px;color:var(--text);font-weight:700;">' + fmt$(p) +
     ' <span class="' + cls(t.price ? p / t.price - 1 : 0) + '" style="font-size:12px;font-weight:400;">(' + fmtPct(t.price ? (p / t.price - 1) * 100 : 0) + ')</span></span></div>';
-   iv.innerHTML = '<div style="font-size:13px;color:#c8d0dc;font-weight:600;margin-bottom:4px;">Implied price targets at these assumptions</div>' +
-    row("Bear case", pBear, "#f87171") + row("Base case", pBase, "#c9a961") + row("Bull case", pBull, "#6a9a6a");
+   iv.innerHTML = '<div style="font-size:13px;color:#dbe5f1;font-weight:600;margin-bottom:4px;">Implied price targets at these assumptions</div>' +
+    row("Bear case", pBear, "#f37d83") + row("Base case", pBase, "#d9a441") + row("Bull case", pBull, "#4dd2aa");
   }
   Object.values(els).forEach((el) => el.addEventListener("input", update));
   // sync number inputs with sliders both ways
@@ -8690,9 +8691,9 @@ route("alerts", function () {
   h += '<div class="section-sub">Institutional alpha factors across the full S&P 500. Refreshed twice per quarter to capture earnings-season changes. Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC.</div>';
   h += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;">';
   h += '<div style="flex:1;min-width:220px;"><label style="font-size:11px;color:var(--muted);letter-spacing:1px;">SEARCH</label><br>' +
-   '<input id="q-search" type="text" placeholder="Ticker or company" style="width:100%;background:#0d1117;border:1px solid #2a3242;border-radius:6px;color:#e8ecf1;padding:8px 10px;margin-top:4px;"></div>';
+   '<input id="q-search" type="text" placeholder="Ticker or company" style="width:100%;background:#0d1117;border:1px solid #253142;border-radius:6px;color:#dbe5f1;padding:8px 10px;margin-top:4px;"></div>';
   const slider = (id, label, min, max, step, val, unit) =>
-   '<div style="flex:1;min-width:160px;"><label style="font-size:11px;color:var(--muted);letter-spacing:1px;">' + label + ': <b id="' + id + '-v" style="color:#e8ecf1;">' + val + unit + '</b></label><br>' +
+   '<div style="flex:1;min-width:160px;"><label style="font-size:11px;color:var(--muted);letter-spacing:1px;">' + label + ': <b id="' + id + '-v" style="color:#dbe5f1;">' + val + unit + '</b></label><br>' +
    '<input id="' + id + '" type="range" min="' + min + '" max="' + max + '" step="' + step + '" value="' + val + '" style="width:100%;margin-top:8px;accent-color:#38bdf8;"></div>';
   h += slider("q-roic", "MIN ROIC", -10, 80, 1, 15, "%");
   h += slider("q-peg", "MAX PEG", 0.5, 5, 0.1, 2, "x");
@@ -8703,7 +8704,7 @@ route("alerts", function () {
   h += '</div>';
   h += '<div class="card" style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;">';
   const tog = (id, label) =>
-   '<label style="font-size:12px;color:#e8ecf1;cursor:pointer;display:flex;align-items:center;gap:8px;">' +
+   '<label style="font-size:12px;color:#dbe5f1;cursor:pointer;display:flex;align-items:center;gap:8px;">' +
    '<input id="' + id + '" type="checkbox" style="accent-color:#38bdf8;width:16px;height:16px;">' + label + '</label>';
   h += tog("q-oplev", "Revenue growth > COGS growth");
   h += tog("q-margexp", "YoY margin expansion");
@@ -8771,19 +8772,19 @@ route("alerts", function () {
    document.getElementById("q-count").textContent = rows.length + " / " + stocks.length;
    document.getElementById("q-page").textContent = "Page " + page + " of " + pages;
    body.innerHTML = slice.map((s) => {
-    const bull = s.goldenTrend ? '<span style="color:#3fb950;font-weight:700;">▲ BULL</span>' : '<span style="color:#8b8fa3;">▼ WEAK</span>';
-    const oplev = s.operatingLeverage ? '<span style="color:#3fb950;font-weight:700;">YES</span>' : '<span style="color:#8b8fa3;">-</span>';
+    const bull = s.goldenTrend ? '<span style="color:#4dd2aa;font-weight:700;">▲ BULL</span>' : '<span style="color:#647184;">▼ WEAK</span>';
+    const oplev = s.operatingLeverage ? '<span style="color:#4dd2aa;font-weight:700;">YES</span>' : '<span style="color:#647184;">-</span>';
     const fs = s.piotroskiFScore;
-    const fsc = fs == null ? "#8b8fa3" : (fs >= 8 ? "#38bdf8" : (fs >= 6 ? "#e8ecf1" : "#f85149"));
-    return '<tr><td><b style="color:#e8ecf1;">' + esc(s.ticker) + '</b> <span style="font-size:10px;color:var(--muted);">' + esc(s.companyName || "") + '</span></td>' +
+    const fsc = fs == null ? "#647184" : (fs >= 8 ? "#38bdf8" : (fs >= 6 ? "#dbe5f1" : "#f37d83"));
+    return '<tr><td><b style="color:#dbe5f1;">' + esc(s.ticker) + '</b> <span style="font-size:10px;color:var(--muted);">' + esc(s.companyName || "") + '</span></td>' +
      '<td style="text-align:right;">' + fmt$(s.price) + '</td>' +
-     '<td style="text-align:right;color:' + (s.roic >= 20 ? "#3fb950" : "#e8ecf1") + ';">' + s.roic.toFixed(1) + '%</td>' +
+     '<td style="text-align:right;color:' + (s.roic >= 20 ? "#4dd2aa" : "#dbe5f1") + ';">' + s.roic.toFixed(1) + '%</td>' +
      '<td style="text-align:right;">' + (s.pegRatio > 0 ? s.pegRatio.toFixed(2) : "N/A") + '</td>' +
      '<td style="text-align:right;">' + s.fcfYield.toFixed(1) + '%</td>' +
      '<td style="text-align:right;">' + (s.evToEbitda > 0 ? s.evToEbitda.toFixed(1) + "x" : "N/A") + '</td>' +
      '<td style="text-align:center;">' + oplev + '</td>' +
      '<td style="text-align:center;font-weight:700;color:' + fsc + ';">' + (fs == null ? "N/A" : fs + "/9") + '</td>' +
-     '<td style="text-align:right;color:' + (s.earningsSurprisePct > 0 ? "#3fb950" : (s.earningsSurprisePct < 0 ? "#f85149" : "#8b8fa3")) + ';">' +
+     '<td style="text-align:right;color:' + (s.earningsSurprisePct > 0 ? "#4dd2aa" : (s.earningsSurprisePct < 0 ? "#f37d83" : "#647184")) + ';">' +
      (s.earningsSurprisePct > 0 ? "+" : "") + s.earningsSurprisePct.toFixed(1) + '%</td>' +
      '<td style="text-align:center;">' + bull + '</td></tr>';
    }).join("") || '<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px;">No securities match the selected criteria.</td></tr>';
@@ -8857,11 +8858,11 @@ route("alerts", function () {
   if (!body) return;
   let sortK = "trend", sortD = -1;
   const sigLabel = (s) => {
-   if (s.trendScore >= 60 && s.exhaustionScore < 40) return '<span style="color:#3fb950;font-weight:700;">Healthy trend</span>';
-   if (s.trendScore >= 60 && s.exhaustionScore >= 60) return '<span style="color:#f85149;font-weight:700;">Crowded, caution</span>';
-   if (s.exhaustionScore >= 60) return '<span style="color:#d29922;font-weight:700;">Reversal risk</span>';
-   if (s.trendScore < 30) return '<span style="color:#8b949e;">Chop</span>';
-   return '<span style="color:#e8ecf1;">Developing</span>';
+   if (s.trendScore >= 60 && s.exhaustionScore < 40) return '<span style="color:#4dd2aa;font-weight:700;">Healthy trend</span>';
+   if (s.trendScore >= 60 && s.exhaustionScore >= 60) return '<span style="color:#f37d83;font-weight:700;">Crowded, caution</span>';
+   if (s.exhaustionScore >= 60) return '<span style="color:#e0aa46;font-weight:700;">Reversal risk</span>';
+   if (s.trendScore < 30) return '<span style="color:#8d99aa;">Chop</span>';
+   return '<span style="color:#dbe5f1;">Developing</span>';
   };
   const draw = () => {
    const rows = Object.keys(tk).map((k) => ({ k, s: tk[k] }));
@@ -8876,14 +8877,14 @@ route("alerts", function () {
    });
    body.innerHTML = rows.map((r) => {
     const s = r.s;
-    const tc = s.trendScore >= 60 ? "#3fb950" : s.trendScore >= 30 ? "#d29922" : "#8b949e";
-    const ec = s.exhaustionScore >= 60 ? "#f85149" : s.exhaustionScore >= 30 ? "#d29922" : "#3fb950";
+    const tc = s.trendScore >= 60 ? "#4dd2aa" : s.trendScore >= 30 ? "#e0aa46" : "#8d99aa";
+    const ec = s.exhaustionScore >= 60 ? "#f37d83" : s.exhaustionScore >= 30 ? "#e0aa46" : "#4dd2aa";
     return '<tr style="cursor:pointer;" data-tk="' + r.k + '">' +
      '<td style="font-weight:700;"><a href="#/' + r.k + '" style="color:#58a6ff;">' + r.k + "</a></td>" +
      '<td style="text-align:right;">$' + s.price.toFixed(2) + "</td>" +
      '<td style="text-align:right;color:' + tc + ';font-weight:700;">' + s.trendScore + "</td>" +
      '<td style="text-align:right;color:' + ec + ';font-weight:700;">' + s.exhaustionScore + "</td>" +
-     '<td style="color:' + (s.trendDirection === "Bullish" ? "#3fb950" : "#f85149") + ';">' + s.trendDirection + "</td>" +
+     '<td style="color:' + (s.trendDirection === "Bullish" ? "#4dd2aa" : "#f37d83") + ';">' + s.trendDirection + "</td>" +
      '<td style="text-align:right;">' + s.adx + "</td>" +
      '<td style="text-align:right;">' + s.rsi + "</td>" +
      "<td>" + sigLabel(s) + "</td></tr>";
@@ -8905,11 +8906,11 @@ route("alerts", function () {
   const meta = (md && md.metadata) || {};
   let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across the full S&P 500. ' +
-   (meta.fullStage2Count != null ? '<b style="color:#3fb950;">' + meta.fullStage2Count + ' names pass all 8</b>. ' : '') +
+   (meta.fullStage2Count != null ? '<b style="color:#4dd2aa;">' + meta.fullStage2Count + ' names pass all 8</b>. ' : '') +
    'Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning. Click a row to inspect its criteria card.</div>';
   h += '<div style="display:grid;grid-template-columns:1fr;gap:16px;" id="min-wrap">';
   h += '<div class="card"><div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">' +
-   '<input id="m-search" type="text" placeholder="Filter ticker" style="background:#0d1117;border:1px solid #2a3242;border-radius:6px;color:#e8ecf1;padding:8px 10px;">' +
+   '<input id="m-search" type="text" placeholder="Filter ticker" style="background:#0d1117;border:1px solid #253142;border-radius:6px;color:#dbe5f1;padding:8px 10px;">' +
    '<button class="btn secondary m-filter" data-f="all">All</button>' +
    '<button class="btn secondary m-filter" data-f="8">8/8 pass</button>' +
    '<button class="btn secondary m-filter" data-f="7">7+ pass</button>' +
@@ -8955,27 +8956,27 @@ route("alerts", function () {
   function cardHtml(s) {
    if (!s) return '<div class="card"><p style="color:var(--muted);text-align:center;padding:24px;">Select a ticker to inspect its 8-point criteria.</p></div>';
    const badge = s.meetsAll
-    ? '<span style="font-size:10px;font-weight:700;color:#3fb950;border:1px solid #3fb950;border-radius:4px;padding:3px 8px;">STAGE 2 CONFIRMED</span>'
-    : '<span style="font-size:10px;font-weight:700;color:#f85149;border:1px solid #f85149;border-radius:4px;padding:3px 8px;">NON-QUALIFIED</span>';
-   let h = '<div class="card" style="padding:0;overflow:hidden;"><div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #2a3242;">' +
+    ? '<span style="font-size:10px;font-weight:700;color:#4dd2aa;border:1px solid #4dd2aa;border-radius:4px;padding:3px 8px;">STAGE 2 CONFIRMED</span>'
+    : '<span style="font-size:10px;font-weight:700;color:#f37d83;border:1px solid #f37d83;border-radius:4px;padding:3px 8px;">NON-QUALIFIED</span>';
+   let h = '<div class="card" style="padding:0;overflow:hidden;"><div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #253142;">' +
     '<div><div style="font-size:10px;color:var(--muted);letter-spacing:1px;">INSPECTING</div>' +
-    '<div style="font-size:18px;font-weight:800;color:#e8ecf1;">' + esc(s.ticker) + ' <span style="font-size:13px;font-weight:400;color:var(--muted);">' + fmt$(s.price) + '</span></div></div>' + badge + '</div>';
+    '<div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + esc(s.ticker) + ' <span style="font-size:13px;font-weight:400;color:var(--muted);">' + fmt$(s.price) + '</span></div></div>' + badge + '</div>';
    h += '<table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr style="background:#14b8a6;">' +
     '<th colspan="2" style="padding:8px;color:#0a0d14;font-size:11px;letter-spacing:1px;">CRITERIA</th></tr></thead><tbody>';
    s.criteria.forEach((c) => {
     const bg = c.passed ? "background:rgba(63,185,80,0.08);" : "background:rgba(248,81,73,0.08);";
-    const col = c.passed ? "#3fb950" : "#f85149";
-    h += '<tr style="border-bottom:1px solid #1c2330;' + bg + '">' +
-     '<td style="padding:8px 10px;color:#e8ecf1;">' + esc(c.label) + '<div style="font-size:10px;color:var(--muted);margin-top:2px;">' + esc(c.value) + '</div></td>' +
+    const col = c.passed ? "#4dd2aa" : "#f37d83";
+    h += '<tr style="border-bottom:1px solid #101620;' + bg + '">' +
+     '<td style="padding:8px 10px;color:#dbe5f1;">' + esc(c.label) + '<div style="font-size:10px;color:var(--muted);margin-top:2px;">' + esc(c.value) + '</div></td>' +
      '<td style="padding:8px 10px;text-align:center;font-weight:800;color:' + col + ';min-width:64px;">' + (c.passed ? "yes" : "no") + '</td></tr>';
    });
-   h += '<tr style="background:#161b26;font-weight:700;"><td style="padding:10px;color:#e8ecf1;">Meet minervini criteria</td>' +
-    '<td style="padding:10px;text-align:center;color:#e8ecf1;">(' + s.totalPassed + ' of 8)</td></tr>';
+   h += '<tr style="background:#101620;font-weight:700;"><td style="padding:10px;color:#dbe5f1;">Meet minervini criteria</td>' +
+    '<td style="padding:10px;text-align:center;color:#dbe5f1;">(' + s.totalPassed + ' of 8)</td></tr>';
    h += '</tbody></table>';
    h += '<div style="padding:12px 16px;font-size:11px;color:var(--muted);line-height:1.8;">' +
-    '<div><b style="color:#e8ecf1;">52W Low:</b> ' + fmt$(s.low52w) + ' (+' + s.pctAboveLow.toFixed(1) + '%)</div>' +
-    '<div><b style="color:#e8ecf1;">52W High:</b> ' + fmt$(s.high52w) + ' (-' + s.pctFromHigh.toFixed(1) + '%)</div>' +
-    '<div><b style="color:#e8ecf1;">RS Percentile:</b> ' + s.rsRating + ' / 99</div></div></div>';
+    '<div><b style="color:#dbe5f1;">52W Low:</b> ' + fmt$(s.low52w) + ' (+' + s.pctAboveLow.toFixed(1) + '%)</div>' +
+    '<div><b style="color:#dbe5f1;">52W High:</b> ' + fmt$(s.high52w) + ' (-' + s.pctFromHigh.toFixed(1) + '%)</div>' +
+    '<div><b style="color:#dbe5f1;">RS Percentile:</b> ' + s.rsRating + ' / 99</div></div></div>';
    return h;
   }
 
@@ -8983,10 +8984,10 @@ route("alerts", function () {
    const rows = filtered();
    body.innerHTML = rows.map((s) => {
     const sel = s.ticker === selected ? ' style="background:#1a2233;"' : "";
-    const rsc = s.rsRating >= 70 ? "#3fb950" : "#f85149";
-    const sc = s.totalPassed === 8 ? "#3fb950" : (s.totalPassed >= 6 ? "#f0b429" : "#f85149");
+    const rsc = s.rsRating >= 70 ? "#4dd2aa" : "#f37d83";
+    const sc = s.totalPassed === 8 ? "#4dd2aa" : (s.totalPassed >= 6 ? "#f0b429" : "#f37d83");
     return '<tr data-tk="' + esc(s.ticker) + '"' + sel + ' style="cursor:pointer;">' +
-     '<td><b style="color:#e8ecf1;">' + esc(s.ticker) + '</b></td>' +
+     '<td><b style="color:#dbe5f1;">' + esc(s.ticker) + '</b></td>' +
      '<td style="text-align:right;">' + fmt$(s.price) + '</td>' +
      '<td style="text-align:right;color:var(--muted);">' + fmt$(s.sma50) + '</td>' +
      '<td style="text-align:right;color:var(--muted);">' + fmt$(s.sma200) + '</td>' +
@@ -9157,7 +9158,7 @@ route("alerts", function () {
    // Ticker card
    h += '<div class="card" style="padding:24px;"><div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;"><div>' + tickerLogo(tk) + '</div><h1 style="font-size:28px;margin:0;">' + esc(tk) + ' <span style="font-weight:400;font-size:18px;color:var(--muted)">- ' + esc(d.name || tk) + '</span></h1></div>';
    if (d.upcoming) {
-    h += '<p style="color:var(--muted);margin:0;">Next earnings: <b style="color:#fff;">' + fmtD(d.upcoming.date) + '</b>';
+    h += '<p style="color:var(--muted);margin:0;">Next earnings: <b style="color:#f5f7fa;">' + fmtD(d.upcoming.date) + '</b>';
     if (d.upcoming.eps_est != null) h += ' &nbsp; Est. EPS ' + fmt$(d.upcoming.eps_est);
     if (d.upcoming.rev_est != null) h += ' &nbsp; Est. Rev ' + fmt$(d.upcoming.rev_est, true);
     h += '</p>';
@@ -9166,10 +9167,10 @@ route("alerts", function () {
    }
    h += '<p style="font-size:11px;color:var(--muted);margin:8px 0 0;">Updated ' + esc(d.as_of || "") + '</p></div>';
    // Upcoming estimates card
-   h += '<div class="card" style="padding:24px;text-align:center;"><div style="font-size:11px;color:#c9a86a;font-weight:700;letter-spacing:1px;margin-bottom:12px;">UPCOMING ESTIMATES</div>';
+   h += '<div class="card" style="padding:24px;text-align:center;"><div style="font-size:11px;color:#d9a441;font-weight:700;letter-spacing:1px;margin-bottom:12px;">UPCOMING ESTIMATES</div>';
    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
-   h += '<div><div style="font-size:11px;color:var(--muted);">Est. Revenue</div><div style="font-size:20px;font-weight:700;color:#c9a86a;">' + (d.upcoming ? fmt$(d.upcoming.rev_est, true) : "N/A") + '</div></div>';
-   h += '<div><div style="font-size:11px;color:var(--muted);">Est. EPS</div><div style="font-size:20px;font-weight:700;color:#c9a86a;">' + (d.upcoming ? fmt$(d.upcoming.eps_est) : "N/A") + '</div></div>';
+   h += '<div><div style="font-size:11px;color:var(--muted);">Est. Revenue</div><div style="font-size:20px;font-weight:700;color:#d9a441;">' + (d.upcoming ? fmt$(d.upcoming.rev_est, true) : "N/A") + '</div></div>';
+   h += '<div><div style="font-size:11px;color:var(--muted);">Est. EPS</div><div style="font-size:20px;font-weight:700;color:#d9a441;">' + (d.upcoming ? fmt$(d.upcoming.eps_est) : "N/A") + '</div></div>';
    h += '</div></div></div>';
    // History table
    h += '<div class="card" style="padding:0;overflow:hidden;"><div style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><b>Past 8 Quarters: Earnings & Price Reactions</b><span style="font-size:11px;color:var(--muted);">Updated ' + esc(d.collected_at || d.as_of || "") + '</span></div>';
@@ -9192,7 +9193,7 @@ route("alerts", function () {
    "<p class='hero-sub'>8 quarters of earnings surprises and 1-day price reactions for every covered ticker. Refreshed every trading morning.</p></div></div>";
   h += '<div class="section"><div class="section-title">Earnings Dashboard ' + PRO_BADGE + '</div>';
   h += '<div class="card" style="margin-bottom:16px;"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;"><span style="font-size:12px;color:var(--muted);">Ticker:</span>';
-  h += '<select id="ed-ticker" style="padding:8px 12px;border-radius:6px;background:var(--bg);border:1px solid var(--border);color:#fff;font-size:14px;">' +
+  h += '<select id="ed-ticker" style="padding:8px 12px;border-radius:6px;background:var(--bg);border:1px solid var(--border);color:#f5f7fa;font-size:14px;">' +
    tickers.map((t) => '<option value="' + esc(t) + '"' + (t === sel ? " selected" : "") + '>' + esc(t) + '</option>').join("") + '</select>';
   h += '<span style="font-size:11px;color:var(--muted);margin-left:auto;">Auto-sync: 12:00 UTC weekdays</span></div></div>';
   h += '<div id="ed-body">' + renderDash(sel) + '</div></div>';
@@ -9230,38 +9231,38 @@ route("alerts", function () {
    "<p class='hero-sub'>NTM growth vs trading multiples with OLS peer regression. Updated " + esc((meta.lastUpdated || "").slice(0, 10)) + ".</p></div></div>";
   // Anomaly cards
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px;">';
-  h += '<div class="card" style="border:1px solid rgba(63,185,80,0.3);"><div style="font-size:12px;font-weight:700;color:#3fb950;margin-bottom:8px;">DISCOUNTED GROWTH</div>';
+  h += '<div class="card" style="border:1px solid rgba(63,185,80,0.3);"><div style="font-size:12px;font-weight:700;color:#4dd2aa;margin-bottom:8px;">DISCOUNTED GROWTH</div>';
   discounts.forEach((d) => {
-   h += '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #1f2937;">' +
-    '<span><b>' + esc(d.ticker) + '</b> <span style="color:#8b949e;">' + esc(d.name) + '</span></span>' +
-    '<span style="color:#3fb950;font-weight:700;">' + d.evRevDiscountPct + '%</span></div>';
+   h += '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #101620;">' +
+    '<span><b>' + esc(d.ticker) + '</b> <span style="color:#8d99aa;">' + esc(d.name) + '</span></span>' +
+    '<span style="color:#4dd2aa;font-weight:700;">' + d.evRevDiscountPct + '%</span></div>';
   });
   h += '</div>';
-  h += '<div class="card" style="border:1px solid rgba(248,81,73,0.3);"><div style="font-size:12px;font-weight:700;color:#f85149;margin-bottom:8px;">PREMIUM MULTIPLES</div>';
+  h += '<div class="card" style="border:1px solid rgba(248,81,73,0.3);"><div style="font-size:12px;font-weight:700;color:#f37d83;margin-bottom:8px;">PREMIUM MULTIPLES</div>';
   premiums.forEach((p) => {
-   h += '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #1f2937;">' +
-    '<span><b>' + esc(p.ticker) + '</b> <span style="color:#8b949e;">' + esc(p.name) + '</span></span>' +
-    '<span style="color:#f85149;font-weight:700;">+' + p.evRevDiscountPct + '%</span></div>';
+   h += '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #101620;">' +
+    '<span><b>' + esc(p.ticker) + '</b> <span style="color:#8d99aa;">' + esc(p.name) + '</span></span>' +
+    '<span style="color:#f37d83;font-weight:700;">+' + p.evRevDiscountPct + '%</span></div>';
   });
   h += '</div></div>';
   // Scatter chart
-  h += '<div class="section"><div class="section-title">Growth vs Multiple ' + PRO_BADGE + ' <span style="font-size:11px;color:#8b949e;">(bubble size = market cap)</span></div>';
+  h += '<div class="section"><div class="section-title">Growth vs Multiple ' + PRO_BADGE + ' <span style="font-size:11px;color:#8d99aa;">(bubble size = market cap)</span></div>';
   h += '<div style="margin-bottom:8px;"><button class="btn" id="comps-toggle" style="font-size:12px;">Switch to Forward P/E</button></div>';
   h += '<div class="zoomable-chart" data-chart="comps" style="position:relative;height:420px;cursor:zoom-in;" title="Click to zoom"><canvas id="comps-chart"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
-  h += '<div style="font-size:11px;color:#8b949e;margin-top:6px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market.</div></div>';
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market.</div></div>';
   // Table
   h += '<div class="section"><div class="section-title">Comps Table ' + PRO_BADGE + '</div><div class="card" style="overflow-x:auto;">';
-  h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid #2a3448;color:#8b949e;text-align:right;">' +
+  h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid #253142;color:#8d99aa;text-align:right;">' +
    '<th style="text-align:left;padding:8px;">Ticker</th><th style="text-align:left;padding:8px;">Sector</th>' +
    '<th style="padding:8px;">NTM Growth</th><th style="padding:8px;">EV/Rev</th><th style="padding:8px;">vs Peer</th>' +
    '<th style="padding:8px;">Fwd P/E</th><th style="padding:8px;">Status</th></tr></thead><tbody>';
   [...recs].sort((a, b) => a.evRevDiscountPct - b.evRevDiscountPct).forEach((r) => {
-   const dc = r.evRevDiscountPct < 0 ? "#3fb950" : r.evRevDiscountPct > 0 ? "#f85149" : "#8b949e";
-   const sc = r.status === "Discounted Growth" ? "#3fb950" : r.status === "Premium Multiple" ? "#f85149" : "#8b949e";
-   h += '<tr style="border-bottom:1px solid #1a2332;">' +
+   const dc = r.evRevDiscountPct < 0 ? "#4dd2aa" : r.evRevDiscountPct > 0 ? "#f37d83" : "#8d99aa";
+   const sc = r.status === "Discounted Growth" ? "#4dd2aa" : r.status === "Premium Multiple" ? "#f37d83" : "#8d99aa";
+   h += '<tr style="border-bottom:1px solid #101620;">' +
     '<td style="padding:8px;"><a href="#/ticker/' + esc(r.ticker) + '" style="color:#58a6ff;font-weight:700;">' + esc(r.ticker) + '</a></td>' +
-    '<td style="padding:8px;color:#8b949e;">' + esc(r.sector) + '</td>' +
+    '<td style="padding:8px;color:#8d99aa;">' + esc(r.sector) + '</td>' +
     '<td style="padding:8px;text-align:right;">' + r.ntmRevGrowth + '%</td>' +
     '<td style="padding:8px;text-align:right;">' + r.ntmEvRevenue + 'x</td>' +
     '<td style="padding:8px;text-align:right;color:' + dc + ';font-weight:700;">' + (r.evRevDiscountPct > 0 ? "+" : "") + r.evRevDiscountPct + '%</td>' +
@@ -9287,8 +9288,8 @@ route("alerts", function () {
    const old = Chart.getChart(cv);
    if (old) old.destroy();
    const yKey = usePE ? "forwardPe" : "ntmEvRevenue";
-   const colors = {"Semiconductors":"#10b981","Enterprise Software":"#38bdf8","Mega-Cap Tech":"#a855f7","Consumer & Marketplace":"#f59e0b","Fintech & Digital Assets":"#ec4899","Public Safety & Defense Tech":"#c99a6b","MedTech":"#6366f1","MedTech & Robotics":"#6366f1",
-    "Information Technology":"#38bdf8","Health Care":"#6366f1","Financials":"#10b981","Consumer Discretionary":"#f59e0b","Consumer Staples":"#84cc16","Industrials":"#94a3b8","Energy":"#ef4444","Utilities":"#facc15","Real Estate":"#a855f7","Materials":"#f97316","Communication Services":"#ec4899","Other":"#6b7280"};
+   const colors = {"Semiconductors":"#4dd2aa","Enterprise Software":"#38bdf8","Mega-Cap Tech":"#a855f7","Consumer & Marketplace":"#e0aa46","Fintech & Digital Assets":"#ec4899","Public Safety & Defense Tech":"#c99a6b","MedTech":"#6366f1","MedTech & Robotics":"#6366f1",
+    "Information Technology":"#38bdf8","Health Care":"#6366f1","Financials":"#4dd2aa","Consumer Discretionary":"#e0aa46","Consumer Staples":"#84cc16","Industrials":"#8d99aa","Energy":"#f37d83","Utilities":"#facc15","Real Estate":"#a855f7","Materials":"#f97316","Communication Services":"#ec4899","Other":"#647184"};
    const bySec = {};
    recs.forEach((r) => {
     if (usePE && !(r.forwardPe > 0 && r.forwardPe < 150)) return;
@@ -9314,10 +9315,10 @@ route("alerts", function () {
      borderColor: colors[sec] || "#c99a6b", borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, fill: false});
    });
    new Chart(cv, {data: {datasets}, options: {animation: false, responsive: true, maintainAspectRatio: false,
-    plugins: {legend: {position: "bottom", labels: {color: "#8b949e", boxWidth: 10, font: {size: 10}}},
+    plugins: {legend: {position: "bottom", labels: {color: "#8d99aa", boxWidth: 10, font: {size: 10}}},
      tooltip: {callbacks: {title: (it) => it[0].raw.ticker || it[0].dataset.label || "Fair value", label: (c) => c.raw.ticker ? ["Growth: " + c.raw.x.toFixed(1) + "%", "Multiple: " + c.raw.y.toFixed(1) + "x"] : "Sector fair: " + c.raw.y.toFixed(1) + "x"}}},
-    scales: {x: {title: {display: true, text: "NTM Revenue Growth (%)", color: "#8b949e"}, ticks: {color: "#8b949e", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
-     y: {title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#8b949e"}, ticks: {color: "#8b949e", callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}});
+    scales: {x: {title: {display: true, text: "NTM Revenue Growth (%)", color: "#8d99aa"}, ticks: {color: "#8d99aa", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+     y: {title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#8d99aa"}, ticks: {color: "#8d99aa", callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}});
   }
  });
 
@@ -9328,30 +9329,30 @@ route("alerts", function () {
    return '<div class="section"><div class="section-title">Liquidity Drain Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Liquidity data unavailable. Check back after the next refresh.</p></div></div>';
   }
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
-  const c = colorMap[L.color] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
+  const c = colorMap[L.color] || "#dbe5f1";
   const m = L.currentMetrics || {};
   let h = '<div class="section"><div class="section-title">Liquidity Drain Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Net US liquidity, USD strength, and yield curve dynamics. Markets rarely crash when liquidity expands; they become vulnerable when it drains.</div>';
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + L.totalScore + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + L.totalScore + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(L.regime || "") + "</div>" +
-   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">Net liquidity $' + (m.netLiquidityB != null ? m.netLiquidityB.toLocaleString() : "-") + "B" +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Net liquidity $' + (m.netLiquidityB != null ? m.netLiquidityB.toLocaleString() : "-") + "B" +
    (m.dxy != null ? " · DXY " + m.dxy : "") +
    (m.t10y2y != null ? " · 10Y-2Y " + m.t10y2y + "%" : "") + "</div></div></div>";
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
   (L.scoreBreakdown || []).forEach((b) => {
-   const bc = b.points >= 30 ? "#3fb950" : b.points > 0 ? "#d29922" : "#f85149";
-   h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
-    '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + esc(b.metric) + "</div>" +
+   const bc = b.points >= 30 ? "#4dd2aa" : b.points > 0 ? "#e0aa46" : "#f37d83";
+   h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
+    '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.metric) + "</div>" +
     '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + " (" + b.points + " pts)</div>" +
-    '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
+    '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
   });
   h += "</div>";
   // Chart: net liquidity vs SPY
   h += '<div class="zoomable-chart" data-chart="liquidity-drain" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="liquidity-drain-chart"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="panel-asof">As of ' + esc((L.as_of || "").slice(0, 10)) + "</div></div>";
   return h;
  }
@@ -9363,52 +9364,52 @@ route("alerts", function () {
     '<div class="card"><p style="color:var(--muted)">Realized Vol Shock data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const cd = R.countdown, rv = R.rvCurrent || {};
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
-  const c = colorMap[cd.statusColor] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
+  const c = colorMap[cd.statusColor] || "#dbe5f1";
   const vcf = rv.vcfExposurePercentile || 0;
-  const vcfColor = vcf >= 80 ? "#f85149" : vcf >= 50 ? "#d29922" : "#3fb950";
+  const vcfColor = vcf >= 80 ? "#f37d83" : vcf >= 50 ? "#e0aa46" : "#4dd2aa";
 
   let h = '<div class="section"><div class="section-title">Realized Vol Shock Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Realized volatility shocks and systematic fund positioning. When volatility has been quiet too long, mechanical sellers are fully loaded.</div>';
 
   // What this means (for everyone)
-  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
-   '<b style="color:#e8ecf1;">The simple version:</b> Markets go through calm stretches and stormy stretches. This model counts how long it has been since the last storm. The longer the calm lasts, the more likely a storm is coming, because big automated funds pile into stocks when things are quiet and are forced to sell when volatility spikes.<br><br>' +
-   '<b style="color:#e8ecf1;">For long-term investors:</b> When the gauge reads OVERDUE, consider it a yellow light, not a sell signal. It is a good time to make sure your position sizes are comfortable and avoid adding leverage. When it reads RECENTLY UNWOUND, the mechanical selling pressure has passed.<br><br>' +
-   '<b style="color:#e8ecf1;">For active traders:</b> An OVERDUE reading with VCF exposure above 80% has historically preceded pullbacks. The forward price action tables below show exactly what happened in the 15 trading days after each past signal: the hit rate, average decline, and worst case. Use these as a statistical roadmap, not a prediction.' +
+  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<b style="color:#dbe5f1;">The simple version:</b> Markets go through calm stretches and stormy stretches. This model counts how long it has been since the last storm. The longer the calm lasts, the more likely a storm is coming, because big automated funds pile into stocks when things are quiet and are forced to sell when volatility spikes.<br><br>' +
+   '<b style="color:#dbe5f1;">For long-term investors:</b> When the gauge reads OVERDUE, consider it a yellow light, not a sell signal. It is a good time to make sure your position sizes are comfortable and avoid adding leverage. When it reads RECENTLY UNWOUND, the mechanical selling pressure has passed.<br><br>' +
+   '<b style="color:#dbe5f1;">For active traders:</b> An OVERDUE reading with VCF exposure above 80% has historically preceded pullbacks. The forward price action tables below show exactly what happened in the 15 trading days after each past signal: the hit rate, average decline, and worst case. Use these as a statistical roadmap, not a prediction.' +
    '</div></div>';
 
   // Status banner
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">STATUS</div>' +
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">STATUS</div>' +
    '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(cd.statusLabel) + "</div>" +
-   '<div style="font-size:12px;color:#8b949e;margin-top:4px;max-width:600px;">' + esc(cd.statusDesc) + "</div></div></div>";
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:600px;">' + esc(cd.statusDesc) + "</div></div></div>";
 
   // Countdown stats
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
   const statCard = (label, val, sub) =>
-   '<div style="background:#161b26;border-radius:10px;padding:12px;text-align:center;">' +
-   '<div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
-   '<div style="font-size:24px;font-weight:800;color:#e8ecf1;">' + val + '</div>' +
-   '<div style="font-size:11px;color:#8b949e;">' + sub + '</div></div>';
+   '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
+   '<div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+   '<div style="font-size:24px;font-weight:800;color:#dbe5f1;">' + val + '</div>' +
+   '<div style="font-size:11px;color:#8d99aa;">' + sub + '</div></div>';
   h += statCard("AVG TIME BETWEEN SHOCKS", cd.avgTimeBetweenTd + " td", "~" + cd.avgTimeBetweenCal + " calendar days");
   h += statCard("MEDIAN GAP", cd.medianGapTd + " td", "shortest " + cd.shortestGapTd + " / longest " + cd.longestGapTd);
   h += statCard("SINCE LAST SHOCK", cd.sinceLastSpikeTd + " td", "last: " + esc(cd.lastSpikeDate || ""));
   h += "</div>";
 
   // VCF exposure bar
-  h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:4px;">Systematic fund exposure (the "spring tension")</div>' +
-   '<div style="font-size:12px;color:#8b949e;margin-bottom:10px;">Volatility-control funds mechanically buy stocks when realized volatility is low and sell when it spikes. Low volatility = they are fully loaded = the spring is coiled tight.</div>' +
+  h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:4px;">Systematic fund exposure (the "spring tension")</div>' +
+   '<div style="font-size:12px;color:#8d99aa;margin-bottom:10px;">Volatility-control funds mechanically buy stocks when realized volatility is low and sell when it spikes. Low volatility = they are fully loaded = the spring is coiled tight.</div>' +
    '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">' +
-   '<span style="font-size:12px;color:#8b949e;">Estimated equity exposure</span>' +
+   '<span style="font-size:12px;color:#8d99aa;">Estimated equity exposure</span>' +
    '<span style="font-size:28px;font-weight:800;color:' + vcfColor + ';">' + vcf + '%</span></div>' +
-   '<div style="width:100%;background:#1f2937;height:10px;border-radius:5px;overflow:hidden;">' +
+   '<div style="width:100%;background:#101620;height:10px;border-radius:5px;overflow:hidden;">' +
    '<div style="height:100%;width:' + vcf + '%;background:' + vcfColor + ';border-radius:5px;"></div></div>' +
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;">' +
-   '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">10-day RV</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (rv.rv10 != null ? rv.rv10 + "%" : "-") + '</div></div>' +
-   '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">20-day RV</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (rv.rv20 != null ? rv.rv20 + "%" : "-") + '</div></div>' +
-   '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">60-day RV</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + (rv.rv60 != null ? rv.rv60 + "%" : "-") + '</div></div>' +
+   '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">10-day RV</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + (rv.rv10 != null ? rv.rv10 + "%" : "-") + '</div></div>' +
+   '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">20-day RV</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + (rv.rv20 != null ? rv.rv20 + "%" : "-") + '</div></div>' +
+   '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">60-day RV</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + (rv.rv60 != null ? rv.rv60 + "%" : "-") + '</div></div>' +
    "</div></div>";
 
   // Forward PA tables
@@ -9417,33 +9418,33 @@ route("alerts", function () {
    const sum = sig.summary || {};
    const rows = sig.rows || [];
    if (!sum.signalCount) return;
-   h += '<div style="margin:16px 0;"><div style="font-size:14px;font-weight:700;color:#e8ecf1;margin-bottom:4px;">' + esc(sig.title || key) + '</div>' +
-    '<div style="font-size:12px;color:#8b949e;margin-bottom:8px;">What happened in the 15 trading days after each past signal. ' +
-    '<b style="color:#3fb950;">Hit rate ' + (sum.hitRate != null ? sum.hitRate : "-") + '%</b> (' + esc(sum.hitFraction || "") + ') ' +
-    'means that share of signals saw a peak decline worse than -1.5%. Avg peak decline <b style="color:#f85149;">' + (sum.avgPeakDecline != null ? sum.avgPeakDecline : "-") + '%</b>, ' +
-    'worst <b style="color:#f85149;">' + (sum.worstDecline != null ? sum.worstDecline : "-") + '%</b>.</div>';
-   h += '<div class="table-wrap" style="max-height:400px;overflow-y:auto;"><table class="coverage ma-table" style="color:#e8ecf1;font-size:11px;"><thead><tr>' +
-    '<th style="color:#a8b0bc;position:sticky;top:0;background:#161b26;">Date</th>';
-   for (let d = 1; d <= 15; d++) h += '<th style="color:#a8b0bc;position:sticky;top:0;background:#161b26;">D+' + d + "</th>";
-   h += '<th style="color:#a8b0bc;position:sticky;top:0;background:#161b26;">Max DD</th></tr></thead><tbody>';
+   h += '<div style="margin:16px 0;"><div style="font-size:14px;font-weight:700;color:#dbe5f1;margin-bottom:4px;">' + esc(sig.title || key) + '</div>' +
+    '<div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">What happened in the 15 trading days after each past signal. ' +
+    '<b style="color:#4dd2aa;">Hit rate ' + (sum.hitRate != null ? sum.hitRate : "-") + '%</b> (' + esc(sum.hitFraction || "") + ') ' +
+    'means that share of signals saw a peak decline worse than -1.5%. Avg peak decline <b style="color:#f37d83;">' + (sum.avgPeakDecline != null ? sum.avgPeakDecline : "-") + '%</b>, ' +
+    'worst <b style="color:#f37d83;">' + (sum.worstDecline != null ? sum.worstDecline : "-") + '%</b>.</div>';
+   h += '<div class="table-wrap" style="max-height:400px;overflow-y:auto;"><table class="coverage ma-table" style="color:#dbe5f1;font-size:11px;"><thead><tr>' +
+    '<th style="color:#8d99aa;position:sticky;top:0;background:#101620;">Date</th>';
+   for (let d = 1; d <= 15; d++) h += '<th style="color:#8d99aa;position:sticky;top:0;background:#101620;">D+' + d + "</th>";
+   h += '<th style="color:#8d99aa;position:sticky;top:0;background:#101620;">Max DD</th></tr></thead><tbody>';
    rows.forEach((r) => {
-    h += '<tr><td style="color:#e8ecf1;font-weight:600;white-space:nowrap;">' + esc(r.date) + "</td>";
+    h += '<tr><td style="color:#dbe5f1;font-weight:600;white-space:nowrap;">' + esc(r.date) + "</td>";
     for (let d = 1; d <= 15; d++) {
      const v = (r.returns || {})["D+" + d];
-     const col = v == null ? "#8b949e" : v < 0 ? "#f85149" : "#3fb950";
+     const col = v == null ? "#8d99aa" : v < 0 ? "#f37d83" : "#4dd2aa";
      h += '<td style="color:' + col + ';">' + (v == null ? "-" : (v > 0 ? "+" : "") + v + "%") + "</td>";
     }
-    h += '<td style="color:#f85149;font-weight:700;">' + (r.peakDecline != null ? r.peakDecline + "%" : "-") + "</td></tr>";
+    h += '<td style="color:#f37d83;font-weight:700;">' + (r.peakDecline != null ? r.peakDecline + "%" : "-") + "</td></tr>";
    });
    // Average row
    const avg = sum.averageCurve || {};
-   h += '<tr style="background:rgba(201,169,97,0.08);font-weight:700;"><td style="color:#c9a961;">AVG</td>';
+   h += '<tr style="background:rgba(217,164,65,0.08);font-weight:700;"><td style="color:#d9a441;">AVG</td>';
    for (let d = 1; d <= 15; d++) {
     const v = avg["D+" + d];
-    const col = v == null ? "#8b949e" : v < 0 ? "#f85149" : "#3fb950";
+    const col = v == null ? "#8d99aa" : v < 0 ? "#f37d83" : "#4dd2aa";
     h += '<td style="color:' + col + ';">' + (v == null ? "-" : (v > 0 ? "+" : "") + v + "%") + "</td>";
    }
-   h += '<td style="color:#c9a961;">' + (sum.avgPeakDecline != null ? sum.avgPeakDecline + "%" : "-") + "</td></tr>";
+   h += '<td style="color:#d9a441;">' + (sum.avgPeakDecline != null ? sum.avgPeakDecline + "%" : "-") + "</td></tr>";
    h += "</tbody></table></div></div>";
   });
 
@@ -9458,52 +9459,52 @@ route("alerts", function () {
    return '<div class="section"><div class="section-title">Dynamic Concentration Risk Gauge ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Concentration data unavailable. Check back after the next refresh.</p></div></div>';
   }
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
-  const c = colorMap[K.color] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
+  const c = colorMap[K.color] || "#dbe5f1";
   const leader = K.leader || {};
 
   let h = '<div class="section"><div class="section-title">Dynamic Concentration Risk Gauge ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Which sector is leading, how stretched it is, and whether the index can survive without it.</div>';
 
-  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
-   '<b style="color:#e8ecf1;">The simple version:</b> The stock market is sometimes carried by one hot sector while everything else goes nowhere. This model finds which sector is leading right now, checks how stretched it is, and warns you when the market depends too much on that one area.<br><br>' +
-   '<b style="color:#e8ecf1;">For long-term investors:</b> A high fragility score means your index fund is more concentrated than it looks. If the leading sector stumbles, the whole index drops with it even if most companies are fine. Consider whether you are comfortable with that.<br><br>' +
-   '<b style="color:#e8ecf1;">For active traders:</b> When the leader detaches from the average stock (low correlation), leadership is fragile. Rotations out of the leading sector tend to be violent. Do not chase the leader into parabolic moves.' +
+  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<b style="color:#dbe5f1;">The simple version:</b> The stock market is sometimes carried by one hot sector while everything else goes nowhere. This model finds which sector is leading right now, checks how stretched it is, and warns you when the market depends too much on that one area.<br><br>' +
+   '<b style="color:#dbe5f1;">For long-term investors:</b> A high fragility score means your index fund is more concentrated than it looks. If the leading sector stumbles, the whole index drops with it even if most companies are fine. Consider whether you are comfortable with that.<br><br>' +
+   '<b style="color:#dbe5f1;">For active traders:</b> When the leader detaches from the average stock (low correlation), leadership is fragile. Rotations out of the leading sector tend to be violent. Do not chase the leader into parabolic moves.' +
    '</div></div>';
 
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">STRUCTURAL FRAGILITY</div>' +
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">STRUCTURAL FRAGILITY</div>' +
    '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(K.regime) + "</div>" +
-   '<div style="font-size:12px;color:#9ba3af;margin-top:4px;max-width:560px;">' + esc(K.description || "") + "</div></div>" +
-   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8b949e;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + K.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div></div>';
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:560px;">' + esc(K.description || "") + "</div></div>" +
+   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8d99aa;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + K.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div></div>';
 
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
-  h += '<div style="background:#161b26;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#8b949e;">CURRENT LEADER</div>' +
-   '<div style="font-size:18px;font-weight:800;color:#e8ecf1;">' + esc(leader.ticker || "-") + '</div>' +
-   '<div style="font-size:11px;color:#8b949e;">' + esc(leader.name || "") + ' · +' + (leader.momentum90d != null ? leader.momentum90d : "-") + '% (90d)</div></div>';
-  h += '<div style="background:#161b26;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#8b949e;">LEADER VS 200-DAY AVG</div>' +
-   '<div style="font-size:18px;font-weight:800;color:#e8ecf1;">+' + (leader.extension200dma != null ? leader.extension200dma : "-") + '%</div>' +
-   '<div style="font-size:11px;color:#8b949e;">Distance above long-term trend</div></div>';
-  h += '<div style="background:#161b26;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#8b949e;">SPY VS EQUAL-WEIGHT</div>' +
-   '<div style="font-size:18px;font-weight:800;color:#e8ecf1;">' + ((K.metrics || {}).capVsEqualSpread > 0 ? "+" : "") + ((K.metrics || {}).capVsEqualSpread != null ? (K.metrics || {}).capVsEqualSpread : "-") + '%</div>' +
-   '<div style="font-size:11px;color:#8b949e;">60-day cap-weight lead</div></div>';
+  h += '<div style="background:#101620;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#8d99aa;">CURRENT LEADER</div>' +
+   '<div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + esc(leader.ticker || "-") + '</div>' +
+   '<div style="font-size:11px;color:#8d99aa;">' + esc(leader.name || "") + ' · +' + (leader.momentum90d != null ? leader.momentum90d : "-") + '% (90d)</div></div>';
+  h += '<div style="background:#101620;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#8d99aa;">LEADER VS 200-DAY AVG</div>' +
+   '<div style="font-size:18px;font-weight:800;color:#dbe5f1;">+' + (leader.extension200dma != null ? leader.extension200dma : "-") + '%</div>' +
+   '<div style="font-size:11px;color:#8d99aa;">Distance above long-term trend</div></div>';
+  h += '<div style="background:#101620;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#8d99aa;">SPY VS EQUAL-WEIGHT</div>' +
+   '<div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + ((K.metrics || {}).capVsEqualSpread > 0 ? "+" : "") + ((K.metrics || {}).capVsEqualSpread != null ? (K.metrics || {}).capVsEqualSpread : "-") + '%</div>' +
+   '<div style="font-size:11px;color:#8d99aa;">60-day cap-weight lead</div></div>';
   h += "</div>";
 
   (K.scoreBreakdown || []).forEach((b) => {
-   const bc = b.points >= 30 ? "#f85149" : b.points >= 15 ? "#d29922" : "#3fb950";
-   h += '<div style="background:#161b26;border-radius:10px;padding:12px;margin:8px 0;border-left:3px solid ' + bc + ';">' +
+   const bc = b.points >= 30 ? "#f37d83" : b.points >= 15 ? "#e0aa46" : "#4dd2aa";
+   h += '<div style="background:#101620;border-radius:10px;padding:12px;margin:8px 0;border-left:3px solid ' + bc + ';">' +
     '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-    '<div style="font-size:12px;font-weight:700;color:#e8ecf1;">' + esc(b.metric) + '</div>' +
+    '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">' + esc(b.metric) + '</div>' +
     '<div style="font-size:11px;font-weight:700;color:' + bc + ';">' + b.points + ' PTS</div></div>' +
     '<div style="font-size:13px;color:' + bc + ';font-weight:600;margin-top:2px;">' + esc(b.status) + '</div>' +
-    '<div style="font-size:12px;color:#8b949e;margin-top:2px;">' + esc(b.value || "") + "</div>" +
-    '<div style="font-size:11px;color:#6b7280;margin-top:4px;">' + esc(b.detail || "") + "</div></div>";
+    '<div style="font-size:12px;color:#8d99aa;margin-top:2px;">' + esc(b.value || "") + "</div>" +
+    '<div style="font-size:11px;color:#647184;margin-top:4px;">' + esc(b.detail || "") + "</div></div>";
   });
 
   h += '<div class="zoomable-chart" data-chart="concentration" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="concentration-chart"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="panel-asof">As of ' + esc((K.as_of || "").slice(0, 10)) + "</div></div>";
   h += explainerHtml;
   return h;
@@ -9515,8 +9516,8 @@ route("alerts", function () {
    return '<div class="section"><div class="section-title">Systemic Leverage Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Margin debt data unavailable. Check back after the next refresh.</p></div></div>';
   }
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
-  const c = colorMap[M.color] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
+  const c = colorMap[M.color] || "#dbe5f1";
   const m = M.metrics || {};
   const stale = M.metadata && M.metadata.stale;
 
@@ -9524,43 +9525,43 @@ route("alerts", function () {
    '<div class="section-sub">How much traders are borrowing to buy stocks. Leverage measures what investors are actually doing with their money, not just how they feel.</div>';
 
   // Score banner
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(M.regime || "") + "</div>" +
-   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">Margin debt $' + (m.debtB != null ? m.debtB.toLocaleString() : "-") + "B" +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Margin debt $' + (m.debtB != null ? m.debtB.toLocaleString() : "-") + "B" +
    (m.marginYoY != null ? " · YoY " + (m.marginYoY >= 0 ? "+" : "") + m.marginYoY + "%" : "") +
    (m.zScore != null ? " · Leverage z-score " + (m.zScore >= 0 ? "+" : "") + m.zScore : "") + "</div>";
   if (M.capitulation) {
-   h += '<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(63,185,80,0.1);border:1px solid #3fb950;font-size:12px;color:#3fb950;font-weight:700;">CAPITULATION REACHED: forced liquidations exhausted. Historically a contrarian buy signal.</div>';
+   h += '<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(63,185,80,0.1);border:1px solid #4dd2aa;font-size:12px;color:#4dd2aa;font-weight:700;">CAPITULATION REACHED: forced liquidations exhausted. Historically a contrarian buy signal.</div>';
   }
   if (m.divergence) {
-   h += '<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(210,153,34,0.1);border:1px solid #d29922;font-size:12px;color:#d29922;font-weight:700;">LEVERAGE DIVERGENCE: market rising while borrowing falls. The rally is running on fumes.</div>';
+   h += '<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(210,153,34,0.1);border:1px solid #e0aa46;font-size:12px;color:#e0aa46;font-weight:700;">LEVERAGE DIVERGENCE: market rising while borrowing falls. The rally is running on fumes.</div>';
   }
   h += "</div></div>";
 
   // Score breakdown
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
   (M.scoreBreakdown || []).forEach((b) => {
-   const bc = b.points >= 30 ? "#f85149" : b.points > 0 ? "#d29922" : "#3fb950";
-   h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
-    '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + esc(b.metric) + "</div>" +
+   const bc = b.points >= 30 ? "#f37d83" : b.points > 0 ? "#e0aa46" : "#4dd2aa";
+   h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
+    '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.metric) + "</div>" +
     '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + " (" + b.points + " pts)</div>" +
-    '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
+    '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
   });
   h += "</div>";
 
   // Chart: margin YoY vs SPY YoY
   h += '<div class="zoomable-chart" data-chart="margin-leverage" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="margin-leverage-chart"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="panel-asof">As of ' + esc((M.metadata && M.metadata.latestDataMonth) || (M.as_of || "").slice(0, 7)) + " (FINRA monthly)" + "</div>";
 
   // Explainer AFTER visuals (standing rule)
-  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
-   '<b style="color:#e8ecf1;">The simple version:</b> This tracks how much money stock traders are borrowing to buy shares. When borrowing explodes, it means euphoria: everyone is maxing out to chase the rally. When borrowing collapses, it means forced selling is over and the weak hands are gone. Sentiment surveys tell you how people feel; this tells you what they are doing with real money.<br><br>' +
-   '<b style="color:#e8ecf1;">For long-term investors:</b> Ignore headlines about margin debt hitting "record highs": in dollar terms it almost always does during a bull market. What matters is the growth rate. When year-over-year growth passes 35%, the market has historically been close to a top. When it drops below negative 15%, forced liquidations are usually finished and that has marked major bottoms. This data updates monthly, so treat it as a slow background gauge, not a trading signal.<br><br>' +
-   '<b style="color:#e8ecf1;">For active traders:</b> Watch for the divergence: the S&P making new highs while margin debt shrinks. That means the rally is running on multiple expansion rather than fresh leveraged capital, and it has preceded major tops by months. A z-score above 2 on the debt-to-market ratio means the market is structurally over-levered and vulnerable to a sharp flush on any catalyst.' +
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<b style="color:#dbe5f1;">The simple version:</b> This tracks how much money stock traders are borrowing to buy shares. When borrowing explodes, it means euphoria: everyone is maxing out to chase the rally. When borrowing collapses, it means forced selling is over and the weak hands are gone. Sentiment surveys tell you how people feel; this tells you what they are doing with real money.<br><br>' +
+   '<b style="color:#dbe5f1;">For long-term investors:</b> Ignore headlines about margin debt hitting "record highs": in dollar terms it almost always does during a bull market. What matters is the growth rate. When year-over-year growth passes 35%, the market has historically been close to a top. When it drops below negative 15%, forced liquidations are usually finished and that has marked major bottoms. This data updates monthly, so treat it as a slow background gauge, not a trading signal.<br><br>' +
+   '<b style="color:#dbe5f1;">For active traders:</b> Watch for the divergence: the S&P making new highs while margin debt shrinks. That means the rally is running on multiple expansion rather than fresh leveraged capital, and it has preceded major tops by months. A z-score above 2 on the debt-to-market ratio means the market is structurally over-levered and vulnerable to a sharp flush on any catalyst.' +
    "</div></div>";
 
   h += "</div>";
@@ -9573,8 +9574,8 @@ route("alerts", function () {
    return '<div class="section"><div class="section-title">Offense vs Defense ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Sector rotation data unavailable. Check back after the next refresh.</p></div></div>';
   }
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
-  const c = colorMap[S.color] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const c = colorMap[S.color] || "#dbe5f1";
   const m = S.metrics || {};
   const r = S.ratios || {};
   const stale = S.metadata && S.metadata.stale;
@@ -9583,14 +9584,14 @@ route("alerts", function () {
    '<div class="section-sub">Consumer Discretionary vs Consumer Staples, cap-weighted and equal-weighted. When institutions hide in toothpaste and toilet paper, the rally is hollow.</div>';
 
   // Score banner
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + S.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + S.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(S.regime || "") + "</div>" +
-   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">RSPD/RSPS ' + (m.rspdRsps != null ? m.rspdRsps : "-") +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">RSPD/RSPS ' + (m.rspdRsps != null ? m.rspdRsps : "-") +
    " · XLY/XLP " + (m.xlyXlp != null ? m.xlyXlp : "-") + "</div>";
   if (S.dualBreakdown) {
-   h += '<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(248,81,73,0.1);border:1px solid #f85149;font-size:12px;color:#f85149;font-weight:700;">DUAL BREAKDOWN: both ratios at 52-week lows. Institutions are sheltering across the entire consumer sector.</div>';
+   h += '<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(248,81,73,0.1);border:1px solid #f37d83;font-size:12px;color:#f37d83;font-weight:700;">DUAL BREAKDOWN: both ratios at 52-week lows. Institutions are sheltering across the entire consumer sector.</div>';
   }
   h += "</div></div>";
 
@@ -9599,28 +9600,28 @@ route("alerts", function () {
   [["rspd_rsps", "RSPD / RSPS", "Equal-weighted"], ["xly_xlp", "XLY / XLP", "Cap-weighted"]].forEach(([key, pair, wt]) => {
    const rr = r[key] || {};
    const pct = rr.rangePercentile != null ? rr.rangePercentile : null;
-   const bc = pct == null ? "#8b949e" : pct <= 10 ? "#f85149" : pct <= 30 ? "#d29922" : pct >= 70 ? "#3fb950" : "#8b949e";
-   h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
-    '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + pair + ' <span style="color:#8b949e;font-weight:400;">(' + wt + ")</span></div>" +
-    '<div style="font-size:20px;font-weight:800;color:#e8ecf1;margin-top:4px;">' + (rr.current != null ? rr.current : "-") + "</div>" +
+   const bc = pct == null ? "#8d99aa" : pct <= 10 ? "#f37d83" : pct <= 30 ? "#e0aa46" : pct >= 70 ? "#4dd2aa" : "#8d99aa";
+   h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
+    '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + pair + ' <span style="color:#8d99aa;font-weight:400;">(' + wt + ")</span></div>" +
+    '<div style="font-size:20px;font-weight:800;color:#dbe5f1;margin-top:4px;">' + (rr.current != null ? rr.current : "-") + "</div>" +
     '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' +
     (rr.isAt52wLow ? "52-WEEK LOW" : pct != null ? pct + "% of 52w range" : "") + "</div>" +
-    '<div style="font-size:11px;color:#8b949e;margin-top:2px;">52w ' + (rr.low52w != null ? rr.low52w : "-") + " – " + (rr.high52w != null ? rr.high52w : "-") +
+    '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">52w ' + (rr.low52w != null ? rr.low52w : "-") + " – " + (rr.high52w != null ? rr.high52w : "-") +
     (rr.aboveSma200 != null ? (rr.aboveSma200 ? " · above 200-day avg" : " · below 200-day avg") : "") + "</div></div>";
   });
   h += "</div>";
 
   // Chart: both ratios
   h += '<div class="zoomable-chart" data-chart="sector-rotation" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="sector-rotation-chart"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="panel-asof">As of ' + esc((S.as_of || "").slice(0, 10)) + (stale ? " · showing last available" : "") + "</div>";
 
   // Explainer AFTER visuals (standing rule)
-  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
-   '<b style="color:#e8ecf1;">The simple version:</b> This compares stocks people buy when they feel rich (restaurants, travel, cars) against stocks people buy no matter what (groceries, toothpaste). When money rotates into the boring stuff, big investors are bracing for trouble, even if the headline index still looks fine.<br><br>' +
-   '<b style="color:#e8ecf1;">For long-term investors:</b> The equal-weighted line is the honest one. The cap-weighted version is dominated by Amazon and Tesla, so two stocks can mask what the other 98 are doing. When both lines break to 52-week lows together, the entire consumer sector is weakening, not just a mega-cap wobble. That has historically lined up with late-cycle caution, not a buying opportunity.<br><br>' +
-   '<b style="color:#e8ecf1;">For active traders:</b> A low oscillator reading while the S&P makes new highs is the classic hollow rally: the index is carried by a narrowing set of winners while institutions de-risk underneath. Use it as a regime filter. When this gauge reads extreme defensive, tighten stops and reduce cyclical exposure rather than chasing breakouts.' +
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<b style="color:#dbe5f1;">The simple version:</b> This compares stocks people buy when they feel rich (restaurants, travel, cars) against stocks people buy no matter what (groceries, toothpaste). When money rotates into the boring stuff, big investors are bracing for trouble, even if the headline index still looks fine.<br><br>' +
+   '<b style="color:#dbe5f1;">For long-term investors:</b> The equal-weighted line is the honest one. The cap-weighted version is dominated by Amazon and Tesla, so two stocks can mask what the other 98 are doing. When both lines break to 52-week lows together, the entire consumer sector is weakening, not just a mega-cap wobble. That has historically lined up with late-cycle caution, not a buying opportunity.<br><br>' +
+   '<b style="color:#dbe5f1;">For active traders:</b> A low oscillator reading while the S&P makes new highs is the classic hollow rally: the index is carried by a narrowing set of winners while institutions de-risk underneath. Use it as a regime filter. When this gauge reads extreme defensive, tighten stops and reduce cyclical exposure rather than chasing breakouts.' +
    "</div></div>";
 
   h += "</div>";
@@ -9633,47 +9634,47 @@ route("alerts", function () {
     '<div class="card"><p style="color:var(--muted)">Flow divergence data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const cur = F.current;
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
-  const c = colorMap[cur.color] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const c = colorMap[cur.color] || "#dbe5f1";
 
   let h = '<div class="section"><div class="section-title">Institutional Flow Divergence ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Retail sentiment vs institutional positioning, as a contrarian risk gauge.</div>';
 
   // Plain-English explainer
-  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
-   '<b style="color:#e8ecf1;">The simple version:</b> This model compares what everyday investors are feeling against what big institutions are actually doing. When the crowd is extremely optimistic but institutions are quietly hedging or selling, the market is vulnerable. When the crowd is fearful but institutions are buying, it is often a good time to be.<br><br>' +
-   '<b style="color:#e8ecf1;">For long-term investors:</b> Extreme readings are rare and worth respecting. A HIGH VULNERABILITY reading means tops tend to form in this setup, so avoid adding aggressively. An INSTITUTIONAL ACCUMULATION reading means fear is high while smart buyers step in, historically a good backdrop for long-term purchases.<br><br>' +
-   '<b style="color:#e8ecf1;">For active traders:</b> The oscillator crossing +2.0 is the highest-conviction short-term risk signal on this page. Treat it like a storm warning: reduce leverage, tighten stops, and do not chase breakouts.' +
+  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<b style="color:#dbe5f1;">The simple version:</b> This model compares what everyday investors are feeling against what big institutions are actually doing. When the crowd is extremely optimistic but institutions are quietly hedging or selling, the market is vulnerable. When the crowd is fearful but institutions are buying, it is often a good time to be.<br><br>' +
+   '<b style="color:#dbe5f1;">For long-term investors:</b> Extreme readings are rare and worth respecting. A HIGH VULNERABILITY reading means tops tend to form in this setup, so avoid adding aggressively. An INSTITUTIONAL ACCUMULATION reading means fear is high while smart buyers step in, historically a good backdrop for long-term purchases.<br><br>' +
+   '<b style="color:#dbe5f1;">For active traders:</b> The oscillator crossing +2.0 is the highest-conviction short-term risk signal on this page. Treat it like a storm warning: reduce leverage, tighten stops, and do not chase breakouts.' +
    '</div></div>';
 
   // Status banner
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">FLOW REGIME</div>' +
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">FLOW REGIME</div>' +
    '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(cur.status) + "</div>" +
-   '<div style="font-size:12px;color:#9ba3af;margin-top:4px;max-width:560px;">' + esc(cur.description || "") + "</div></div>" +
-   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8b949e;">OSCILLATOR</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + (cur.oscillator > 0 ? "+" : "") + cur.oscillator + '<span style="font-size:16px;color:#8b949e;">σ</span></div></div></div>';
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:560px;">' + esc(cur.description || "") + "</div></div>" +
+   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8d99aa;">OSCILLATOR</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + (cur.oscillator > 0 ? "+" : "") + cur.oscillator + '<span style="font-size:16px;color:#8d99aa;">σ</span></div></div></div>';
 
   // Component cards
   const ret = cur.retail || {}, inst = cur.institutional || {};
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
-  h += '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
-   '<div style="font-size:12px;font-weight:700;color:#e8ecf1;">Retail Sentiment</div>' +
-   '<div style="font-size:11px;color:#8b949e;margin:2px 0;">' + esc(ret.metric || "") + '</div>' +
-   '<div style="font-size:20px;font-weight:800;color:#e8ecf1;">' + esc(ret.value || "-") + '</div>' +
-   '<div style="font-size:11px;color:#8b949e;">Z-score ' + (ret.zScore > 0 ? "+" : "") + (ret.zScore != null ? ret.zScore : "-") + ' · ' + esc(ret.reading || "") + "</div>" +
-   '<div style="font-size:11px;color:#6b7280;margin-top:6px;">' + esc(ret.detail || "") + "</div></div>";
-  h += '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
-   '<div style="font-size:12px;font-weight:700;color:#e8ecf1;">Institutional Positioning</div>' +
-   '<div style="font-size:11px;color:#8b949e;margin:2px 0;">' + esc(inst.dixMetric || "") + ': <b style="color:#e8ecf1;">' + esc(inst.dixValue || "-") + '</b></div>' +
-   '<div style="font-size:11px;color:#8b949e;margin:2px 0;">' + esc(inst.cotMetric || "") + ': <b style="color:#e8ecf1;">' + esc(inst.cotValue || "-") + '</b></div>' +
-   '<div style="font-size:11px;color:#6b7280;margin-top:6px;">' + esc(inst.dixDetail || "") + " " + esc(inst.cotDetail || "") + "</div></div>";
+  h += '<div style="background:#101620;border-radius:10px;padding:12px;">' +
+   '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">Retail Sentiment</div>' +
+   '<div style="font-size:11px;color:#8d99aa;margin:2px 0;">' + esc(ret.metric || "") + '</div>' +
+   '<div style="font-size:20px;font-weight:800;color:#dbe5f1;">' + esc(ret.value || "-") + '</div>' +
+   '<div style="font-size:11px;color:#8d99aa;">Z-score ' + (ret.zScore > 0 ? "+" : "") + (ret.zScore != null ? ret.zScore : "-") + ' · ' + esc(ret.reading || "") + "</div>" +
+   '<div style="font-size:11px;color:#647184;margin-top:6px;">' + esc(ret.detail || "") + "</div></div>";
+  h += '<div style="background:#101620;border-radius:10px;padding:12px;">' +
+   '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">Institutional Positioning</div>' +
+   '<div style="font-size:11px;color:#8d99aa;margin:2px 0;">' + esc(inst.dixMetric || "") + ': <b style="color:#dbe5f1;">' + esc(inst.dixValue || "-") + '</b></div>' +
+   '<div style="font-size:11px;color:#8d99aa;margin:2px 0;">' + esc(inst.cotMetric || "") + ': <b style="color:#dbe5f1;">' + esc(inst.cotValue || "-") + '</b></div>' +
+   '<div style="font-size:11px;color:#647184;margin-top:6px;">' + esc(inst.dixDetail || "") + " " + esc(inst.cotDetail || "") + "</div></div>";
   h += "</div>";
 
   // History chart
   h += '<div class="zoomable-chart" data-chart="flow-divergence" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="flow-divergence-chart"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="panel-asof">As of ' + esc((F.as_of || "").slice(0, 10)) + "</div></div>";
   h += explainerHtml;
   return h;
@@ -9687,25 +9688,25 @@ function oasDistressHtml() {
    return '<div class="section"><div class="section-title">Credit Stress Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Credit Stress data unavailable. Check back after the next refresh.</p></div></div>';
   }
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
-  const c = colorMap[O.color] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
+  const c = colorMap[O.color] || "#dbe5f1";
   const bps = (v) => v != null ? Number(v).toLocaleString() + " bps" : "N/A";
   let h = '<div class="section"><div class="section-title">Credit Stress Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Option-adjusted spreads across high-yield and investment-grade bonds. Widening spreads mean credit markets are pricing distress, and the HY minus IG quality spread isolates true default fear.</div>';
   // Score banner
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + O.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + O.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(O.regime || "") + "</div>" +
-   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">HY OAS ' + bps(O.hy_oas) +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">HY OAS ' + bps(O.hy_oas) +
    " \u00B7 Quality spread " + bps(O.quality_spread) +
    (O.implied_default_5y != null ? " \u00B7 Implied 5Y default " + O.implied_default_5y + "%" : "") + "</div></div></div>";
   // Metric cards
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
   const mc = (label, val) =>
-   '<div style="background:#161b26;border-radius:10px;padding:12px;text-align:center;">' +
-   '<div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
-   '<div style="font-size:22px;font-weight:800;color:#e8ecf1;">' + val + "</div></div>";
+   '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
+   '<div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+   '<div style="font-size:22px;font-weight:800;color:#dbe5f1;">' + val + "</div></div>";
   h += mc("HY OAS", bps(O.hy_oas));
   h += mc("IG OAS", bps(O.ig_oas));
   h += mc("QUALITY SPREAD", bps(O.quality_spread));
@@ -9714,12 +9715,12 @@ function oasDistressHtml() {
   const hist = O.history || [];
   if (hist.length) {
    h += '<div class="zoomable-chart" data-chart="oas-distress" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="oas-distress-chart"></canvas>' +
-    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
   }
   h += '<div class="panel-asof">As of ' + esc((O.as_of || "").slice(0, 10)) + "</div></div>";
   // Explainer AFTER the visuals
-  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
    "An option-adjusted spread measures the extra yield investors demand to hold a corporate bond instead of a Treasury of the same maturity, after stripping out the value of embedded options such as call features. When spreads rise, investors are demanding more compensation for credit risk. When spreads fall, confidence is returning.<br><br>" +
    "High-yield spreads move with broad risk appetite and liquidity conditions. Investment-grade spreads move with those same forces but carry far less default risk. The gap between them, the quality spread, strips out what hits all bonds equally and leaves the part driven by fear of actual defaults. A widening quality spread means investors are repricing default risk in the weakest balance sheets, and that repricing has historically shown up in equities soon after.<br><br>" +
    "The model compresses this picture into a 0 to 100 score. Low readings mean credit markets are calm and supportive of risk assets. Elevated readings mean spreads are pricing in real stress, and equity drawdowns have historically been more frequent in those stretches. Credit markets turn before headlines do, so the gauge works best as a slow-moving backdrop rather than a timing signal." +
@@ -9731,11 +9732,11 @@ function oasDistressHtml() {
  function oasDistressFreeCard() {
   const O = (D.risk_headlines || {}).oas_distress || {};
   if (O.score == null) return "";
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
-  const c = colorMap[O.color] || "#e8ecf1";
-  return '<div id="risk-credit-stress" class="risk-anchor" style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
-   '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">CREDIT STRESS</div>' +
-   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(O.score) + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
+  const c = colorMap[O.color] || "#dbe5f1";
+  return '<div id="risk-credit-stress" class="risk-anchor" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">CREDIT STRESS</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(O.score) + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
    '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(O.regime || "") + "</div></div>";
  }
 
@@ -9753,17 +9754,17 @@ function oasDistressHtml() {
     labels: hist.map((r) => r.date),
     datasets: [
      { type: "line", label: "HY OAS (bps)", data: hist.map((r) => r.hy_oas),
-       borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+       borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.2 },
      { type: "line", label: "Quality Spread (bps)", data: hist.map((r) => r.spread),
-       borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+       borderColor: "#e0aa46", borderWidth: 2, pointRadius: 0, tension: 0.2 },
     ]},
    options: { animation: false, responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+    plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
     scales: {
-     x: { ticks: { color: "#6b7280", maxTicksLimit: 8 }, grid: { display: false } },
-     y: { title: { display: true, text: "bps", color: "#8b949e" },
-          ticks: { color: "#8b949e" }, grid: { color: "rgba(42,46,57,0.4)" } },
+     x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
+     y: { title: { display: true, text: "bps", color: "#8d99aa" },
+          ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
     }},
   });
  }
@@ -9778,24 +9779,24 @@ function quadrantSectionHtml(M) {
   const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
   const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
   const signed = (v) => v != null ? (v > 0 ? "+" : "") + Number(v).toFixed(2) : "N/A";
-  const quadColors = { reflation: "#d29922", goldilocks: "#3fb950", deflation: "#58a6ff", stagflation: "#f85149" };
+  const quadColors = { reflation: "#e0aa46", goldilocks: "#4dd2aa", deflation: "#58a6ff", stagflation: "#f37d83" };
   const quadFill = { reflation: "rgba(210,153,34,0.10)", goldilocks: "rgba(63,185,80,0.10)", deflation: "rgba(88,166,255,0.10)", stagflation: "rgba(248,81,73,0.10)" };
   const quadDesc = { reflation: "Growth rising, inflation rising", goldilocks: "Growth rising, inflation falling", deflation: "Growth falling, inflation falling", stagflation: "Growth falling, inflation rising" };
   const quadNum = { reflation: "I", goldilocks: "II", deflation: "III", stagflation: "IV" };
   const quadName = { reflation: "Reflation", goldilocks: "Goldilocks", deflation: "Deflation", stagflation: "Stagflation" };
   if (Q.z_growth == null || Q.z_inflation == null || !Q.probabilities) {
-   return '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:6px;">Growth and Inflation Quadrant</div>' +
+   return '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:6px;">Growth and Inflation Quadrant</div>' +
     '<p style="color:var(--muted);font-size:13px;margin:0;">Quadrant data is unavailable in this snapshot. One or both momentum axes could not be computed from the available series, so the model reports N/A rather than an estimate. The sovereign yield layer below is unaffected.</p></div>';
   }
   const P = Q.probabilities;
-  const dc = quadColors[Q.dominant] || "#e8ecf1";
+  const dc = quadColors[Q.dominant] || "#dbe5f1";
   let h = "";
   // Dominant quadrant callout
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
-   '<div style="text-align:center;min-width:120px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">GROWTH Z / INFLATION Z</div>' +
-   '<div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + signed(Q.z_growth) + ' <span style="color:#8b949e;">/</span> ' + signed(Q.z_inflation) + '</div></div>' +
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
+   '<div style="text-align:center;min-width:120px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">GROWTH Z / INFLATION Z</div>' +
+   '<div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + signed(Q.z_growth) + ' <span style="color:#8d99aa;">/</span> ' + signed(Q.z_inflation) + '</div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + dc + ';">' + esc(Q.quadrant_label || "") + ' \u00B7 ' + esc(Q.dominant_name || "") + '</div>' +
-   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">The dominant quadrant carries a ' + f1(P[Q.dominant]) + '% probability weight from the distance softmax. The dashed path on the map traces the weekly position over the past 90 days, with each point computed only from data available on that date.</div></div></div>';
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">The dominant quadrant carries a ' + f1(P[Q.dominant]) + '% probability weight from the distance softmax. The dashed path on the map traces the weekly position over the past 90 days, with each point computed only from data available on that date.</div></div></div>';
   // (1) 2D quadrant plot in SVG
   const W = 660, H = 436, x0 = 62, x1 = 618, y0 = 24, y1 = 376;
   const clamp = (z) => Math.max(-3, Math.min(3, z));
@@ -9809,10 +9810,10 @@ function quadrantSectionHtml(M) {
   svg += '<rect x="' + zx.toFixed(1) + '" y="' + zy.toFixed(1) + '" width="' + (x1 - zx).toFixed(1) + '" height="' + (y1 - zy).toFixed(1) + '" fill="' + quadFill.goldilocks + '"/>';
   [-3, -2, -1, 0, 1, 2, 3].forEach((t) => {
    const gx = px(t), gy = py(t), zero = t === 0;
-   svg += '<line x1="' + gx.toFixed(1) + '" y1="' + y0 + '" x2="' + gx.toFixed(1) + '" y2="' + y1 + '" stroke="' + (zero ? "#8b949e" : "rgba(139,148,158,0.18)") + '" stroke-width="' + (zero ? 1.4 : 1) + '"/>';
-   svg += '<line x1="' + x0 + '" y1="' + gy.toFixed(1) + '" x2="' + x1 + '" y2="' + gy.toFixed(1) + '" stroke="' + (zero ? "#8b949e" : "rgba(139,148,158,0.18)") + '" stroke-width="' + (zero ? 1.4 : 1) + '"/>';
-   svg += '<text x="' + gx.toFixed(1) + '" y="' + (y1 + 16) + '" fill="#8b949e" font-size="10" text-anchor="middle">' + (t > 0 ? "+" + t : t) + '</text>';
-   svg += '<text x="' + (x0 - 8) + '" y="' + (gy + 3).toFixed(1) + '" fill="#8b949e" font-size="10" text-anchor="end">' + (t > 0 ? "+" + t : t) + '</text>';
+   svg += '<line x1="' + gx.toFixed(1) + '" y1="' + y0 + '" x2="' + gx.toFixed(1) + '" y2="' + y1 + '" stroke="' + (zero ? "#8d99aa" : "rgba(139,148,158,0.18)") + '" stroke-width="' + (zero ? 1.4 : 1) + '"/>';
+   svg += '<line x1="' + x0 + '" y1="' + gy.toFixed(1) + '" x2="' + x1 + '" y2="' + gy.toFixed(1) + '" stroke="' + (zero ? "#8d99aa" : "rgba(139,148,158,0.18)") + '" stroke-width="' + (zero ? 1.4 : 1) + '"/>';
+   svg += '<text x="' + gx.toFixed(1) + '" y="' + (y1 + 16) + '" fill="#8d99aa" font-size="10" text-anchor="middle">' + (t > 0 ? "+" + t : t) + '</text>';
+   svg += '<text x="' + (x0 - 8) + '" y="' + (gy + 3).toFixed(1) + '" fill="#8d99aa" font-size="10" text-anchor="end">' + (t > 0 ? "+" + t : t) + '</text>';
   });
   const lbl = (k, x, y, anchor) => '<text x="' + x + '" y="' + y + '" fill="' + quadColors[k] + '" font-size="12" font-weight="700" text-anchor="' + anchor + '">' + quadNum[k] + ' \u00B7 ' + quadName[k].toUpperCase() + ' \u00B7 ' + f1(P[k]) + '%</text>';
   svg += lbl("stagflation", x0 + 10, y0 + 20, "start");
@@ -9821,30 +9822,30 @@ function quadrantSectionHtml(M) {
   svg += lbl("goldilocks", x1 - 10, y1 - 12, "end");
   const traj = Q.trajectory || [];
   if (traj.length > 1) {
-   svg += '<polyline fill="none" stroke="#e8ecf1" stroke-width="1.6" stroke-dasharray="5 4" opacity="0.7" points="' + traj.map((p) => px(p.z_growth).toFixed(1) + "," + py(p.z_inflation).toFixed(1)).join(" ") + '"/>';
+   svg += '<polyline fill="none" stroke="#dbe5f1" stroke-width="1.6" stroke-dasharray="5 4" opacity="0.7" points="' + traj.map((p) => px(p.z_growth).toFixed(1) + "," + py(p.z_inflation).toFixed(1)).join(" ") + '"/>';
   }
   traj.forEach((p, i) => {
    if (i === traj.length - 1) return;
-   svg += '<circle cx="' + px(p.z_growth).toFixed(1) + '" cy="' + py(p.z_inflation).toFixed(1) + '" r="3.5" fill="#8b949e"><title>' + esc(p.date) + ' \u00B7 Growth Z ' + f2(p.z_growth) + ' \u00B7 Inflation Z ' + f2(p.z_inflation) + '</title></circle>';
+   svg += '<circle cx="' + px(p.z_growth).toFixed(1) + '" cy="' + py(p.z_inflation).toFixed(1) + '" r="3.5" fill="#8d99aa"><title>' + esc(p.date) + ' \u00B7 Growth Z ' + f2(p.z_growth) + ' \u00B7 Inflation Z ' + f2(p.z_inflation) + '</title></circle>';
   });
-  svg += '<circle cx="' + px(Q.z_growth).toFixed(1) + '" cy="' + py(Q.z_inflation).toFixed(1) + '" r="8" fill="#d29922" stroke="#ffffff" stroke-width="2.5"><title>' + esc(Q.as_of || "") + ' \u00B7 Growth Z ' + f2(Q.z_growth) + ' \u00B7 Inflation Z ' + f2(Q.z_inflation) + '</title></circle>';
-  svg += '<text x="' + x0 + '" y="' + (H - 6) + '" fill="#8b949e" font-size="10" text-anchor="start">\u2190 Growth contraction</text>';
-  svg += '<text x="' + ((x0 + x1) / 2) + '" y="' + (H - 6) + '" fill="#e8ecf1" font-size="11" font-weight="700" text-anchor="middle">Growth momentum (Z)</text>';
-  svg += '<text x="' + x1 + '" y="' + (H - 6) + '" fill="#8b949e" font-size="10" text-anchor="end">Growth acceleration \u2192</text>';
-  svg += '<text transform="rotate(-90 16 ' + ((y0 + y1) / 2) + ')" x="16" y="' + ((y0 + y1) / 2) + '" fill="#e8ecf1" font-size="11" font-weight="700" text-anchor="middle">Inflation momentum (Z)</text>';
+  svg += '<circle cx="' + px(Q.z_growth).toFixed(1) + '" cy="' + py(Q.z_inflation).toFixed(1) + '" r="8" fill="#e0aa46" stroke="#f5f7fa" stroke-width="2.5"><title>' + esc(Q.as_of || "") + ' \u00B7 Growth Z ' + f2(Q.z_growth) + ' \u00B7 Inflation Z ' + f2(Q.z_inflation) + '</title></circle>';
+  svg += '<text x="' + x0 + '" y="' + (H - 6) + '" fill="#8d99aa" font-size="10" text-anchor="start">\u2190 Growth contraction</text>';
+  svg += '<text x="' + ((x0 + x1) / 2) + '" y="' + (H - 6) + '" fill="#dbe5f1" font-size="11" font-weight="700" text-anchor="middle">Growth momentum (Z)</text>';
+  svg += '<text x="' + x1 + '" y="' + (H - 6) + '" fill="#8d99aa" font-size="10" text-anchor="end">Growth acceleration \u2192</text>';
+  svg += '<text transform="rotate(-90 16 ' + ((y0 + y1) / 2) + ')" x="16" y="' + ((y0 + y1) / 2) + '" fill="#dbe5f1" font-size="11" font-weight="700" text-anchor="middle">Inflation momentum (Z)</text>';
   svg += "</svg>";
   h += '<div class="card" style="padding:16px;margin:12px 0;">' + svg +
-   '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Reflation sits top right, goldilocks bottom right, deflation bottom left, and stagflation top left. Inflation momentum builds toward the top of the map while disinflation deepens toward the bottom.</div></div>';
+   '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Reflation sits top right, goldilocks bottom right, deflation bottom left, and stagflation top left. Inflation momentum builds toward the top of the map while disinflation deepens toward the bottom.</div></div>';
   // (2) Quadrant probability cards
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin:12px 0;">';
   ["reflation", "goldilocks", "deflation", "stagflation"].forEach((k) => {
    const qc = quadColors[k], dom = k === Q.dominant;
-   h += '<div style="background:#161b26;border-radius:10px;padding:12px 14px;' + (dom ? "border:1px solid " + qc + ";" : "border:1px solid transparent;") + '">' +
+   h += '<div style="background:#101620;border-radius:10px;padding:12px 14px;' + (dom ? "border:1px solid " + qc + ";" : "border:1px solid transparent;") + '">' +
     '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">' +
     '<div style="font-size:13px;font-weight:700;color:' + qc + ';">' + quadNum[k] + ' \u00B7 ' + quadName[k] + '</div>' +
     '<div style="font-size:18px;font-weight:800;color:' + qc + ';">' + f1(P[k]) + '%</div></div>' +
-    '<div style="height:6px;background:#1f2937;border-radius:3px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + Math.min(100, P[k] || 0) + '%;background:' + qc + ';border-radius:3px;"></div></div>' +
-    '<div style="font-size:11px;color:#8b949e;">' + quadDesc[k] + (dom ? ' \u00B7 <span style="color:' + qc + ';font-weight:700;">DOMINANT</span>' : "") + '</div></div>';
+    '<div style="height:6px;background:#101620;border-radius:3px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + Math.min(100, P[k] || 0) + '%;background:' + qc + ';border-radius:3px;"></div></div>' +
+    '<div style="font-size:11px;color:#8d99aa;">' + quadDesc[k] + (dom ? ' \u00B7 <span style="color:' + qc + ';font-weight:700;">DOMINANT</span>' : "") + '</div></div>';
   });
   h += "</div>";
   // Axis component transparency
@@ -9852,45 +9853,45 @@ function quadrantSectionHtml(M) {
   const gw = Q.growth_weights_used || {}, iw = Q.inflation_weights_used || {};
   const compNames = { copper_gold: "Copper/gold ratio", indpro_momentum: "Industrial production", curve: "Curve level", breakeven: "Breakeven inflation", cpi_momentum: "CPI momentum", oil: "Crude oil" };
   const compCell = (k, comps, weights) =>
-   '<div style="flex:1;min-width:130px;"><div style="font-size:11px;color:#8b949e;">' + compNames[k] + (weights[k] != null ? ' \u00B7 weight ' + Math.round(weights[k] * 100) + '%' : '') + '</div>' +
-   '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + signed(comps[k]) + '</div></div>';
+   '<div style="flex:1;min-width:130px;"><div style="font-size:11px;color:#8d99aa;">' + compNames[k] + (weights[k] != null ? ' \u00B7 weight ' + Math.round(weights[k] * 100) + '%' : '') + '</div>' +
+   '<div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + signed(comps[k]) + '</div></div>';
   const missing = Object.keys(compNames).filter((k) => (k in gc ? gc[k] : ic[k]) == null);
-  h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What is driving the two axes</div>' +
-   '<div style="font-size:11px;color:#8b949e;margin-bottom:6px;">GROWTH AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
+  h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What is driving the two axes</div>' +
+   '<div style="font-size:11px;color:#8d99aa;margin-bottom:6px;">GROWTH AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
    ["copper_gold", "indpro_momentum", "curve"].map((k) => compCell(k, gc, gw)).join("") + '</div>' +
-   '<div style="font-size:11px;color:#8b949e;margin:10px 0 6px;">INFLATION AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
+   '<div style="font-size:11px;color:#8d99aa;margin:10px 0 6px;">INFLATION AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
    ["breakeven", "cpi_momentum", "oil"].map((k) => compCell(k, ic, iw)).join("") + '</div>' +
-   (missing.length ? '<div style="font-size:11px;color:#d29922;margin-top:8px;">Reduced coverage in this snapshot. ' + missing.map((k) => compNames[k]).join(", ") + ' could not be computed, so the remaining weights were renormalized to sum to one.</div>' : "") +
+   (missing.length ? '<div style="font-size:11px;color:#e0aa46;margin-top:8px;">Reduced coverage in this snapshot. ' + missing.map((k) => compNames[k]).join(", ") + ' could not be computed, so the remaining weights were renormalized to sum to one.</div>' : "") +
    '</div>';
   // (3) Tactical allocation, blended by the live probabilities
   const A = Q.allocation;
   if (A) {
    const allocRows = [
     ["Equities", A.equities, "#58a6ff"],
-    ["Fixed income and duration", A.fixed_income, "#3fb950"],
-    ["Commodities and real assets", A.commodities, "#d29922"],
-    ["Cash and T-bills", A.cash, "#8b949e"],
+    ["Fixed income and duration", A.fixed_income, "#4dd2aa"],
+    ["Commodities and real assets", A.commodities, "#e0aa46"],
+    ["Cash and T-bills", A.cash, "#8d99aa"],
    ];
-   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:4px;">Tactical allocation, blended by quadrant probabilities</div>' +
-    '<div style="font-size:12px;color:#8b949e;margin-bottom:12px;">Target weights blend all four desk playbooks by their live probabilities and sum to 100%. The tilts and mandate come from the dominant quadrant, ' + esc(quadName[Q.dominant] || "") + '.</div>';
+   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:4px;">Tactical allocation, blended by quadrant probabilities</div>' +
+    '<div style="font-size:12px;color:#8d99aa;margin-bottom:12px;">Target weights blend all four desk playbooks by their live probabilities and sum to 100%. The tilts and mandate come from the dominant quadrant, ' + esc(quadName[Q.dominant] || "") + '.</div>';
    allocRows.forEach((r) => {
-    h += '<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:#e8ecf1;">' + r[0] + '</span><span style="font-weight:700;color:#e8ecf1;">' + (r[1] != null ? f1(r[1]) + "%" : "N/A") + '</span></div>' +
-     '<div style="height:8px;background:#1f2937;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, r[1] || 0) + '%;background:' + r[2] + ';border-radius:4px;"></div></div></div>';
+    h += '<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:#dbe5f1;">' + r[0] + '</span><span style="font-weight:700;color:#dbe5f1;">' + (r[1] != null ? f1(r[1]) + "%" : "N/A") + '</span></div>' +
+     '<div style="height:8px;background:#101620;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, r[1] || 0) + '%;background:' + r[2] + ';border-radius:4px;"></div></div></div>';
    });
    const chip = (t, up) => '<span style="display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;margin:0 6px 6px 0;' + (up ? "background:rgba(63,185,80,0.12);border:1px solid rgba(63,185,80,0.45);color:#56d364;" : "background:rgba(248,81,73,0.10);border:1px solid rgba(248,81,73,0.45);color:#ff7b72;") + '">' + esc(t) + '</span>';
    h += '<div style="margin-top:12px;"><div style="font-size:11px;color:#56d364;font-weight:700;margin-bottom:6px;">TACTICAL OVERWEIGHTS</div><div>' + (A.overweight || []).map((t) => chip(t, true)).join("") + '</div>' +
     '<div style="font-size:11px;color:#ff7b72;font-weight:700;margin:6px 0;">TACTICAL UNDERWEIGHTS</div><div>' + (A.underweight || []).map((t) => chip(t, false)).join("") + '</div>' +
-    '<p style="font-size:13px;color:#9ba3af;line-height:1.6;margin:10px 0 0;">' + esc(A.mandate || "") + '</p></div></div>';
+    '<p style="font-size:13px;color:#8d99aa;line-height:1.6;margin:10px 0 0;">' + esc(A.mandate || "") + '</p></div></div>';
   }
   // (4) Financial conditions and plumbing strip
   const PL = Q.plumbing || {};
   const nf = PL.nfci || {}, cs = PL.curve_slope || {}, tp = PL.term_premium || {}, rp = PL.real_policy || {};
   const pc = (label, val, sub) =>
-   '<div class="card"><div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
-   '<div style="font-size:24px;font-weight:800;color:#e8ecf1;">' + val + '</div>' +
-   (sub ? '<div style="font-size:11px;color:#8b949e;margin-top:4px;">' + sub + "</div>" : "") + "</div>";
+   '<div class="card"><div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+   '<div style="font-size:24px;font-weight:800;color:#dbe5f1;">' + val + '</div>' +
+   (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">' + sub + "</div>" : "") + "</div>";
   const stanceTxt = rp.stance ? rp.stance.charAt(0).toUpperCase() + rp.stance.slice(1) : null;
-  h += '<div style="font-size:13px;font-weight:700;color:#e8ecf1;margin:16px 0 4px;">Financial conditions and plumbing</div>' +
+  h += '<div style="font-size:13px;font-weight:700;color:#dbe5f1;margin:16px 0 4px;">Financial conditions and plumbing</div>' +
    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:8px 0 12px;">' +
    pc("CHICAGO FED NFCI", nf.value != null ? f2(nf.value) : "N/A",
      (nf.label ? esc(nf.label) : "National financial conditions index") + (nf.as_of ? " \u00B7 weekly, as of " + esc(nf.as_of) : "")) +
@@ -9913,13 +9914,13 @@ function macroRegimeHtml() {
    return '<div class="section"><div class="section-title">Macro Regime Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Macro Regime data unavailable. Check back after the next refresh.</p></div></div>';
   }
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
-  const c = colorMap[M.color] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const c = colorMap[M.color] || "#dbe5f1";
   const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
   const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
   const pct = (v) => v != null ? f1(v) + "%" : "N/A";
   const bp = (v) => v != null ? (v > 0 ? "+" : "") + Math.round(v) + " bps" : "N/A";
-  const regimeColors = { blowout: "#f85149", plateau: "#d29922", growth: "#58a6ff", liquidity: "#a371f7" };
+  const regimeColors = { blowout: "#f37d83", plateau: "#e0aa46", growth: "#58a6ff", liquidity: "#a371f7" };
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const monthLabel = (d) => {
    if (!d) return "monthly";
@@ -9931,35 +9932,35 @@ function macroRegimeHtml() {
   // Quadrant layer first (visuals before the sovereign detail)
   h += quadrantSectionHtml(M);
   // Score banner
-  h += '<div style="font-size:13px;font-weight:700;color:#e8ecf1;margin:16px 0 4px;">Sovereign yield layer</div>' +
-   '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">BLOWOUT RISK</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+  h += '<div style="font-size:13px;font-weight:700;color:#dbe5f1;margin:16px 0 4px;">Sovereign yield layer</div>' +
+   '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">BLOWOUT RISK</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(M.regime || "") + '</div>' +
-   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">Dominant regime carries a ' + pct((M.probabilities || {})[M.regime_key]) + ' probability weight' +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Dominant regime carries a ' + pct((M.probabilities || {})[M.regime_key]) + ' probability weight' +
    " \u00B7 Expected 10Y " + (M.expected_10y != null ? f2(M.expected_10y) + "%" : "N/A") +
    " \u00B7 US 10Y now " + ((M.yields || {}).us_10y != null ? f2(M.yields.us_10y) + "%" : "N/A") + "</div></div></div>";
   // (1) Regime probability bars
   const scenarios = M.scenarios || [];
   h += '<div style="display:flex;flex-direction:column;gap:8px;margin:12px 0;">';
   scenarios.forEach((sc) => {
-   const rc = regimeColors[sc.key] || "#e8ecf1";
+   const rc = regimeColors[sc.key] || "#dbe5f1";
    const dom = sc.key === M.regime_key;
-   h += '<div style="background:#161b26;border-radius:10px;padding:12px 14px;' + (dom ? "border:1px solid " + rc + ";" : "border:1px solid transparent;") + '">' +
+   h += '<div style="background:#101620;border-radius:10px;padding:12px 14px;' + (dom ? "border:1px solid " + rc + ";" : "border:1px solid transparent;") + '">' +
     '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;">' +
-    '<div style="font-size:13px;font-weight:700;color:#e8ecf1;">' + esc(sc.name) + (dom ? ' <span style="font-size:10px;font-weight:800;color:' + rc + ';letter-spacing:0.5px;">DOMINANT</span>' : "") + '</div>' +
+    '<div style="font-size:13px;font-weight:700;color:#dbe5f1;">' + esc(sc.name) + (dom ? ' <span style="font-size:10px;font-weight:800;color:' + rc + ';letter-spacing:0.5px;">DOMINANT</span>' : "") + '</div>' +
     '<div style="font-size:18px;font-weight:800;color:' + rc + ';">' + pct(sc.prob) + '</div></div>' +
-    '<div style="height:6px;background:#1f2937;border-radius:3px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + Math.min(100, sc.prob || 0) + '%;background:' + rc + ';border-radius:3px;"></div></div>' +
-    '<div style="font-size:11px;color:#8b949e;">US 10Y mean ' + f2(sc.us10y_mean) + "% across a " + f2(sc.range_low) + "% to " + f2(sc.range_high) + "% range" +
+    '<div style="height:6px;background:#101620;border-radius:3px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + Math.min(100, sc.prob || 0) + '%;background:' + rc + ';border-radius:3px;"></div></div>' +
+    '<div style="font-size:11px;color:#8d99aa;">US 10Y mean ' + f2(sc.us10y_mean) + "% across a " + f2(sc.range_low) + "% to " + f2(sc.range_high) + "% range" +
     " \u00B7 Bund " + f2(sc.bund_mean) + "% \u00B7 Gilt " + f2(sc.gilt_mean) + "% \u00B7 JGB " + f2(sc.jgb_mean) + "%</div></div>";
   });
   h += "</div>";
   // (2) Expected value and tails
   const mc = (label, val, sub) =>
-   '<div style="background:#161b26;border-radius:10px;padding:12px;text-align:center;">' +
-   '<div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
-   '<div style="font-size:22px;font-weight:800;color:#e8ecf1;">' + val + "</div>" +
-   (sub ? '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
+   '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
+   '<div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+   '<div style="font-size:22px;font-weight:800;color:#dbe5f1;">' + val + "</div>" +
+   (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
    mc("EXPECTED 10Y (12M)", M.expected_10y != null ? f2(M.expected_10y) + "%" : "N/A", "probability-weighted across regimes") +
    mc("SIGMA BAND", M.sigma_bps != null ? "\u00B1" + f1(M.sigma_bps) + " bps" : "N/A", (M.band_low != null ? f2(M.band_low) + "% to " + f2(M.band_high) + "%" : "")) +
@@ -9970,7 +9971,7 @@ function macroRegimeHtml() {
   const Y = M.yields || {};
   const F = M.foreign || {};
   const row = (name, cur, basis, weighted) =>
-   "<tr><td style=\"font-weight:600;color:#e8ecf1;\">" + name + "</td><td>" + (cur != null ? f2(cur) + "%" : "N/A") + "</td><td>" + basis + "</td><td>" + (weighted != null ? f2(weighted) + "%" : "N/A") + "</td></tr>";
+   "<tr><td style=\"font-weight:600;color:#dbe5f1;\">" + name + "</td><td>" + (cur != null ? f2(cur) + "%" : "N/A") + "</td><td>" + basis + "</td><td>" + (weighted != null ? f2(weighted) + "%" : "N/A") + "</td></tr>";
   h += '<div class="card" style="padding:0;overflow:hidden;margin:12px 0;"><div class="table-wrap"><table class="coverage">' +
    "<thead><tr><th>Sovereign 10Y Benchmark</th><th>Current</th><th>Basis</th><th>Probability-Weighted</th></tr></thead><tbody>" +
    row("US Treasury 2Y", Y.us_2y, "daily", null) +
@@ -9980,13 +9981,13 @@ function macroRegimeHtml() {
    row("UK Gilt 10Y", (F.gilt || {}).current, monthLabel((F.gilt || {}).as_of), (F.gilt || {}).weighted) +
    row("Japan JGB 10Y", (F.jgb || {}).current, monthLabel((F.jgb || {}).as_of), (F.jgb || {}).weighted) +
    "</tbody></table></div></div>" +
-   '<div style="font-size:11px;color:#8b949e;margin:-4px 0 12px;">Foreign yields are monthly OECD observations and lag the daily US data. The probability-weighted column blends the four regime scenario means by their current probabilities.</div>';
+   '<div style="font-size:11px;color:#8d99aa;margin:-4px 0 12px;">Foreign yields are monthly OECD observations and lag the daily US data. The probability-weighted column blends the four regime scenario means by their current probabilities.</div>';
   // (4) Term premium and curve readouts
   const TP = M.term_premium || {};
   const rc2 = (label, val, sub) =>
-   '<div class="card"><div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
-   '<div style="font-size:24px;font-weight:800;color:#e8ecf1;">' + val + '</div>' +
-   (sub ? '<div style="font-size:11px;color:#8b949e;margin-top:4px;">' + sub + "</div>" : "") + "</div>";
+   '<div class="card"><div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+   '<div style="font-size:24px;font-weight:800;color:#dbe5f1;">' + val + '</div>' +
+   (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">' + sub + "</div>" : "") + "</div>";
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:12px 0;">' +
    rc2("TERM PREMIUM (KIM-WRIGHT 10Y)", TP.level != null ? f2(TP.level) + "%" : "N/A",
      (TP.chg_20d_bps != null ? bp(TP.chg_20d_bps) + " over 20 sessions" : "20-session change N/A") + (TP.as_of ? " \u00B7 as of " + esc(String(TP.as_of).slice(0, 10)) : "")) +
@@ -10004,20 +10005,20 @@ function macroRegimeHtml() {
   // Active signals (transparency on what tilted the probabilities)
   const sigs = M.signals || [];
   if (sigs.length) {
-   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">Signals moving the probabilities today</div>' +
-    '<div style="font-size:13px;color:#9ba3af;line-height:1.7;">' +
+   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">Signals moving the probabilities today</div>' +
+    '<div style="font-size:13px;color:#8d99aa;line-height:1.7;">' +
     sigs.map((s) => "\u2022 " + esc(s)).join("<br>") + "</div></div>";
   }
   // (5) Probability history chart (drawn by drawMacroRegimeChart)
   const hist = M.history || [];
   if (hist.length) {
    h += '<div class="zoomable-chart" data-chart="macro-regime" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="macro-regime-chart"></canvas>' +
-    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
   }
   h += '<div class="panel-asof">As of ' + esc((M.as_of || "").slice(0, 10)) + "</div></div>";
   // (6) Explainer AFTER the visuals
-  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
    "The first layer reads the economy itself rather than bond prices. Every asset class ultimately prices two forces, growth and inflation, so the model standardizes each into a momentum score. The growth score blends the copper to gold ratio, industrial production momentum, and the level of the curve, while the inflation score blends breakeven inflation, consumer price momentum, and crude oil. The position on the map selects one of four quadrants, and a distance-weighted softmax converts that position into probabilities instead of a single asserted regime. The allocation panel blends the four desk playbooks by those probabilities, so positioning migrates gradually as the economy moves rather than flipping on one data print.<br><br>" +
    "The plumbing strip tracks how tightly money is moving while that migration unfolds. The Chicago Fed conditions index summarizes credit availability across debt, equity, and shadow banking channels. The real policy rate strips core inflation out of the effective fed funds rate and compares the result with an assumed neutral band, which shows whether policy is adding restraint or quietly easing. Loose plumbing alongside building inflation momentum is the combination that tends to feed the blowout odds in the sovereign layer, because ample credit lets heavy Treasury supply clear at rising yields until demand finally balks.<br><br>" +
    "The sovereign layer frames the next 6 to 12 months for the US 10-year yield as a contest between four regimes. A fiscal blowout, where heavy Treasury supply and fading foreign demand push long yields toward 5.60%. A higher-for-longer plateau around 4.85%, where sticky inflation and a heavy issuance calendar keep yields elevated without disorder. A growth deceleration toward 4.05%, where a credit or labor slowdown restores the traditional duration bid. And a liquidity shock toward 3.30%, where a funding fracture forces emergency easing. Probabilities start from the framework priors and shift every day with observable signals, so the mix reflects where the evidence is building rather than a fixed view.<br><br>" +
@@ -10042,9 +10043,9 @@ function macroRegimeHtml() {
     labels: hist.map((r) => r.date),
     datasets: [
      { type: "line", label: "Fiscal Blowout %", data: hist.map((r) => r.p_blowout),
-       borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+       borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.2 },
      { type: "line", label: "Plateau %", data: hist.map((r) => r.p_plateau),
-       borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+       borderColor: "#e0aa46", borderWidth: 2, pointRadius: 0, tension: 0.2 },
      { type: "line", label: "Growth Decel. %", data: hist.map((r) => r.p_growth),
        borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
      { type: "line", label: "Liquidity Shock %", data: hist.map((r) => r.p_liquidity),
@@ -10052,11 +10053,11 @@ function macroRegimeHtml() {
     ]},
    options: { animation: false, responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+    plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
     scales: {
-     x: { ticks: { color: "#6b7280", maxTicksLimit: 8 }, grid: { display: false } },
-     y: { title: { display: true, text: "probability %", color: "#8b949e" },
-          ticks: { color: "#8b949e" }, grid: { color: "rgba(42,46,57,0.4)" } },
+     x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
+     y: { title: { display: true, text: "probability %", color: "#8d99aa" },
+          ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
     }},
   });
  }
@@ -10066,7 +10067,7 @@ function macroRegimeHtml() {
 // momentum, Taylor policy gap, sovereign fragmentation. The nowcast
 // headline is a momentum score (high = strong economy); the Taylor
 // headline value is the raw policy gap in bps, not a 0-100 score.
-const GM_COLORS = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+const GM_COLORS = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
 const GM_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 function gmMonthLabel(d) {
  if (!d) return "";
@@ -10079,22 +10080,22 @@ function gmQuarterLabel(d) {
  return "Q" + (Math.floor((Number(p[1]) - 1) / 3) + 1) + " " + p[0];
 }
 function gmCard(label, val, sub) {
- return '<div style="background:#161b26;border-radius:10px;padding:12px;text-align:center;">' +
-  '<div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
-  '<div style="font-size:22px;font-weight:800;color:#e8ecf1;">' + val + "</div>" +
-  (sub ? '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
+ return '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
+  '<div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+  '<div style="font-size:22px;font-weight:800;color:#dbe5f1;">' + val + "</div>" +
+  (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
 }
 function gmBanner(label, big, unit, regime, color, sub) {
- const c = GM_COLORS[color] || "#e8ecf1";
- return '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
-  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + label + "</div>" +
-  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + big + (unit ? '<span style="font-size:16px;color:#8b949e;">' + unit + "</span>" : "") + "</div></div>" +
+ const c = GM_COLORS[color] || "#dbe5f1";
+ return '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
+  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + "</div>" +
+  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + big + (unit ? '<span style="font-size:16px;color:#8d99aa;">' + unit + "</span>" : "") + "</div></div>" +
   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div>" +
-  (sub ? '<div style="font-size:12px;color:#8b949e;margin-top:4px;">' + sub + "</div>" : "") + "</div></div>";
+  (sub ? '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">' + sub + "</div>" : "") + "</div></div>";
 }
 function gmChart(id, chartKey) {
  return '<div class="zoomable-chart" data-chart="' + chartKey + '" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="' + id + '"></canvas>' +
-  '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
+  '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
 }
 function gmAsof(model, dateText) {
  return '<div class="panel-asof">As of ' + esc(dateText || (model.as_of || "").slice(0, 10)) +
@@ -10105,8 +10106,8 @@ function gmMissing(title) {
   '<div class="card"><p style="color:var(--muted)">Data unavailable for this gauge right now. It will return with the next successful refresh, and no estimate is shown in its place.</p></div></div>';
 }
 function gmExplainer(paras) {
- return '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' + paras + "</div></div>";
+ return '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' + paras + "</div></div>";
 }
 function gmModels() { return (D.advanced_macro || {}).models || {}; }
 
@@ -10127,7 +10128,7 @@ function fiscalDominanceHtml() {
   gmCard("DEBT TO GDP", M.debt_gdp_pct != null ? f1(M.debt_gdp_pct) + "%" : "N/A", "total public debt" + (M.debt_gdp_as_of ? ", " + gmQuarterLabel(M.debt_gdp_as_of) : "")) +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8b949e;margin:4px 0;">Interest burden over the last 16 quarters. The desk bands sit at 15 percent for structural constraint and 22 percent for binding fiscal dominance.</div>';
+  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Interest burden over the last 16 quarters. The desk bands sit at 15 percent for structural constraint and 22 percent for binding fiscal dominance.</div>';
   h += gmChart("fiscal-dominance-chart", "fiscal-dominance");
  }
  h += gmAsof(M, gmQuarterLabel(M.as_of));
@@ -10154,7 +10155,7 @@ function eurodollarStressHtml() {
   gmCard("DOLLAR VELOCITY 20D", sz(M.velocity_z), "20-day change in its own recent distribution") +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8b949e;margin:4px 0;">Stress score over the last 120 trading days. Sustained readings above 45 have accompanied offshore funding strains, and spikes toward 70 mark an active squeeze.</div>';
+  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Stress score over the last 120 trading days. Sustained readings above 45 have accompanied offshore funding strains, and spikes toward 70 mark an active squeeze.</div>';
   h += gmChart("eurodollar-stress-chart", "eurodollar-stress");
  }
  h += gmAsof(M);
@@ -10182,7 +10183,7 @@ function economicNowcastHtml() {
   gmCard("INITIAL CLAIMS 4WK", M.claims_4wk != null ? Math.round(M.claims_4wk).toLocaleString() : "N/A", "52-week mean " + (M.claims_52wk != null ? Math.round(M.claims_52wk).toLocaleString() : "N/A")) +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8b949e;margin:4px 0;">Momentum score over the last 52 weeks. The recessionary zone sits at 35 and below, and strong momentum at 65 and above.</div>';
+  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Momentum score over the last 52 weeks. The recessionary zone sits at 35 and below, and strong momentum at 65 and above.</div>';
   h += gmChart("nowcast-momentum-chart", "nowcast-momentum");
  }
  h += gmAsof(M);
@@ -10211,7 +10212,7 @@ function taylorGapHtml() {
   gmCard("OUTPUT GAP", M.output_gap != null ? (M.output_gap > 0 ? "+" : "") + f2(M.output_gap) + "%" : "N/A", "Okun mapping from unemployment at " + (M.unrate != null ? f2(M.unrate) + "%" : "N/A")) +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8b949e;margin:4px 0;">Effective fed funds against the Taylor prescription over the last 24 months. Where the gold line runs above the purple line, policy is tighter than the rule prescribes.</div>';
+  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Effective fed funds against the Taylor prescription over the last 24 months. Where the gold line runs above the purple line, policy is tighter than the rule prescribes.</div>';
   h += gmChart("taylor-gap-chart", "taylor-gap");
  }
  h += gmAsof(M, gmMonthLabel(M.as_of));
@@ -10228,7 +10229,7 @@ function sovereignFragmentationHtml() {
  const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
  const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
  const yrow = (name, cur, sub) =>
-  "<tr><td style=\"font-weight:600;color:#e8ecf1;\">" + name + "</td><td>" + (cur != null ? f2(cur) + "%" : "N/A") + "</td><td>" + sub + "</td></tr>";
+  "<tr><td style=\"font-weight:600;color:#dbe5f1;\">" + name + "</td><td>" + (cur != null ? f2(cur) + "%" : "N/A") + "</td><td>" + sub + "</td></tr>";
  let h = '<div class="section"><div class="section-title">Sovereign Credit Fragmentation ' + PRO_BADGE + "</div>" +
   '<div class="section-sub">Italian and French 10-year yields against the German Bund, the market\u2019s running vote on whether the eurozone holds together under a global rate shock.</div>';
  h += gmBanner("FRAGMENTATION RISK", M.score, "/100", M.regime, M.color,
@@ -10245,7 +10246,7 @@ function sovereignFragmentationHtml() {
   yrow("Germany Bund 10Y", M.germany_10y, "monthly, " + gmMonthLabel(M.as_of)) +
   yrow("France OAT 10Y", M.france_10y, "monthly, " + gmMonthLabel(M.as_of)) +
   "</tbody></table></div></div>" +
-  '<div style="font-size:11px;color:#8b949e;margin:-4px 0 12px;">Spreads are computed on the latest month all three series share, because the Italian print lags the German and French releases. The Bund card above shows the newest German print on its own.</div>';
+  '<div style="font-size:11px;color:#8d99aa;margin:-4px 0 12px;">Spreads are computed on the latest month all three series share, because the Italian print lags the German and French releases. The Bund card above shows the newest German print on its own.</div>';
  if ((M.history || []).length) {
   h += gmChart("fragmentation-chart", "fragmentation");
  }
@@ -10274,11 +10275,11 @@ function globalMacroHtml() {
 function taylorGapFreeCard() {
  const T = (D.risk_headlines || {}).taylor_gap || {};
  if (T.score == null) return "";
- const c = GM_COLORS[T.color] || "#e8ecf1";
+ const c = GM_COLORS[T.color] || "#dbe5f1";
  const g = Math.round(T.score);
- return '<div id="risk-taylor-gap" class="risk-anchor" style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
-  '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">TAYLOR GAP</div>' +
-  '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + (g > 0 ? "+" : "") + g + '<span style="font-size:14px;color:#8b949e;"> bps</span></div>' +
+ return '<div id="risk-taylor-gap" class="risk-anchor" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">TAYLOR GAP</div>' +
+  '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + (g > 0 ? "+" : "") + g + '<span style="font-size:14px;color:#8d99aa;"> bps</span></div>' +
   '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(T.regime || "") + "</div></div>";
 }
 
@@ -10295,11 +10296,11 @@ function drawAdvancedMacroCharts() {
    data: { labels: labels, datasets: datasets },
    options: { animation: false, responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+    plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
     scales: {
-     x: { ticks: { color: "#6b7280", maxTicksLimit: 8 }, grid: { display: false } },
-     y: { title: { display: true, text: yTitle, color: "#8b949e" },
-          ticks: { color: "#8b949e" }, grid: { color: "rgba(42,46,57,0.4)" } },
+     x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
+     y: { title: { display: true, text: yTitle, color: "#8d99aa" },
+          ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
     }},
   });
  };
@@ -10308,11 +10309,11 @@ function drawAdvancedMacroCharts() {
  const fd = models.fiscal_dominance || {};
  if ((fd.history || []).length)
   line("fiscal-dominance-chart", fd.history.map((r) => gmQuarterLabel(r.date)),
-   [ds("Interest burden %", fd.history.map((r) => r.ratio), "#f85149")], "% of receipts");
+   [ds("Interest burden %", fd.history.map((r) => r.ratio), "#f37d83")], "% of receipts");
  const eu = models.eurodollar_stress || {};
  if ((eu.history || []).length)
   line("eurodollar-stress-chart", eu.history.map((r) => r.date),
-   [ds("Stress score", eu.history.map((r) => r.score), "#d29922")], "score");
+   [ds("Stress score", eu.history.map((r) => r.score), "#e0aa46")], "score");
  const nc = models.economic_nowcast || {};
  if ((nc.history || []).length)
   line("nowcast-momentum-chart", nc.history.map((r) => r.date),
@@ -10320,13 +10321,13 @@ function drawAdvancedMacroCharts() {
  const tg = models.taylor_gap || {};
  if ((tg.history || []).length)
   line("taylor-gap-chart", tg.history.map((r) => gmMonthLabel(r.date)),
-   [ds("Effective fed funds %", tg.history.map((r) => r.effr), "#c9a961"),
+   [ds("Effective fed funds %", tg.history.map((r) => r.effr), "#d9a441"),
     ds("Taylor prescription %", tg.history.map((r) => r.taylor_rate), "#a371f7")], "%");
  const sf = models.sovereign_fragmentation || {};
  if ((sf.history || []).length)
   line("fragmentation-chart", sf.history.map((r) => gmMonthLabel(r.date)),
-   [ds("BTP/Bund (bps)", sf.history.map((r) => r.btp_bund_bps), "#f85149"),
-    ds("OAT/Bund (bps)", sf.history.map((r) => r.oat_bund_bps), "#c9a961")], "bps");
+   [ds("BTP/Bund (bps)", sf.history.map((r) => r.btp_bund_bps), "#f37d83"),
+    ds("OAT/Bund (bps)", sf.history.map((r) => r.oat_bund_bps), "#d9a441")], "bps");
 }
 
 // === real_yield_shock.js ===
@@ -10340,37 +10341,37 @@ function realYieldShockHtml() {
    const H = (D.risk_headlines || {}).real_yield_shock || {};
    R = { regime: H.regime, color: H.color, tips_10y: H.tips_10y, score: H.score, as_of: H.as_of };
   }
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
-  const c = colorMap[R.color] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
+  const c = colorMap[R.color] || "#dbe5f1";
   const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
   const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
   let h = '<div class="section"><div class="section-title">Real Yield Shock Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">The 10-year TIPS yield is the market\u2019s real cost of capital. When real yields rise, equity multiples tend to compress, and this gauge tracks that pressure.</div>';
   // Gauge banner: regime badge plus headline values. Pro users also see
   // fair P/E vs benchmark P/E; free users see the shock score instead.
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
    '<div style="font-size:13px;font-weight:800;padding:6px 14px;border-radius:20px;background:' + c + '22;color:' + c + ';border:1px solid ' + c + ';">' + esc(R.regime || "N/A") + "</div>" +
    '<div style="display:grid;grid-template-columns:repeat(' + (isProUser ? 3 : 2) + ',1fr);gap:8px;flex:1;min-width:260px;">' +
-   '<div><div style="font-size:11px;color:#8b949e;">10Y REAL YIELD</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.tips_10y != null ? f2(R.tips_10y) + "%" : "N/A") + "</div></div>";
+   '<div><div style="font-size:11px;color:#8d99aa;">10Y REAL YIELD</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.tips_10y != null ? f2(R.tips_10y) + "%" : "N/A") + "</div></div>";
   if (isProUser) {
-   h += '<div><div style="font-size:11px;color:#8b949e;">FAIR P/E</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.fair_pe != null ? f1(R.fair_pe) + "x" : "N/A") + "</div></div>" +
-   '<div><div style="font-size:11px;color:#8b949e;">BENCHMARK P/E</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.benchmark_pe != null ? f1(R.benchmark_pe) + "x" : "N/A") + "</div></div>";
+   h += '<div><div style="font-size:11px;color:#8d99aa;">FAIR P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.fair_pe != null ? f1(R.fair_pe) + "x" : "N/A") + "</div></div>" +
+   '<div><div style="font-size:11px;color:#8d99aa;">BENCHMARK P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.benchmark_pe != null ? f1(R.benchmark_pe) + "x" : "N/A") + "</div></div>";
   } else {
-   h += '<div><div style="font-size:11px;color:#8b949e;">SHOCK SCORE</div><div style="font-size:26px;font-weight:800;color:' + c + ';">' + (R.score != null ? fmtScore(R.score) : "N/A") + '<span style="font-size:14px;color:#8b949e;">/100</span></div></div>';
+   h += '<div><div style="font-size:11px;color:#8d99aa;">SHOCK SCORE</div><div style="font-size:26px;font-weight:800;color:' + c + ';">' + (R.score != null ? fmtScore(R.score) : "N/A") + '<span style="font-size:14px;color:#8d99aa;">/100</span></div></div>';
   }
   h += "</div></div>";
   if (isProUser) {
    // Pro details: implied compression + real yield z-score
    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-    '<div class="card"><div style="font-size:11px;color:#8b949e;">IMPLIED MULTIPLE COMPRESSION</div>' +
+    '<div class="card"><div style="font-size:11px;color:#8d99aa;">IMPLIED MULTIPLE COMPRESSION</div>' +
     '<div style="font-size:24px;font-weight:800;color:' + c + ';">' + (R.compression_pct != null ? f1(R.compression_pct) + "%" : "N/A") + '</div>' +
-    '<div style="font-size:11px;color:#8b949e;margin-top:4px;">The gap between the benchmark multiple and the fair multiple implied by current real yields.</div></div>' +
-    '<div class="card"><div style="font-size:11px;color:#8b949e;">REAL YIELD Z-SCORE</div>' +
-    '<div style="font-size:24px;font-weight:800;color:#e8ecf1;">' + (R.tips_z != null ? f2(R.tips_z) : "N/A") + '</div>' +
-    '<div style="font-size:11px;color:#8b949e;margin-top:4px;">Where the current real yield sits against its own history.</div></div></div>';
+    '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">The gap between the benchmark multiple and the fair multiple implied by current real yields.</div></div>' +
+    '<div class="card"><div style="font-size:11px;color:#8d99aa;">REAL YIELD Z-SCORE</div>' +
+    '<div style="font-size:24px;font-weight:800;color:#dbe5f1;">' + (R.tips_z != null ? f2(R.tips_z) : "N/A") + '</div>' +
+    '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">Where the current real yield sits against its own history.</div></div></div>';
    // Explainer AFTER the visuals
-   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-    '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+    '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
     "The 10-year TIPS yield measures the real return investors can lock in by holding risk-free bonds for a decade. It is the hurdle rate that competes directly with equities for capital, and every valuation multiple is priced against it.<br><br>" +
     "The fair P/E comes from that relationship. When real yields climb, each dollar of future earnings is worth less in present terms, so the fair multiple falls. The gauge compares that fair multiple with the market\u2019s actual multiple to estimate how much compression is needed for valuations to reconcile with the current cost of capital.<br><br>" +
     "The z-score puts the current real yield in historical context. Readings near zero mean yields are ordinary, while readings beyond two standard deviations mean yields are unusually high relative to recent history, and that is when multiple compression pressure has historically been most acute." +
@@ -10384,7 +10385,7 @@ function realYieldShockHtml() {
 
 // === pead_screener.js ===
 function peadScreenerHtml() {
- const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
 
  const fmtP = (v) => {
   if (v == null || v === "" || isNaN(+v)) return "N/A";
@@ -10393,7 +10394,7 @@ function peadScreenerHtml() {
  };
  const fmtSue = (v) => (v == null || v === "" || isNaN(+v)) ? "N/A" : (+v).toFixed(2);
  const badge = (label, colorKey) => {
-  const col = colorMap[colorKey] || "#8b949e";
+  const col = colorMap[colorKey] || "#8d99aa";
   return '<span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:' +
    col + '22;color:' + col + ';">' + esc(label || "N/A") + "</span>";
  };
@@ -10411,14 +10412,14 @@ function peadScreenerHtml() {
 
  // Summary line: count of candidates in active accumulation drift
  const active = cands.filter((c) => /accumulation drift/i.test(String(c.status || ""))).length;
- h += '<p style="font-size:13px;color:#8b949e;margin:0 0 12px;"><b style="color:#e8ecf1;">' + active + "</b> of " + cands.length +
+ h += '<p style="font-size:13px;color:#8d99aa;margin:0 0 12px;"><b style="color:#dbe5f1;">' + active + "</b> of " + cands.length +
   (active === 1 ? " candidate" : " candidates") + " in active accumulation drift.</p>";
 
  h += '<div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table class="coverage">' +
   "<thead><tr><th>Ticker</th><th>Report Date</th><th>Surprise %</th><th>SUE</th><th>Drift %</th><th>Status</th></tr></thead><tbody>";
  cands.forEach((c) => {
   h += "<tr>" +
-   '<td><a href="#/ticker/' + esc(c.ticker) + '" style="color:#e8ecf1;font-weight:600;text-decoration:none;">' + esc(c.ticker) + "</a></td>" +
+   '<td><a href="#/ticker/' + esc(c.ticker) + '" style="color:#dbe5f1;font-weight:600;text-decoration:none;">' + esc(c.ticker) + "</a></td>" +
    "<td>" + esc(c.report_date || "N/A") + "</td>" +
    '<td class="' + cls(c.surprise_pct) + '">' + fmtP(c.surprise_pct) + "</td>" +
    "<td>" + fmtSue(c.sue) + "</td>" +
@@ -10430,8 +10431,8 @@ function peadScreenerHtml() {
  h += '<div class="panel-asof">As of ' + esc((p.as_of || "").slice(0, 10)) + "</div></div>";
 
  // Plain-English explainer, after the visual
- const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+ const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
   "Post-earnings announcement drift is the tendency for a stock to keep moving in the direction of its earnings surprise for weeks after the report. The initial reaction captures only part of the repricing, and the rest leaks in gradually as the market digests the print.<br><br>" +
   "The drift exists largely because large institutions rarely buy or sell their full position at once. They scale in over days and weeks to avoid moving the price against themselves, and that steady flow of orders extends the move well beyond the first session. Research desks also take time to update models and recommendations, which adds a second wave of demand after strong reports and persistent selling after weak ones. The screener separates fresh surprises from stale ones so the drift still has room to run.<br><br>" +
   "SUE, or standardized unexpected earnings, scales the surprise by the stock's own history of forecast error. A 10 percent beat means little for a company that routinely beats by 12 percent, while a 5 percent beat is large for one that usually lands within 2 percent. Higher SUE values mark surprises that are genuinely unusual for that name, and those are the ones where drift has historically been strongest." +
@@ -10443,7 +10444,7 @@ function peadScreenerHtml() {
 
 // === squeeze_radar.js ===
 function squeezeRadarHtml() {
- const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
 
  const fmtLvl = (v) => {
   if (v == null || v === "" || isNaN(+v)) return "N/A";
@@ -10457,7 +10458,7 @@ function squeezeRadarHtml() {
  const fmtNum = (v) => (v == null || v === "" || isNaN(+v)) ? "N/A" : (+v).toFixed(1);
  const fmtScore = (v) => (v == null || v === "" || isNaN(+v)) ? "N/A" : (+v).toFixed(1).replace(/\.0$/, "");
  const badge = (label, colorKey) => {
-  const col = colorMap[colorKey] || "#8b949e";
+  const col = colorMap[colorKey] || "#8d99aa";
   return '<span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:' +
    col + '22;color:' + col + ';">' + esc(label || "N/A") + "</span>";
  };
@@ -10478,7 +10479,7 @@ function squeezeRadarHtml() {
  recs.forEach((r, i) => {
   const rowStyle = i < 3 ? ' style="background:rgba(255,255,255,0.04);"' : "";
   h += "<tr" + rowStyle + ">" +
-   '<td><a href="#/ticker/' + esc(r.ticker) + '" style="color:#e8ecf1;font-weight:600;text-decoration:none;">' + esc(r.ticker) + "</a></td>" +
+   '<td><a href="#/ticker/' + esc(r.ticker) + '" style="color:#dbe5f1;font-weight:600;text-decoration:none;">' + esc(r.ticker) + "</a></td>" +
    "<td>" + fmtLvl(r.si_pct) + "</td>" +
    "<td>" + fmtNum(r.dtc) + "</td>" +
    '<td class="' + cls(r.si_velocity) + '">' + fmtChg(r.si_velocity) + "</td>" +
@@ -10490,8 +10491,8 @@ function squeezeRadarHtml() {
  h += '<div class="panel-asof">As of ' + esc((s.as_of || "").slice(0, 10)) + "</div></div>";
 
  // Plain-English explainer, after the visual
- const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+ const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
   "Days to cover estimates how long it would take short sellers to buy back every share they have borrowed, based on average daily trading volume. A reading of three means roughly three days of normal volume must be purchased to unwind the entire short position. When that number is high, exits are orderly in theory but crowded in practice, because every short seller is heading for the same narrow exit.<br><br>" +
   "Borrow exhaustion is the point where the supply of shares available to short runs out. New shorts can no longer be opened easily, and existing shorts face rising borrow fees and recall risk. At that point any buying, from a strong earnings report or a technical breakout, forces shorts to compete for the same limited float, and the covering itself becomes the catalyst for further upside.<br><br>" +
   "The squeeze score blends short interest, days to cover, the velocity of short interest change, and related positioning signals into a single gauge. Higher scores flag names where positioning is most crowded and most vulnerable to a sharp reversal, not names that are fundamentally sound. The radar is a positioning tool rather than a quality screen, and elevated scores warrant tighter risk management rather than larger positions." +
@@ -10506,15 +10507,15 @@ function treasurySlrFreeCard(d) {
  const S = d || {};
  if (S.score == null) return "";
  if (typeof isPro === "function" && isPro()) return ""; // Pro users see the full section
- const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
- const c = colorMap[S.color] || "#e8ecf1";
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
+ const c = colorMap[S.color] || "#dbe5f1";
  return '<div class="card" style="margin-bottom:16px;"><h3>Treasury Absorption &amp; SLR Gauge ' +
   '' + FREE_BADGE + '</h3>' +
   '<div style="display:flex;align-items:center;gap:16px;margin:8px 0;">' +
   '<div style="font-size:32px;font-weight:800;color:' + c + ';">' + S.score +
-  '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
+  '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
   '<div><div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(S.status || "") + "</div>" +
-  '<div style="font-size:11px;color:#8b949e;margin-top:2px;">Dealer balance-sheet capacity. Full breakdown is Pro.</div></div></div>' +
+  '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">Dealer balance-sheet capacity. Full breakdown is Pro.</div></div></div>' +
   '<div class="panel-asof">As of ' + esc((S.as_of || "").slice(0, 10)) + "</div></div>";
 }
 
@@ -10524,27 +10525,27 @@ function treasurySlrHtml() {
   return '<div class="section"><div class="section-title">Treasury Absorption &amp; SLR Gauge ' + PRO_BADGE + "</div>" +
    '<div class="card"><p style="color:var(--muted)">Treasury absorption data unavailable. Check back after the next refresh.</p></div></div>';
  }
- const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
- const c = colorMap[S.color] || "#e8ecf1";
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
+ const c = colorMap[S.color] || "#dbe5f1";
  const fmtB = (v) => (v == null ? "N/A" : "$" + Number(v).toLocaleString() + "B");
 
  let h = '<div class="section"><div class="section-title">Treasury Absorption &amp; SLR Gauge ' + PRO_BADGE + "</div>" +
   '<div class="section-sub">How much room dealers have on their balance sheets to absorb Treasury supply, and whether the leverage ratio is the binding constraint.</div>';
 
  // Capacity score banner (score/100 + status)
- h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">SCORE</div>' +
-  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + S.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+ h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
+  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + S.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(S.status || "") + "</div>" +
-  '<div style="font-size:12px;color:#8b949e;margin-top:4px;max-width:620px;">Higher scores mean ample balance-sheet room for dealers to intermediate Treasury auctions. Low scores mean the system is running close to the constraint.</div></div></div>';
+  '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:620px;">Higher scores mean ample balance-sheet room for dealers to intermediate Treasury auctions. Low scores mean the system is running close to the constraint.</div></div></div>';
 
  // 4 metric cards: reserves, TGA, RRP, reserve buffer
  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
  const card4 = (label, val, sub) =>
-  '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
-  '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + label + "</div>" +
-  '<div style="font-size:24px;font-weight:800;color:#e8ecf1;margin:2px 0;">' + val + "</div>" +
-  '<div style="font-size:11px;color:#8b949e;">' + sub + "</div></div>";
+  '<div style="background:#101620;border-radius:10px;padding:12px;">' +
+  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + "</div>" +
+  '<div style="font-size:24px;font-weight:800;color:#dbe5f1;margin:2px 0;">' + val + "</div>" +
+  '<div style="font-size:11px;color:#8d99aa;">' + sub + "</div></div>";
  h += card4("BANK RESERVES", fmtB(S.reserves_b), "Cash banks hold at the Fed, the raw material of dealer balance-sheet capacity");
  h += card4("TREASURY GENERAL ACCOUNT", fmtB(S.tga_b), "Treasury cash at the Fed, every dollar here is a dollar drained from reserves");
  h += card4("REVERSE REPO FACILITY", fmtB(S.rrp_b), "Cash parked by money funds at the Fed, outside the banking system");
@@ -10552,11 +10553,11 @@ function treasurySlrHtml() {
  h += "</div>";
 
  // Explainer AFTER the visuals
- h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
-  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">How the SLR works.</b> The Supplementary Leverage Ratio is a post-2008 backstop that forces large US banks to hold Tier 1 capital against total leverage exposure, with no credit for the safety of the asset. Treasuries and reserves count the same as risky loans, so the ratio penalizes banks for holding exactly the assets that make markets function.</p>' +
-  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">Why reserves versus TGA and RRP matter.</b> Bank reserves are the cash balances banks keep at the Federal Reserve, and they are the funding base that lets dealers finance Treasury inventories. When the Treasury rebuilds its General Account after a debt-ceiling standoff, or when money market funds flood the reverse repo facility, cash leaves the banking system and reserves fall. The deficit itself may be unchanged, yet dealer balance-sheet room has quietly tightened.</p>' +
-  '<p style="margin:0;"><b style="color:#e8ecf1;">What a binding constraint means.</b> When the SLR binds, banks pull back from market making and auction participation because adding Treasuries would breach the ratio. Auction tails widen, bid-ask spreads stretch, and the Treasury has to pay higher yields to clear supply. Regulators temporarily excluded Treasuries and reserves from the SLR in 2020 for exactly this reason, a binding ratio can turn an ordinary funding squeeze into a market event.</p>' +
+ h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">How the SLR works.</b> The Supplementary Leverage Ratio is a post-2008 backstop that forces large US banks to hold Tier 1 capital against total leverage exposure, with no credit for the safety of the asset. Treasuries and reserves count the same as risky loans, so the ratio penalizes banks for holding exactly the assets that make markets function.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Why reserves versus TGA and RRP matter.</b> Bank reserves are the cash balances banks keep at the Federal Reserve, and they are the funding base that lets dealers finance Treasury inventories. When the Treasury rebuilds its General Account after a debt-ceiling standoff, or when money market funds flood the reverse repo facility, cash leaves the banking system and reserves fall. The deficit itself may be unchanged, yet dealer balance-sheet room has quietly tightened.</p>' +
+  '<p style="margin:0;"><b style="color:#dbe5f1;">What a binding constraint means.</b> When the SLR binds, banks pull back from market making and auction participation because adding Treasuries would breach the ratio. Auction tails widen, bid-ask spreads stretch, and the Treasury has to pay higher yields to clear supply. Regulators temporarily excluded Treasuries and reserves from the SLR in 2020 for exactly this reason, a binding ratio can turn an ordinary funding squeeze into a market event.</p>' +
   "</div></div>";
 
  h += '<div class="panel-asof">As of ' + esc((S.as_of || "").slice(0, 10)) + " · Sources: FRED (WRESBAL, WTREGEN, RRPONTSYD)</div></div>";
@@ -10566,7 +10567,7 @@ function treasurySlrHtml() {
 // === gamma_flip.js ===
 function gammaFlipHtml() {
  const G = D.gamma_flip || {};
- const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
 
  // One index panel (SPY or QQQ). Handles the N/A fallback gracefully.
  const legPanel = (name, leg) => {
@@ -10577,38 +10578,38 @@ function gammaFlipHtml() {
   if (isNA) {
    body = '<p style="color:var(--muted);font-size:13px;margin:12px 0;">Options data unavailable.</p>';
   } else if (noFlip) {
-   const c = colorMap[L.color] || "#e8ecf1";
-   body = '<div style="margin:12px 0;padding:16px;border:1px solid #2a3448;border-radius:8px;">' +
+   const c = colorMap[L.color] || "#dbe5f1";
+   body = '<div style="margin:12px 0;padding:16px;border:1px solid #253142;border-radius:8px;">' +
     '<div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(L.regime || "") + "</div>" +
-    '<div style="font-size:12px;color:#8b949e;margin-top:4px;">' + esc(L.regime_detail || "") + "</div>" +
-    '<div style="font-size:11px;color:#8b949e;margin-top:8px;font-style:italic;">No clean gamma flip within observable strikes. ' + esc(L.note || "") + "</div></div>";
+    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">' + esc(L.regime_detail || "") + "</div>" +
+    '<div style="font-size:11px;color:#8d99aa;margin-top:8px;font-style:italic;">No clean gamma flip within observable strikes. ' + esc(L.note || "") + "</div></div>";
   } else {
-   const c = colorMap[L.color] || "#e8ecf1";
+   const c = colorMap[L.color] || "#dbe5f1";
    const spot = Number(L.spot), flip = Number(L.flip_strike), dist = Number(L.distance_pct);
    const dir = dist >= 0 ? "above" : "below";
    // Marker position on the bar: flip strike sits at center, spot is offset by distance.
    const pos = Math.min(97, Math.max(3, 50 + (dist / 5) * 45));
-   const sideColor = dist >= 0 ? "#3fb950" : "#f85149";
+   const sideColor = dist >= 0 ? "#4dd2aa" : "#f37d83";
    const stat = (label, val, sub) =>
-    '<div style="background:#161b26;border-radius:10px;padding:12px;text-align:center;">' +
-    '<div style="font-size:11px;color:#8b949e;">' + label + "</div>" +
-    '<div style="font-size:22px;font-weight:800;color:#e8ecf1;">' + val + "</div>" +
-    '<div style="font-size:11px;color:#8b949e;">' + sub + "</div></div>";
+    '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
+    '<div style="font-size:11px;color:#8d99aa;">' + label + "</div>" +
+    '<div style="font-size:22px;font-weight:800;color:#dbe5f1;">' + val + "</div>" +
+    '<div style="font-size:11px;color:#8d99aa;">' + sub + "</div></div>";
    body =
     '<div style="display:flex;align-items:baseline;gap:10px;margin:10px 0 4px;">' +
-    '<span style="font-size:28px;font-weight:800;color:#e8ecf1;">$' + spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</span>" +
-    '<span style="font-size:11px;font-weight:700;color:#fff;background:' + c + ';padding:3px 10px;border-radius:12px;">' + esc(L.regime || "") + "</span></div>" +
-    (L.regime_detail ? '<div style="font-size:12px;color:#8b949e;margin-bottom:10px;">' + esc(L.regime_detail) + "</div>" : "") +
+    '<span style="font-size:28px;font-weight:800;color:#dbe5f1;">$' + spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</span>" +
+    '<span style="font-size:11px;font-weight:700;color:#f5f7fa;background:' + c + ';padding:3px 10px;border-radius:12px;">' + esc(L.regime || "") + "</span></div>" +
+    (L.regime_detail ? '<div style="font-size:12px;color:#8d99aa;margin-bottom:10px;">' + esc(L.regime_detail) + "</div>" : "") +
     // Spot vs flip position bar (pure divs, no chart library)
     '<div style="margin:12px 0;">' +
-    '<div style="position:relative;height:52px;border-radius:8px;overflow:hidden;display:flex;border:1px solid #2a3448;">' +
+    '<div style="position:relative;height:52px;border-radius:8px;overflow:hidden;display:flex;border:1px solid #253142;">' +
     '<div style="flex:1;background:rgba(248,81,73,0.10);"></div>' +
     '<div style="flex:1;background:rgba(63,185,80,0.10);"></div>' +
-    '<div title="Gamma flip $' + flip.toLocaleString() + '" style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:#c9a961;"></div>' +
+    '<div title="Gamma flip $' + flip.toLocaleString() + '" style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:#d9a441;"></div>' +
     '<div title="Spot $' + spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '" style="position:absolute;left:calc(' + pos.toFixed(1) + '% - 7px);top:19px;width:14px;height:14px;border-radius:50%;background:' + sideColor + ';border:2px solid #fff;"></div></div>' +
-    '<div style="display:flex;justify-content:space-between;font-size:10px;color:#8b949e;margin-top:4px;">' +
+    '<div style="display:flex;justify-content:space-between;font-size:10px;color:#8d99aa;margin-top:4px;">' +
     '<span>Below flip · hedging amplifies moves</span>' +
-    '<span style="color:#c9a961;font-weight:700;">Flip $' + flip.toLocaleString() + "</span>" +
+    '<span style="color:#d9a441;font-weight:700;">Flip $' + flip.toLocaleString() + "</span>" +
     '<span>Above flip · hedging dampens moves</span></div>' +
     '<div style="text-align:center;font-size:12px;color:' + sideColor + ';font-weight:700;margin-top:6px;">' +
     Math.abs(dist).toFixed(2) + "% " + dir + " the flip</div></div>" +
@@ -10628,11 +10629,11 @@ function gammaFlipHtml() {
   legPanel("SPY", G.spy) + legPanel("QQQ", G.qqq) +
   "</div>" +
   // Explainer AFTER the visuals
-  '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this barometer tells you</div>' +
-  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
-  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">How the gamma flip works.</b> Option dealers hedge the options they sell by trading the underlying, and the direction of that hedging depends on their aggregate gamma. The gamma flip is the index level where total dealer gamma changes sign, estimated from the full options chain by weighting gamma exposure across strikes. It moves as the chain changes, so it is a living level, not a fixed line in the sand.</p>' +
-  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">Why dealers hedge differently above and below it.</b> Above the flip, dealers are net long gamma and their hedging is stabilizing. They buy into weakness and sell into strength, which absorbs intraday moves and compresses realized volatility. Below the flip, dealers are net short gamma and hedging turns destabilizing. They sell into weakness and buy into strength, which feeds momentum and can turn an ordinary down day into an accelerated selloff.</p>' +
-  '<p style="margin:0;"><b style="color:#e8ecf1;">What OPEX charm means.</b> As options approach expiration their gamma first rises and then collapses at expiry, while charm measures how fast their delta decays with the passage of time. Into monthly expiration, large gamma positions rolling off can shift the flip level and release the hedging pressure that had been pinning price in place, which is why ranges often expand in the sessions right after expiration.</p>' +
+  '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this barometer tells you</div>' +
+  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">How the gamma flip works.</b> Option dealers hedge the options they sell by trading the underlying, and the direction of that hedging depends on their aggregate gamma. The gamma flip is the index level where total dealer gamma changes sign, estimated from the full options chain by weighting gamma exposure across strikes. It moves as the chain changes, so it is a living level, not a fixed line in the sand.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Why dealers hedge differently above and below it.</b> Above the flip, dealers are net long gamma and their hedging is stabilizing. They buy into weakness and sell into strength, which absorbs intraday moves and compresses realized volatility. Below the flip, dealers are net short gamma and hedging turns destabilizing. They sell into weakness and buy into strength, which feeds momentum and can turn an ordinary down day into an accelerated selloff.</p>' +
+  '<p style="margin:0;"><b style="color:#dbe5f1;">What OPEX charm means.</b> As options approach expiration their gamma first rises and then collapses at expiry, while charm measures how fast their delta decays with the passage of time. Into monthly expiration, large gamma positions rolling off can shift the flip level and release the hedging pressure that had been pinning price in place, which is why ranges often expand in the sessions right after expiration.</p>' +
   "</div></div>" +
   '<div class="panel-asof">As of ' + esc((G.as_of || "").slice(0, 10)) + " · Source: CBOE delayed options chains</div></div>";
  return h;
@@ -10642,27 +10643,27 @@ function gammaFlipHtml() {
 let _volSortKey = "ticker";
 let _volSortDir = 1;
 function volSurfaceRowsHtml(rows) {
- const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
  const sgn = (v, d) => (v == null ? "N/A" : (v > 0 ? "+" : "") + Number(v).toFixed(d == null ? 2 : d));
  return rows.map((r) => {
   if (!r.e || !r.e.available) {
    return '<tr style="border-bottom:1px solid #1c2434;">' +
-    '<td style="padding:8px 10px;font-weight:700;color:#e8ecf1;">' + esc(r.tk) + '</td>' +
-    '<td colspan="7" style="padding:8px 10px;color:#8b949e;">N/A, options data unavailable</td></tr>';
+    '<td style="padding:8px 10px;font-weight:700;color:#dbe5f1;">' + esc(r.tk) + '</td>' +
+    '<td colspan="7" style="padding:8px 10px;color:#8d99aa;">N/A, options data unavailable</td></tr>';
   }
   const e = r.e;
-  const spreadC = e.term_spread > 0 ? "#f85149" : "#3fb950";
-  const rrC = e.risk_reversal_25d >= 0 ? "#d29922" : (e.risk_reversal_25d < -8 ? "#f85149" : "#e8ecf1");
-  const sentC = colorMap[e.skew_color] || "#e8ecf1";
+  const spreadC = e.term_spread > 0 ? "#f37d83" : "#4dd2aa";
+  const rrC = e.risk_reversal_25d >= 0 ? "#e0aa46" : (e.risk_reversal_25d < -8 ? "#f37d83" : "#dbe5f1");
+  const sentC = colorMap[e.skew_color] || "#dbe5f1";
   return '<tr style="border-bottom:1px solid #1c2434;">' +
-   '<td style="padding:8px 10px;font-weight:700;color:#e8ecf1;">' + esc(r.tk) +
-   (e.stale ? ' <span style="font-size:10px;color:#d29922;">STALE</span>' : "") + '</td>' +
-   '<td style="padding:8px 10px;color:#c8d0dc;">$' + Number(e.spot).toFixed(2) + '</td>' +
-   '<td style="padding:8px 10px;color:#c8d0dc;">' + Number(e.atm_iv_30d).toFixed(1) + '%</td>' +
-   '<td style="padding:8px 10px;color:#c8d0dc;">' + Number(e.atm_iv_90d).toFixed(1) + '%</td>' +
+   '<td style="padding:8px 10px;font-weight:700;color:#dbe5f1;">' + esc(r.tk) +
+   (e.stale ? ' <span style="font-size:10px;color:#e0aa46;">STALE</span>' : "") + '</td>' +
+   '<td style="padding:8px 10px;color:#dbe5f1;">$' + Number(e.spot).toFixed(2) + '</td>' +
+   '<td style="padding:8px 10px;color:#dbe5f1;">' + Number(e.atm_iv_30d).toFixed(1) + '%</td>' +
+   '<td style="padding:8px 10px;color:#dbe5f1;">' + Number(e.atm_iv_90d).toFixed(1) + '%</td>' +
    '<td style="padding:8px 10px;font-weight:600;color:' + spreadC + ';">' + sgn(e.term_spread, 2) + ' pts</td>' +
    '<td style="padding:8px 10px;font-weight:600;color:' + rrC + ';">' + sgn(e.risk_reversal_25d, 2) + ' pts</td>' +
-   '<td style="padding:8px 10px;color:#c8d0dc;">' + (e.skew_ratio == null ? "N/A" : Number(e.skew_ratio).toFixed(3)) + '</td>' +
+   '<td style="padding:8px 10px;color:#dbe5f1;">' + (e.skew_ratio == null ? "N/A" : Number(e.skew_ratio).toFixed(3)) + '</td>' +
    '<td style="padding:8px 10px;font-size:11px;font-weight:700;color:' + sentC + ';">' + esc(e.skew_sentiment || "") + '</td></tr>';
  }).join("");
 }
@@ -10697,19 +10698,19 @@ function volSurfaceHtml() {
   return '<div class="section"><div class="section-title">Volatility Surface ' + PRO_BADGE + '</div>' +
    '<div class="card"><p style="color:var(--muted)">Volatility surface data unavailable. Check back after the next refresh.</p></div></div>';
  }
- const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
- const frontC = colorMap[M.vix_vix3m_color] || "#e8ecf1";
- const skewIdxC = M.skew_index > 140 ? "#f85149" : (M.skew_index < 120 ? "#3fb950" : "#d29922");
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+ const frontC = colorMap[M.vix_vix3m_color] || "#dbe5f1";
+ const skewIdxC = M.skew_index > 140 ? "#f37d83" : (M.skew_index < 120 ? "#4dd2aa" : "#e0aa46");
 
  let h = '<div class="section"><div class="section-title">Volatility Surface ' + PRO_BADGE + '</div>' +
   '<div class="section-sub">The two dimensions a derivatives desk prices first. Time to maturity runs down the term structure, strike moneyness runs across the skew. Daily Snapshot.</div>';
 
  // Macro term structure index cards
  const idxCard = (label, val, sub, c) =>
-  '<div style="background:#161b26;border:1px solid #2a3142;border-radius:10px;padding:14px;">' +
-  '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + label + '</div>' +
-  '<div style="font-size:26px;font-weight:800;color:' + (c || "#e8ecf1") + ';margin:2px 0;">' + val + '</div>' +
-  '<div style="font-size:11px;color:#8b949e;">' + sub + '</div></div>';
+  '<div style="background:#101620;border:1px solid #253142;border-radius:10px;padding:14px;">' +
+  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + '</div>' +
+  '<div style="font-size:26px;font-weight:800;color:' + (c || "#dbe5f1") + ';margin:2px 0;">' + val + '</div>' +
+  '<div style="font-size:11px;color:#8d99aa;">' + sub + '</div></div>';
  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0;">' +
   idxCard("VIX9D (9-DAY)", Number(M.vix9d).toFixed(2), "Front of the curve, immediate event risk") +
   idxCard("VIX (30-DAY)", Number(M.vix).toFixed(2), "The market standard vol gauge") +
@@ -10721,17 +10722,17 @@ function volSurfaceHtml() {
  // Ratio gauges
  const gauge = (label, ratio, regime, c, lo, hi, marks) => {
   const pos = ratio == null ? 0 : Math.min(100, Math.max(0, (ratio - lo) / (hi - lo) * 100));
-  let bars = '<div style="position:relative;height:10px;background:#1a2030;border-radius:5px;margin:10px 0 4px;">' +
+  let bars = '<div style="position:relative;height:10px;background:#101620;border-radius:5px;margin:10px 0 4px;">' +
    '<div style="position:absolute;left:0;top:0;height:100%;width:' + pos + '%;background:' + c + ';border-radius:5px;"></div>';
   (marks || []).forEach((mk) => {
    const mp = (mk.v - lo) / (hi - lo) * 100;
-   bars += '<div style="position:absolute;left:' + mp + '%;top:-3px;width:2px;height:16px;background:#8b949e;"></div>' +
-    '<div style="position:absolute;left:' + mp + '%;top:14px;transform:translateX(-50%);font-size:10px;color:#8b949e;white-space:nowrap;">' + mk.label + '</div>';
+   bars += '<div style="position:absolute;left:' + mp + '%;top:-3px;width:2px;height:16px;background:#8d99aa;"></div>' +
+    '<div style="position:absolute;left:' + mp + '%;top:14px;transform:translateX(-50%);font-size:10px;color:#8d99aa;white-space:nowrap;">' + mk.label + '</div>';
   });
   bars += '</div><div style="height:14px;"></div>';
-  return '<div style="background:#161b26;border:1px solid #2a3142;border-radius:10px;padding:14px;">' +
+  return '<div style="background:#101620;border:1px solid #253142;border-radius:10px;padding:14px;">' +
    '<div style="display:flex;justify-content:space-between;align-items:baseline;">' +
-   '<span style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + label + '</span>' +
+   '<span style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + '</span>' +
    '<span style="font-size:20px;font-weight:800;color:' + c + ';">' + (ratio == null ? "N/A" : Number(ratio).toFixed(3)) + '</span></div>' +
    bars +
    '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + '</div></div>';
@@ -10748,14 +10749,14 @@ function volSurfaceHtml() {
  const quadCell = (id, name, desc) => {
   const active = Q.quadrant === id;
   const style = active
-   ? "background:rgba(201,169,97,0.13);border:2px solid #c9a961;"
+   ? "background:rgba(217,164,65,0.13);border:2px solid #d9a441;"
    : "background:#12161f;border:1px solid #232b3d;";
   return '<div style="' + style + 'border-radius:10px;padding:14px;">' +
-   '<div style="font-size:11px;color:' + (active ? "#c9a961" : "#8b949e") + ';font-weight:700;letter-spacing:0.5px;">QUADRANT ' + id + (active ? " · CURRENT" : "") + '</div>' +
-   '<div style="font-size:15px;font-weight:700;color:#e8ecf1;margin:3px 0;">' + name + '</div>' +
-   '<div style="font-size:12px;color:#8b949e;">' + desc + '</div></div>';
+   '<div style="font-size:11px;color:' + (active ? "#d9a441" : "#8d99aa") + ';font-weight:700;letter-spacing:0.5px;">QUADRANT ' + id + (active ? " · CURRENT" : "") + '</div>' +
+   '<div style="font-size:15px;font-weight:700;color:#dbe5f1;margin:3px 0;">' + name + '</div>' +
+   '<div style="font-size:12px;color:#8d99aa;">' + desc + '</div></div>';
  };
- h += '<div style="font-size:12px;color:#8b949e;margin:4px 0 8px;">Surface matrix. Vertical axis is the term structure, backwardation on top. Horizontal axis is skew, flat or inverted on the left, steep downside skew on the right.</div>' +
+ h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0 8px;">Surface matrix. Vertical axis is the term structure, backwardation on top. Horizontal axis is skew, flat or inverted on the left, steep downside skew on the right.</div>' +
   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
   quadCell("I", "Parabolic Speculation", "Call squeeze regime. Calls bid over puts into a backwardated curve.") +
   quadCell("II", "Systemic Crisis", "Forced liquidation. Puts heavily bid and the front end inverted.") +
@@ -10763,7 +10764,7 @@ function volSurfaceHtml() {
   quadCell("IV", "Orderly Bull Trend", "Institutional collar hedging. Standard downside skew, no panic.") +
   "</div>";
  if (Q.quadrant) {
-  h += '<div style="margin:10px 0 4px;font-size:13px;color:#c8d0dc;">Current read <b style="color:#c9a961;">Quadrant ' + esc(Q.quadrant) + ", " + esc(Q.name || "") + '</b>. ' + esc(Q.detail || "") + '</div>';
+  h += '<div style="margin:10px 0 4px;font-size:13px;color:#dbe5f1;">Current read <b style="color:#d9a441;">Quadrant ' + esc(Q.quadrant) + ", " + esc(Q.name || "") + '</b>. ' + esc(Q.detail || "") + '</div>';
  }
 
  // Per-ticker table (indices first, then coverage)
@@ -10771,21 +10772,21 @@ function volSurfaceHtml() {
  ["SPY", "QQQ"].forEach((tk) => { if (V.indices && V.indices[tk]) rows.push({ tk: tk, e: V.indices[tk] }); });
  Object.keys(V.tickers || {}).sort().forEach((tk) => rows.push({ tk: tk, e: V.tickers[tk] }));
  window._volSurfaceRows = rows;
- const th = (label, key) => '<th data-vsort="' + key + '" style="padding:9px 10px;text-align:left;font-size:11px;color:#8b949e;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;">' + label + ' &#8597;</th>';
+ const th = (label, key) => '<th data-vsort="' + key + '" style="padding:9px 10px;text-align:left;font-size:11px;color:#8d99aa;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;">' + label + ' &#8597;</th>';
  h += '<div style="overflow-x:auto;margin-top:14px;"><table style="width:100%;border-collapse:collapse;min-width:760px;">' +
-  '<thead><tr style="border-bottom:2px solid #2a3142;">' +
+  '<thead><tr style="border-bottom:2px solid #253142;">' +
   th("TICKER", "ticker") + th("SPOT", "spot") + th("30D ATM IV", "atm_iv_30d") + th("90D ATM IV", "atm_iv_90d") +
   th("TERM SPREAD", "term_spread") + th("25D RISK REVERSAL", "risk_reversal_25d") + th("SKEW RATIO", "skew_ratio") +
-  '<th style="padding:9px 10px;text-align:left;font-size:11px;color:#8b949e;letter-spacing:0.5px;">SKEW SENTIMENT</th>' +
+  '<th style="padding:9px 10px;text-align:left;font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SKEW SENTIMENT</th>' +
   '</tr></thead><tbody id="vol-surface-tbody">' + volSurfaceRowsHtml(rows) + '</tbody></table></div>';
 
  // Explainer after the visuals
- h += '<div class="card" style="margin:14px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
-  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">Term structure.</b> In calm markets the vol curve slopes upward, back-month implied vol above front-month, because longer horizons carry more uncertainty. When the VIX to VIX3M ratio pushes above 1.00 the curve has flipped into backwardation, front-month event risk is dominating, and that configuration has historically accompanied forced liquidation rather than orderly selling.</p>' +
-  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">Skew and the risk reversal.</b> The 25-delta risk reversal compares the implied vol of an out-of-the-money call against an out-of-the-money put on the same expiry. Equity skew normally runs negative, puts richer than calls, because institutions perpetually buy downside insurance. Readings below minus 8 vol points mark saturated tail hedging, while a reading at or above zero means calls are bid over puts, the signature of speculative upside chasing. The skew ratio divides that gap by at-the-money vol so readings stay comparable across vol regimes.</p>' +
-  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">Single-name term spreads.</b> A name whose 30-day ATM vol sits well above its 90-day vol is pricing a near-term catalyst, most often earnings. A spread beyond plus 5 points is a severe inversion and usually collapses right after the event prints. Names in healthy contango, spread below minus 3, carry no acute front-month pricing.</p>' +
-  '<p style="margin:0;"><b style="color:#e8ecf1;">How we calculate it.</b> Macro readings come from the Cboe volatility indices. Per-ticker figures come from CBOE delayed options chains, using the expiries nearest 30 and 90 days out, the at-the-money strike, and strikes near 1.05 times spot for the call and 0.95 times spot for the put as the 25-delta approximation. Strikes with no valid implied vol are skipped, never interpolated.</p>' +
+ h += '<div class="card" style="margin:14px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Term structure.</b> In calm markets the vol curve slopes upward, back-month implied vol above front-month, because longer horizons carry more uncertainty. When the VIX to VIX3M ratio pushes above 1.00 the curve has flipped into backwardation, front-month event risk is dominating, and that configuration has historically accompanied forced liquidation rather than orderly selling.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Skew and the risk reversal.</b> The 25-delta risk reversal compares the implied vol of an out-of-the-money call against an out-of-the-money put on the same expiry. Equity skew normally runs negative, puts richer than calls, because institutions perpetually buy downside insurance. Readings below minus 8 vol points mark saturated tail hedging, while a reading at or above zero means calls are bid over puts, the signature of speculative upside chasing. The skew ratio divides that gap by at-the-money vol so readings stay comparable across vol regimes.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Single-name term spreads.</b> A name whose 30-day ATM vol sits well above its 90-day vol is pricing a near-term catalyst, most often earnings. A spread beyond plus 5 points is a severe inversion and usually collapses right after the event prints. Names in healthy contango, spread below minus 3, carry no acute front-month pricing.</p>' +
+  '<p style="margin:0;"><b style="color:#dbe5f1;">How we calculate it.</b> Macro readings come from the Cboe volatility indices. Per-ticker figures come from CBOE delayed options chains, using the expiries nearest 30 and 90 days out, the at-the-money strike, and strikes near 1.05 times spot for the call and 0.95 times spot for the put as the 25-delta approximation. Strikes with no valid implied vol are skipped, never interpolated.</p>' +
   "</div></div>";
 
  h += '<div class="panel-asof">Daily Snapshot as of ' + esc((V.as_of || "").slice(0, 10)) + " · Sources: Cboe indices via Yahoo Finance, CBOE delayed options chains</div></div>";
@@ -10797,49 +10798,49 @@ function volSurfaceHtml() {
     '<div class="card"><p style="color:var(--muted)">Contagion data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const comp = C.composite, pillars = C.pillars || {};
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
-  const c = colorMap[comp.threatColor] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const c = colorMap[comp.threatColor] || "#dbe5f1";
 
   let h = '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Currency, rates, and commodity stress as early warnings before shocks reach stocks.</div>';
 
   // Plain-English explainer
-  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
-   '<b style="color:#e8ecf1;">The simple version:</b> Sometimes trouble starts outside the stock market, in currencies, bonds, or commodities, and spills over later. This model watches those three areas and warns you when they are flashing red while stocks still look calm.<br><br>' +
-   '<b style="color:#e8ecf1;">For long-term investors:</b> A CRITICAL or ELEVATED reading means the odds of a market drawdown driven by outside forces are higher than normal. It is not a sell signal, but a good time to check that you are comfortable with your risk level.<br><br>' +
-   '<b style="color:#e8ecf1;">For active traders:</b> The divergence warning is the highest-value signal here. When stocks are calm (VIX under 20) but this model is flashing, history says the calm is often false. Tighten stops and reduce size into strength.' +
+  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<b style="color:#dbe5f1;">The simple version:</b> Sometimes trouble starts outside the stock market, in currencies, bonds, or commodities, and spills over later. This model watches those three areas and warns you when they are flashing red while stocks still look calm.<br><br>' +
+   '<b style="color:#dbe5f1;">For long-term investors:</b> A CRITICAL or ELEVATED reading means the odds of a market drawdown driven by outside forces are higher than normal. It is not a sell signal, but a good time to check that you are comfortable with your risk level.<br><br>' +
+   '<b style="color:#dbe5f1;">For active traders:</b> The divergence warning is the highest-value signal here. When stocks are calm (VIX under 20) but this model is flashing, history says the calm is often false. Tighten stops and reduce size into strength.' +
    '</div></div>';
 
   // Threat banner
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-   '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">THREAT LEVEL</div>' +
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">THREAT LEVEL</div>' +
    '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(comp.threatLevel) + '</div>' +
-   '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(comp.threatBadge || "") + "</div></div>" +
-   '<div style="margin-left:auto;text-align:right;"><div style="font-size:11px;color:#8b949e;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div></div>';
+   '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(comp.threatBadge || "") + "</div></div>" +
+   '<div style="margin-left:auto;text-align:right;"><div style="font-size:11px;color:#8d99aa;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div></div>';
 
   // Divergence warning
   if (comp.divergenceActive) {
    h += '<div style="background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.4);border-radius:12px;padding:14px;margin:12px 0;">' +
-    '<div style="font-size:12px;font-weight:700;color:#f85149;margin-bottom:4px;">DIVERGENCE WARNING</div>' +
-    '<div style="font-size:13px;color:#e8ecf1;">' + esc(comp.divergenceText || "") + "</div></div>";
+    '<div style="font-size:12px;font-weight:700;color:#f37d83;margin-bottom:4px;">DIVERGENCE WARNING</div>' +
+    '<div style="font-size:13px;color:#dbe5f1;">' + esc(comp.divergenceText || "") + "</div></div>";
   }
 
   // Three pillars
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
   ["currency", "rates", "commodities"].forEach((key) => {
    const p = pillars[key] || {};
-   const pc = (p.score || 0) >= 50 ? "#f85149" : (p.score || 0) >= 30 ? "#d29922" : "#3fb950";
-   h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-top:3px solid ' + pc + ';">' +
-    '<div style="font-size:12px;font-weight:700;color:#e8ecf1;">' + esc(p.title || key) + '</div>' +
-    '<div style="font-size:11px;color:#8b949e;margin:2px 0;">Weight ' + esc(p.weight || "") + " · " + esc(p.status || "") + "</div>" +
-    '<div style="font-size:20px;font-weight:800;color:' + pc + ';">' + (p.score != null ? p.score : "-") + '<span style="font-size:12px;color:#8b949e;">/100</span></div>';
+   const pc = (p.score || 0) >= 50 ? "#f37d83" : (p.score || 0) >= 30 ? "#e0aa46" : "#4dd2aa";
+   h += '<div style="background:#101620;border-radius:10px;padding:12px;border-top:3px solid ' + pc + ';">' +
+    '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">' + esc(p.title || key) + '</div>' +
+    '<div style="font-size:11px;color:#8d99aa;margin:2px 0;">Weight ' + esc(p.weight || "") + " · " + esc(p.status || "") + "</div>" +
+    '<div style="font-size:20px;font-weight:800;color:' + pc + ';">' + (p.score != null ? p.score : "-") + '<span style="font-size:12px;color:#8d99aa;">/100</span></div>';
    (p.metrics || []).forEach((m) => {
-    h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #232833;">' +
-     '<div style="font-size:11px;color:#e8ecf1;font-weight:600;">' + esc(m.label) + (m.stress ? ' <span style="color:#f85149;">●</span>' : "") + "</div>" +
-     '<div style="font-size:12px;color:' + (m.stress ? "#f85149" : "#8b949e") + ';font-weight:600;">' + esc(m.value) + "</div>" +
-     '<div style="font-size:11px;color:#6b7280;margin-top:2px;">' + esc(m.detail || "") + "</div></div>";
+    h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #101620;">' +
+     '<div style="font-size:11px;color:#dbe5f1;font-weight:600;">' + esc(m.label) + (m.stress ? ' <span style="color:#f37d83;">●</span>' : "") + "</div>" +
+     '<div style="font-size:12px;color:' + (m.stress ? "#f37d83" : "#8d99aa") + ';font-weight:600;">' + esc(m.value) + "</div>" +
+     '<div style="font-size:11px;color:#647184;margin-top:2px;">' + esc(m.detail || "") + "</div></div>";
    });
    h += "</div>";
   });
@@ -10847,7 +10848,7 @@ function volSurfaceHtml() {
 
   // History chart
   h += '<div class="zoomable-chart" data-chart="contagion" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="contagion-chart"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="panel-asof">As of ' + esc((C.as_of || "").slice(0, 10)) + "</div></div>";
   h += explainerHtml;
   return h;
@@ -10861,32 +10862,32 @@ function volSurfaceHtml() {
   }
   const score = cr.totalRiskScore;
   const regime = cr.regime || "";
-  const colorMap = {emerald: "#10b981", amber: "#f59e0b", rose: "#f43f5e", slate: "#94a3b8"};
-  const rc = colorMap[cr.color] || "#94a3b8";
+  const colorMap = {emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f43f5e", slate: "#8d99aa"};
+  const rc = colorMap[cr.color] || "#8d99aa";
   let h = '<div class="section" style="max-width:none;"><div class="section-title">Correction Risk Model ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Multi-factor risk score combining price extension, volatility trend, credit stress, and market breadth. Signals when a market top is forming. Updated ' + esc((cr.as_of || "").slice(0, 10)) + '.</div>';
   // Regime banner
   h += '<div class="card" style="border:1px solid ' + rc + '55;padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">';
-  h += '<div><div style="font-size:11px;color:#8b949e;letter-spacing:1.5px;">CURRENT REGIME</div>' +
+  h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:1.5px;">CURRENT REGIME</div>' +
    '<div style="font-size:28px;font-weight:800;color:' + rc + ';">' + esc(regime) + '</div></div>';
-  h += '<div style="text-align:right;"><div style="font-size:48px;font-weight:800;color:' + rc + ';line-height:1;">' + score + '<span style="font-size:20px;color:#8b949e;">/100</span></div>' +
-   '<div style="font-size:11px;color:#8b949e;">LEVEL ' + (cr.riskLevel || 1) + '</div></div></div>';
+  h += '<div style="text-align:right;"><div style="font-size:48px;font-weight:800;color:' + rc + ';line-height:1;">' + score + '<span style="font-size:20px;color:#8d99aa;">/100</span></div>' +
+   '<div style="font-size:11px;color:#8d99aa;">LEVEL ' + (cr.riskLevel || 1) + '</div></div></div>';
   // Breakdown cards
   const bd = cr.scoreBreakdown || [];
   if (bd.length) {
    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-top:12px;">';
    bd.forEach((b) => {
-    const bc = b.points > 0 ? "#f43f5e" : "#10b981";
+    const bc = b.points > 0 ? "#f43f5e" : "#4dd2aa";
     h += '<div class="card" style="padding:14px;"><div style="font-size:11px;color:#c99a6b;font-weight:700;letter-spacing:0.5px;">' + esc(b.metric).toUpperCase() + '</div>' +
      '<div style="font-size:14px;font-weight:700;color:' + bc + ';margin:4px 0;">' + esc(b.status) + ' (' + b.points + ' pts)</div>' +
-     '<div style="font-size:12px;color:#8b949e;">' + esc(b.value) + '</div></div>';
+     '<div style="font-size:12px;color:#8d99aa;">' + esc(b.value) + '</div></div>';
    });
    h += '</div>';
   }
   // History chart
   h += '<div class="section-title" style="margin-top:16px;">Risk Score History (90 days)</div>';
   h += '<div class="zoomable-chart" data-chart="correction-risk" style="position:relative;height:320px;cursor:zoom-in;" title="Click to zoom"><canvas id="correction-risk-chart"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '</div>';
   return h;
  }
@@ -10897,8 +10898,8 @@ function volSurfaceHtml() {
   const rh = D.risk_headlines || {};
   const comp = rh.composite || {};
   if (comp.score == null) return "";
-  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
-  const c = colorMap[comp.color] || "#e8ecf1";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const c = colorMap[comp.color] || "#dbe5f1";
   const comps = comp.components || [];
   const pillars = comp.pillars || [];
   // Top 3 risk contributors
@@ -10911,35 +10912,35 @@ function volSurfaceHtml() {
    macro_regime: "Macro Regime", fiscal_dominance: "Fiscal Dom.",
    eurodollar_stress: "Eurodollar", economic_nowcast: "Nowcast",
    taylor_gap: "Taylor Gap", sovereign_fragmentation: "Fragment." };
-  let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-   '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8b949e;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
-   '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8b949e;">/100</span></div>' +
+  let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
+   '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8d99aa;">/100</span></div>' +
    '<div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(comp.regime || "") + "</div>" +
-   '<div style="font-size:11px;color:#8b949e;margin-top:6px;font-style:italic;">Algorithmic synthesis across ' + (comp.model_count || comps.length) + ' independent quantitative models.</div></div>';
+   '<div style="font-size:11px;color:#8d99aa;margin-top:6px;font-style:italic;">Algorithmic synthesis across ' + (comp.model_count || comps.length) + ' independent quantitative models.</div></div>';
   if (typeof isPro === "function" && isPro()) {
-   h += '<div style="flex:1;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models' + (comp.weighted ? ' (hierarchical weighting)' : ' (equal-weighted)') +
-    (comp.primary_driver ? ' · Primary driver: <span style="color:#e8ecf1;font-weight:600;">' + esc(comp.primary_driver) + "</span>" : "") + "</div>";
+   h += '<div style="flex:1;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models' + (comp.weighted ? ' (hierarchical weighting)' : ' (equal-weighted)') +
+    (comp.primary_driver ? ' · Primary driver: <span style="color:#dbe5f1;font-weight:600;">' + esc(comp.primary_driver) + "</span>" : "") + "</div>";
    // Pillar bars
    if (pillars.length) {
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">';
     pillars.forEach((p) => {
-     const pc = p.score >= 65 ? "#f85149" : p.score >= 45 ? "#d29922" : p.score >= 25 ? "#8b949e" : "#3fb950";
+     const pc = p.score >= 65 ? "#f37d83" : p.score >= 45 ? "#e0aa46" : p.score >= 25 ? "#8d99aa" : "#4dd2aa";
      h += '<div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;">' +
-      '<span style="color:#8b949e;">' + esc(p.pillar) + (p.weight != null ? ' <span style="opacity:0.6;">' + p.weight + '%</span>' : '') + '</span><span style="color:' + pc + ';font-weight:700;">' + p.score + "</span></div>" +
-      '<div style="height:4px;background:#1f2937;border-radius:2px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, p.score) + '%;background:' + pc + ';border-radius:2px;"></div></div></div>';
+      '<span style="color:#8d99aa;">' + esc(p.pillar) + (p.weight != null ? ' <span style="opacity:0.6;">' + p.weight + '%</span>' : '') + '</span><span style="color:' + pc + ';font-weight:700;">' + p.score + "</span></div>" +
+      '<div style="height:4px;background:#101620;border-radius:2px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, p.score) + '%;background:' + pc + ';border-radius:2px;"></div></div></div>';
     });
     h += "</div>";
    }
    h += '<div style="display:flex;gap:12px;flex-wrap:wrap;">';
    top.forEach((t) => {
-    const tc = t.risk >= 70 ? "#f85149" : t.risk >= 50 ? "#d29922" : "#8b949e";
-    h += '<div style="font-size:12px;"><span style="color:#8b949e;">' + esc(nameMap[t.model] || t.model) + '</span> ' +
+    const tc = t.risk >= 70 ? "#f37d83" : t.risk >= 50 ? "#e0aa46" : "#8d99aa";
+    h += '<div style="font-size:12px;"><span style="color:#8d99aa;">' + esc(nameMap[t.model] || t.model) + '</span> ' +
      '<span style="color:' + tc + ';font-weight:700;">' + t.risk + "</span>" +
-     (t.weight != null ? ' <span style="color:#8b949e;opacity:0.6;font-size:11px;">' + t.weight + '%</span>' : '') + "</div>";
+     (t.weight != null ? ' <span style="color:#8d99aa;opacity:0.6;font-size:11px;">' + t.weight + '%</span>' : '') + "</div>";
    });
-   h += '</div><div style="font-size:11px;color:#8b949e;margin-top:8px;">Highest risk contributors right now</div></div>';
+   h += '</div><div style="font-size:11px;color:#8d99aa;margin-top:8px;">Highest risk contributors right now</div></div>';
   } else {
-   h += '<div style="flex:1;"><div style="font-size:13px;color:#8b949e;margin-bottom:10px;">What is driving this reading? The four-pillar attribution, primary driver, and top risk contributors are Pro.</div>' +
+   h += '<div style="flex:1;"><div style="font-size:13px;color:#8d99aa;margin-bottom:10px;">What is driving this reading? The four-pillar attribution, primary driver, and top risk contributors are Pro.</div>' +
     '<button class="btn" id="teaser-pricing" style="font-size:13px;">See Pro Plans</button></div>';
   }
   h += "</div>";
@@ -10982,29 +10983,29 @@ function volSurfaceHtml() {
   }
  }
  function qualityCard(title, value, sub, good) {
-  const vc = good === true ? "#3fb950" : good === false ? "#f85149" : "#e8ecf1";
-  return '<div style="background:#161b26;border-radius:10px;padding:12px;">' +
-   '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + esc(title) + "</div>" +
+  const vc = good === true ? "#4dd2aa" : good === false ? "#f37d83" : "#dbe5f1";
+  return '<div style="background:#101620;border-radius:10px;padding:12px;">' +
+   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(title) + "</div>" +
    '<div style="font-size:22px;font-weight:800;color:' + vc + ';margin-top:4px;">' + value + "</div>" +
-   (sub ? '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(sub) + "</div>" : "") + "</div>";
+   (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(sub) + "</div>" : "") + "</div>";
  }
  function renderQualityResult(q) {
   const el = document.getElementById("quality-result");
   if (!el) return;
   if (q.error) {
-   el.innerHTML = '<div class="card"><p style="color:#f85149;">' + esc(q.error) + "</p></div>";
+   el.innerHTML = '<div class="card"><p style="color:#f37d83;">' + esc(q.error) + "</p></div>";
    return;
   }
   const cr = q.capitalReturns || {}, ef = q.efficiency || {}, ge = q.growthEngine || {};
   const qs = q.qualityScore || 0;
-  const qc = qs >= 75 ? "#3fb950" : qs >= 45 ? "#d29922" : "#f85149";
+  const qc = qs >= 75 ? "#4dd2aa" : qs >= 45 ? "#e0aa46" : "#f37d83";
   const fmtPct = (v) => (v === null || v === undefined ? "N/A" : v + "%");
   const fmtMoney = (v) => (v === null || v === undefined ? "N/A" : "$" + Math.round(v).toLocaleString());
-  let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
-   '<div><div style="font-size:28px;font-weight:800;color:#e8ecf1;">' + esc(q.ticker) + "</div>" +
-   '<div style="font-size:12px;color:#8b949e;">' + esc(q.sector || "") + " · " + esc(q.industry || "") + "</div></div>" +
-   '<div style="margin-left:auto;text-align:center;"><div style="font-size:11px;color:#8b949e;letter-spacing:1px;">QUALITY SCORE</div>' +
-   '<div style="font-size:44px;font-weight:800;color:' + qc + ';">' + qs + '<span style="font-size:18px;color:#8b949e;">/100</span></div></div></div>';
+  let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div><div style="font-size:28px;font-weight:800;color:#dbe5f1;">' + esc(q.ticker) + "</div>" +
+   '<div style="font-size:12px;color:#8d99aa;">' + esc(q.sector || "") + " · " + esc(q.industry || "") + "</div></div>" +
+   '<div style="margin-left:auto;text-align:center;"><div style="font-size:11px;color:#8d99aa;letter-spacing:1px;">QUALITY SCORE</div>' +
+   '<div style="font-size:44px;font-weight:800;color:' + qc + ';">' + qs + '<span style="font-size:18px;color:#8d99aa;">/100</span></div></div></div>';
   h += '<div class="section-title" style="margin-top:16px;">Capital Returns</div>' +
    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:8px 0;">' +
    qualityCard("ROIC", fmtPct(cr.roic), "Return on invested capital", cr.roic !== null && cr.roic > 15) +
@@ -11021,7 +11022,7 @@ function volSurfaceHtml() {
    qualityCard("Rule of 40", ge.ruleOf40 !== null ? ge.ruleOf40 : "N/A", "Revenue growth + FCF margin", ge.ruleOf40 !== null && ge.ruleOf40 >= 40) +
    qualityCard("Revenue Growth", fmtPct(ge.revGrowth), "Year over year", ge.revGrowth !== null && ge.revGrowth > 20) +
    qualityCard("FCF Margin", fmtPct(ge.fcfMargin), "Free cash flow / revenue", ge.fcfMargin !== null && ge.fcfMargin > 20) + "</div>";
-  h += '<div class="card" style="margin-top:12px;"><div style="font-size:12px;color:#8b949e;line-height:1.6;">A simplified on-demand screen. For DCF-covered names, the full Investment Scorecard and valuation work remain the deeper read.</div></div>';
+  h += '<div class="card" style="margin-top:12px;"><div style="font-size:12px;color:#8d99aa;line-height:1.6;">A simplified on-demand screen. For DCF-covered names, the full Investment Scorecard and valuation work remain the deeper read.</div></div>';
   el.innerHTML = h;
  }
  async function runQualitySearch() {
@@ -11030,7 +11031,7 @@ function volSurfaceHtml() {
   if (!inp || !el) return;
   const tk = inp.value.toUpperCase().trim();
   if (!tk) return;
-  el.innerHTML = '<div class="card"><p style="color:#8b949e;">Analyzing ' + esc(tk) + "...</p></div>";
+  el.innerHTML = '<div class="card"><p style="color:#8d99aa;">Analyzing ' + esc(tk) + "...</p></div>";
   const q = await fetchQuality(tk);
   renderQualityResult(q);
  }
@@ -11059,36 +11060,36 @@ function volSurfaceHtml() {
   }
  }
  function e360Pillar(n, title, body, accent) {
-  return '<div style="background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:20px;">' +
+  return '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:20px;">' +
    '<div style="display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(42,52,72,0.6);padding-bottom:10px;margin-bottom:10px;">' +
    '<span style="font-family:monospace;font-size:12px;font-weight:700;color:' + accent + ';">' + n + '</span>' +
    '<span style="font-size:12px;font-weight:700;letter-spacing:1px;color:' + accent + ';">' + esc(title).toUpperCase() + '</span></div>' +
-   '<p style="font-size:14px;color:#c9d1d9;line-height:1.7;margin:0;">' + esc(body) + "</p></div>";
+   '<p style="font-size:14px;color:#dbe5f1;line-height:1.7;margin:0;">' + esc(body) + "</p></div>";
  }
  function e360ScenarioCard(name, label, s, accent, elevated) {
   const prob = typeof s.probability === "number" ? s.probability + "%" : "N/A";
   const cardStyle = elevated
-   ? 'background:#161b26;border:1px solid #c9a961;border-radius:12px;padding:24px;position:relative;box-shadow:0 8px 32px rgba(201,169,97,0.12);'
-   : 'background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:20px;opacity:0.92;';
+   ? 'background:#101620;border:1px solid #d9a441;border-radius:12px;padding:24px;position:relative;box-shadow:0 8px 32px rgba(217,164,65,0.12);'
+   : 'background:#101620;border:1px solid #253142;border-radius:12px;padding:20px;opacity:0.92;';
   const badge = elevated
-   ? '<div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#c9a961;color:#0a0f1a;font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 12px;border-radius:20px;white-space:nowrap;">HIGHEST PROBABILITY</div>'
+   ? '<div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#d9a441;color:#0a0e17;font-size:10px;font-weight:800;letter-spacing:1px;padding:3px 12px;border-radius:20px;white-space:nowrap;">HIGHEST PROBABILITY</div>'
    : '';
   return '<div style="' + cardStyle + '">' + badge +
    '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(42,52,72,0.6);padding-bottom:10px;margin-bottom:12px;">' +
    '<span style="font-size:11px;font-weight:700;letter-spacing:1px;color:' + accent + ';">' + esc(label).toUpperCase() + '</span>' +
    '<span style="font-size:' + (elevated ? "28px" : "20px") + ';font-weight:800;color:' + accent + ';">' + esc(prob) + "</span></div>" +
-   '<div style="font-size:10px;color:#8b949e;letter-spacing:1px;margin-bottom:4px;">TARGET PRICE</div>' +
-   '<div style="font-size:' + (elevated ? "32px" : "24px") + ';font-weight:800;color:#fff;margin-bottom:14px;">' + esc(s.priceTarget || "N/A") + "</div>" +
+   '<div style="font-size:10px;color:#8d99aa;letter-spacing:1px;margin-bottom:4px;">TARGET PRICE</div>' +
+   '<div style="font-size:' + (elevated ? "32px" : "24px") + ';font-weight:800;color:#f5f7fa;margin-bottom:14px;">' + esc(s.priceTarget || "N/A") + "</div>" +
    '<div style="font-size:10px;font-weight:700;letter-spacing:1px;color:' + accent + ';margin-bottom:4px;">FUNDAMENTAL TRIGGER</div>' +
-   '<p style="font-size:13px;color:#c9d1d9;line-height:1.6;margin:0 0 12px;">' + esc(s.trigger || "N/A") + "</p>" +
+   '<p style="font-size:13px;color:#dbe5f1;line-height:1.6;margin:0 0 12px;">' + esc(s.trigger || "N/A") + "</p>" +
    '<div style="font-size:10px;font-weight:700;letter-spacing:1px;color:' + accent + ';margin-bottom:4px;">FLOW REACTION</div>' +
-   '<p style="font-size:13px;color:#c9d1d9;line-height:1.6;margin:0;">' + esc(s.reaction || "N/A") + "</p></div>";
+   '<p style="font-size:13px;color:#dbe5f1;line-height:1.6;margin:0;">' + esc(s.reaction || "N/A") + "</p></div>";
  }
  function renderEarnings360(d, elId) {
   const el = document.getElementById(elId);
   if (!el) return;
   if (d.error) {
-   el.innerHTML = '<div class="card"><p style="color:#f85149;">' + esc(d.error) + "</p></div>";
+   el.innerHTML = '<div class="card"><p style="color:#f37d83;">' + esc(d.error) + "</p></div>";
    return;
   }
   const a = d.analysis || {};
@@ -11107,46 +11108,46 @@ function volSurfaceHtml() {
    '<option value="' + e.ts + '"' + (e.ts === selExp ? " selected" : "") + ">" + esc(expLabel(e)) + "</option>"
   ).join("");
   const expSelHtml = exps.length > 1
-   ? '<div style="margin-top:10px;"><span style="font-size:10px;color:#8b949e;letter-spacing:1px;">IMPLIED MOVE EXPIRY</span>' +
-     '<select id="' + elId + '-expiry" style="background:#0f1420;color:#e8ecf1;border:1px solid #2a3448;border-radius:6px;padding:5px 8px;font-size:12px;cursor:pointer;margin-left:8px;max-width:200px;">' +
+   ? '<div style="margin-top:10px;"><span style="font-size:10px;color:#8d99aa;letter-spacing:1px;">IMPLIED MOVE EXPIRY</span>' +
+     '<select id="' + elId + '-expiry" style="background:#0d131d;color:#dbe5f1;border:1px solid #253142;border-radius:6px;padding:5px 8px;font-size:12px;cursor:pointer;margin-left:8px;max-width:200px;">' +
      expOpts + "</select></div>"
    : "";
   const expTag = d.expiryDate ? " \u2192 " + d.expiryDate.slice(5).replace("-", "/") : "";
   const expSub = d.isEarningsExpiry ? "earnings-expiry straddle" : "straddle to expiry";
   let h = '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;margin:12px 0;">' +
-   '<div style="flex:1;min-width:220px;background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:18px;">' +
-   '<div style="font-size:24px;font-weight:800;color:#fff;">' + esc(d.ticker) + '</div>' +
-   '<div style="font-size:12px;color:#8b949e;margin-top:2px;">' + esc(d.companyName || "") + " · " + esc(d.sector || "") + "</div>" +
-   '<div style="font-size:13px;color:#8b949e;margin-top:8px;">Spot <span style="color:#fff;font-weight:700;">$' + esc(String(d.price)) + "</span>" +
-   ' · Earnings <span style="color:#fff;font-weight:700;">' + esc(d.earningsDate || "TBD") + "</span></div>" + expSelHtml + "</div>" +
-   '<div style="background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:18px;text-align:right;min-width:150px;">' +
-   '<div style="font-size:10px;color:#8b949e;letter-spacing:1px;">IMPLIED MOVE' + esc(expTag) + "</div>" +
+   '<div style="flex:1;min-width:220px;background:#101620;border:1px solid #253142;border-radius:12px;padding:18px;">' +
+   '<div style="font-size:24px;font-weight:800;color:#f5f7fa;">' + esc(d.ticker) + '</div>' +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:2px;">' + esc(d.companyName || "") + " · " + esc(d.sector || "") + "</div>" +
+   '<div style="font-size:13px;color:#8d99aa;margin-top:8px;">Spot <span style="color:#f5f7fa;font-weight:700;">$' + esc(String(d.price)) + "</span>" +
+   ' · Earnings <span style="color:#f5f7fa;font-weight:700;">' + esc(d.earningsDate || "TBD") + "</span></div>" + expSelHtml + "</div>" +
+   '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:18px;text-align:right;min-width:150px;">' +
+   '<div style="font-size:10px;color:#8d99aa;letter-spacing:1px;">IMPLIED MOVE' + esc(expTag) + "</div>" +
    '<div style="font-size:26px;font-weight:800;color:#58a6ff;margin-top:4px;">' + esc(im) + "</div>" +
-   '<div style="font-size:10px;color:#8b949e;margin-top:4px;">' + expSub + "</div></div>" +
-   '<div style="background:#141a26;border:1px solid #2a3448;border-radius:12px;padding:18px;text-align:right;min-width:150px;">' +
-   '<div style="font-size:10px;color:#8b949e;letter-spacing:1px;">PUT/CALL OI</div>' +
-   '<div style="font-size:26px;font-weight:800;color:#c9a961;margin-top:4px;">' + esc(String(pcr)) + "</div>" +
-   '<div style="font-size:10px;color:#8b949e;margin-top:4px;">open interest ratio</div></div></div>';
+   '<div style="font-size:10px;color:#8d99aa;margin-top:4px;">' + expSub + "</div></div>" +
+   '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:18px;text-align:right;min-width:150px;">' +
+   '<div style="font-size:10px;color:#8d99aa;letter-spacing:1px;">PUT/CALL OI</div>' +
+   '<div style="font-size:26px;font-weight:800;color:#d9a441;margin-top:4px;">' + esc(String(pcr)) + "</div>" +
+   '<div style="font-size:10px;color:#8d99aa;margin-top:4px;">open interest ratio</div></div></div>';
   // Probabilistic Scenario Matrix: Bear | Base (elevated) | Bull
-  h += '<div style="margin:20px 0 8px;"><div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#fff;">PROBABILISTIC SCENARIO MATRIX</div>' +
-   '<div style="font-size:11px;color:#8b949e;margin-top:2px;">Targets are options-implied ±1σ bounds; probabilities reflect the fundamental setup.</div></div>';
+  h += '<div style="margin:20px 0 8px;"><div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#f5f7fa;">PROBABILISTIC SCENARIO MATRIX</div>' +
+   '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">Targets are options-implied ±1σ bounds; probabilities reflect the fundamental setup.</div></div>';
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:12px 0;align-items:start;">' +
-   e360ScenarioCard("bear", "Bear Scenario (-1σ)", sc.bear || {}, "#f85149", false) +
-   e360ScenarioCard("base", "Base Scenario", sc.base || {}, "#c9a961", true) +
-   e360ScenarioCard("bull", "Bull Scenario (+1σ)", sc.bull || {}, "#3fb950", false) + "</div>";
+   e360ScenarioCard("bear", "Bear Scenario (-1σ)", sc.bear || {}, "#f37d83", false) +
+   e360ScenarioCard("base", "Base Scenario", sc.base || {}, "#d9a441", true) +
+   e360ScenarioCard("bull", "Bull Scenario (+1σ)", sc.bull || {}, "#4dd2aa", false) + "</div>";
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:12px 0;">' +
-   e360Pillar("01", "Macro Dynamics", a.macroDynamics || "N/A", "#c9a961") +
+   e360Pillar("01", "Macro Dynamics", a.macroDynamics || "N/A", "#d9a441") +
    e360Pillar("02", "Micro Fundamentals", a.microFundamentals || "N/A", "#58a6ff") + "</div>";
-  h += '<div style="margin:12px 0;">' + e360Pillar("03", "Management Tone, Last Four Quarters", a.historicalCommentary || "N/A", "#3fb950") + "</div>";
+  h += '<div style="margin:12px 0;">' + e360Pillar("03", "Management Tone, Last Four Quarters", a.historicalCommentary || "N/A", "#4dd2aa") + "</div>";
   h += '<div style="margin:12px 0;">' + e360Pillar("04", "Options Mechanics", a.optionsMechanics || "N/A", "#a371f7") + "</div>";
-  h += '<div style="font-size:11px;color:#8b949e;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div>';
+  h += '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div>';
   el.innerHTML = h;
   // Wire the expiry selector: re-fetch the matrix for the chosen expiry.
   const expSel = document.getElementById(elId + "-expiry");
   if (expSel) {
    expSel.addEventListener("change", async () => {
     const tk = d.ticker;
-    el.innerHTML = '<div class="card"><p style="color:#8b949e;">Recomputing for the selected expiry...</p></div>';
+    el.innerHTML = '<div class="card"><p style="color:#8d99aa;">Recomputing for the selected expiry...</p></div>';
     const nd = await fetchEarnings360(tk, expSel.value);
     renderEarnings360(nd, elId);
    });
@@ -11161,7 +11162,7 @@ function volSurfaceHtml() {
   if (!tk) return;
   const originalLabel = btn ? btn.textContent : "";
   if (btn) { btn.disabled = true; btn.textContent = "GENERATING..."; }
-  el.innerHTML = '<div class="card"><p style="color:#8b949e;">Running quantitative models and AI synthesis for ' + esc(tk) + ". This usually takes 20-30 seconds.</p></div>";
+  el.innerHTML = '<div class="card"><p style="color:#8d99aa;">Running quantitative models and AI synthesis for ' + esc(tk) + ". This usually takes 20-30 seconds.</p></div>";
   const d = await fetchEarnings360(tk);
   renderEarnings360(d, resultId);
   if (btn) { btn.disabled = false; btn.textContent = originalLabel || "ANALYZE"; }
@@ -11194,7 +11195,7 @@ function volSurfaceHtml() {
  }
  const METRICS_CURRENCY = ["Market Cap", "Revenue", "Total Debt", "Cash (Balance Sheet)", "EBITDA", "EBIT", "Total Assets", "Current Liabilities"];
  function fmtMetric(key, val) {
-  if (val === null || val === undefined || Number.isNaN(val)) return '<span style="color:#5b6577;">--</span>';
+  if (val === null || val === undefined || Number.isNaN(val)) return '<span style="color:#647184;">--</span>';
   const isCurrency = METRICS_CURRENCY.indexOf(key) >= 0;
   const isPct = /Yield|Return|Growth|Margin|Turnover|Rate/.test(key);
   const isMoney = /EPS/.test(key);
@@ -11214,20 +11215,20 @@ function volSurfaceHtml() {
   const el = document.getElementById(elId);
   if (!el) return;
   if (data.error) {
-   el.innerHTML = '<div class="card"><p style="color:#f87171;">' + esc(data.error) + "</p></div>";
+   el.innerHTML = '<div class="card"><p style="color:#f37d83;">' + esc(data.error) + "</p></div>";
    return;
   }
   const rows = Object.entries(data.metrics || {}).map(([k, v]) =>
    '<tr style="border-bottom:1px solid #1f293d;">' +
-   '<td style="padding:8px 12px;color:#8b949e;font-weight:600;">' + esc(k) + "</td>" +
-   '<td style="padding:8px 12px;text-align:right;font-weight:700;color:#fff;font-family:monospace;">' + fmtMetric(k, v) + "</td></tr>"
+   '<td style="padding:8px 12px;color:#8d99aa;font-weight:600;">' + esc(k) + "</td>" +
+   '<td style="padding:8px 12px;text-align:right;font-weight:700;color:#f5f7fa;font-family:monospace;">' + fmtMetric(k, v) + "</td></tr>"
   ).join("");
   el.innerHTML =
-   '<div style="background:#0f1420;border:1px solid #2a3448;border-radius:12px;overflow:hidden;">' +
-   '<div style="padding:12px 16px;background:#161b26;border-bottom:1px solid #2a3448;display:flex;justify-content:space-between;align-items:center;">' +
-   '<span style="font-weight:800;font-size:16px;color:#fff;">' + esc(data.ticker) +
-   ' <span style="font-size:12px;font-weight:400;color:#8b949e;">' + esc(data.companyName || "") + "</span></span>" +
-   '<span style="font-size:11px;color:#8b949e;font-family:monospace;">56 METRICS</span></div>' +
+   '<div style="background:#0d131d;border:1px solid #253142;border-radius:12px;overflow:hidden;">' +
+   '<div style="padding:12px 16px;background:#101620;border-bottom:1px solid #253142;display:flex;justify-content:space-between;align-items:center;">' +
+   '<span style="font-weight:800;font-size:16px;color:#f5f7fa;">' + esc(data.ticker) +
+   ' <span style="font-size:12px;font-weight:400;color:#8d99aa;">' + esc(data.companyName || "") + "</span></span>" +
+   '<span style="font-size:11px;color:#8d99aa;font-family:monospace;">56 METRICS</span></div>' +
    '<div style="max-height:560px;overflow-y:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><tbody>' +
    rows + "</tbody></table></div></div>";
  }
@@ -11237,15 +11238,15 @@ function volSurfaceHtml() {
   if (!inp || !el) return;
   const tk = inp.value.toUpperCase().trim();
   if (!tk) return;
-  el.innerHTML = '<div class="card"><p style="color:#8b949e;">Loading 56 metrics for ' + esc(tk) + "...</p></div>";
+  el.innerHTML = '<div class="card"><p style="color:#8d99aa;">Loading 56 metrics for ' + esc(tk) + "...</p></div>";
   const m = await fetchMetrics(tk);
   renderMetricsTable(m, resultId);
  }
  function metricsTrackerInputHtml(inputId, resultId, initial) {
   return '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
    '<input id="' + inputId + '" type="text" placeholder="TICKER (e.g. CRWD)" value="' + esc(initial || "") + '" ' +
-   'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
-   '<button id="' + inputId + '-btn" type="button" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
+   'style="flex:1;background:#101620;border:1px solid #253142;border-radius:8px;padding:10px 12px;color:#dbe5f1;font-size:14px;text-transform:uppercase;" />' +
+   '<button id="' + inputId + '-btn" type="button" style="background:#d9a441;color:#0a0e17;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
    '<div id="' + resultId + '"></div>';
  }
  function wireMetricsInput(inputId, resultId, autoRun) {
@@ -11290,52 +11291,52 @@ function volSurfaceHtml() {
   if (!el) return;
   const a = await fetchAgencyRisk(ticker);
   if (a.error) {
-   el.innerHTML = '<div class="card"><p style="color:#8b949e;">' + esc(a.error) + '</p></div>';
+   el.innerHTML = '<div class="card"><p style="color:#8d99aa;">' + esc(a.error) + '</p></div>';
    return;
   }
   const s = a.scores;
-  const regimeColor = a.regimeColor === "rose" ? "#f85149" : a.regimeColor === "emerald" ? "#3fb950" : "#d29922";
+  const regimeColor = a.regimeColor === "rose" ? "#f37d83" : a.regimeColor === "emerald" ? "#4dd2aa" : "#e0aa46";
   let h = '<div class="card" style="border-left:4px solid ' + regimeColor + ';">';
   h += '<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">';
-  h += '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">ALIGNMENT SCORE</div>';
-  h += '<div style="font-size:36px;font-weight:700;color:' + regimeColor + ';font-family:monospace;">' + a.alignmentScore + '<span style="font-size:18px;color:#8b949e;">/100</span></div></div>';
-  h += '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">REGIME</div>';
+  h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">ALIGNMENT SCORE</div>';
+  h += '<div style="font-size:36px;font-weight:700;color:' + regimeColor + ';font-family:monospace;">' + a.alignmentScore + '<span style="font-size:18px;color:#8d99aa;">/100</span></div></div>';
+  h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">REGIME</div>';
   h += '<div style="font-size:16px;font-weight:700;color:' + regimeColor + ';">' + esc(a.regime) + '</div></div>';
-  h += '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">INSIDER OWNERSHIP</div>';
-  h += '<div style="font-size:20px;font-weight:700;color:#fff;font-family:monospace;">' + s.skinInTheGame.insiderPercent + '%</div></div>';
-  h += '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">6M NET FLOW</div>';
-  const flowCls = s.convictionFlow.netFlowDollars > 0 ? "#3fb950" : s.convictionFlow.netFlowDollars < 0 ? "#f85149" : "#8b949e";
+  h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">INSIDER OWNERSHIP</div>';
+  h += '<div style="font-size:20px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + s.skinInTheGame.insiderPercent + '%</div></div>';
+  h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">6M NET FLOW</div>';
+  const flowCls = s.convictionFlow.netFlowDollars > 0 ? "#4dd2aa" : s.convictionFlow.netFlowDollars < 0 ? "#f37d83" : "#8d99aa";
   h += '<div style="font-size:20px;font-weight:700;color:' + flowCls + ';font-family:monospace;">' + fmtMoney(s.convictionFlow.netFlowDollars) + '</div></div>';
   h += '</div>';
 
   // Three pillars
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;">';
-  h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:12px;">';
-  h += '<div style="font-size:11px;color:#c9a961;font-weight:700;">SKIN IN THE GAME ' + s.skinInTheGame.score + '/' + s.skinInTheGame.max + '</div>';
-  h += '<div style="font-size:13px;color:#e8ecf1;margin-top:4px;">' + s.skinInTheGame.insiderPercent + '% insider ownership</div></div>';
-  h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:12px;">';
+  h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:12px;">';
+  h += '<div style="font-size:11px;color:#d9a441;font-weight:700;">SKIN IN THE GAME ' + s.skinInTheGame.score + '/' + s.skinInTheGame.max + '</div>';
+  h += '<div style="font-size:13px;color:#dbe5f1;margin-top:4px;">' + s.skinInTheGame.insiderPercent + '% insider ownership</div></div>';
+  h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:12px;">';
   h += '<div style="font-size:11px;color:#58a6ff;font-weight:700;">CONVICTION FLOW ' + s.convictionFlow.score + '/' + s.convictionFlow.max + '</div>';
-  h += '<div style="font-size:13px;color:#e8ecf1;margin-top:4px;">Buys ' + fmtMoney(s.convictionFlow.buyDollars) + ' / Sells ' + fmtMoney(s.convictionFlow.sellDollars) + '</div></div>';
-  h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:12px;">';
-  h += '<div style="font-size:11px;color:#3fb950;font-weight:700;">PAY-FOR-PERF ' + s.compensation.score + '/' + s.compensation.max + '</div>';
-  h += '<div style="font-size:13px;color:#e8ecf1;margin-top:4px;">' + esc(s.compensation.badge) + '</div>';
-  h += '<div style="font-size:11px;color:#8b949e;">1Y TSR ' + (s.compensation.tsr1y >= 0 ? '+' : '') + s.compensation.tsr1y + '% · ' + esc(s.compensation.ceoName) + '</div></div>';
+  h += '<div style="font-size:13px;color:#dbe5f1;margin-top:4px;">Buys ' + fmtMoney(s.convictionFlow.buyDollars) + ' / Sells ' + fmtMoney(s.convictionFlow.sellDollars) + '</div></div>';
+  h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:12px;">';
+  h += '<div style="font-size:11px;color:#4dd2aa;font-weight:700;">PAY-FOR-PERF ' + s.compensation.score + '/' + s.compensation.max + '</div>';
+  h += '<div style="font-size:13px;color:#dbe5f1;margin-top:4px;">' + esc(s.compensation.badge) + '</div>';
+  h += '<div style="font-size:11px;color:#8d99aa;">1Y TSR ' + (s.compensation.tsr1y >= 0 ? '+' : '') + s.compensation.tsr1y + '% · ' + esc(s.compensation.ceoName) + '</div></div>';
   h += '</div>';
 
   // Flow chart
   if (a.flowHistory && a.flowHistory.length) {
    h += '<div class="zoomable-chart" data-chart="agency-flow-' + ticker + '" style="position:relative;height:220px;margin-bottom:12px;cursor:zoom-in;" title="Click to zoom"><canvas id="agency-flow-' + ticker + '"></canvas>';
-   h += '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+   h += '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   }
 
   // Recent filings
   if (a.recentFilings && a.recentFilings.length) {
-   h += '<div style="font-size:12px;font-weight:700;color:#fff;margin:12px 0 8px;">Recent Form 4 Filings</div>';
-   h += '<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;color:#e8ecf1;">';
-   h += '<tr style="color:#8b949e;text-align:left;"><th style="padding:6px;">Date</th><th style="padding:6px;">Filer</th><th style="padding:6px;">Type</th><th style="padding:6px;text-align:right;">Shares</th><th style="padding:6px;text-align:right;">Value</th></tr>';
+   h += '<div style="font-size:12px;font-weight:700;color:#f5f7fa;margin:12px 0 8px;">Recent Form 4 Filings</div>';
+   h += '<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;color:#dbe5f1;">';
+   h += '<tr style="color:#8d99aa;text-align:left;"><th style="padding:6px;">Date</th><th style="padding:6px;">Filer</th><th style="padding:6px;">Type</th><th style="padding:6px;text-align:right;">Shares</th><th style="padding:6px;text-align:right;">Value</th></tr>';
    a.recentFilings.forEach(function(tx) {
-    const tc = tx.type === "BUY" ? "#3fb950" : "#f85149";
-    h += '<tr style="border-top:1px solid #2a3448;"><td style="padding:6px;">' + esc(tx.date) + '</td><td style="padding:6px;">' + esc(tx.filer) + '</td><td style="padding:6px;color:' + tc + ';font-weight:700;">' + tx.type + '</td><td style="padding:6px;text-align:right;">' + tx.shares.toLocaleString() + '</td><td style="padding:6px;text-align:right;">' + fmtMoney(tx.value) + '</td></tr>';
+    const tc = tx.type === "BUY" ? "#4dd2aa" : "#f37d83";
+    h += '<tr style="border-top:1px solid #253142;"><td style="padding:6px;">' + esc(tx.date) + '</td><td style="padding:6px;">' + esc(tx.filer) + '</td><td style="padding:6px;color:' + tc + ';font-weight:700;">' + tx.type + '</td><td style="padding:6px;text-align:right;">' + tx.shares.toLocaleString() + '</td><td style="padding:6px;text-align:right;">' + fmtMoney(tx.value) + '</td></tr>';
    });
    h += '</table></div>';
   }
@@ -11343,43 +11344,43 @@ function volSurfaceHtml() {
   // SEC DEF 14A Proxy Audit (from ceo_compensation.json)
   const proxy = (D.ceo_compensation && D.ceo_compensation.records && D.ceo_compensation.records[ticker]) || null;
   if (proxy) {
-   const gradeColor = proxy.alignmentGrade === "A" ? "#3fb950" : proxy.alignmentGrade === "B" ? "#58a6ff" : proxy.alignmentGrade === "C" ? "#d29922" : "#f85149";
-   const chgCls = proxy.tookPayCut ? "#3fb950" : "#f85149";
+   const gradeColor = proxy.alignmentGrade === "A" ? "#4dd2aa" : proxy.alignmentGrade === "B" ? "#58a6ff" : proxy.alignmentGrade === "C" ? "#e0aa46" : "#f37d83";
+   const chgCls = proxy.tookPayCut ? "#4dd2aa" : "#f37d83";
    const chgTxt = (proxy.compPercentageChange > 0 ? "+" : "") + proxy.compPercentageChange + "%";
-   h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;">';
+   h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;margin-top:12px;">';
    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
-   h += '<div style="font-size:13px;font-weight:700;color:#fff;">SEC Proxy Audit <span style="font-size:11px;color:#8b949e;font-weight:400;">DEF 14A ' + esc(proxy.filingDate || "") + '</span></div>';
+   h += '<div style="font-size:13px;font-weight:700;color:#f5f7fa;">SEC Proxy Audit <span style="font-size:11px;color:#8d99aa;font-weight:400;">DEF 14A ' + esc(proxy.filingDate || "") + '</span></div>';
    h += '<div style="font-size:24px;font-weight:700;color:' + gradeColor + ';font-family:monospace;">' + esc(proxy.alignmentGrade || "") + '</div></div>';
    h += '<div style="font-size:14px;font-weight:700;color:' + chgCls + ';margin-bottom:8px;">' + esc(proxy.verdictTitle || "") + '</div>';
-   h += '<div style="font-size:12px;color:#8b949e;margin-bottom:8px;">' + esc(proxy.ceoName || "") + ' · FY' + esc(proxy.fiscalYearAnalyzed || "") + ' vs FY' + esc(proxy.priorFiscalYear || "") + ' · YoY ' + chgTxt + '</div>';
+   h += '<div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">' + esc(proxy.ceoName || "") + ' · FY' + esc(proxy.fiscalYearAnalyzed || "") + ' vs FY' + esc(proxy.priorFiscalYear || "") + ' · YoY ' + chgTxt + '</div>';
    if (proxy.payBreakdown) {
     h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:8px;">';
-    h += '<div><div style="font-size:10px;color:#8b949e;">BASE SALARY</div><div style="font-size:12px;color:#e8ecf1;">' + esc(proxy.payBreakdown.baseSalary || "N/A") + '</div></div>';
-    h += '<div><div style="font-size:10px;color:#8b949e;">STOCK AWARDS</div><div style="font-size:12px;color:#e8ecf1;">' + esc(proxy.payBreakdown.stockAwards || "N/A") + '</div></div>';
-    h += '<div><div style="font-size:10px;color:#8b949e;">BONUS</div><div style="font-size:12px;color:#e8ecf1;">' + esc(proxy.payBreakdown.nonEquityIncentiveBonus || "N/A") + '</div></div>';
-    h += '<div><div style="font-size:10px;color:#8b949e;">OTHER</div><div style="font-size:12px;color:#e8ecf1;">' + esc(proxy.payBreakdown.otherComp || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#8d99aa;">BASE SALARY</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.baseSalary || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#8d99aa;">STOCK AWARDS</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.stockAwards || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#8d99aa;">BONUS</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.nonEquityIncentiveBonus || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#8d99aa;">OTHER</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.otherComp || "N/A") + '</div></div>';
     h += '</div>';
    }
    if (proxy.founderModeFlag) {
-    h += '<div style="font-size:11px;color:#c9a961;background:rgba(201,169,97,0.1);border:1px solid #c9a961;padding:6px 10px;border-radius:4px;margin-bottom:8px;">FOUNDER MODE: symbolic salary, equity-aligned</div>';
+    h += '<div style="font-size:11px;color:#d9a441;background:rgba(217,164,65,0.1);border:1px solid #d9a441;padding:6px 10px;border-radius:4px;margin-bottom:8px;">FOUNDER MODE: symbolic salary, equity-aligned</div>';
    }
    if (proxy.lootingFlag) {
-    h += '<div style="font-size:11px;color:#f85149;background:rgba(248,81,73,0.1);border:1px solid #f85149;padding:6px 10px;border-radius:4px;margin-bottom:8px;">LOOTING FLAG: pay up sharply while shareholders lost money</div>';
+    h += '<div style="font-size:11px;color:#f37d83;background:rgba(248,81,73,0.1);border:1px solid #f37d83;padding:6px 10px;border-radius:4px;margin-bottom:8px;">LOOTING FLAG: pay up sharply while shareholders lost money</div>';
    }
-   h += '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;margin-bottom:8px;">' + esc(proxy.forensicTakeaway || "") + '</div>';
-   h += '<div style="font-size:11px;color:#8b949e;"><a href="' + esc(proxy.proxyUrl || "#") + '" target="_blank" style="color:#58a6ff;">View DEF 14A on SEC EDGAR</a> · Audited ' + esc((proxy.auditedAt || "").slice(0, 10)) + '</div>';
+   h += '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;margin-bottom:8px;">' + esc(proxy.forensicTakeaway || "") + '</div>';
+   h += '<div style="font-size:11px;color:#8d99aa;"><a href="' + esc(proxy.proxyUrl || "#") + '" target="_blank" style="color:#58a6ff;">View DEF 14A on SEC EDGAR</a> · Audited ' + esc((proxy.auditedAt || "").slice(0, 10)) + '</div>';
    h += '</div>';
   }
 
   // Explainer
-  h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;">';
-  h += '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">What this tells you</div>';
-  h += '<div style="font-size:13px;color:#e8ecf1;line-height:1.6;">';
+  h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;margin-top:12px;">';
+  h += '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:8px;">What this tells you</div>';
+  h += '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">';
   h += 'The <b>Agency Risk score</b> measures whether management\'s incentives align with shareholders. ';
   h += 'High insider ownership means executives feel the same pain as investors. ';
   h += 'Open-market buying (not option grants) signals genuine conviction. ';
   h += 'When executives draw large pay packages while the stock drops, that is the classic agency problem: management gets paid regardless of performance.</div>';
-  h += '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Source: Yahoo Finance (SEC Form 4, insider holdings, executive compensation), updated on demand.</div></div>';
+  h += '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Source: Yahoo Finance (SEC Form 4, insider holdings, executive compensation), updated on demand.</div></div>';
   h += '</div>';
 
   el.innerHTML = h;
@@ -11396,16 +11397,16 @@ function volSurfaceHtml() {
      data: {
       labels: a.flowHistory.map(function(x) { return x.month; }),
       datasets: [
-       { label: "Buys ($)", data: a.flowHistory.map(function(x) { return x.buys; }), backgroundColor: "#3fb950" },
-       { label: "Sells ($)", data: a.flowHistory.map(function(x) { return x.sells; }), backgroundColor: "#f85149" }
+       { label: "Buys ($)", data: a.flowHistory.map(function(x) { return x.buys; }), backgroundColor: "#4dd2aa" },
+       { label: "Sells ($)", data: a.flowHistory.map(function(x) { return x.sells; }), backgroundColor: "#f37d83" }
       ]
      },
      options: {
       animation: false, responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: "#8b949e", font: { size: 10 } } } },
+      plugins: { legend: { labels: { color: "#8d99aa", font: { size: 10 } } } },
       scales: {
-       x: { ticks: { color: "#6b7280", font: { size: 10 } }, grid: { display: false } },
-       y: { ticks: { color: "#6b7280", font: { size: 10 } }, grid: { color: "rgba(42,46,57,0.4)" } }
+       x: { ticks: { color: "#647184", font: { size: 10 } }, grid: { display: false } },
+       y: { ticks: { color: "#647184", font: { size: 10 } }, grid: { color: "rgba(42,46,57,0.4)" } }
       }
      }
     });
@@ -11460,7 +11461,7 @@ function volSurfaceHtml() {
   if (el) el.innerHTML = html;
  }
  function researchStat(label, value) {
-  return '<div style="background:#141a28;border:1px solid #232c40;border-radius:10px;padding:10px 12px;"><div style="font-size:10px;letter-spacing:0.08em;color:#8b93a7;text-transform:uppercase;">' + label + '</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;margin-top:2px;">' + value + "</div></div>";
+  return '<div style="background:#101620;border:1px solid #253142;border-radius:10px;padding:10px 12px;"><div style="font-size:10px;letter-spacing:0.08em;color:#647184;text-transform:uppercase;">' + label + '</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;margin-top:2px;">' + value + "</div></div>";
  }
  function researchBigMoney(v) {
   if (v === null || v === undefined || Number.isNaN(v)) return "N/A";
@@ -11478,22 +11479,22 @@ function volSurfaceHtml() {
   const mult = (v) => (v === null || v === undefined ? "N/A" : v.toFixed(2) + "x");
   let h = '<div class="card" style="padding:20px;">';
   h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">';
-  h += "<div><div style=\"font-size:22px;font-weight:800;color:#fff;\">" + esc(hd.name || tk) +
-   ' <span style="font-size:13px;color:#8b93a7;font-weight:600;">' + esc(tk) + (hd.exchange ? " · " + esc(hd.exchange) : "") + "</span></div>";
-  h += '<div style="font-size:12px;color:#8b93a7;margin-top:2px;">' +
+  h += "<div><div style=\"font-size:22px;font-weight:800;color:#f5f7fa;\">" + esc(hd.name || tk) +
+   ' <span style="font-size:13px;color:#647184;font-weight:600;">' + esc(tk) + (hd.exchange ? " · " + esc(hd.exchange) : "") + "</span></div>";
+  h += '<div style="font-size:12px;color:#647184;margin-top:2px;">' +
    esc([hd.sector, hd.industry].filter(Boolean).join(" · ") || "Sector data unavailable") + "</div></div>";
   if (hd.price !== null && hd.price !== undefined) {
    const chg = hd.change;
    const chgPct = hd.changePercent;
-   h += '<div style="text-align:right;"><div style="font-size:26px;font-weight:800;color:#fff;">' + fmt$(hd.price) + "</div>" +
+   h += '<div style="text-align:right;"><div style="font-size:26px;font-weight:800;color:#f5f7fa;">' + fmt$(hd.price) + "</div>" +
     '<div class="' + cls(chg || 0) + '" style="font-size:13px;font-weight:700;">' +
     (chg !== null && chg !== undefined ? (chg >= 0 ? "+" : "") + chg.toFixed(2) : " - ") +
     (chgPct !== null && chgPct !== undefined ? " (" + (chgPct >= 0 ? "+" : "") + chgPct.toFixed(2) + "%)" : "") +
-    '</div><div style="font-size:11px;color:#8b93a7;">As of ' + esc((d.asOf || "").slice(0, 10)) + "</div></div>";
+    '</div><div style="font-size:11px;color:#647184;">As of ' + esc((d.asOf || "").slice(0, 10)) + "</div></div>";
   }
   h += "</div>";
   if (hd.description) {
-   h += '<p style="font-size:13px;line-height:1.65;color:#c8d0dc;margin:14px 0 4px;">' + esc(hd.description) + "</p>";
+   h += '<p style="font-size:13px;line-height:1.65;color:#dbe5f1;margin:14px 0 4px;">' + esc(hd.description) + "</p>";
   }
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:14px;">';
   h += researchStat("Market Cap", researchBigMoney(hd.marketCap));
@@ -11509,9 +11510,9 @@ function volSurfaceHtml() {
   h += "</div>";
   if (km.week52Low !== null && km.week52Low !== undefined && km.week52High !== null && km.week52High !== undefined && hd.price !== null && hd.price !== undefined && km.week52High > km.week52Low) {
    const pos = Math.max(0, Math.min(100, ((hd.price - km.week52Low) / (km.week52High - km.week52Low)) * 100));
-   h += '<div style="margin-top:16px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:#8b93a7;"><span>52-week low ' + fmt$(km.week52Low) + '</span><span style="letter-spacing:0.08em;">52-WEEK RANGE</span><span>52-week high ' + fmt$(km.week52High) + "</span></div>" +
-    '<div style="position:relative;height:8px;background:#1c2536;border-radius:4px;margin-top:6px;"><div style="position:absolute;left:0;top:0;height:8px;width:' + pos.toFixed(1) + '%;background:linear-gradient(90deg,#2a4a73,#c9a961);border-radius:4px;"></div>' +
-    '<div style="position:absolute;top:-4px;left:calc(' + pos.toFixed(1) + '% - 2px);width:4px;height:16px;background:#e8ecf1;border-radius:2px;"></div></div></div>';
+   h += '<div style="margin-top:16px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:#647184;"><span>52-week low ' + fmt$(km.week52Low) + '</span><span style="letter-spacing:0.08em;">52-WEEK RANGE</span><span>52-week high ' + fmt$(km.week52High) + "</span></div>" +
+    '<div style="position:relative;height:8px;background:#1c2536;border-radius:4px;margin-top:6px;"><div style="position:absolute;left:0;top:0;height:8px;width:' + pos.toFixed(1) + '%;background:linear-gradient(90deg,#253142,#d9a441);border-radius:4px;"></div>' +
+    '<div style="position:absolute;top:-4px;left:calc(' + pos.toFixed(1) + '% - 2px);width:4px;height:16px;background:#dbe5f1;border-radius:2px;"></div></div></div>';
   }
   return h + "</div>";
  }
@@ -11521,8 +11522,8 @@ function volSurfaceHtml() {
   const s = d.summary || { buys: 0, sells: 0, automatic_count: 0 };
   if (!txns.length) return '<div class="card"><p style="color:var(--muted)">No recent Form 4 filings found.</p></div>';
   let h = '<div class="card"><div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:13px;">' +
-   '<span>Open-market buys <b style="color:#3fb950;">' + s.buys + "</b></span>" +
-   '<span>Open-market sells <b style="color:#f87171;">' + s.sells + "</b></span>" +
+   '<span>Open-market buys <b style="color:#4dd2aa;">' + s.buys + "</b></span>" +
+   '<span>Open-market sells <b style="color:#f37d83;">' + s.sells + "</b></span>" +
    '<span style="color:var(--muted)">Automatic and plan transactions ' + (s.automatic_count || 0) + "</span></div>";
   h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Date</th><th>Insider</th><th>Type</th><th style="text-align:right;">Shares</th><th style="text-align:right;">Price</th><th style="text-align:right;">Value</th></tr></thead><tbody>';
   h += txns.slice(0, 15).map((x) => {
@@ -11533,7 +11534,7 @@ function volSurfaceHtml() {
     : ' style="opacity:0.55"';
    const badge = open
     ? ' <span style="font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 5px;border-radius:4px;background:' + (isBuy ? "#14532d" : "#5b2121") + ";color:" + (isBuy ? "#4ade80" : "#fca5a5") + ';">OPEN MARKET</span>'
-    : ' <span style="font-size:11px;color:#8b949e;">(' + esc(x.code_label || "") + ")</span>";
+    : ' <span style="font-size:11px;color:#8d99aa;">(' + esc(x.code_label || "") + ")</span>";
    return "<tr" + rowStyle + "><td>" + esc(x.date || "") + "</td><td>" + esc(x.insider || "") +
     (x.title ? ' <span style="color:var(--muted);font-size:11px;">' + esc(x.title) + "</span>" : "") + "</td>" +
     '<td class="' + (isBuy ? "pos" : "neg") + '">' + (isBuy ? "Buy" : "Sell") + badge + "</td>" +
@@ -11575,18 +11576,18 @@ function volSurfaceHtml() {
   h += months.map((mn, i) => {
    const entry = (seasonality || []).find((m) => m.month === i) || {};
    const v = entry.avgReturn;
-   if (v === null || v === undefined) return '<div style="background:#161b26;border:1px solid #2a3448;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:11px;font-weight:700;color:#8b93a7;letter-spacing:0.05em;">' + mn + '</div><div style="font-size:16px;font-weight:800;color:#5b6577;margin:4px 0;">N/A</div><div style="font-size:10px;color:#5b6577;">' + (entry.years || 0) + " yrs</div></div>";
+   if (v === null || v === undefined) return '<div style="background:#101620;border:1px solid #253142;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:11px;font-weight:700;color:#647184;letter-spacing:0.05em;">' + mn + '</div><div style="font-size:16px;font-weight:800;color:#647184;margin:4px 0;">N/A</div><div style="font-size:10px;color:#647184;">' + (entry.years || 0) + " yrs</div></div>";
    const pos = v >= 0;
    const wdt = Math.max(6, Math.round((Math.abs(v) / maxAbs) * 100));
-   return '<div style="background:#161b26;border:1px solid #2a3448;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:11px;font-weight:700;color:#8b93a7;letter-spacing:0.05em;">' + mn + "</div>" +
-    '<div style="font-size:16px;font-weight:800;color:' + (pos ? "#3fb950" : "#f87171") + ';margin:4px 0;">' + (pos ? "+" : "") + v.toFixed(1) + "%</div>" +
-    '<div style="height:5px;background:#232c40;border-radius:3px;overflow:hidden;margin:4px 0;"><div style="height:100%;width:' + wdt + "%;background:" + (pos ? "#3fb950" : "#f85149") + ';"></div></div>' +
-    '<div style="font-size:10px;color:#5b6577;">' + entry.years + " yrs</div></div>";
+   return '<div style="background:#101620;border:1px solid #253142;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:11px;font-weight:700;color:#647184;letter-spacing:0.05em;">' + mn + "</div>" +
+    '<div style="font-size:16px;font-weight:800;color:' + (pos ? "#4dd2aa" : "#f37d83") + ';margin:4px 0;">' + (pos ? "+" : "") + v.toFixed(1) + "%</div>" +
+    '<div style="height:5px;background:#253142;border-radius:3px;overflow:hidden;margin:4px 0;"><div style="height:100%;width:' + wdt + "%;background:" + (pos ? "#4dd2aa" : "#f37d83") + ';"></div></div>' +
+    '<div style="font-size:10px;color:#647184;">' + entry.years + " yrs</div></div>";
   }).join("");
   h += "</div>";
   const ranked = vals.slice().sort((a, b) => b.avgReturn - a.avgReturn);
   if (ranked.length) {
-   h += '<div class="panel-summary" style="margin-top:10px;color:#c8d0dc;">Strongest: <b style="color:#6a9a6a;">' + months[ranked[0].month] + " (" + (ranked[0].avgReturn >= 0 ? "+" : "") + ranked[0].avgReturn.toFixed(1) + '%)</b> · Weakest: <b style="color:#f87171;">' + months[ranked[ranked.length - 1].month] + " (" + ranked[ranked.length - 1].avgReturn.toFixed(1) + "%)</b></div>";
+   h += '<div class="panel-summary" style="margin-top:10px;color:#dbe5f1;">Strongest: <b style="color:#4dd2aa;">' + months[ranked[0].month] + " (" + (ranked[0].avgReturn >= 0 ? "+" : "") + ranked[0].avgReturn.toFixed(1) + '%)</b> · Weakest: <b style="color:#f37d83;">' + months[ranked[ranked.length - 1].month] + " (" + ranked[ranked.length - 1].avgReturn.toFixed(1) + "%)</b></div>";
   }
   return h + "</div>";
  }
@@ -11597,14 +11598,14 @@ function volSurfaceHtml() {
   }
   function gauge(label, score, color, note) {
    const pct = score != null ? Math.max(0, Math.min(100, score)) : 0;
-   return '<div style="flex:1;min-width:220px;background:#161b26;border:1px solid #232c40;border-radius:10px;padding:14px;">' +
-    '<div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:11px;letter-spacing:0.08em;color:#8b93a7;text-transform:uppercase;">' + label + '</span>' +
+   return '<div style="flex:1;min-width:220px;background:#101620;border:1px solid #253142;border-radius:10px;padding:14px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:11px;letter-spacing:0.08em;color:#647184;text-transform:uppercase;">' + label + '</span>' +
     '<span style="font-size:24px;font-weight:800;color:' + color + ';">' + (score != null ? score : " - ") + "</span></div>" +
-    '<div style="height:8px;background:#0f1420;border-radius:4px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + pct + "%;background:" + color + ';"></div></div>' +
-    '<div style="font-size:12px;color:#c8d0dc;">' + note + "</div></div>";
+    '<div style="height:8px;background:#0d131d;border-radius:4px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + pct + "%;background:" + color + ';"></div></div>' +
+    '<div style="font-size:12px;color:#dbe5f1;">' + note + "</div></div>";
   }
   const trendColor = trend.trendScore >= 60 ? "#a78bfa" : trend.trendScore >= 40 ? "#d9b45b" : "#5b8def";
-  const exhColor = trend.exhaustionScore >= 60 ? "#f85149" : trend.exhaustionScore >= 35 ? "#f59e0b" : "#3fb950";
+  const exhColor = trend.exhaustionScore >= 60 ? "#f37d83" : trend.exhaustionScore >= 35 ? "#e0aa46" : "#4dd2aa";
   let h = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">';
   h += gauge("Trend Conviction", trend.trendScore, trendColor,
    esc(trend.direction || "") + " · " + esc(trend.alignment || "") + (trend.adx != null ? " · ADX " + trend.adx.toFixed(1) : ""));
@@ -11621,19 +11622,19 @@ function volSurfaceHtml() {
    const sv = block.sma ? block.sma[p] : null;
    const ev = block.ema ? block.ema[p] : null;
    if (sv === null && ev === null) return;
-   const cell = (v) => (v === null || v === undefined ? '<td style="text-align:right;color:#5b6577;">N/A</td>' : '<td style="text-align:right;">' + v.toFixed(2) + "</td>");
-   const cellE = (v) => (v === null || v === undefined ? '<td style="text-align:right;color:#5b6577;">N/A</td>' : '<td style="text-align:right;">' + v.toFixed(2) + "</td>");
-   rows += '<tr><td style="font-weight:600;color:#c8d0dc;">' + p + "-day</td>" + cell(sv) + cellE(ev) + "</tr>";
+   const cell = (v) => (v === null || v === undefined ? '<td style="text-align:right;color:#647184;">N/A</td>' : '<td style="text-align:right;">' + v.toFixed(2) + "</td>");
+   const cellE = (v) => (v === null || v === undefined ? '<td style="text-align:right;color:#647184;">N/A</td>' : '<td style="text-align:right;">' + v.toFixed(2) + "</td>");
+   rows += '<tr><td style="font-weight:600;color:#dbe5f1;">' + p + "-day</td>" + cell(sv) + cellE(ev) + "</tr>";
   });
   const rsi = block.rsi || {};
   const sigChip = block.signal
-   ? ' <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:' + (block.signal === "Bullish" ? "rgba(63,185,80,0.15);color:#3fb950" : block.signal === "Bearish" ? "rgba(248,81,73,0.15);color:#f87171" : "rgba(139,147,167,0.15);color:#8b93a7") + ';">' + esc(block.signal.toUpperCase()) + "</span>"
+   ? ' <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:' + (block.signal === "Bullish" ? "rgba(63,185,80,0.15);color:#4dd2aa" : block.signal === "Bearish" ? "rgba(248,81,73,0.15);color:#f37d83" : "rgba(139,147,167,0.15);color:#647184") + ';">' + esc(block.signal.toUpperCase()) + "</span>"
    : "";
   let h = '<div class="card" style="margin-bottom:12px;">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;"><div style="font-size:14px;font-weight:700;color:#e8ecf1;">' + label + sigChip + "</div>" +
-   '<div style="font-size:12px;color:#8b93a7;">RSI(14) <b style="color:#e8ecf1;">' + (rsi.value != null ? rsi.value.toFixed(1) : "N/A") + "</b>" +
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">' + label + sigChip + "</div>" +
+   '<div style="font-size:12px;color:#647184;">RSI(14) <b style="color:#dbe5f1;">' + (rsi.value != null ? rsi.value.toFixed(1) : "N/A") + "</b>" +
    (rsi.status === "INSUFFICIENT_DATA" ? " · insufficient data" : rsi.value != null && rsi.value > 70 ? " · overbought" : rsi.value != null && rsi.value < 30 ? " · oversold" : "") +
-   (label === "Daily" && dist200 != null ? ' · <span style="color:#e8ecf1;">' + (dist200 >= 0 ? "+" : "") + dist200.toFixed(1) + "%</span> vs 200-day average" : "") +
+   (label === "Daily" && dist200 != null ? ' · <span style="color:#dbe5f1;">' + (dist200 >= 0 ? "+" : "") + dist200.toFixed(1) + "%</span> vs 200-day average" : "") +
    "</div></div>";
   h += '<div style="position:relative;height:250px;"><canvas id="research-ma-' + label.toLowerCase() + '"></canvas></div>';
   if (rows) {
@@ -11660,7 +11661,7 @@ function volSurfaceHtml() {
      labels: ch.dates,
      datasets: [
       ds("Price", ch.close, "#d5dbe5", 1.8),
-      ds("SMA 10", ch.sma10, "#f23645"),
+      ds("SMA 10", ch.sma10, "#f37d83"),
       ds("SMA 20", ch.sma20, "#ff9800"),
       ds("SMA 50", ch.sma50, "#2962ff"),
       ds("SMA 200", ch.sma200, "#00bcd4"),
@@ -11671,8 +11672,8 @@ function volSurfaceHtml() {
      interaction: { mode: "index", intersect: false },
      plugins: { legend: { labels: { color: "#aab2c0", boxWidth: 10, font: { size: 10 } } } },
      scales: {
-      x: { ticks: { color: "#8b93a7", maxTicksLimit: 6, font: { size: 10 } }, grid: { color: "#1c2436" } },
-      y: { position: "right", ticks: { color: "#8b93a7", font: { size: 10 } }, grid: { color: "#1c2436" } },
+      x: { ticks: { color: "#647184", maxTicksLimit: 6, font: { size: 10 } }, grid: { color: "#1c2436" } },
+      y: { position: "right", ticks: { color: "#647184", font: { size: 10 } }, grid: { color: "#1c2436" } },
      },
     },
    });
@@ -11696,7 +11697,7 @@ function volSurfaceHtml() {
    console.error("Research financials render failed", tk, e);
    html = researchUnavailable(tk);
   }
-  if (d.source) html += '<p style="font-size:11px;color:#8b949e;margin-top:8px;">Figures drawn from ' + esc(d.source) + ". Items a filer does not report show as N/A.</p>";
+  if (d.source) html += '<p style="font-size:11px;color:#8d99aa;margin-top:8px;">Figures drawn from ' + esc(d.source) + ". Items a filer does not report show as N/A.</p>";
   setResearchHtml("research-financials", html);
   const tabs = document.getElementById("fin-" + tk + "-tabs");
   if (tabs) {
@@ -11723,7 +11724,7 @@ function volSurfaceHtml() {
   h += researchTimeframeHtml("Daily", tf.daily, d.dist200);
   h += researchTimeframeHtml("Weekly", tf.weekly, null);
   h += researchTimeframeHtml("Monthly", tf.monthly, null);
-  h += '<p style="font-size:11px;color:#8b949e;">Price history as of ' + esc(d.asOf || "") + ". Gauges follow the same formulas as the coverage trend engine.</p>";
+  h += '<p style="font-size:11px;color:#8d99aa;">Price history as of ' + esc(d.asOf || "") + ". Gauges follow the same formulas as the coverage trend engine.</p>";
   setResearchHtml("research-technicals", h);
   drawResearchTechCharts(d);
   setResearchHtml("research-seasonality", researchSeasonalityHtml(d.seasonality));
@@ -11769,8 +11770,8 @@ function volSurfaceHtml() {
  function researchSearchFormHtml(val) {
   return '<form id="research-form" style="display:flex;gap:8px;margin:12px 0;max-width:460px;" autocomplete="off">' +
    '<input id="research-ticker" type="text" placeholder="TICKER (e.g. AAPL)" value="' + esc(val || "") + '" autocomplete="off" autocapitalize="characters" spellcheck="false" ' +
-   'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
-   '<button id="research-btn" type="submit" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Research</button></form>';
+   'style="flex:1;background:#101620;border:1px solid #253142;border-radius:8px;padding:10px 12px;color:#dbe5f1;font-size:14px;text-transform:uppercase;" />' +
+   '<button id="research-btn" type="submit" style="background:#d9a441;color:#0a0e17;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Research</button></form>';
  }
  function wireResearchForm() {
   const form = document.getElementById("research-form");
@@ -11801,8 +11802,8 @@ function volSurfaceHtml() {
    app.innerHTML = hero +
     '<div class="section"><div class="section-title">Ticker Lookup ' + PRO_BADGE + "</div>" +
     researchSearchFormHtml("") +
-    '<div class="card"><p style="font-size:13px;line-height:1.65;color:#c8d0dc;">Enter a ticker symbol and the toolkit builds the page on demand. Statements come from SEC filings, insider activity comes from Form 4, options positioning comes from CBOE delayed chains, and technicals are computed from five years of daily prices.</p>' +
-    '<p style="font-size:13px;line-height:1.65;color:#c8d0dc;margin-top:8px;">Names inside our coverage link straight through to their analyst pages, where the rating, DCF targets, and research report live.</p></div></div>';
+    '<div class="card"><p style="font-size:13px;line-height:1.65;color:#dbe5f1;">Enter a ticker symbol and the toolkit builds the page on demand. Statements come from SEC filings, insider activity comes from Form 4, options positioning comes from CBOE delayed chains, and technicals are computed from five years of daily prices.</p>' +
+    '<p style="font-size:13px;line-height:1.65;color:#dbe5f1;margin-top:8px;">Names inside our coverage link straight through to their analyst pages, where the rating, DCF targets, and research report live.</p></div></div>';
    wireResearchForm();
    const inp = document.getElementById("research-ticker");
    if (inp) inp.focus();
@@ -11814,9 +11815,9 @@ function volSurfaceHtml() {
    "<p class='hero-sub'>On-demand research computed from filings, market data, and CBOE delayed chains.</p></div></div>";
   h += '<div class="section">' + researchSearchFormHtml(tk) + "</div>";
   if (inCoverage) {
-   h += '<div class="section"><div class="card" style="border:1px solid #c9a961;background:rgba(201,169,97,0.08);padding:16px 20px;">' +
-    '<div style="font-size:15px;font-weight:700;color:#e8ecf1;">' + esc(tk) + " is inside Cascadia coverage</div>" +
-    '<p style="font-size:13px;color:#c8d0dc;margin:6px 0 10px;">The full analyst page carries our rating, valuation targets, and the research report for this name.</p>' +
+   h += '<div class="section"><div class="card" style="border:1px solid #d9a441;background:rgba(217,164,65,0.08);padding:16px 20px;">' +
+    '<div style="font-size:15px;font-weight:700;color:#dbe5f1;">' + esc(tk) + " is inside Cascadia coverage</div>" +
+    '<p style="font-size:13px;color:#dbe5f1;margin:6px 0 10px;">The full analyst page carries our rating, valuation targets, and the research report for this name.</p>' +
     '<a class="btn" href="#/ticker/' + esc(tk) + '" style="display:inline-block;">Open the ' + esc(tk) + " analyst page</a></div></div>";
   }
   h += '<div class="section"><div id="research-header">' + researchLoading("company profile") + "</div></div>";
@@ -11829,8 +11830,8 @@ function volSurfaceHtml() {
   h += '<div class="section"><div class="section-title">Earnings ' + PRO_BADGE + '</div><div id="research-earnings">' + researchLoading("earnings record") + "</div></div>";
   h += '<div class="section"><div class="section-title">Options Positioning ' + PRO_BADGE + '</div><div id="research-options">' + researchLoading("options positioning") + "</div></div>";
   h += '<div class="section"><div class="section-title">Cascadia Catalyst Compass ' + PRO_BADGE + "</div>" +
-   '<div class="card"><p style="font-size:13px;color:#c8d0dc;line-height:1.6;margin-bottom:12px;">A probabilistic Bull, Base, and Bear scenario matrix for the next earnings print, mapped to options-implied price bounds with macro, fundamental, tone, and positioning context. Generation takes about 20 to 30 seconds.</p>' +
-   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Catalyst Compass</button></div>' +
+   '<div class="card"><p style="font-size:13px;color:#dbe5f1;line-height:1.6;margin-bottom:12px;">A probabilistic Bull, Base, and Bear scenario matrix for the next earnings print, mapped to options-implied price bounds with macro, fundamental, tone, and positioning context. Generation takes about 20 to 30 seconds.</p>' +
+   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#d9a441;color:#0a0e17;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Catalyst Compass</button></div>' +
    '<input type="hidden" id="e360-input-' + tk + '" value="' + esc(tk) + '" />' +
    '<div id="e360-' + tk + '"></div></div></div>';
   h += '<div class="section"><div class="section-title">Executive Alignment and Agency Risk ' + PRO_BADGE + '</div><div id="agency-risk-' + tk + '">' + researchLoading("agency risk") + "</div></div>";
@@ -11882,8 +11883,8 @@ function volSurfaceHtml() {
    '<div class="section"><div class="section-title">Ticker Lookup ' + PRO_BADGE + '</div>' +
    '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
    '<input id="quality-ticker" type="text" placeholder="TICKER (e.g. CRWD)" value="' + esc(initial) + '" ' +
-   'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
-   '<button id="quality-btn" type="button" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
+   'style="flex:1;background:#101620;border:1px solid #253142;border-radius:8px;padding:10px 12px;color:#dbe5f1;font-size:14px;text-transform:uppercase;" />' +
+   '<button id="quality-btn" type="button" style="background:#d9a441;color:#0a0e17;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
    '<div id="quality-result"></div></div>';
   const inp = document.getElementById("quality-ticker");
   const qBtn = document.getElementById("quality-btn");
@@ -11913,10 +11914,10 @@ function volSurfaceHtml() {
    '<div class="section"><div class="section-title">Ticker Lookup ' + PRO_BADGE + '</div>' +
    '<form id="e360-form" style="display:flex;gap:8px;margin:12px 0;max-width:420px;" autocomplete="off">' +
    '<input id="e360-ticker" type="text" placeholder="TICKER (e.g. NVDA)" value="' + esc(initial) + '" autocomplete="off" autocapitalize="characters" spellcheck="false" ' +
-   'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
-   '<button id="e360-btn" type="submit" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></form>' +
+   'style="flex:1;background:#101620;border:1px solid #253142;border-radius:8px;padding:10px 12px;color:#dbe5f1;font-size:14px;text-transform:uppercase;" />' +
+   '<button id="e360-btn" type="submit" style="background:#d9a441;color:#0a0e17;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></form>' +
    '<div id="e360-result"></div>' +
-   '<div style="font-size:11px;color:#8b949e;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div></div>';
+   '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div></div>';
   const e360Form = document.getElementById("e360-form");
   if (e360Form) {
    e360Form.addEventListener("submit", (e) => {
@@ -11943,69 +11944,69 @@ function volSurfaceHtml() {
   if (memo) {
    // Single memo view - Pro gate if memo.pro
    if (memo.pro && !isPro()) {
-    let h = '<div class="crumb"><a href="#/memos" style="color:#8b949e;">CASCADIA MEMOS</a></div>';
+    let h = '<div class="crumb"><a href="#/memos" style="color:#8d99aa;">CASCADIA MEMOS</a></div>';
     h += '<div class="hero"><div><h1 class="hero-h">' + esc(memo.title) + '</h1>';
-    h += '<p class="hero-sub">' + esc(memo.date) + ' &middot; <span style="color:#c9a961;">PRO</span></p></div></div>';
+    h += '<p class="hero-sub">' + esc(memo.date) + ' &middot; <span style="color:#d9a441;">PRO</span></p></div></div>';
     h += '<div class="section" style="max-width:800px;margin:0 auto;">';
-    h += '<div style="font-size:15px;color:#e8ecf1;line-height:1.8;margin-bottom:16px;">' + esc(memo.excerpt || "") + '</div>';
-    h += gated('<div style="background:#161b26;border:1px solid #c9a961;border-radius:12px;padding:32px;text-align:center;">' +
-      '<div style="font-size:16px;font-weight:700;color:#c9a961;margin-bottom:8px;">Pro members read the full Week Ahead</div>' +
-      '<div style="font-size:14px;color:#e8ecf1;margin-bottom:16px;">Company news, macro, Fed, positioning, and risk model readings for the coming week.</div>' +
+    h += '<div style="font-size:15px;color:#dbe5f1;line-height:1.8;margin-bottom:16px;">' + esc(memo.excerpt || "") + '</div>';
+    h += gated('<div style="background:#101620;border:1px solid #d9a441;border-radius:12px;padding:32px;text-align:center;">' +
+      '<div style="font-size:16px;font-weight:700;color:#d9a441;margin-bottom:8px;">Pro members read the full Week Ahead</div>' +
+      '<div style="font-size:14px;color:#dbe5f1;margin-bottom:16px;">Company news, macro, Fed, positioning, and risk model readings for the coming week.</div>' +
       '<button class="btn" id="teaser-pricing">See Pro Plans</button></div>');
-    h += '<div style="font-size:11px;color:#8b949e;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
+    h += '<div style="font-size:11px;color:#8d99aa;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
     h += '</div>';
     app.innerHTML = h;
     return;
    }
-   let h = '<div class="crumb"><a href="#/memos" style="color:#8b949e;">CASCADIA MEMOS</a></div>';
+   let h = '<div class="crumb"><a href="#/memos" style="color:#8d99aa;">CASCADIA MEMOS</a></div>';
    h += '<div class="hero"><div><h1 class="hero-h">' + esc(memo.title) + '</h1>';
    h += '<p class="hero-sub">' + esc(memo.date) + '</p></div></div>';
    h += '<div class="section" style="max-width:800px;margin:0 auto;">';
    (memo.sections || []).forEach((s) => {
     if (s.visual === "scarcity-premium") {
-     h += '<div style="background:#161b26;border:1px solid #2a3142;border-radius:12px;padding:24px;margin:24px 0;">';
-     h += '<div style="font-size:14px;font-weight:700;color:#c9a961;letter-spacing:1px;margin-bottom:16px;">THE SCARCITY PREMIUM</div>';
+     h += '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:24px;margin:24px 0;">';
+     h += '<div style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:16px;">THE SCARCITY PREMIUM</div>';
      h += '<div style="display:flex;gap:16px;flex-wrap:wrap;">';
-     h += '<div style="flex:1;min-width:200px;background:#0f1420;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">MORATORIUMS</div><div style="font-size:28px;font-weight:800;color:#f87171;">Supply ↓</div><div style="font-size:13px;color:#e8ecf1;margin-top:8px;">New builds paused</div></div>';
-     h += '<div style="flex:1;min-width:200px;background:#0f1420;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">AI DEMAND</div><div style="font-size:28px;font-weight:800;color:#6a9a6a;">Demand ↑</div><div style="font-size:13px;color:#e8ecf1;margin-top:8px;">Inelastic compute needs</div></div>';
-     h += '<div style="flex:1;min-width:200px;background:#0f1420;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">RESULT</div><div style="font-size:28px;font-weight:800;color:#c9a961;">Pricing ↑</div><div style="font-size:13px;color:#e8ecf1;margin-top:8px;">Margin expansion</div></div>';
+     h += '<div style="flex:1;min-width:200px;background:#0d131d;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">MORATORIUMS</div><div style="font-size:28px;font-weight:800;color:#f37d83;">Supply ↓</div><div style="font-size:13px;color:#dbe5f1;margin-top:8px;">New builds paused</div></div>';
+     h += '<div style="flex:1;min-width:200px;background:#0d131d;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">AI DEMAND</div><div style="font-size:28px;font-weight:800;color:#4dd2aa;">Demand ↑</div><div style="font-size:13px;color:#dbe5f1;margin-top:8px;">Inelastic compute needs</div></div>';
+     h += '<div style="flex:1;min-width:200px;background:#0d131d;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">RESULT</div><div style="font-size:28px;font-weight:800;color:#d9a441;">Pricing ↑</div><div style="font-size:13px;color:#dbe5f1;margin-top:8px;">Margin expansion</div></div>';
      h += '</div>';
-     h += '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a3142;"><div style="font-size:12px;color:#8b949e;margin-bottom:8px;">KEY BENEFICIARIES</div><div style="display:flex;gap:8px;flex-wrap:wrap;">';
-     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">DLR</span>';
-     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">EQIX</span>';
-     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">IRM</span>';
-     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">MSFT</span>';
-     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">AMZN</span>';
-     h += '<span style="background:#1a2332;padding:6px 12px;border-radius:6px;font-size:13px;color:#fff;font-weight:600;">GOOGL</span>';
+     h += '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #253142;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">KEY BENEFICIARIES</div><div style="display:flex;gap:8px;flex-wrap:wrap;">';
+     h += '<span style="background:#101620;padding:6px 12px;border-radius:6px;font-size:13px;color:#f5f7fa;font-weight:600;">DLR</span>';
+     h += '<span style="background:#101620;padding:6px 12px;border-radius:6px;font-size:13px;color:#f5f7fa;font-weight:600;">EQIX</span>';
+     h += '<span style="background:#101620;padding:6px 12px;border-radius:6px;font-size:13px;color:#f5f7fa;font-weight:600;">IRM</span>';
+     h += '<span style="background:#101620;padding:6px 12px;border-radius:6px;font-size:13px;color:#f5f7fa;font-weight:600;">MSFT</span>';
+     h += '<span style="background:#101620;padding:6px 12px;border-radius:6px;font-size:13px;color:#f5f7fa;font-weight:600;">AMZN</span>';
+     h += '<span style="background:#101620;padding:6px 12px;border-radius:6px;font-size:13px;color:#f5f7fa;font-weight:600;">GOOGL</span>';
      h += '</div></div></div>';
      return;
     }
     if (s.visual === "axon-sotp") {
-     h += '<div style="background:#161b26;border:1px solid #2a3142;border-radius:12px;padding:24px;margin:24px 0;">';
-     h += '<div style="font-size:14px;font-weight:700;color:#c9a961;letter-spacing:1px;margin-bottom:16px;">AXON SUM-OF-THE-PARTS: 2036 REVENUE</div>';
-     const segs = [["Evidence.com", 18.5, "#c9a961"], ["TASER", 4.0, "#6a9a6a"], ["Dedrone", 3.47, "#5b8dd9"], ["Bodycams", 2.3, "#8b949e"], ["ALPR/RTCC", 1.28, "#f87171"]];
+     h += '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:24px;margin:24px 0;">';
+     h += '<div style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:16px;">AXON SUM-OF-THE-PARTS: 2036 REVENUE</div>';
+     const segs = [["Evidence.com", 18.5, "#d9a441"], ["TASER", 4.0, "#4dd2aa"], ["Dedrone", 3.47, "#5b8dd9"], ["Bodycams", 2.3, "#8d99aa"], ["ALPR/RTCC", 1.28, "#f37d83"]];
      const total = 29.55;
      segs.forEach((sg) => {
       const pct = (sg[1] / total * 100).toFixed(1);
-      h += '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:#e8ecf1;">' + sg[0] + '</span><span style="color:#8b949e;">$' + sg[1] + 'B (' + pct + '%)</span></div>';
-      h += '<div style="background:#0f1420;border-radius:4px;height:24px;overflow:hidden;"><div style="width:' + pct + '%;height:100%;background:' + sg[2] + ';"></div></div></div>';
+      h += '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:#dbe5f1;">' + sg[0] + '</span><span style="color:#8d99aa;">$' + sg[1] + 'B (' + pct + '%)</span></div>';
+      h += '<div style="background:#0d131d;border-radius:4px;height:24px;overflow:hidden;"><div style="width:' + pct + '%;height:100%;background:' + sg[2] + ';"></div></div></div>';
      });
-     h += '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a3142;display:flex;justify-content:space-between;align-items:center;">';
-     h += '<div><div style="font-size:12px;color:#8b949e;">SOTP TOTAL</div><div style="font-size:24px;font-weight:800;color:#fff;">$29.55B</div></div>';
-     h += '<div style="text-align:right;"><div style="font-size:12px;color:#8b949e;">FLOCK BACKLASH HAIRCUT</div><div style="font-size:24px;font-weight:800;color:#f87171;">-$732M</div><div style="font-size:11px;color:#8b949e;">2.4% of terminal</div></div>';
+     h += '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #253142;display:flex;justify-content:space-between;align-items:center;">';
+     h += '<div><div style="font-size:12px;color:#8d99aa;">SOTP TOTAL</div><div style="font-size:24px;font-weight:800;color:#f5f7fa;">$29.55B</div></div>';
+     h += '<div style="text-align:right;"><div style="font-size:12px;color:#8d99aa;">FLOCK BACKLASH HAIRCUT</div><div style="font-size:24px;font-weight:800;color:#f37d83;">-$732M</div><div style="font-size:11px;color:#8d99aa;">2.4% of terminal</div></div>';
      h += '</div></div>';
      return;
     }
-    if (s.heading) h += '<h2 style="font-size:20px;font-weight:700;color:#fff;margin:24px 0 12px;">' + esc(s.heading) + '</h2>';
-    if (s.body) h += '<div style="font-size:15px;color:#e8ecf1;line-height:1.8;white-space:pre-line;">' + esc(s.body) + '</div>';
+    if (s.heading) h += '<h2 style="font-size:20px;font-weight:700;color:#f5f7fa;margin:24px 0 12px;">' + esc(s.heading) + '</h2>';
+    if (s.body) h += '<div style="font-size:15px;color:#dbe5f1;line-height:1.8;white-space:pre-line;">' + esc(s.body) + '</div>';
     if (s.table && s.table.headers && s.table.rows) {
      h += '<div style="overflow-x:auto;margin:16px 0 8px;"><table style="width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.55;">';
-     h += '<thead><tr>' + s.table.headers.map((th) => '<th style="text-align:left;padding:10px 12px;border-bottom:2px solid #c9a961;color:#c9a961;font-size:12px;letter-spacing:0.6px;text-transform:uppercase;white-space:nowrap;">' + esc(th) + '</th>').join("") + '</tr></thead><tbody>';
+     h += '<thead><tr>' + s.table.headers.map((th) => '<th style="text-align:left;padding:10px 12px;border-bottom:2px solid #d9a441;color:#d9a441;font-size:12px;letter-spacing:0.6px;text-transform:uppercase;white-space:nowrap;">' + esc(th) + '</th>').join("") + '</tr></thead><tbody>';
      s.table.rows.forEach((row, ri) => {
       h += '<tr style="background:' + (ri % 2 ? "#11161f" : "transparent") + ';">' + row.map((c, ci) => {
-       let st = 'padding:10px 12px;border-bottom:1px solid #2a3142;vertical-align:top;color:#e8ecf1;';
-       if (ci === 0) st += 'font-weight:700;color:#fff;white-space:nowrap;';
-       if (ci === 1) st += 'font-weight:700;color:#c9a961;white-space:nowrap;';
+       let st = 'padding:10px 12px;border-bottom:1px solid #253142;vertical-align:top;color:#dbe5f1;';
+       if (ci === 0) st += 'font-weight:700;color:#f5f7fa;white-space:nowrap;';
+       if (ci === 1) st += 'font-weight:700;color:#d9a441;white-space:nowrap;';
        if (ci === 2) st += 'white-space:nowrap;';
        return '<td style="' + st + '">' + esc(c) + '</td>';
       }).join("") + '</tr>';
@@ -12015,16 +12016,16 @@ function volSurfaceHtml() {
    });
    // Pro CTA (free users only) - links to covered ticker pages
    if (!isPro()) {
-    h += '<div style="background:#161b26;border:1px solid #c9a961;border-radius:12px;padding:24px;margin-top:32px;text-align:center;">';
-    h += '<div style="font-size:16px;font-weight:700;color:#c9a961;margin-bottom:8px;">Explore the coverage</div>';
-    h += '<div style="font-size:14px;color:#e8ecf1;margin-bottom:16px;">Deep dive into the DCF models behind this thesis:</div>';
+    h += '<div style="background:#101620;border:1px solid #d9a441;border-radius:12px;padding:24px;margin-top:32px;text-align:center;">';
+    h += '<div style="font-size:16px;font-weight:700;color:#d9a441;margin-bottom:8px;">Explore the coverage</div>';
+    h += '<div style="font-size:14px;color:#dbe5f1;margin-bottom:16px;">Deep dive into the DCF models behind this thesis:</div>';
     h += '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">';
     ["DLR", "EQIX", "IRM", "MSFT", "AMZN", "GOOGL"].forEach((tk) => {
      h += '<a href="#/ticker/' + tk + '" class="btn" style="text-decoration:none;">' + tk + '</a>';
     });
     h += '</div></div>';
    }
-   h += '<div style="font-size:11px;color:#8b949e;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
+   h += '<div style="font-size:11px;color:#8d99aa;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
    h += '</div>';
    app.innerHTML = h;
    return;
@@ -12036,15 +12037,15 @@ function volSurfaceHtml() {
   h += '<p class="hero-sub">Market analysis and investment perspectives from Cascadia Analytics.</p></div></div>';
   h += '<div class="section" style="max-width:800px;margin:0 auto;">';
   if (!allMemos.length) {
-   h += '<div class="card"><p style="color:#8b949e;">No memos yet.</p></div>';
+   h += '<div class="card"><p style="color:#8d99aa;">No memos yet.</p></div>';
   } else {
    allMemos.slice().reverse().forEach((m) => {
     h += '<a href="#/memos/' + esc(m.id) + '" style="text-decoration:none;">';
     h += '<div class="card" style="margin-bottom:16px;cursor:pointer;">';
-    h += '<div style="font-size:11px;color:#8b949e;">' + esc(m.date) + (m.pro ? ' &nbsp;<span style="color:#c9a961;font-weight:700;">PRO</span>' : '') + '</div>';
-    h += '<div style="font-size:20px;font-weight:700;color:#fff;margin:8px 0;">' + esc(m.title) + '</div>';
-    h += '<div style="font-size:14px;color:#8b949e;line-height:1.6;">' + esc(m.excerpt) + '</div>';
-    h += '<div style="font-size:13px;color:#c9a961;margin-top:8px;">Read memo →</div>';
+    h += '<div style="font-size:11px;color:#8d99aa;">' + esc(m.date) + (m.pro ? ' &nbsp;<span style="color:#d9a441;font-weight:700;">PRO</span>' : '') + '</div>';
+    h += '<div style="font-size:20px;font-weight:700;color:#f5f7fa;margin:8px 0;">' + esc(m.title) + '</div>';
+    h += '<div style="font-size:14px;color:#8d99aa;line-height:1.6;">' + esc(m.excerpt) + '</div>';
+    h += '<div style="font-size:13px;color:#d9a441;margin-top:8px;">Read memo →</div>';
     h += '</div></a>';
    });
   }
@@ -12090,32 +12091,32 @@ function volSurfaceHtml() {
  const RISK_TOC_CSS =
   ".risk-anchor{scroll-margin-top:88px;}" +
   ".risk-flash{animation:riskFlash 1.8s ease-out;}" +
-  "@keyframes riskFlash{0%{box-shadow:0 0 0 2px #c9a961,0 0 24px rgba(201,169,97,0.5);}100%{box-shadow:0 0 0 0 rgba(201,169,97,0);}}" +
-  ".risk-toc{background:#0d1522;border:1px solid #1c2b3e;border-radius:12px;padding:18px;margin:14px 0 6px;}" +
+  "@keyframes riskFlash{0%{box-shadow:0 0 0 2px #d9a441,0 0 24px rgba(217,164,65,0.5);}100%{box-shadow:0 0 0 0 rgba(217,164,65,0);}}" +
+  ".risk-toc{background:#0a0e17;border:1px solid #253142;border-radius:12px;padding:18px;margin:14px 0 6px;}" +
   ".risk-toc-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}" +
-  ".risk-toc-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#c9a961;}" +
-  ".risk-toc-meta{font-size:12px;color:#8b949e;}" +
+  ".risk-toc-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#d9a441;}" +
+  ".risk-toc-meta{font-size:12px;color:#8d99aa;}" +
   ".risk-toc-btns{display:flex;gap:10px;flex-wrap:wrap;}" +
   ".risk-toc-cat{position:relative;flex:1 1 200px;min-width:180px;}" +
   ".risk-toc-cat.open{z-index:60;}" +
-  ".risk-toc-btn{width:100%;display:flex;align-items:center;gap:10px;background:#121d2d;border:1px solid #1c2b3e;border-left:3px solid #1c2b3e;border-radius:10px;padding:12px 14px;cursor:pointer;color:#e8ecf1;font-family:inherit;text-align:left;transition:border-color .2s ease,box-shadow .2s ease;}" +
-  ".risk-toc-btn:hover{border-color:#c9a961;border-left-color:#c9a961;}" +
-  ".risk-toc-cat.open .risk-toc-btn{border-color:#c9a961;border-left-color:#dfb76c;box-shadow:inset 0 -2px 0 #c9a961;}" +
-  ".risk-toc-num{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;color:#c9a961;}" +
+  ".risk-toc-btn{width:100%;display:flex;align-items:center;gap:10px;background:#151d29;border:1px solid #253142;border-left:3px solid #253142;border-radius:10px;padding:12px 14px;cursor:pointer;color:#dbe5f1;font-family:inherit;text-align:left;transition:border-color .2s ease,box-shadow .2s ease;}" +
+  ".risk-toc-btn:hover{border-color:#d9a441;border-left-color:#d9a441;}" +
+  ".risk-toc-cat.open .risk-toc-btn{border-color:#d9a441;border-left-color:#d9a441;box-shadow:inset 0 -2px 0 #d9a441;}" +
+  ".risk-toc-num{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;color:#d9a441;}" +
   ".risk-toc-btnname{font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap;}" +
-  ".risk-toc-count{margin-left:auto;font-size:11px;color:#8b949e;white-space:nowrap;}" +
-  ".risk-toc-chev{display:inline-block;color:#c9a961;font-size:12px;line-height:1;transition:transform .25s ease;}" +
+  ".risk-toc-count{margin-left:auto;font-size:11px;color:#8d99aa;white-space:nowrap;}" +
+  ".risk-toc-chev{display:inline-block;color:#d9a441;font-size:12px;line-height:1;transition:transform .25s ease;}" +
   ".risk-toc-cat.open .risk-toc-chev{transform:rotate(180deg);}" +
-  ".risk-toc-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0d1522;border:1px solid #1c2b3e;border-top:2px solid #c9a961;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,0.5);max-height:0;opacity:0;overflow:hidden;pointer-events:none;transform:translateY(-4px);transition:max-height .3s ease,opacity .25s ease,transform .25s ease;}" +
+  ".risk-toc-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0a0e17;border:1px solid #253142;border-top:2px solid #d9a441;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,0.5);max-height:0;opacity:0;overflow:hidden;pointer-events:none;transform:translateY(-4px);transition:max-height .3s ease,opacity .25s ease,transform .25s ease;}" +
   ".risk-toc-cat.open .risk-toc-drop{max-height:70vh;opacity:1;pointer-events:auto;transform:none;overflow-y:auto;}" +
-  ".risk-toc-link{display:block;width:100%;background:none;border:0;border-left:3px solid transparent;border-bottom:1px solid #1c2b3e;padding:10px 14px;color:#c8d0dc;font-size:13px;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s ease,color .15s ease,border-color .15s ease;}" +
+  ".risk-toc-link{display:block;width:100%;background:none;border:0;border-left:3px solid transparent;border-bottom:1px solid #253142;padding:10px 14px;color:#dbe5f1;font-size:13px;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s ease,color .15s ease,border-color .15s ease;}" +
   ".risk-toc-link:last-child{border-bottom:0;}" +
-  ".risk-toc-link:hover{background:#121d2d;color:#fff;border-left-color:#c9a961;}" +
-  ".risk-cat-band{display:flex;align-items:center;gap:14px;background:#0d1522;border:1px solid #1c2b3e;border-left:3px solid #c9a961;border-radius:10px;padding:16px 18px;margin:42px 0 2px;}" +
-  ".risk-cat-num{font-family:var(--mono);font-size:22px;font-weight:800;color:#c9a961;line-height:1;}" +
-  ".risk-cat-name{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;}" +
-  ".risk-cat-sub{font-size:12.5px;color:#8b949e;margin-top:3px;line-height:1.45;}" +
-  ".risk-cat-count{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#c9a961;white-space:nowrap;}" +
+  ".risk-toc-link:hover{background:#151d29;color:#f5f7fa;border-left-color:#d9a441;}" +
+  ".risk-cat-band{display:flex;align-items:center;gap:14px;background:#0a0e17;border:1px solid #253142;border-left:3px solid #d9a441;border-radius:10px;padding:16px 18px;margin:42px 0 2px;}" +
+  ".risk-cat-num{font-family:var(--mono);font-size:22px;font-weight:800;color:#d9a441;line-height:1;}" +
+  ".risk-cat-name{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#f5f7fa;}" +
+  ".risk-cat-sub{font-size:12.5px;color:#8d99aa;margin-top:3px;line-height:1.45;}" +
+  ".risk-cat-count{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#d9a441;white-space:nowrap;}" +
   "@media (max-width:640px){.risk-toc-btns{flex-direction:column;}.risk-toc-cat{flex:1 1 auto;width:100%;min-width:0;}.risk-cat-band{flex-wrap:wrap;}.risk-cat-count{margin-left:0;}}";
  function riskTocHtml() {
   const total = RISK_CATEGORIES.reduce((n, c) => n + c.models.length, 0);
@@ -12237,20 +12238,20 @@ function volSurfaceHtml() {
    const euro = rh.eurodollar_stress || {};
    const nowc = rh.economic_nowcast || {};
    const frag = rh.sovereign_fragmentation || {};
-   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+   const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
    const card = (name, score, regime, color, anchorId) => {
     if (score == null) return "";
-    const c = colorMap[color] || "#e8ecf1";
-    return '<div' + (anchorId ? ' id="' + anchorId + '" class="risk-anchor"' : "") + ' style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
-     '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
-     '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(score) + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
+    const c = colorMap[color] || "#dbe5f1";
+    return '<div' + (anchorId ? ' id="' + anchorId + '" class="risk-anchor"' : "") + ' style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+     '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
+     '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(score) + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
      '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div></div>";
    };
    let freeH = '<div class="crumb">RISK MODELS</div>' +
     '<div class="hero"><div><h1 class="hero-h">Risk Models</h1>' +
     "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
     '<div class="section"><div class="section-title">Daily Snapshot ' + PRO_BADGE + '' +
-    ' <span style="font-size:11px;color:#8b949e;font-weight:400;">as of ' + esc((D.generated_at || "").slice(0, 10)) + '</span></div>' +
+    ' <span style="font-size:11px;color:#8d99aa;font-weight:400;">as of ' + esc((D.generated_at || "").slice(0, 10)) + '</span></div>' +
     '<div class="section-sub">Current scores, free. The full breakdown, charts, history, and in-depth analysis are Pro.</div>' +
     compositeBanner() +
     riskTocHtml() +
@@ -12334,9 +12335,9 @@ function volSurfaceHtml() {
      interaction: {mode: "index", intersect: false},
      plugins: {legend: {display: false}},
      scales: {
-      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
+      x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
       yPrice: {position: "left", ticks: {color: "#c99a6b"}, grid: {color: "rgba(42,46,57,0.4)"}},
-      yScore: {position: "right", min: 0, max: 100, ticks: {color: "#8b949e", stepSize: 25}, grid: {display: false}},
+      yScore: {position: "right", min: 0, max: 100, ticks: {color: "#8d99aa", stepSize: 25}, grid: {display: false}},
      }},
    });
   }
@@ -12352,16 +12353,16 @@ function volSurfaceHtml() {
      labels: ldHist.map((r) => r.date),
      datasets: [
       { type: "line", label: "Net Liquidity ($B)", data: ldHist.map((r) => r.netLiquidity),
-        borderColor: "#c9a961", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yLiq" },
+        borderColor: "#d9a441", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yLiq" },
       { type: "line", label: "SPY", data: ldHist.map((r) => r.spy),
         borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
      scales: {
-      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
-      yLiq: {position: "left", ticks: {color: "#c9a961"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
+      yLiq: {position: "left", ticks: {color: "#d9a441"}, grid: {color: "rgba(42,46,57,0.4)"}},
       ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
      }},
    });
@@ -12381,17 +12382,17 @@ function volSurfaceHtml() {
      labels: cgHist.map((r) => r.date),
      datasets: [
       { type: "line", label: "Contagion Score", data: cgHist.map((r) => r.contagionScore),
-        borderColor: "#d29922", backgroundColor: "rgba(210,153,34,0.1)", fill: true,
+        borderColor: "#e0aa46", backgroundColor: "rgba(210,153,34,0.1)", fill: true,
         borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yScore" },
       { type: "line", label: "SPY", data: cgHist.map((r) => r.spy),
         borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
      scales: {
-      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
-      yScore: {position: "left", min: 0, max: 100, ticks: {color: "#d29922"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
+      yScore: {position: "left", min: 0, max: 100, ticks: {color: "#e0aa46"}, grid: {color: "rgba(42,46,57,0.4)"}},
       ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
      }},
    });
@@ -12408,17 +12409,17 @@ function volSurfaceHtml() {
      labels: fdHist.map((r) => r.date),
      datasets: [
       { type: "line", label: "Divergence Oscillator", data: fdHist.map((r) => r.oscillator),
-        borderColor: "#f85149", backgroundColor: "rgba(248,81,73,0.1)", fill: true,
+        borderColor: "#f37d83", backgroundColor: "rgba(248,81,73,0.1)", fill: true,
         borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yOsc" },
       { type: "line", label: "SPY", data: fdHist.map((r) => r.spy),
         borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
      scales: {
-      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
-      yOsc: {position: "left", min: -3, max: 3, ticks: {color: "#f85149"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
+      yOsc: {position: "left", min: -3, max: 3, ticks: {color: "#f37d83"}, grid: {color: "rgba(42,46,57,0.4)"}},
       ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
      }},
    });
@@ -12436,19 +12437,19 @@ function volSurfaceHtml() {
      labels: kcHist.map((r) => r.date),
      datasets: [
       { type: "line", label: "Leader: " + kcLeader, data: kcHist.map((r) => r.leader),
-        borderColor: "#3fb950", backgroundColor: "rgba(63,185,80,0.1)", fill: true,
+        borderColor: "#4dd2aa", backgroundColor: "rgba(63,185,80,0.1)", fill: true,
         borderWidth: 2, pointRadius: 0, tension: 0.2 },
       { type: "line", label: "SPY", data: kcHist.map((r) => r.spy),
         borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
       { type: "line", label: "RSP", data: kcHist.map((r) => r.rsp),
-        borderColor: "#8b949e", borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.2 },
+        borderColor: "#8d99aa", borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.2 },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
      scales: {
-      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
-      y: {ticks: {color: "#8b949e"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
+      y: {ticks: {color: "#8d99aa"}, grid: {color: "rgba(42,46,57,0.4)"}},
      }},
    });
   }
@@ -12464,16 +12465,16 @@ function volSurfaceHtml() {
      labels: mlHist.map((r) => r.date),
      datasets: [
       { type: "line", label: "Margin Debt YoY (%)", data: mlHist.map((r) => r.marginYoY),
-        borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+        borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.2 },
       { type: "line", label: "SPY YoY (%)", data: mlHist.map((r) => r.spyYoY),
         borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2 },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
      scales: {
-      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
-      y: {ticks: {color: "#8b949e", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
+      y: {ticks: {color: "#8d99aa", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
      }},
    });
   }
@@ -12491,14 +12492,14 @@ function volSurfaceHtml() {
       { type: "line", label: "RSPD/RSPS (equal-wt)", data: srHist.map((r) => r.rspdRsps),
         borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
       { type: "line", label: "XLY/XLP (cap-wt)", data: srHist.map((r) => r.xlyXlp),
-        borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+        borderColor: "#e0aa46", borderWidth: 2, pointRadius: 0, tension: 0.2 },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
      scales: {
-      x: {ticks: {color: "#6b7280", maxTicksLimit: 8}, grid: {display: false}},
-      y: {ticks: {color: "#8b949e"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
+      y: {ticks: {color: "#8d99aa"}, grid: {color: "rgba(42,46,57,0.4)"}},
      }},
    });
   }
@@ -12509,22 +12510,22 @@ function volSurfaceHtml() {
   const proActive = isPro();
   const root = document.getElementById("modal-root");
   let h = '<div class="modal-back" id="pricing-back" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;padding:4vh 4vw;cursor:pointer;overflow-y:auto;">' +
-   '<div id="pricing-modal" style="background:#131722;border-radius:16px;width:100%;max-width:960px;max-height:92vh;overflow-y:auto;padding:32px;cursor:default;position:relative;" onclick="event.stopPropagation()">' +
-   '<button id="pricing-x" style="position:absolute;top:16px;right:16px;background:#2a3448;border:0;color:#c8d0dc;font-size:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;line-height:1;">&times;</button>' +
+   '<div id="pricing-modal" style="background:#0d131d;border-radius:16px;width:100%;max-width:960px;max-height:92vh;overflow-y:auto;padding:32px;cursor:default;position:relative;" onclick="event.stopPropagation()">' +
+   '<button id="pricing-x" style="position:absolute;top:16px;right:16px;background:#253142;border:0;color:#dbe5f1;font-size:20px;width:40px;height:40px;border-radius:50%;cursor:pointer;line-height:1;">&times;</button>' +
    '<div style="text-align:center;margin-bottom:24px;">' +
-   '<div style="font-size:13px;font-weight:700;letter-spacing:3px;color:#e8ecf1;margin-bottom:8px;">MEMBERSHIP</div>' +
-   '<h1 style="font-size:32px;font-weight:800;color:#fff;margin:0 0 8px;">Choose your plan.</h1>' +
-   "<p style='color:#e8ecf1;opacity:0.7;font-size:15px;margin:0;'>Free forever for the essentials. Pro for the full institutional toolkit.</p></div>";
+   '<div style="font-size:13px;font-weight:700;letter-spacing:3px;color:#dbe5f1;margin-bottom:8px;">MEMBERSHIP</div>' +
+   '<h1 style="font-size:32px;font-weight:800;color:#f5f7fa;margin:0 0 8px;">Choose your plan.</h1>' +
+   "<p style='color:#dbe5f1;opacity:0.7;font-size:15px;margin:0;'>Free forever for the essentials. Pro for the full institutional toolkit.</p></div>";
 
   h += '<div class="pricing-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;margin:0 auto 32px;">' +
    '<style>@media (max-width:640px){.pricing-grid{grid-template-columns:1fr !important;}}</style>';
 
   // FREE column
   h += '<div class="card" style="padding:28px;">' +
-   '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#e8ecf1;margin-bottom:8px;">FREE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:#fff;margin-bottom:4px;">$0</div>' +
-   '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">forever</div>' +
-   '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
+   '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#dbe5f1;margin-bottom:8px;">FREE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:#f5f7fa;margin-bottom:4px;">$0</div>' +
+   '<div style="font-size:13px;color:#dbe5f1;opacity:0.7;margin-bottom:20px;">forever</div>' +
+   '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#dbe5f1;">' +
    '<li>✓ Full DCF valuation coverage, ' + ORDER.length + ' tickers with Bear/Base/Bull targets</li>' +
    '<li>✓ Fair value path chart, price history plotted against the Bear, Base, and Bull DCF paths</li>' +
    '<li>✓ Reverse DCF, what the market is pricing in at the current quote</li>' +
@@ -12549,12 +12550,12 @@ function volSurfaceHtml() {
    "</ul></div>";
 
   // PRO column
-  h += '<div class="card" style="padding:28px;border:2px solid #d4a017;position:relative;">' +
-   '<div style="position:absolute;top:-14px;right:20px;background:#d4a017;color:#0a0f0a;font-size:11px;font-weight:800;padding:4px 12px;border-radius:12px;letter-spacing:1px;">MOST POPULAR</div>' +
-   '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#d4a017;margin-bottom:8px;">PRO</div>' +
-   '<div style="font-size:36px;font-weight:800;color:#fff;margin-bottom:4px;">$19<span style="font-size:16px;font-weight:400;color:#e8ecf1;">/month</span></div>' +
-   '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
-   '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
+  h += '<div class="card" style="padding:28px;border:2px solid #d9a441;position:relative;">' +
+   '<div style="position:absolute;top:-14px;right:20px;background:#d9a441;color:#0a0f0a;font-size:11px;font-weight:800;padding:4px 12px;border-radius:12px;letter-spacing:1px;">MOST POPULAR</div>' +
+   '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#d9a441;margin-bottom:8px;">PRO</div>' +
+   '<div style="font-size:36px;font-weight:800;color:#f5f7fa;margin-bottom:4px;">$19<span style="font-size:16px;font-weight:400;color:#dbe5f1;">/month</span></div>' +
+   '<div style="font-size:13px;color:#dbe5f1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
+   '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#dbe5f1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
    '<li>✓ All ' + (((D.risk_headlines || {}).composite || {}).model_count || 15) + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Macro Regime, with charts, history, and plain-English explainers</li>' +
    '<li>✓ Global Macro suite: Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, and Sovereign Credit Fragmentation (BTP/Bund and OAT/Bund)</li>' +
@@ -12589,8 +12590,8 @@ function volSurfaceHtml() {
    '<li>✓ Email alerts, all 13 market monitors</li>' +
    '<li>✓ Moving average cross alerts, stocks and indices</li>' +
    '<li>✓ Custom price alerts, any covered ticker</li>' +
-   '<li style="color:#d4a017;">✓ <b>All future features included at no extra cost</b>, our team ships new trackers and tools constantly and Pro members get every one of them automatically</li>' +
-   '<li style="color:#d4a017;">✓ <b>Legacy price lock</b>, your $19/mo rate is locked in. If prices increase in the future, you keep paying $19 as long as your subscription stays active.</li>' +
+   '<li style="color:#d9a441;">✓ <b>All future features included at no extra cost</b>, our team ships new trackers and tools constantly and Pro members get every one of them automatically</li>' +
+   '<li style="color:#d9a441;">✓ <b>Legacy price lock</b>, your $19/mo rate is locked in. If prices increase in the future, you keep paying $19 as long as your subscription stays active.</li>' +
    "</ul>";
 
   if (proActive) {
@@ -12604,8 +12605,8 @@ function volSurfaceHtml() {
 
   // Price lock terms
   h += '<div class="card" style="max-width:900px;margin:0 auto;padding:24px;">' +
-   '<div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:12px;">Legacy Price Lock, Terms</div>' +
-   '<ul style="font-size:13px;color:#e8ecf1;display:flex;flex-direction:column;gap:8px;padding-left:20px;margin:0;">' +
+   '<div style="font-size:15px;font-weight:700;color:#f5f7fa;margin-bottom:12px;">Legacy Price Lock, Terms</div>' +
+   '<ul style="font-size:13px;color:#dbe5f1;display:flex;flex-direction:column;gap:8px;padding-left:20px;margin:0;">' +
    "<li>Your subscription rate of <b>$19/month</b> is locked in for as long as your Pro membership remains continuously active.</li>" +
    "<li>If Cascadia Analytics raises prices in the future, <b>you will not pay the higher price</b>, your legacy rate is grandfathered.</li>" +
    "<li>All new Pro features released during your membership are <b>included at no extra cost</b>.</li>" +
@@ -12704,7 +12705,7 @@ function volSurfaceHtml() {
 //     (String(d.signal || "").toLowerCase().includes("buy") ? "bullish" : String(d.signal || "").toLowerCase().includes("sell") ? "bearish" : "neutral") +
 //     '">' + esc(d.signal || "") + "</span></h3>" +
 //     '<div id="' + cid + '" style="height:420px;width:100%;margin-bottom:12px;"></div>' +
-//     '<div style="font-size:12px;color:#a8b0bc;margin-bottom:10px;">Overlays: <b style="color:#c8d0dc;">SMA 10</b> · <b style="color:#c8d0dc;">SMA 20</b> · <b style="color:#c8d0dc;">SMA 50</b> · <b style="color:#c8d0dc;">SMA 200</b> (simple moving averages)</div>' +
+//     '<div style="font-size:12px;color:#8d99aa;margin-bottom:10px;">Overlays: <b style="color:#dbe5f1;">SMA 10</b> · <b style="color:#dbe5f1;">SMA 20</b> · <b style="color:#dbe5f1;">SMA 50</b> · <b style="color:#dbe5f1;">SMA 200</b> (simple moving averages)</div>' +
 //     '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
 //     ["10", "20", "30", "50", "100", "200"].map((p) =>
 //      "<tr><td>" + p + "</td><td>" + fmt$((d.sma || {})[p]) + "</td><td>" + fmt$((d.ema || {})[p]) + "</td></tr>"
@@ -12727,7 +12728,7 @@ function volSurfaceHtml() {
 //      try {
 //       const widget = new TradingView.widget({
 //        container_id: cid, symbol: tvSym, interval: intervals[tf],
-//        theme: "dark", style: "1", locale: "en", toolbar_bg: "#1a2332",
+//        theme: "dark", style: "1", locale: "en", toolbar_bg: "#101620",
 //        hide_side_toolbar: false, allow_symbol_change: false,
 //        autosize: true,
 //        // add MA studies once chart is ready

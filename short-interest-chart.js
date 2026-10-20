@@ -7,11 +7,11 @@
   "use strict";
 
   var instanceCounter = 0;
-  var CHART_RED = "#ef4444";
-  var CHART_WHITE = "#ffffff";
-  var BG_COLOR = "#000000";
+  var CHART_RED = "#f37d83";
+  var CHART_WHITE = "#f5f7fa";
+  var BG_COLOR = "#0a0e17";
   var GRID_COLOR = "rgba(255,255,255,0.12)";
-  var TEXT_COLOR = "#9ca3af";
+  var TEXT_COLOR = "#8d99aa";
 
   function fmtMillions(v) {
     if (v == null) return "-";
@@ -33,7 +33,7 @@
   }
 
   function showError(el, msg) {
-    el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:280px;color:#f87171;' +
+    el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:280px;color:#f37d83;' +
       'font-size:13px;text-align:center;padding:0 20px;">' + escapeHtml(msg) + "</div>";
   }
 
@@ -140,7 +140,7 @@
           tooltip: {
             backgroundColor: "rgba(17,24,39,0.95)",
             titleColor: "#fff",
-            bodyColor: "#d1d5db",
+            bodyColor: "#dbe5f1",
             callbacks: {
               label: function (ctx) {
                 if (ctx.datasetIndex === 0)
@@ -193,7 +193,7 @@
     var id = "sic-" + (++instanceCounter);
     container.innerHTML =
       '<div style="background:' + BG_COLOR + ';border-radius:12px;padding:20px 16px 12px;">' +
-      '<div style="font-size:22px;font-weight:600;color:#fff;margin-bottom:12px;">Short interest' +
+      '<div style="font-size:22px;font-weight:600;color:#f5f7fa;margin-bottom:12px;">Short interest' +
       (opts.showTicker === false ? "" : ' <span style="font-size:13px;color:' + TEXT_COLOR + ';font-weight:400;">' + escapeHtml(ticker) + "</span>") +
       "</div>" +
       '<div style="display:flex;gap:24px;margin-bottom:8px;font-size:13px;color:' + TEXT_COLOR + ';">' +
@@ -201,7 +201,7 @@
       '<span><span style="display:inline-block;width:24px;height:4px;background:' + CHART_WHITE + ';border-radius:2px;vertical-align:middle;margin-right:8px;"></span>Short float</span>' +
       "</div>" +
       '<div id="' + id + '-body" class="zoomable-chart" data-chart="short-interest" data-ticker="' + escapeHtml(ticker) + '" style="position:relative;height:300px;cursor:zoom-in;" title="Click to zoom">' +
-      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">&#x26F6; click to zoom</div>' +
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">&#x26F6; click to zoom</div>' +
       "</div>" +
       "</div>";
 
@@ -233,7 +233,7 @@
         return;
       }
       chartData = rows;
-      body.innerHTML = '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">&#x26F6; click to zoom</div>' +
+      body.innerHTML = '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">&#x26F6; click to zoom</div>' +
         '<canvas id="' + id + '-canvas"></canvas>';
       var canvas = document.getElementById(id + "-canvas");
       chartRef.instance = buildChart(canvas, rows, ticker);
@@ -260,8 +260,8 @@
     modal.style.cssText = "position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;";
     modal.innerHTML = '<div style="background:#000;border-radius:12px;padding:24px;width:100%;max-width:900px;max-height:90vh;overflow:auto;" onclick="event.stopPropagation();">' +
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
-      '<div style="font-size:20px;font-weight:600;color:#fff;">Short interest <span style="font-size:13px;color:' + TEXT_COLOR + ';font-weight:400;">' + escapeHtml(ticker) + "</span></div>" +
-      '<button onclick="document.getElementById(\'sic-zoom-modal\').remove()" style="background:#1a1a1a;border:1px solid #333;color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;">Close</button>' +
+      '<div style="font-size:20px;font-weight:600;color:#f5f7fa;">Short interest <span style="font-size:13px;color:' + TEXT_COLOR + ';font-weight:400;">' + escapeHtml(ticker) + "</span></div>" +
+      '<button onclick="document.getElementById(\'sic-zoom-modal\').remove()" style="background:#101620;border:1px solid #253142;color:#f5f7fa;border-radius:6px;padding:6px 12px;cursor:pointer;">Close</button>' +
       "</div>" +
       '<div style="position:relative;height:60vh;min-height:400px;"><canvas id="sic-zoom-canvas"></canvas></div>' +
       "</div>";
