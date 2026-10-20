@@ -61,6 +61,7 @@
   "RBRK": { domain: "rubrik.com", industry: "Cybersecurity" },
   "RNMBY": { domain: "rheinmetall.com", industry: "Aerospace & Defense" },
   "ROAD": { domain: "construction.com", industry: "Construction" },
+  "SE": { domain: "sealimited.com", industry: "E-commerce & Internet" },
   "SMTC": { domain: "semtech.com", industry: "Semiconductors" },
   "SNPS": { domain: "synopsys.com", industry: "Semiconductors" },
   "TSM": { domain: "tsmc.com", industry: "Semiconductors" },
