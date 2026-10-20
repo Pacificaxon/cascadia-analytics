@@ -533,7 +533,11 @@
   if (opt && Array.isArray(opt) && opt.length) {
    let bull = 0, bear = 0;
    opt.forEach((o) => {
-    const d = (o.direction || "").toLowerCase();
+    // The options collector records the directional read in `sentiment`
+    // ("bullish"/"bearish", derived from contract type + bought/sold);
+    // `direction` holds only "bought"/"sold" and never matched the bull/bear
+    // test, which silently dropped this factor for every ticker.
+    const d = (o.sentiment || o.direction || "").toLowerCase();
     if (d.includes("bull")) bull++; else if (d.includes("bear")) bear++;
    });
    if (bull + bear > 0) {
@@ -647,6 +651,9 @@ function bindZoomHandlers() {
      el.dataset.zoomBound = "1";
      el.addEventListener("click", () => {
       const kind = el.dataset.chart;
+      // The short-interest component binds and owns its own zoom modal;
+      // the generic handler must not stack a second (blank) modal on top.
+      if (kind === "short-interest") return;
       const titles = {
        jaw: "Alligator Jaw, S&P 500 vs Forward EPS",
        voldiv: "Volatility Divergence, VIX vs MOVE",
@@ -656,8 +663,12 @@ function bindZoomHandlers() {
        breadth: "Market Breadth",
        rsicd: "RSI: Cyclicals vs Defensives (XLY/XLP)",
        "gex-ticker": "Gamma Exposure, " + (el.dataset.ticker || ""),
+       "gex-strike": "GEX by Strike, " + (el.dataset.ticker || ""),
        "fvpath": "Fair Value Across Scenarios, " + (el.dataset.ticker || ""),
+       "fcf": "Free Cash Flow Projection, " + (el.dataset.ticker || ""),
+       "ma": "Moving Averages (" + (el.dataset.tf || "") + "), " + (el.dataset.ticker || ""),
        "skew-ticker": "Volatility Skew, " + (el.dataset.ticker || ""),
+       "skew-curve": "Volatility Skew Curve, " + (el.dataset.ticker || ""),
        "gex-index": "Gamma Exposure, " + (el.dataset.symbol || ""),
        trends: "Trading Trends, " + (el.dataset.ticker || ""),
        aaii: "AAII Investor Sentiment",
@@ -1334,6 +1345,18 @@ function bindZoomHandlers() {
        } else if (kind === "fvpath") {
         const ft = TICKERS[el.dataset.ticker] || {};
         if (ft.history && ft.history.length) new Chart(zc, buildFvChartConfig(ft));
+       } else if (kind === "gex-strike") {
+        const gd = gexStrikeChartData[el.dataset.chartId];
+        if (gd) new Chart(zc, gexStrikeChartConfig(gd, true));
+       } else if (kind === "skew-curve") {
+        const sd = skewCurveChartData[el.dataset.chartId];
+        if (sd) new Chart(zc, skewCurveChartConfig(sd, true));
+       } else if (kind === "fcf") {
+        const ft = TICKERS[el.dataset.ticker] || {};
+        if (ft.fcf && ft.fcf.base) new Chart(zc, fcfChartConfig(ft));
+       } else if (kind === "ma") {
+        const mc = maChartConfig(el.dataset.ticker, el.dataset.tf, "zoom-ma");
+        if (mc) new Chart(zc, mc);
        } else if (kind === "trends") {
         const tk2 = el.dataset.ticker;
         const t = (D.ticker_trends || {})[tk2];
@@ -1502,6 +1525,7 @@ function bindZoomHandlers() {
   } catch (e) {}
   // Clear GEX strike chart registry for fresh render
   Object.keys(gexStrikeChartData).forEach((k) => delete gexStrikeChartData[k]);
+  Object.keys(skewCurveChartData).forEach((k) => delete skewCurveChartData[k]);
   try { document.body.dataset.route = r.name; } catch (e) {}
   document.querySelectorAll(".topnav a[data-route]").forEach((b) =>
    b.classList.toggle("active", b.dataset.route === r.name));
@@ -1513,6 +1537,7 @@ function bindZoomHandlers() {
   else routes.home();
   // Draw GEX strike charts after HTML is in the DOM
   drawGexStrikeCharts();
+  drawSkewCurveCharts();
   // Fresh navigation (hash changed): always land at the top of the new
   // route. In-page TOC anchor jumps never call render(), so they are not
   // affected. Same-route re-render (hash unchanged, e.g. after a tab
@@ -1814,7 +1839,7 @@ function bindZoomHandlers() {
   h += '<span><span style="display:inline-block;width:12px;height:4px;background:#FF5000;border-radius:2px;vertical-align:middle;"></span> Sell</span>';
   h += '<span><span style="display:inline-block;width:12px;height:4px;background:#2979FF;border-radius:2px;vertical-align:middle;"></span> Price</span>';
   h += '</div>';
-  h += '<div class="zoomable-chart" data-chart="trends" data-ticker="' + esc(tk) + '" style="position:relative;cursor:zoom-in;" title="Click to zoom"><canvas id="' + chartId + '" style="max-height:300px;"></canvas>';
+  h += '<div class="zoomable-chart" data-chart="trends" data-ticker="' + esc(tk) + '" style="position:relative;height:300px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + chartId + '" style="max-height:300px;"></canvas>';
   h += '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div id="' + chartId + '-table" style="margin-top:16px;"></div>';
   // Defer chart draw until DOM is ready
@@ -1847,7 +1872,20 @@ function bindZoomHandlers() {
    },
    options: {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
+    // Index-mode hover: any position inside a quarter column activates the
+    // tooltip. The chart previously shipped with no interaction/tooltip
+    // config at all, so hovers (especially on the radius-0 price line and
+    // the sparse snapshot bars) produced nothing; the zoom variant of this
+    // same chart already carried this config.
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { display: false },
+     tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#f5f7fa", bodyColor: "#dbe5f1", padding: 10,
+      callbacks: { label: (c) => {
+       if (c.parsed.y == null) return " " + c.dataset.label + ": no data";
+       if (c.dataset.label === "Price") return " Price: $" + c.parsed.y.toLocaleString();
+       const v = Math.abs(c.parsed.y);
+       return " " + c.dataset.label + ": " + (v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") + " shares";
+      } } } },
     scales: {
      x: { grid: { display: false }, ticks: { color: "#647184", font: { size: 10 } } },
      yVol: { position: "left", grid: { color: "#101620" },
@@ -2160,7 +2198,7 @@ function bindZoomHandlers() {
    put_wall: d.put_wall,
    unit: unit,
   };
-  return '<div class="zoomable-chart" style="position:relative;margin:12px 0;cursor:zoom-in;" title="Click to zoom">' +
+  return '<div class="zoomable-chart" data-chart="gex-strike" data-ticker="' + esc(tk) + '" data-chart-id="' + chartId + '" style="position:relative;margin:12px 0;cursor:zoom-in;" title="Click to zoom">' +
    '<canvas id="' + chartId + '" style="max-height:380px;"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
    '<div style="font-size:12px;color:#dbe5f1;text-align:center;margin-bottom:8px;">' +
@@ -2317,6 +2355,46 @@ function bindZoomHandlers() {
   });
  }
 
+ // Shared config for the GEX-by-strike chart, used by the inline draw and
+ // by the click-to-zoom modal so both render the identical chart.
+ function gexStrikeChartConfig(d, forZoom) {
+  const labels = d.strikes.map((s) => s.strike);
+  const barData = d.strikes.map((s) => s.net_gex);
+  const barColors = d.strikes.map((s) => s.net_gex >= 0 ? "#2f6fed" : "#f0a030");
+  const aggMap = {};
+  (d.agg || []).forEach((a) => { aggMap[a.strike] = a.agg_gex; });
+  const aggData = labels.map((k) => aggMap[k] !== undefined ? aggMap[k] : null);
+  const ann = {};
+  if (d.spot != null) ann.spot = { type: "line", xMin: d.spot, xMax: d.spot, borderColor: "#4dd2aa", borderWidth: 2, label: { display: true, content: "Spot", position: "start", color: "#4dd2aa", font: { size: 10 } } };
+  if (d.zero_gamma != null) ann.flip = { type: "line", xMin: d.zero_gamma, xMax: d.zero_gamma, borderColor: "#f37d83", borderWidth: 2, borderDash: [6, 4], label: { display: true, content: "Flip", position: "start", color: "#f37d83", font: { size: 10 } } };
+  if (d.call_wall != null) ann.cwall = { type: "line", xMin: d.call_wall, xMax: d.call_wall, borderColor: "#4dd2aa", borderWidth: 1, borderDash: [3, 3], label: { display: true, content: "C wall", position: "end", color: "#4dd2aa", font: { size: 9 } } };
+  if (d.put_wall != null) ann.pwall = { type: "line", xMin: d.put_wall, xMax: d.put_wall, borderColor: "#f37d83", borderWidth: 1, borderDash: [3, 3], label: { display: true, content: "P wall", position: "end", color: "#f37d83", font: { size: 9 } } };
+  return {
+   type: "bar",
+   data: { labels: labels, datasets: [
+    { type: "bar", label: "Net GEX by strike (" + d.unit + ")", data: barData, backgroundColor: barColors, borderWidth: 0, barPercentage: 0.9, categoryPercentage: 0.9, yAxisID: "y" },
+    { type: "line", label: "Aggregate GEX (" + d.unit + ")", data: aggData, borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "y1" },
+   ]},
+   options: {
+    responsive: true, maintainAspectRatio: !forZoom, interaction: { mode: "index", intersect: false },
+    plugins: {
+     legend: { labels: { color: "#dbe5f1", boxWidth: 12, font: { size: 11 } } },
+     tooltip: { callbacks: { label: (c) => {
+      const s = d.strikes[c.dataIndex];
+      if (!s) return "";
+      return " Net: " + s.net_gex + d.unit + " (C +" + s.call_gex + d.unit + " / P " + s.put_gex + d.unit + ") · OI " + s.total_oi.toLocaleString();
+     }}},
+     annotation: { annotations: ann },
+    },
+    scales: {
+     x: { title: { display: true, text: "Strike Price", color: "#dbe5f1" }, ticks: { color: "#dbe5f1", maxTicksLimit: 12 }, grid: { color: "rgba(255,255,255,0.06)" } },
+     y: { title: { display: true, text: "Net GEX (" + d.unit + ")", color: "#dbe5f1" }, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(255,255,255,0.06)" } },
+     y1: { position: "right", title: { display: true, text: "Aggregate (" + d.unit + ")", color: "#58a6ff" }, ticks: { color: "#58a6ff" }, grid: { drawOnChartArea: false } },
+    },
+   },
+  };
+ }
+
  function drawGexStrikeCharts() {
   if (typeof Chart === "undefined") return;
   Object.keys(gexStrikeChartData).forEach((chartId) => {
@@ -2325,42 +2403,66 @@ function bindZoomHandlers() {
    // Don't redraw if already has a chart
    if (ctx.dataset.gexDrawn) return;
    ctx.dataset.gexDrawn = "1";
-   const d = gexStrikeChartData[chartId];
-   const labels = d.strikes.map((s) => s.strike);
-   const barData = d.strikes.map((s) => s.net_gex);
-   const barColors = d.strikes.map((s) => s.net_gex >= 0 ? "#2f6fed" : "#f0a030");
-   const aggMap = {};
-   d.agg.forEach((a) => { aggMap[a.strike] = a.agg_gex; });
-   const aggData = labels.map((k) => aggMap[k] !== undefined ? aggMap[k] : null);
-   const ann = {};
-   if (d.spot != null) ann.spot = { type: "line", xMin: d.spot, xMax: d.spot, borderColor: "#4dd2aa", borderWidth: 2, label: { display: true, content: "Spot", position: "start", color: "#4dd2aa", font: { size: 10 } } };
-   if (d.zero_gamma != null) ann.flip = { type: "line", xMin: d.zero_gamma, xMax: d.zero_gamma, borderColor: "#f37d83", borderWidth: 2, borderDash: [6, 4], label: { display: true, content: "Flip", position: "start", color: "#f37d83", font: { size: 10 } } };
-   if (d.call_wall != null) ann.cwall = { type: "line", xMin: d.call_wall, xMax: d.call_wall, borderColor: "#4dd2aa", borderWidth: 1, borderDash: [3, 3], label: { display: true, content: "C wall", position: "end", color: "#4dd2aa", font: { size: 9 } } };
-   if (d.put_wall != null) ann.pwall = { type: "line", xMin: d.put_wall, xMax: d.put_wall, borderColor: "#f37d83", borderWidth: 1, borderDash: [3, 3], label: { display: true, content: "P wall", position: "end", color: "#f37d83", font: { size: 9 } } };
-   new Chart(ctx, {
-    type: "bar",
-    data: { labels: labels, datasets: [
-     { type: "bar", label: "Net GEX by strike (" + d.unit + ")", data: barData, backgroundColor: barColors, borderWidth: 0, barPercentage: 0.9, categoryPercentage: 0.9, yAxisID: "y" },
-     { type: "line", label: "Aggregate GEX (" + d.unit + ")", data: aggData, borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.3, yAxisID: "y1" },
-    ]},
-    options: {
-     responsive: true, maintainAspectRatio: true, interaction: { mode: "index", intersect: false },
-     plugins: {
-      legend: { labels: { color: "#dbe5f1", boxWidth: 12, font: { size: 11 } } },
-      tooltip: { callbacks: { label: (c) => {
-       const s = d.strikes[c.dataIndex];
-       if (!s) return "";
-       return " Net: " + s.net_gex + d.unit + " (C +" + s.call_gex + d.unit + " / P " + s.put_gex + d.unit + ") · OI " + s.total_oi.toLocaleString();
-      }}},
-      annotation: { annotations: ann },
-     },
-     scales: {
-      x: { title: { display: true, text: "Strike Price", color: "#dbe5f1" }, ticks: { color: "#dbe5f1", maxTicksLimit: 12 }, grid: { color: "rgba(255,255,255,0.06)" } },
-      y: { title: { display: true, text: "Net GEX (" + d.unit + ")", color: "#dbe5f1" }, ticks: { color: "#dbe5f1" }, grid: { color: "rgba(255,255,255,0.06)" } },
-      y1: { position: "right", title: { display: true, text: "Aggregate (" + d.unit + ")", color: "#58a6ff" }, ticks: { color: "#58a6ff" }, grid: { drawOnChartArea: false } },
-     },
+   new Chart(ctx, gexStrikeChartConfig(gexStrikeChartData[chartId], false));
+  });
+ }
+
+ /* Per-ticker volatility skew curve: IV by strike for the expiry nearest
+   30 DTE, emitted by track_ticker_skew.py as ticker_skew[ticker].curve.
+   Registry mirrors the GEX strike chart pattern. */
+ const skewCurveChartData = {};
+ function skewCurveChartHtml(tk, d, chartId) {
+  if (!d || !d.curve || !d.curve.length) return "";
+  skewCurveChartData[chartId] = {
+   curve: d.curve,
+   spot: d.spot,
+   curve_dte: d.curve_dte,
+  };
+  return '<div style="font-size:12px;font-weight:700;color:#dbe5f1;margin:14px 0 6px;">Implied volatility by strike' +
+   (d.curve_dte ? " · " + d.curve_dte + " DTE expiry" : "") + "</div>" +
+   '<div class="zoomable-chart" data-chart="skew-curve" data-ticker="' + esc(tk) + '" data-chart-id="' + chartId + '" style="position:relative;margin:6px 0;cursor:zoom-in;" title="Click to zoom">' +
+   '<canvas id="' + chartId + '" style="max-height:300px;"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
+   '<div style="font-size:12px;color:#dbe5f1;text-align:center;margin-bottom:8px;">' +
+   '<span style="color:#f37d83;">■</span> Put IV &nbsp; <span style="color:#4dd2aa;">■</span> Call IV' +
+   (d.spot ? ' &nbsp; <span style="color:#dbe5f1;">- -</span> Spot $' + Number(d.spot).toFixed(2) : "") + "</div>";
+ }
+ function skewCurveChartConfig(d, forZoom) {
+  const labels = d.curve.map((p) => p.strike);
+  const ann = {};
+  if (d.spot != null) ann.spot = { type: "line", xMin: d.spot, xMax: d.spot, borderColor: "#dbe5f1", borderWidth: 1, borderDash: [5, 4], label: { display: true, content: "Spot", position: "start", color: "#dbe5f1", font: { size: 10 } } };
+  return {
+   type: "line",
+   data: { labels: labels, datasets: [
+    { label: "Put IV %", data: d.curve.map((p) => p.put_iv != null ? p.put_iv : null), borderColor: "#f37d83", backgroundColor: "#f37d83", borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true },
+    { label: "Call IV %", data: d.curve.map((p) => p.call_iv != null ? p.call_iv : null), borderColor: "#4dd2aa", backgroundColor: "#4dd2aa", borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true },
+   ]},
+   options: {
+    responsive: true, maintainAspectRatio: !forZoom, interaction: { mode: "index", intersect: false },
+    plugins: {
+     legend: { labels: { color: "#dbe5f1", boxWidth: 12, font: { size: 11 } } },
+     tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#f5f7fa", bodyColor: "#dbe5f1", padding: 10,
+      callbacks: {
+       title: (items) => items.length ? "Strike $" + labels[items[0].dataIndex] : "",
+       label: (c) => " " + c.dataset.label.replace(" %", "") + ": " + (c.parsed.y != null ? c.parsed.y.toFixed(1) + "%" : " - "),
+      } },
+     annotation: { annotations: ann },
     },
-   });
+    scales: {
+     x: { title: { display: true, text: "Strike Price", color: "#dbe5f1" }, ticks: { color: "#dbe5f1", maxTicksLimit: 12 }, grid: { color: "rgba(255,255,255,0.06)" } },
+     y: { title: { display: true, text: "Implied Volatility %", color: "#dbe5f1" }, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(255,255,255,0.06)" } },
+    },
+   },
+  };
+ }
+ function drawSkewCurveCharts() {
+  if (typeof Chart === "undefined") return;
+  Object.keys(skewCurveChartData).forEach((chartId) => {
+   const ctx = document.getElementById(chartId);
+   if (!ctx) return;
+   if (ctx.dataset.skewDrawn) return;
+   ctx.dataset.skewDrawn = "1";
+   new Chart(ctx, skewCurveChartConfig(skewCurveChartData[chartId], false));
   });
  }
 
@@ -6936,7 +7038,8 @@ route("alerts", function () {
   if (hasFcf) {
    h += '<div class="card"><h3>Unlevered Free Cash Flow Projection</h3>' +
     '<div class="section-sub">Modeled unlevered FCF by scenario. Hover or tap a bar for values.</div>' +
-    '<div class="chart-box"><canvas id="fcf-chart"></canvas></div></div>';
+    '<div class="zoomable-chart" data-chart="fcf" data-ticker="' + esc(tk) + '" style="position:relative;cursor:zoom-in;" title="Click to zoom"><div class="chart-box"><canvas id="fcf-chart"></canvas></div>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div></div>';
   }
 
   // Reverse DCF note (free)
@@ -7037,7 +7140,7 @@ route("alerts", function () {
   h += '<div class="section"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>';
   h += gated("Volatility Skew, Pro",
    "Put vs call implied volatility for " + tk + ", what downside protection is costing.",
-   (ts && ts.available) ? tickerSkewHtml(tk, ts) : '<div class="card"><p style="color:var(--muted)">No skew data available for this ticker.</p></div>');
+   (ts && ts.available) ? tickerSkewHtml(tk, ts) + skewCurveChartHtml(tk, ts, "skew-curve-" + tk) : '<div class="card"><p style="color:var(--muted)">No skew data available for this ticker.</p></div>');
   h += "</div>";
 
   // Short Interest (Pro), FINRA biweekly data
@@ -7166,7 +7269,21 @@ route("alerts", function () {
   const tryRenderSI = () => {
    const siEl = document.getElementById("short-interest-" + tk);
    if (siEl && typeof ShortInterestChart !== "undefined") {
-    ShortInterestChart.render(siEl, { ticker: tk, dataUrl: "ticker_short_interest.json" });
+    // Feed the component the series already loaded in the page bundle
+    // (build.py sources it from the FINRA collector output). It previously
+    // fetched the static ticker_short_interest.json file, a stale copy
+    // that predates newer coverage names (LITE, SE) and hid their data.
+    // The mapping matches the component's own local-file transform
+    // (days-to-cover carried on the line series).
+    const siRows = (((D.ticker_short_interest || {}).tickers) || {})[tk] || [];
+    const rows = siRows.map((r) => ({
+     date: r.date,
+     shortInterest: r.shortInterest,
+     shortFloat: r.daysToCover != null ? r.daysToCover / 100 : null,
+     daysToCover: r.daysToCover,
+     _isDaysToCover: true,
+    }));
+    ShortInterestChart.render(siEl, { ticker: tk, data: rows });
    } else if (siEl && siAttempts < 5) {
     siAttempts++;
     setTimeout(tryRenderSI, 500);
@@ -7616,10 +7733,113 @@ route("alerts", function () {
   return h;
  }
 
+ // Shared config for the custom candlestick MA charts (inline draw + zoom
+ // modal). uid keeps the wick-drawing plugin id unique per chart instance.
+ function maChartConfig(tk, tf, uid) {
+  const ohlcv = (D.ticker_ohlcv || {})[tk] || [];
+  if (!ohlcv.length) return null;
+  let bars = ohlcv.map((r) => ({ t: r[0], o: r[1], h: r[2], l: r[3], c: r[4], v: r[5] || 0 }));
+  if (tf === "weekly") {
+   const agg = [];
+   bars.forEach((b) => {
+    const w = Math.floor(b.t / (7 * 864e5));
+    const p = agg[agg.length - 1];
+    if (!p || p.w !== w) agg.push({ w, t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
+    else { p.h = Math.max(p.h, b.h); p.l = Math.min(p.l, b.l); p.c = b.c; p.v += b.v; }
+   });
+   bars = agg;
+  } else if (tf === "monthly") {
+   const agg = [];
+   bars.forEach((b) => {
+    const dt = new Date(b.t), k = dt.getFullYear() * 12 + dt.getMonth();
+    const p = agg[agg.length - 1];
+    if (!p || p.k !== k) agg.push({ k, t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
+    else { p.h = Math.max(p.h, b.h); p.l = Math.min(p.l, b.l); p.c = b.c; p.v += b.v; }
+   });
+   bars = agg;
+  }
+  // limit to last 120 bars for readability
+  if (bars.length > 120) bars = bars.slice(-120);
+  const up = bars.map((b) => b.c >= b.o);
+  const labels = bars.map((b) => new Date(b.t).toLocaleDateString("en-US", { month: "short", day: "numeric" }));
+  const bodies = bars.map((b) => [Math.min(b.o, b.c), Math.max(b.o, b.c)]);
+  const closes = bars.map((b) => b.c);
+  const vols = bars.map((b) => b.v);
+  const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b2) => a + b2, 0) / n);
+  const smaDs = (label, data, color) => ({
+   type: "line", label, data,
+   borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0, spanGaps: true,
+   order: 1, yAxisID: "y"
+  });
+  const UP = "#26a69a", DN = "#ef5350";
+  const wickPlugin = {
+   id: "wicks-" + uid,
+   afterDatasetsDraw(chart) {
+    const ctx = chart.ctx, yS = chart.scales.y;
+    const meta = chart.getDatasetMeta(0);
+    bars.forEach((b, i) => {
+     const el = meta.data[i];
+     if (!el) return;
+     ctx.save();
+     ctx.strokeStyle = up[i] ? UP : DN;
+     ctx.lineWidth = Math.max(1, el.width * 0.12);
+     ctx.beginPath();
+     ctx.moveTo(el.x, yS.getPixelForValue(b.h));
+     ctx.lineTo(el.x, yS.getPixelForValue(b.l));
+     ctx.stroke();
+     ctx.restore();
+    });
+   }
+  };
+  const fmtVol = (v) => v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : String(Math.round(v));
+  return {
+   type: "bar",
+   data: { labels, datasets: [
+    { label: "Price", data: bodies, backgroundColor: up.map((u) => u ? UP : DN),
+     borderColor: up.map((u) => u ? UP : DN), borderWidth: 1,
+     order: 2, yAxisID: "y", barPercentage: 0.65, categoryPercentage: 0.9 },
+    { label: "Volume", data: vols, type: "bar",
+     backgroundColor: up.map((u) => u ? "rgba(38,166,154,0.45)" : "rgba(239,83,80,0.45)"),
+     borderWidth: 0, order: 3, yAxisID: "y1", barPercentage: 0.65, categoryPercentage: 0.9 },
+    smaDs("SMA 10", sma(10), "#f37d83"),
+    smaDs("SMA 20", sma(20), "#ff9800"),
+    smaDs("SMA 50", sma(50), "#2962ff"),
+    ...(closes.length >= 100 ? [smaDs("SMA 200", sma(200), "#00bcd4")] : []),
+   ]},
+   options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: {
+     legend: { display: false },
+     tooltip: {
+      backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
+      titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10, displayColors: false,
+      callbacks: {
+       title: (items) => items.length ? labels[items[0].dataIndex] : "",
+       label: (c) => {
+        if (c.dataset.label === "Volume") return " Volume: " + fmtVol(c.parsed.y);
+        if (c.dataset.label === "Price") {
+         const b = bars[c.dataIndex];
+         if (b) return " O " + b.o.toFixed(2) + " H " + b.h.toFixed(2) + " L " + b.l.toFixed(2) + " C " + b.c.toFixed(2);
+        }
+        return " " + c.dataset.label + ": " + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "-");
+       }
+      }
+     }
+    },
+    scales: {
+     x: { ticks: { color: "#dbe5f1", maxTicksLimit: 8, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.5)" } },
+     y: { position: "right", ticks: { color: "#dbe5f1", callback: (v) => v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.5)" } },
+     y1: { position: "right", display: false, max: Math.max(...vols, 1) * 5, grid: { display: false } }
+    }
+   },
+   plugins: [wickPlugin]
+  };
+ }
+
  function maHtml(tk) {
   const m = (D.ticker_ma || {})[tk];
   if (!m) return '<div class="card"><p style="color:var(--muted)">No moving-average data for this ticker.</p></div>';
-  const ohlcv = (D.ticker_ohlcv || {})[tk] || [];
   let h = "";
   const chartCfgs = [];
   ["daily", "weekly", "monthly"].forEach((tf) => {
@@ -7630,7 +7850,8 @@ route("alerts", function () {
    h += '<div class="card"><h3 style="text-transform:capitalize">' + tf + ' <span class="verdict ' +
     (String(d.signal || "").toLowerCase().includes("buy") ? "bullish" : String(d.signal || "").toLowerCase().includes("sell") ? "bearish" : "neutral") +
     '">' + esc(d.signal || "") + "</span></h3>" +
-    '<div style="position:relative;height:420px;margin-bottom:8px;background:#0d131d;border-radius:8px;"><canvas id="' + cid + '"></canvas></div>' +
+    '<div class="zoomable-chart" data-chart="ma" data-ticker="' + esc(tk) + '" data-tf="' + tf + '" style="position:relative;height:420px;margin-bottom:8px;background:#0d131d;border-radius:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + cid + '"></canvas>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">⛶ click to zoom</div></div>' +
     '<div style="font-size:12px;color:#8d99aa;margin-bottom:10px;">Overlays: ' +
     '<b style="color:#f37d83;">SMA 10</b> · <b style="color:#ff9800;">SMA 20</b> · ' +
     '<b style="color:#2962ff;">SMA 50</b> · <b style="color:#00bcd4;">SMA 200</b> (simple moving averages)</div>' +
@@ -7644,105 +7865,10 @@ route("alerts", function () {
   setTimeout(() => {
    chartCfgs.forEach(({ cid, tf }) => {
     const cv = document.getElementById(cid);
-    if (!cv || !ohlcv.length) return;
+    if (!cv) return;
     try {
-     let bars = ohlcv.map((r) => ({ t: r[0], o: r[1], h: r[2], l: r[3], c: r[4], v: r[5] || 0 }));
-     if (tf === "weekly") {
-      const agg = [];
-      bars.forEach((b) => {
-       const w = Math.floor(b.t / (7 * 864e5));
-       const p = agg[agg.length - 1];
-       if (!p || p.w !== w) agg.push({ w, t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
-       else { p.h = Math.max(p.h, b.h); p.l = Math.min(p.l, b.l); p.c = b.c; p.v += b.v; }
-      });
-      bars = agg;
-     } else if (tf === "monthly") {
-      const agg = [];
-      bars.forEach((b) => {
-       const dt = new Date(b.t), k = dt.getFullYear() * 12 + dt.getMonth();
-       const p = agg[agg.length - 1];
-       if (!p || p.k !== k) agg.push({ k, t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v });
-       else { p.h = Math.max(p.h, b.h); p.l = Math.min(p.l, b.l); p.c = b.c; p.v += b.v; }
-      });
-      bars = agg;
-     }
-     // limit to last 120 bars for readability
-     if (bars.length > 120) bars = bars.slice(-120);
-     const up = bars.map((b) => b.c >= b.o);
-     const labels = bars.map((b) => new Date(b.t).toLocaleDateString("en-US", { month: "short", day: "numeric" }));
-     const bodies = bars.map((b) => [Math.min(b.o, b.c), Math.max(b.o, b.c)]);
-     const closes = bars.map((b) => b.c);
-     const vols = bars.map((b) => b.v);
-     const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b2) => a + b2, 0) / n);
-     const smaDs = (label, data, color) => ({
-      type: "line", label, data,
-      borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0, spanGaps: true,
-      order: 1, yAxisID: "y"
-     });
-     const UP = "#26a69a", DN = "#ef5350";
-     const wickPlugin = {
-      id: "wicks-" + cid,
-      afterDatasetsDraw(chart) {
-       const ctx = chart.ctx, yS = chart.scales.y;
-       const meta = chart.getDatasetMeta(0);
-       bars.forEach((b, i) => {
-        const el = meta.data[i];
-        if (!el) return;
-        ctx.save();
-        ctx.strokeStyle = up[i] ? UP : DN;
-        ctx.lineWidth = Math.max(1, el.width * 0.12);
-        ctx.beginPath();
-        ctx.moveTo(el.x, yS.getPixelForValue(b.h));
-        ctx.lineTo(el.x, yS.getPixelForValue(b.l));
-        ctx.stroke();
-        ctx.restore();
-       });
-      }
-     };
-     const fmtVol = (v) => v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : String(Math.round(v));
-     new Chart(cv, {
-      type: "bar",
-      data: { labels, datasets: [
-       { label: "Price", data: bodies, backgroundColor: up.map((u) => u ? UP : DN),
-        borderColor: up.map((u) => u ? UP : DN), borderWidth: 1,
-        order: 2, yAxisID: "y", barPercentage: 0.65, categoryPercentage: 0.9 },
-       { label: "Volume", data: vols, type: "bar",
-        backgroundColor: up.map((u) => u ? "rgba(38,166,154,0.45)" : "rgba(239,83,80,0.45)"),
-        borderWidth: 0, order: 3, yAxisID: "y1", barPercentage: 0.65, categoryPercentage: 0.9 },
-       smaDs("SMA 10", sma(10), "#f37d83"),
-       smaDs("SMA 20", sma(20), "#ff9800"),
-       smaDs("SMA 50", sma(50), "#2962ff"),
-       ...(closes.length >= 100 ? [smaDs("SMA 200", sma(200), "#00bcd4")] : []),
-      ]},
-      options: {
-       responsive: true, maintainAspectRatio: false,
-       interaction: { mode: "index", intersect: false },
-       plugins: {
-        legend: { display: false },
-        tooltip: {
-         backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
-         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10, displayColors: false,
-         callbacks: {
-          title: (items) => items.length ? labels[items[0].dataIndex] : "",
-          label: (c) => {
-           if (c.dataset.label === "Volume") return " Volume: " + fmtVol(c.parsed.y);
-           if (c.dataset.label === "Price") {
-            const b = bars[c.dataIndex];
-            if (b) return " O " + b.o.toFixed(2) + " H " + b.h.toFixed(2) + " L " + b.l.toFixed(2) + " C " + b.c.toFixed(2);
-           }
-           return " " + c.dataset.label + ": " + (c.parsed.y != null ? c.parsed.y.toFixed(2) : "-");
-          }
-         }
-        }
-       },
-       scales: {
-        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 8, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.5)" } },
-        y: { position: "right", ticks: { color: "#dbe5f1", callback: (v) => v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.5)" } },
-        y1: { position: "right", display: false, max: Math.max(...vols, 1) * 5, grid: { display: false } }
-       }
-      },
-      plugins: [wickPlugin]
-     });
+     const cfg = maChartConfig(tk, tf, cid);
+     if (cfg) new Chart(cv, cfg);
     } catch (e) { console.error("Custom MA chart error", e); }
    });
   }, 150);
@@ -7979,12 +8105,31 @@ route("alerts", function () {
     "<td>" + rev(up7, dn7) + '</td><td>' + rev(up30, dn30) + "</td>" +
     '<td class="' + driftCls + '">' + driftTxt + "</td></tr>";
   };
+  // Fallback (standing rule): a ticker with no revisions entry yet still
+  // shows its consensus from the estimates collector rather than a blank
+  // "No estimates" panel. Estimates entries come in two shapes (primary
+  // eps_consensus fields, or the Yahoo calendar fallback consensus fields);
+  // normalize both into the revisions row shape. Revision counts and drift
+  // stay honestly empty (0 / -) when only the fallback is available.
+  const normEst = (e) => {
+   if (!e) return null;
+   return {
+    label: e.label,
+    consensus: e.eps_consensus != null ? e.eps_consensus : (e.consensus != null ? e.consensus : null),
+    analysts: e.eps_analysts != null ? e.eps_analysts : e.analysts,
+    drift_90d_pct: e.drift_90d_pct != null ? e.drift_90d_pct : null,
+    up_7d: e.up_7d || 0, down_7d: e.down_7d || 0,
+    up_30d: e.up_30d || 0, down_30d: e.down_30d || 0,
+   };
+  };
+  const qRow = (r && r.quarter) || normEst(est && est.quarter);
+  const aRow = (r && r.annual) || normEst(est && est.annual);
   const asOf = (r && r.as_of) || (est && est.as_of) || "";
   return '<div class="card"><div style="font-size:13px;color:#dbe5f1;margin-bottom:10px;">Analyst EPS and revenue estimates, up/down counts and 90-day consensus drift.</div>' +
    '<div class="table-wrap"><table class="coverage ma-table" style="color:#dbe5f1;"><thead><tr>' +
    '<th style="color:#8d99aa;">Period</th><th style="color:#8d99aa;">Consensus EPS</th><th style="color:#8d99aa;">Revenue Est.</th><th style="color:#8d99aa;">7-day</th><th style="color:#8d99aa;">30-day</th><th style="color:#8d99aa;">90-day drift</th>' +
    "</tr></thead><tbody>" +
-   row("Upcoming quarter", r && r.quarter) + row("Full year", r && r.annual) +
+   row("Upcoming quarter", qRow) + row("Full year", aRow) +
    '</tbody></table></div><div class="panel-asof" style="color:#8d99aa;">As of ' + esc(asOf) + " · Source: Yahoo Finance</div></div>";
  }
 
@@ -8519,17 +8664,16 @@ route("alerts", function () {
   if (!el || !t.history || !t.history.length) return;
   priceChart = new Chart(el, buildFvChartConfig(t));
  }
- function drawFcfChart(t) {
-  const el = document.getElementById("fcf-chart");
+ // Shared config for the FCF projection chart (inline draw + zoom modal).
+ function fcfChartConfig(t) {
   const fcf = t.fcf || {};
-  if (!el || !fcf.base) return;
-  const years = fcf.base.years || [];
+  const years = (fcf.base && fcf.base.years) || [];
   const ds = [];
   const cfg = [["bear", "#f37d83", "Bear"], ["base", "#d9a441", "Base"], ["bull", "#4dd2aa", "Bull"]];
   cfg.forEach(([k, color, lbl]) => {
    if (fcf[k] && fcf[k].fcf_m) ds.push({ label: lbl, data: fcf[k].fcf_m, backgroundColor: color, borderRadius: 3 });
   });
-  fcfChart = new Chart(el, {
+  return {
    type: "bar",
    data: { labels: years, datasets: ds },
    options: { responsive: true, maintainAspectRatio: false,
@@ -8537,7 +8681,13 @@ route("alerts", function () {
      tooltip: { callbacks: { label: (c) => " " + c.dataset.label + ": " + fmtM(c.parsed.y) } } },
     scales: { x: { ticks: { color: "#647184" }, grid: { display: false } },
      y: { ticks: { color: "#647184", callback: (v) => "$" + v + "M" }, grid: { color: "#253142" } } } }
-  });
+  };
+ }
+ function drawFcfChart(t) {
+  const el = document.getElementById("fcf-chart");
+  const fcf = t.fcf || {};
+  if (!el || !fcf.base) return;
+  fcfChart = new Chart(el, fcfChartConfig(t));
  }
 
  /* ---------- assumption sandbox ---------- */
@@ -11656,6 +11806,9 @@ function volSurfaceHtml() {
     });
    } catch (e) { console.error("Agency flow chart error:", e); }
   }
+  // The agency panel is inserted asynchronously, after render() already
+  // bound zoom handlers; bind the flow chart's zoom control now.
+  bindZoomHandlers();
  }
  /* ---------- Ticker Research (PRO): on-demand toolkit for any ticker ----------
    Sections are computed on request by the /api/stock-* functions (each one
@@ -12002,13 +12155,17 @@ function volSurfaceHtml() {
    h += researchUnavailable(tk);
   }
   if (d.skew) {
-   try { h += '<div style="margin-top:16px;">' + tickerSkewHtml(tk, d.skew) + "</div>"; }
+   try { h += '<div style="margin-top:16px;">' + tickerSkewHtml(tk, d.skew) + skewCurveChartHtml(tk, d.skew, "research-skew-" + tk) + "</div>"; }
    catch (e) { console.error("Research skew render failed", tk, e); }
   } else {
    h += '<div class="card" style="margin-top:12px;"><p style="color:var(--muted)">Skew needs a contract pair near 30 days to expiry inside the selection bands, and none qualified for ' + esc(tk) + ".</p></div>";
   }
   setResearchHtml("research-options", h);
   try { drawGexStrikeCharts(); } catch (e) { console.error("Research GEX chart draw failed", tk, e); }
+  try { drawSkewCurveCharts(); } catch (e) { console.error("Research skew chart draw failed", tk, e); }
+  // The options panel is inserted asynchronously, after render() already
+  // bound zoom handlers; bind the newly inserted charts now.
+  bindZoomHandlers();
  }
 
  function researchSearchFormHtml(val) {

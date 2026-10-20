@@ -177,6 +177,13 @@ def main():
         ticker_short_interest = load(os.path.join(MR, "ticker_short_interest.json"))
     except FileNotFoundError:
         ticker_short_interest = {}
+    # Keep the site-root copy in sync with the collector output. The ticker
+    # page no longer fetches it (it reads the bundle), but the demo page and
+    # any static fallback still do, and the copy previously went stale and
+    # hid newer coverage names (LITE, SE) from the short interest panel.
+    if ticker_short_interest:
+        with open(os.path.join(HERE, "ticker_short_interest.json"), "w") as _sif:
+            json.dump(ticker_short_interest, _sif, indent=1)
     try:
         dark_pool = load(os.path.join(MR, "dark_pool.json"))
     except FileNotFoundError:
