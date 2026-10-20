@@ -674,6 +674,7 @@ function bindZoomHandlers() {
        income: "Income Statement, " + (el.dataset.ticker || ""),
        balance: "Balance Sheet, " + (el.dataset.ticker || ""),
        cashflow: "Cash Flow, " + (el.dataset.ticker || ""),
+       comps: "Relative Valuation, Growth vs Multiple",
       };
       // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
       if (kind === "gex-ticker") {
@@ -1444,6 +1445,11 @@ function bindZoomHandlers() {
            yAmount: { position: "right", ticks: { color: "#dbe5f1", callback: fmtM }, grid: { display: false },
             title: { display: true, text: isBal ? "Cash / Debt" : "Cash flow", color: "#dbe5f1" } } } }
         });
+       } else if (kind === "comps") {
+        // Rebuild the comps scatter at modal size, same metric the inline
+        // view is currently showing (EV/Revenue or Forward P/E toggle).
+        const cfg = buildCompsChartConfig(window._compsUsePE === true, true);
+        if (cfg) new Chart(zc, cfg);
        }
       } catch (e) { console.error("Zoom chart error", e); }
      });
@@ -9205,6 +9211,66 @@ route("alerts", function () {
   });
  });
 
+ /* ================= COMPS CHART BUILDER (shared by inline view + zoom modal) ================= */
+ const COMPS_COLORS = {"Semiconductors":"#4dd2aa","Enterprise Software":"#38bdf8","Mega-Cap Tech":"#a855f7","Consumer & Marketplace":"#e0aa46","Fintech & Digital Assets":"#ec4899","Public Safety & Defense Tech":"#c99a6b","MedTech":"#6366f1","MedTech & Robotics":"#6366f1",
+  "Information Technology":"#38bdf8","Health Care":"#6366f1","Financials":"#4dd2aa","Consumer Discretionary":"#e0aa46","Consumer Staples":"#84cc16","Industrials":"#8d99aa","Energy":"#f37d83","Utilities":"#facc15","Real Estate":"#a855f7","Materials":"#f97316","Communication Services":"#ec4899","Other":"#647184",
+  "Aerospace & Defense":"#e879f9","Fintech":"#2dd4bf","Telecom & Networking":"#67e8f9","Utilities & Energy":"#bef264"};
+ // Axis caps keep a handful of extreme outliers from stretching the plot and
+ // crushing the other 500+ names into one corner. Points beyond a cap are
+ // drawn at the edge; their true values stay on the point for the tooltip.
+ const COMPS_X_CAP = 200, COMPS_Y_CAP_EVREV = 45, COMPS_Y_CAP_PE = 150;
+ // Bubble radius scales with the square root of market cap (so bubble AREA
+ // tracks cap), compressed into a legible band. The old log formula put
+ // nearly every bubble at 11-14px radius, which buried the plot.
+ function compsBubbleRadius(marketCap, zoom) {
+  const s = Math.sqrt(Math.max(marketCap || 0, 0) / 1e9);
+  const r = 2.1 + 0.105 * s;
+  return zoom ? Math.max(3.5, Math.min(13, r * 1.45)) : Math.max(2.5, Math.min(9, r));
+ }
+ function buildCompsChartConfig(usePE, zoom) {
+  const cm = D.comps_matrix || {};
+  const recs = cm.records || [];
+  const meta = cm.metadata || {};
+  if (!recs.length) return null;
+  const yKey = usePE ? "forwardPe" : "ntmEvRevenue";
+  const yCap = usePE ? COMPS_Y_CAP_PE : COMPS_Y_CAP_EVREV;
+  const bySec = {};
+  recs.forEach((r) => {
+   if (usePE && !(r.forwardPe > 0 && r.forwardPe < 150)) return;
+   (bySec[r.sector] = bySec[r.sector] || []).push(r);
+  });
+  const xsAll = recs.map((r) => r.ntmRevGrowth);
+  const xMin = Math.min(-20, Math.floor(Math.min(...xsAll)));
+  const datasets = Object.keys(bySec).map((sec) => ({
+   type: "bubble",
+   label: sec,
+   data: bySec[sec].map((r) => {
+    const gx = r.ntmRevGrowth, gy = r[yKey];
+    return {x: Math.max(xMin, Math.min(COMPS_X_CAP, gx)), y: Math.max(0, Math.min(yCap, gy)), ox: gx, oy: gy, ticker: r.ticker, name: r.name, mcapFmt: r.marketCapFormatted || "", r: compsBubbleRadius(r.marketCap, zoom)};
+   }),
+   backgroundColor: (COMPS_COLORS[sec] || "#38bdf8") + "99",
+   borderColor: COMPS_COLORS[sec] || "#38bdf8",
+   borderWidth: 1,
+   hoverRadius: 3,
+   hoverBorderWidth: 1.5,
+  }));
+  // Sector-relative trendlines: each visible sector gets its own OLS line
+  const secRegs = (meta.sectorRegressions || {});
+  Object.keys(bySec).forEach((sec) => {
+   const sr = secRegs[sec];
+   const rr = sr && (usePE ? sr.forwardPe : sr.evRevenue);
+   if (!rr) return;
+   datasets.unshift({type: "line", label: sec + " fair value", data: [{x: xMin, y: rr.slope * xMin + rr.intercept}, {x: COMPS_X_CAP, y: rr.slope * COMPS_X_CAP + rr.intercept}],
+    borderColor: COMPS_COLORS[sec] || "#c99a6b", borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, fill: false});
+  });
+  return {data: {datasets}, options: {animation: false, responsive: true, maintainAspectRatio: false,
+   plugins: {legend: {position: "bottom", labels: {color: "#8d99aa", boxWidth: 10, font: {size: 10}}},
+    tooltip: {callbacks: {title: (it) => it[0].raw.ticker || it[0].dataset.label || "Fair value",
+     label: (c) => c.raw.ticker ? [c.raw.ticker + (c.raw.name ? " · " + c.raw.name : ""), "Growth: " + c.raw.ox.toFixed(1) + "%", "Multiple: " + c.raw.oy.toFixed(1) + "x", "Market cap: " + (c.raw.mcapFmt || "N/A")] : "Sector fair: " + c.parsed.y.toFixed(1) + "x"}}},
+   scales: {x: {min: xMin, max: COMPS_X_CAP, title: {display: true, text: "NTM Revenue Growth (%)", color: "#8d99aa"}, ticks: {color: "#8d99aa", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+    y: {min: 0, max: yCap, title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#8d99aa"}, ticks: {color: "#8d99aa", callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}};
+ }
+
  /* ================= COMPS MATRIX (PRO) ================= */
  route("comps", async function () {
   const mySeq = window._renderSeq || 0;
@@ -9251,7 +9317,7 @@ route("alerts", function () {
   h += '<div style="margin-bottom:8px;"><button class="btn" id="comps-toggle" style="font-size:12px;">Switch to Forward P/E</button></div>';
   h += '<div class="zoomable-chart" data-chart="comps" style="position:relative;height:420px;cursor:zoom-in;" title="Click to zoom"><canvas id="comps-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
-  h += '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market.</div></div>';
+  h += '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axes are capped for readability (growth at +200%, EV/Revenue at 45x, Forward P/E at 150x); names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.</div></div>';
   // Table
   h += '<div class="section"><div class="section-title">Comps Table ' + PRO_BADGE + '</div><div class="card" style="overflow-x:auto;">';
   h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid #253142;color:#8d99aa;text-align:right;">' +
@@ -9262,7 +9328,7 @@ route("alerts", function () {
    const dc = r.evRevDiscountPct < 0 ? "#4dd2aa" : r.evRevDiscountPct > 0 ? "#f37d83" : "#8d99aa";
    const sc = r.status === "Discounted Growth" ? "#4dd2aa" : r.status === "Premium Multiple" ? "#f37d83" : "#8d99aa";
    h += '<tr style="border-bottom:1px solid #101620;">' +
-    '<td style="padding:8px;"><a href="#/ticker/' + esc(r.ticker) + '" style="color:#58a6ff;font-weight:700;">' + esc(r.ticker) + '</a></td>' +
+    '<td style="padding:8px;"><a href="' + (ORDER.indexOf(r.ticker) >= 0 ? "#/ticker/" : "#/research/") + esc(r.ticker) + '" style="color:#58a6ff;font-weight:700;">' + esc(r.ticker) + '</a></td>' +
     '<td style="padding:8px;color:#8d99aa;">' + esc(r.sector) + '</td>' +
     '<td style="padding:8px;text-align:right;">' + r.ntmRevGrowth + '%</td>' +
     '<td style="padding:8px;text-align:right;">' + r.ntmEvRevenue + 'x</td>' +
@@ -9275,51 +9341,24 @@ route("alerts", function () {
   h += realYieldShockHtml();
   app.innerHTML = h;
   bindZoomHandlers();
-  // Toggle button
+  // Toggle button. window._compsUsePE mirrors the visible metric so the
+  // zoom modal redraws the same view the user clicked on.
   let usePE = false;
+  window._compsUsePE = false;
   document.getElementById("comps-toggle").addEventListener("click", function () {
    usePE = !usePE;
+   window._compsUsePE = usePE;
    this.textContent = usePE ? "Switch to EV/Revenue" : "Switch to Forward P/E";
    drawCompsChart(usePE);
   });
   drawCompsChart(false);
-  function drawCompsChart(usePE) {
+  function drawCompsChart(mode) {
    const cv = document.getElementById("comps-chart");
    if (!cv || !window.Chart) return;
    const old = Chart.getChart(cv);
    if (old) old.destroy();
-   const yKey = usePE ? "forwardPe" : "ntmEvRevenue";
-   const colors = {"Semiconductors":"#4dd2aa","Enterprise Software":"#38bdf8","Mega-Cap Tech":"#a855f7","Consumer & Marketplace":"#e0aa46","Fintech & Digital Assets":"#ec4899","Public Safety & Defense Tech":"#c99a6b","MedTech":"#6366f1","MedTech & Robotics":"#6366f1",
-    "Information Technology":"#38bdf8","Health Care":"#6366f1","Financials":"#4dd2aa","Consumer Discretionary":"#e0aa46","Consumer Staples":"#84cc16","Industrials":"#8d99aa","Energy":"#f37d83","Utilities":"#facc15","Real Estate":"#a855f7","Materials":"#f97316","Communication Services":"#ec4899","Other":"#647184"};
-   const bySec = {};
-   recs.forEach((r) => {
-    if (usePE && !(r.forwardPe > 0 && r.forwardPe < 150)) return;
-    (bySec[r.sector] = bySec[r.sector] || []).push(r);
-   });
-   const datasets = Object.keys(bySec).map((sec) => ({
-    type: "bubble",
-    label: sec,
-    data: bySec[sec].map((r) => ({x: r.ntmRevGrowth, y: r[yKey], ticker: r.ticker, r: Math.max(4, Math.min(14, Math.log10(r.marketCap || 1e9) * 1.1))})),
-    backgroundColor: (colors[sec] || "#38bdf8") + "AA",
-    borderColor: colors[sec] || "#38bdf8",
-    borderWidth: 1,
-   }));
-   // Sector-relative trendlines: each visible sector gets its own OLS line
-   const secRegs = (meta.sectorRegressions || {});
-   const xs = recs.map((r) => r.ntmRevGrowth);
-   const x0 = Math.floor(Math.min(...xs, 0)), x1 = Math.ceil(Math.max(...xs, 60));
-   Object.keys(bySec).forEach((sec) => {
-    const sr = secRegs[sec];
-    const rr = sr && (usePE ? sr.forwardPe : sr.evRevenue);
-    if (!rr) return;
-    datasets.unshift({type: "line", label: sec + " fair value", data: [{x: x0, y: rr.slope * x0 + rr.intercept}, {x: x1, y: rr.slope * x1 + rr.intercept}],
-     borderColor: colors[sec] || "#c99a6b", borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, fill: false});
-   });
-   new Chart(cv, {data: {datasets}, options: {animation: false, responsive: true, maintainAspectRatio: false,
-    plugins: {legend: {position: "bottom", labels: {color: "#8d99aa", boxWidth: 10, font: {size: 10}}},
-     tooltip: {callbacks: {title: (it) => it[0].raw.ticker || it[0].dataset.label || "Fair value", label: (c) => c.raw.ticker ? ["Growth: " + c.raw.x.toFixed(1) + "%", "Multiple: " + c.raw.y.toFixed(1) + "x"] : "Sector fair: " + c.raw.y.toFixed(1) + "x"}}},
-    scales: {x: {title: {display: true, text: "NTM Revenue Growth (%)", color: "#8d99aa"}, ticks: {color: "#8d99aa", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
-     y: {title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#8d99aa"}, ticks: {color: "#8d99aa", callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}});
+   const cfg = buildCompsChartConfig(mode, false);
+   if (cfg) new Chart(cv, cfg);
   }
  });
 
