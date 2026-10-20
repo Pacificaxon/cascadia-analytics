@@ -10850,7 +10850,11 @@ function volSurfaceHtml() {
   try {
    const res = await fetch("/api/quality?ticker=" + encodeURIComponent(tk));
    const j = await res.json();
-   if (j.error) return { error: j.error };
+   if (j.error || !res.ok) {
+    // Never surface raw upstream errors (e.g. a Yahoo crumb 429) to users.
+    console.warn("quality fetch failed for " + tk + ":", j.error || ("HTTP " + res.status));
+    return { error: "Quality data is temporarily unavailable for " + tk + ". Please try again in a few minutes." };
+   }
    _qualityCache[tk] = j;
    return j;
   } catch (e) {
@@ -10923,7 +10927,11 @@ function volSurfaceHtml() {
    if (expiry) url += "&expiry=" + encodeURIComponent(expiry);
    const res = await fetch(url, { signal: AbortSignal.timeout(90000) });
    const j = await res.json();
-   if (j.error) return { error: j.error };
+   if (j.error || !res.ok) {
+    // Never surface raw upstream errors (e.g. LLM provider failure detail) to users.
+    console.warn("earnings360 fetch failed for " + tk + ":", j.error || ("HTTP " + res.status));
+    return { error: "The earnings preview is temporarily unavailable for " + tk + ". Please try again in a few minutes." };
+   }
    _e360Cache[cacheKey] = j;
    return j;
   } catch (e) {

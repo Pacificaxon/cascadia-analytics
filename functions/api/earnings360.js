@@ -367,7 +367,7 @@ export async function onRequestGet(context) {
 
     return Response.json(
       { ...grounded, provider, analysis, expirations, selectedExpiry, earningsExpiryTs },
-      { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=3600" } }
+      { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=3600", "CDN-Cache-Control": "public, max-age=3600, stale-if-error=86400" } }
     );
   } catch (err) {
     return Response.json({ error: String(err.message || err), ticker }, { status: 502 });

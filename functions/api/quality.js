@@ -135,7 +135,7 @@ export async function onRequestGet(context) {
         },
         growthEngine: { ruleOf40: f2(ruleOf40), revGrowth: f2(revGrowth), fcfMargin: f2(fcfMargin) },
       },
-      { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=3600" } }
+      { headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=3600", "CDN-Cache-Control": "public, max-age=3600, stale-if-error=86400" } }
     );
   } catch (err) {
     return Response.json({ error: String(err.message || err), ticker }, { status: 502 });
