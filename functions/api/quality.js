@@ -9,7 +9,23 @@
  * For DCF-covered tickers, the full Investment Scorecard remains the deeper read.
  */
 
+import { verifyPro, jsonResponse, handleOptions } from "./_auth.js";
+
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+// Pro gate, identical to pro-data.js: validate the Supabase JWT server-side
+// and check profiles.is_pro. 401 -> no/invalid session, 403 -> not Pro.
+export async function onRequest(context) {
+  const { request, env } = context;
+  if (request.method === "OPTIONS") return handleOptions(request);
+  if (request.method !== "GET") {
+    return jsonResponse({ error: "method_not_allowed" }, 405, request);
+  }
+  const v = await verifyPro(request, env);
+  if (!v.ok) return jsonResponse({ error: v.error }, v.status, request);
+  if (!v.is_pro) return jsonResponse({ error: "forbidden" }, 403, request);
+  return onRequestGet(context);
+}
 
 async function getCrumb() {
   // Step 1: get cookies from Yahoo homepage
@@ -29,7 +45,7 @@ async function getCrumb() {
   return { crumb, cookies };
 }
 
-export async function onRequestGet(context) {
+async function onRequestGet(context) {
   const { searchParams } = new URL(context.request.url);
   const ticker = (searchParams.get("ticker") || "").toUpperCase().trim().replace(/[^A-Z0-9.\-=]/g, "");
   if (!ticker) {

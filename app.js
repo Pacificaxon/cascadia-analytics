@@ -10852,6 +10852,20 @@ function volSurfaceHtml() {
   return h;
  }
 
+ // Authorization header for the server-gated on-demand Pro endpoints
+ // (/api/metrics, /api/quality, /api/alignment, /api/earnings360 verify the
+ // Supabase JWT and profiles.is_pro server-side, same as /api/pro-data).
+ // Mirrors the session handling in fetchProData and fetchStock: refresh
+ // first so a stale token does not 401, then attach the access token.
+ async function proAuthHeaders() {
+  if (!supa) return {};
+  try { await supa.auth.refreshSession(); } catch (e) {}
+  try {
+   const { data: { session } } = await supa.auth.getSession();
+   if (session && session.access_token) return { Authorization: "Bearer " + session.access_token };
+  } catch (e) {}
+  return {};
+ }
  // Quality snapshot: on-demand ROIC / CROIC / Rule of 40 for any ticker (PRO).
  // Backend: /api/quality edge function (Yahoo Finance, free).
  let _qualityCache = {};
@@ -10860,7 +10874,7 @@ function volSurfaceHtml() {
   if (!tk) return { error: "Enter a ticker." };
   if (_qualityCache[tk]) return _qualityCache[tk];
   try {
-   const res = await fetch("/api/quality?ticker=" + encodeURIComponent(tk));
+   const res = await fetch("/api/quality?ticker=" + encodeURIComponent(tk), { headers: await proAuthHeaders() });
    const j = await res.json();
    if (j.error || !res.ok) {
     // Never surface raw upstream errors (e.g. a Yahoo crumb 429) to users.
@@ -10937,7 +10951,7 @@ function volSurfaceHtml() {
   try {
    let url = "/api/earnings360?ticker=" + encodeURIComponent(tk);
    if (expiry) url += "&expiry=" + encodeURIComponent(expiry);
-   const res = await fetch(url, { signal: AbortSignal.timeout(90000) });
+   const res = await fetch(url, { signal: AbortSignal.timeout(90000), headers: await proAuthHeaders() });
    const j = await res.json();
    if (j.error || !res.ok) {
     // Never surface raw upstream errors (e.g. LLM provider failure detail) to users.
@@ -11071,7 +11085,7 @@ function volSurfaceHtml() {
   if (!tk) return { error: "No ticker." };
   if (_metricsCache[tk]) return _metricsCache[tk];
   try {
-   const res = await fetch("/api/metrics?ticker=" + encodeURIComponent(tk));
+   const res = await fetch("/api/metrics?ticker=" + encodeURIComponent(tk), { headers: await proAuthHeaders() });
    const j = await res.json();
    if (j.error || !res.ok) {
     // Never surface raw upstream errors (e.g. a Yahoo crumb 429) to users.
@@ -11156,7 +11170,7 @@ function volSurfaceHtml() {
   if (!tk) return { error: "No ticker." };
   if (_agencyCache[tk]) return _agencyCache[tk];
   try {
-   const res = await fetch("/api/alignment?ticker=" + encodeURIComponent(tk));
+   const res = await fetch("/api/alignment?ticker=" + encodeURIComponent(tk), { headers: await proAuthHeaders() });
    const j = await res.json();
    if (j.error || !res.ok) {
     // Never surface raw upstream errors (e.g. a Yahoo crumb 429) to users.
