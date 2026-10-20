@@ -2531,7 +2531,7 @@ function bindZoomHandlers() {
  // index entry is skipped with them.
  const MONITOR_CATEGORIES = [
   { key: "macro", num: "01", name: "Macro",
-    sub: "Rates, inflation expectations, Treasury plumbing, and positioning. The policy backdrop every other signal trades against.",
+    sub: "Rates, inflation expectations, Treasury plumbing, liquidity, and positioning. The policy backdrop every other signal trades against.",
     models: [
      { id: "monitor-cot-positioning", key: "cot", name: "COT Positioning", free: true },
      { id: "monitor-fed-funds-futures", key: "fedfunds", name: "Fed Funds Futures", free: true },
@@ -2539,11 +2539,13 @@ function bindZoomHandlers() {
      { id: "monitor-implied-erp", key: "erp", name: "Implied ERP", free: true },
      { id: "monitor-treasury-slr", key: "treasury", name: "Treasury Absorption & SLR Gauge", free: false },
      { id: "monitor-macroeconomic-analysis", key: "macroanalysis", name: "Macroeconomic Analysis", free: false },
+     { id: "monitor-global-liquidity", key: "globalliquidity", name: "Global Liquidity", free: false },
     ] },
   { key: "quantitative", num: "02", name: "Quantitative",
-    sub: "Volatility, options positioning, and sentiment statistics. What derivatives markets and surveys say about fear and crowding.",
+    sub: "Volatility, options positioning, off-exchange flow, and sentiment statistics. What derivatives markets, dark pools, and surveys say about fear and crowding.",
     models: [
      { id: "monitor-aaii-sentiment", key: "aaii", name: "AAII Sentiment", free: true },
+     { id: "monitor-dark-pool-flow", key: "darkpool", name: "Dark Pool Flow", free: true },
      { id: "monitor-credit-spreads", key: "panel-creditvol", name: "Credit Spreads vs VIX", free: false },
      { id: "monitor-volatility-divergence", key: "panel-voldiv", name: "Volatility Divergence", free: false },
      { id: "monitor-gex", key: "gex", name: "Gamma Exposure (GEX)", free: false },
@@ -2747,6 +2749,16 @@ function bindZoomHandlers() {
   if (D.implied_erp && D.implied_erp.erp != null) {
    SEC.erp = erpHtml(D.implied_erp, isPro);
   }
+  // Dark Pool Flow, FREE aggregate across the coverage universe, built
+  // from the same per-ticker FINRA Reg SHO data as the ticker pages.
+  if (D.dark_pool && D.dark_pool.tickers && Object.keys(D.dark_pool.tickers).length) {
+   const dpAgg = darkPoolAggHtml(D.dark_pool);
+   if (dpAgg) {
+    SEC.darkpool = '<div class="section" style="max-width:none;"><div class="section-title">Dark Pool Flow ' + FREE_BADGE + '</div>' +
+     '<div class="section-sub">Off-exchange volume share, dark short ratios, and net dark flow aggregated across the coverage universe. Updates every trading morning.</div>' +
+     '<div class="card">' + dpAgg + "</div></div>";
+   }
+  }
   // Market Internals tracker panels, each individually Pro-locked with
   // badge, built into per-panel buckets keyed by monitorPanelKey.
   const panelHtmlList = panels.map((p) => {
@@ -2896,6 +2908,142 @@ function bindZoomHandlers() {
     '<p style="margin:0;"><b style="color:#e8ecf1;">Desk rule of thumb:</b> scores of 75+ mean structural tailwinds favor risk assets (expand exposure, buy dips). Scores of 25 or below mean contraction (tighten stops, favor defensives, hold cash).</p>' +
     "</div></div>";
    h += '<div class="panel-asof">As of ' + esc(L.as_of || "") + " · Sources: FRED (WALCL, WTREGEN, RRPONTSYD), Yahoo Finance (DXY, VIX, HYG, IEF)</div>";
+   return h;
+  }
+
+  /* ---------- Dark Pool Flow aggregate HTML (FREE) ---------- */
+  // Aggregates the per-ticker FINRA Reg SHO dark pool data (the same data
+  // behind the ticker-page Dark Pool Flow section) into a market internals
+  // view: S&P 500 DIX context, coverage-average participation (DPR) and dark
+  // short ratio (DPSR), net and cumulative dark flow totals, a 10-session
+  // trend of the coverage averages, and a per-ticker ranking by
+  // participation. Averages are equal-weighted across names with data and
+  // totals are plain sums of the per-ticker figures. Nothing is shown that
+  // the collector does not produce.
+  function darkPoolAggHtml(dp) {
+   const tickers = dp.tickers || {};
+   const rows = Object.keys(tickers).map((k) => tickers[k])
+    .filter((r) => r && isFinite(r.dpr) && isFinite(r.dpsr));
+   if (!rows.length) return "";
+   const n = rows.length;
+   const sumOf = (f) => rows.reduce((a, r) => a + (Number(f(r)) || 0), 0);
+   const avgDpr = sumOf((r) => r.dpr) / n;
+   const avgDpsr = sumOf((r) => r.dpsr) / n;
+   const totNet = sumOf((r) => r.net_dark_flow_usd);
+   const totCum = sumOf((r) => r.cum_dark_flow_usd);
+   const macro = dp.macro || {};
+   const fmtUsd = (v) => {
+    const a = Math.abs(v || 0);
+    const s = v < 0 ? "-$" : "+$";
+    if (a >= 1e9) return s + (a / 1e9).toFixed(2) + "B";
+    if (a >= 1e6) return s + (a / 1e6).toFixed(1) + "M";
+    if (a >= 1e3) return s + (a / 1e3).toFixed(1) + "K";
+    return s + a.toFixed(0);
+   };
+   const fmtDate = (s) => (s && String(s).length === 8)
+    ? String(s).slice(0, 4) + "-" + String(s).slice(4, 6) + "-" + String(s).slice(6, 8)
+    : esc(s || "");
+   const latestDate = rows.map((r) => r.date || "").sort().slice(-1)[0] || "";
+   const sentimentColors = {
+    "BULLISH ACCUMULATION": "#3fb950",
+    "MODERATE BUY BIAS": "#58a6ff",
+    "INSTITUTIONAL DISTRIBUTION": "#f85149",
+    "BEARISH FADE": "#d29922",
+    "NEUTRAL / BALANCED": "#8b949e",
+   };
+   // Sentiment breadth across the universe
+   const sentCounts = {};
+   rows.forEach((r) => { sentCounts[r.sentiment] = (sentCounts[r.sentiment] || 0) + 1; });
+   const sentOrder = ["BULLISH ACCUMULATION", "MODERATE BUY BIAS", "NEUTRAL / BALANCED", "BEARISH FADE", "INSTITUTIONAL DISTRIBUTION"];
+   const breadth = sentOrder.filter((s) => sentCounts[s]).map((s) =>
+    '<span style="color:' + (sentimentColors[s] || "#8b949e") + ';font-weight:600;">' + sentCounts[s] + " " + esc(s.toLowerCase()) + "</span>").join(" · ");
+   // Stat cards (visuals first)
+   const card = (label, value, sub, color) =>
+    '<div style="background:#161b26;border-radius:10px;padding:14px;flex:1;min-width:160px;">' +
+    '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + label + "</div>" +
+    '<div style="font-size:24px;font-weight:800;color:' + (color || "#e8ecf1") + ';margin:4px 0;">' + value + "</div>" +
+    '<div style="font-size:11px;color:#8b949e;">' + sub + "</div></div>";
+   let h = '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;">';
+   if (macro.dix != null) {
+    const dixChg = macro.dix_change != null ? (macro.dix_change * 100) : null;
+    h += card("S&P 500 DARK POOL INDEX (DIX)", (macro.dix * 100).toFixed(1) + "%",
+     esc(macro.regime || "") + (dixChg != null ? " · " + (dixChg >= 0 ? "+" : "") + dixChg.toFixed(1) + " pts vs prior" : "") +
+     (macro.date ? " · " + esc(macro.date) : ""), "#58a6ff");
+   }
+   h += card("AVG PARTICIPATION (DPR)", avgDpr.toFixed(1) + "%",
+    "of volume off-exchange, average across " + n + " names");
+   h += card("AVG DARK SHORT RATIO (DPSR)", avgDpsr.toFixed(1) + "%",
+    avgDpsr >= 50 ? "Dealers shorting to fill institutional buys" : avgDpsr < 40 ? "Dealers absorbing institutional sells" : "Balanced dealer positioning");
+   h += card("NET DARK FLOW, LATEST SESSION", fmtUsd(totNet),
+    "summed across all coverage names", totNet >= 0 ? "#3fb950" : "#f85149");
+   h += card("CUMULATIVE DARK FLOW", fmtUsd(totCum),
+    "trailing window, summed across all coverage names", totCum >= 0 ? "#3fb950" : "#f85149");
+   h += "</div>";
+   if (breadth) {
+    h += '<div style="font-size:12px;color:#8b949e;margin:4px 0 8px;">Sentiment breadth across the coverage universe · ' + breadth + "</div>";
+   }
+   // 10-session trend of the coverage averages, from per-ticker histories
+   const byDate = {};
+   rows.forEach((r) => (r.history || []).forEach((hr) => {
+    if (!isFinite(hr.dpr) || !isFinite(hr.dpsr)) return;
+    if (!byDate[hr.date]) byDate[hr.date] = { dpr: 0, dpsr: 0, n: 0 };
+    byDate[hr.date].dpr += hr.dpr; byDate[hr.date].dpsr += hr.dpsr; byDate[hr.date].n += 1;
+   }));
+   const trend = Object.keys(byDate).sort().map((d) => ({
+    date: d, dpr: byDate[d].dpr / byDate[d].n * 100, dpsr: byDate[d].dpsr / byDate[d].n * 100,
+   }));
+   const barStrip = (label, pick, colorFor) => {
+    if (trend.length < 2) return "";
+    const vals = trend.map(pick);
+    const mn = Math.min(...vals), mx = Math.max(...vals);
+    return '<div style="margin:12px 0;"><div style="font-size:11px;color:#8b949e;margin-bottom:6px;">' + label + "</div>" +
+     '<div style="display:flex;align-items:flex-end;gap:3px;height:60px;">' +
+     trend.map((t) => {
+      const v = pick(t);
+      const ht = 8 + ((v - mn) / Math.max(0.01, mx - mn) * 48);
+      return '<div title="' + fmtDate(t.date) + ": " + v.toFixed(1) + '%" style="flex:1;background:' + colorFor(v) + ";height:" + ht.toFixed(0) + 'px;border-radius:2px;min-width:8px;opacity:0.85;"></div>';
+     }).join("") + "</div></div>";
+   };
+   h += barStrip("COVERAGE-AVERAGE PARTICIPATION (DPR), LAST " + trend.length + " SESSIONS",
+    (t) => t.dpr, () => "#58a6ff");
+   h += barStrip("COVERAGE-AVERAGE DARK SHORT RATIO (DPSR), LAST " + trend.length + " SESSIONS",
+    (t) => t.dpsr, (v) => v >= 55 ? "#3fb950" : v >= 50 ? "#58a6ff" : v < 40 ? "#f85149" : "#8b949e");
+   // Per-ticker ranking by participation
+   const ranked = rows.slice().sort((a, b) => b.dpr - a.dpr);
+   const flowCell = (v) => '<span style="color:' + (v >= 0 ? "#3fb950" : "#f85149") + ';font-weight:600;">' + fmtUsd(v) + "</span>";
+   const th = (label, right) => '<th style="padding:8px 10px;text-align:' + (right ? "right" : "left") + ';color:#8b949e;font-size:11px;letter-spacing:0.5px;">' + label + "</th>";
+   h += '<div style="overflow:auto;max-height:520px;margin:12px 0;"><table style="width:100%;border-collapse:collapse;min-width:780px;">' +
+    "<thead><tr style=\"border-bottom:2px solid rgba(255,255,255,0.1);\">" +
+    th("#") + th("TICKER") + th("PRICE", 1) + th("PARTICIPATION", 1) + th("DARK SHORT RATIO", 1) +
+    th("NET DARK FLOW", 1) + th("CUM. DARK FLOW", 1) + th("Z-SCORE", 1) + th("SENTIMENT") +
+    "</tr></thead><tbody>" +
+    ranked.map((r, i) => {
+     const sc = sentimentColors[r.sentiment] || "#e8ecf1";
+     const z = Number(r.z_score) || 0;
+     return '<tr style="border-bottom:1px solid rgba(255,255,255,0.06);">' +
+      '<td style="padding:7px 10px;color:#8b949e;font-size:12px;">' + (i + 1) + "</td>" +
+      '<td style="padding:7px 10px;">' + tickerLink(r.ticker) + "</td>" +
+      '<td style="padding:7px 10px;text-align:right;color:#e8ecf1;font-size:13px;">$' + (Number(r.price) || 0).toFixed(2) + "</td>" +
+      '<td style="padding:7px 10px;text-align:right;color:#e8ecf1;font-size:13px;font-weight:700;">' + r.dpr.toFixed(1) + "%</td>" +
+      '<td style="padding:7px 10px;text-align:right;color:#e8ecf1;font-size:13px;">' + r.dpsr.toFixed(1) + "%</td>" +
+      '<td style="padding:7px 10px;text-align:right;font-size:13px;">' + flowCell(r.net_dark_flow_usd) + "</td>" +
+      '<td style="padding:7px 10px;text-align:right;font-size:13px;">' + flowCell(r.cum_dark_flow_usd) + "</td>" +
+      '<td style="padding:7px 10px;text-align:right;color:#e8ecf1;font-size:13px;">' + (z >= 0 ? "+" : "") + z.toFixed(2) + "</td>" +
+      '<td style="padding:7px 10px;font-size:11px;font-weight:700;color:' + sc + ';">' + esc(r.sentiment) + "</td></tr>";
+    }).join("") +
+    "</tbody></table></div>";
+   // Explainer card: visuals first, explanation after
+   h += '<div class="panel-about" style="text-align:left;max-width:none;margin:16px 0;">' +
+    '<div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">How to read dark pool flow</div>' +
+    '<div style="font-size:12px;color:#8b949e;line-height:1.6;">' +
+    '<p style="margin:0 0 8px;">Dark pools and other off-exchange venues execute a large share of US equity volume away from the public exchanges. FINRA publishes the off-exchange volume, reported to a Trade Reporting Facility, for every name each day, and this panel aggregates those prints across the coverage universe.</p>' +
+    '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">Participation</b> is the share of a name\u2019s consolidated volume that printed off-exchange. Higher participation means more block flow is being worked away from the lit book. <b style="color:#e8ecf1;">Dark short ratio</b> is the short share of that off-exchange volume. Above 50% it usually means wholesale dealers are selling short from inventory to fill aggressive institutional buy orders, which reads as accumulation. Below 40% it usually means dealers are absorbing institutional sell tickets.</p>' +
+    '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">Net dark flow</b> converts the imbalance into dollars, and the cumulative figure tracks the running total over the trailing window. The S&P 500 Dark Pool Index (DIX) from SqueezeMetrics gives the market-wide context for the coverage averages. Averages here are equal-weighted across the ' + n + ' coverage names with data, and the flow totals are sums of the per-ticker estimates.</p>' +
+    '<p style="margin:0;">Open any name in the table to see its own dark pool history and sentiment read on its ticker page.</p>' +
+    "</div></div>";
+   h += '<div class="panel-asof">As of ' + esc(dp.as_of || "") + " · Session " + fmtDate(latestDate) +
+    (macro.date ? " · DIX as of " + esc(macro.date) : "") +
+    " · Sources: FINRA Reg SHO daily files, SqueezeMetrics, Yahoo Finance</div>";
    return h;
   }
 
@@ -3813,6 +3961,13 @@ function bindZoomHandlers() {
   SEC.gammaflip = gatedSafe("Dealer Gamma Flip Barometer",
    "SPY and QQQ gamma flip levels, dealer hedging regimes, and distance to the flip.",
    gammaFlipHtml);
+  // Global Liquidity, Pro-gated (always show section; gatedSafe shows the
+  // locked teaser for free users and the full panel for Pro via D.liquidity).
+  SEC.globalliquidity = '<div class="section" style="max-width:none;"><div class="section-title">Global Liquidity ' + PRO_BADGE + '</div>' +
+   '<div class="section-sub">Net US liquidity from the Fed balance sheet, the Treasury cash balance, and reverse repo, scored against the dollar, credit spreads, and volatility. Updates every trading morning.</div>' +
+   gatedSafe("Global Liquidity", "Net US liquidity score, Fed balance sheet decomposition, and the four-factor regime read.",
+    () => '<div class="card">' + liquidityHtml() + "</div>") +
+   "</div>";
   // render interactive vol divergence chart after DOM insert
   setTimeout(() => {
    const cv = document.getElementById("voldiv-chart");
@@ -11613,7 +11768,7 @@ function volSurfaceHtml() {
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
    '<li>✓ Volatility Surface, VIX term structure regimes, four-quadrant matrix, and per-ticker 25-delta risk reversals</li>' +
-   '<li>✓ Full market internals suite: Volatility Divergence, Alligator Jaw, Credit Spreads vs VIX, Market Breadth, Theme Rotation, Small/Mid Cap Monitor, RSI Cyclicals vs Defensives, Macroeconomic Analysis</li>' +
+   '<li>✓ Full market internals suite: Global Liquidity, Volatility Divergence, Alligator Jaw, Credit Spreads vs VIX, Market Breadth, Theme Rotation, Small/Mid Cap Monitor, RSI Cyclicals vs Defensives, Macroeconomic Analysis</li>' +
    '<li>✓ Quantitative Factor Screener, full S&P 500 on ROIC, PEG, FCF yield, Piotroski, and more, with CSV export</li>' +
    '<li>✓ Technical Factor Screener, Minervini Stage-2 trend template across the S&P 500</li>' +
    '<li>✓ Trend & Reversal Screener, per-ticker trend conviction and exhaustion gauges</li>' +
