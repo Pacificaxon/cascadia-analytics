@@ -2885,6 +2885,92 @@ function bindZoomHandlers() {
     '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">TGA</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">$' + (m.tga_b != null ? m.tga_b.toLocaleString() : "-") + "B</div></div>" +
     '<div style="text-align:center;"><div style="font-size:11px;color:#8b949e;">REVERSE REPO</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;">$' + (m.rrp_b != null ? m.rrp_b.toLocaleString() : "-") + "B</div></div>" +
     "</div>";
+   // Global central bank balance sheets in USD (Fed + ECB + BOJ)
+   const G = L.global || null;
+   if (G && G.banks) {
+    const MONTHS_L = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const fmtD = (iso) => { if (!iso) return "-"; const p = String(iso).split("-"); return MONTHS_L[Number(p[1]) - 1] + " " + Number(p[2]) + ", " + p[0]; };
+    const fmtB0 = (v) => v != null ? "$" + Number(v).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B" : "N/A";
+    const bankColors = { fed: "#58a6ff", ecb: "#d29922", boj: "#a371f7" };
+    const bankOrder = ["fed", "ecb", "boj"];
+    const totChg = G.change_4w_usd_b;
+    const totCol = totChg == null ? "#8b949e" : (totChg >= 0 ? "#3fb950" : "#f85149");
+    h += '<div style="margin:18px 0 8px;font-size:11px;color:#8b949e;letter-spacing:0.5px;">GLOBAL CENTRAL BANK BALANCE SHEETS (USD)</div>';
+    h += '<div style="display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
+     '<div><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">GLOBAL TOTAL (FED + ECB + BOJ)</div>' +
+     '<div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + fmtB0(G.total_usd_b) + "</div></div>" +
+     (totChg != null ? '<div style="font-size:12px;color:' + totCol + ';font-weight:600;">' + (totChg >= 0 ? "+" : "-") + "$" + Math.abs(totChg).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B (" + (G.change_4w_pct >= 0 ? "+" : "") + G.change_4w_pct + "%) over 4 weeks</div>" : "") +
+     "</div>";
+    if (G.partial) {
+     const missing = bankOrder.filter((k) => !G.banks[k]).map((k) => ({ fed: "Fed", ecb: "ECB", boj: "Bank of Japan" })[k]).join(" and ");
+     h += '<div style="font-size:11px;color:#d29922;margin-top:6px;">' + esc(missing) + " data is unavailable in the latest run, so the total covers the remaining balance sheets.</div>";
+    }
+    if (G.stale_banks && G.stale_banks.length) {
+     const staleNames = G.stale_banks.map((k) => ({ fed: "Fed", ecb: "ECB", boj: "Bank of Japan" })[k] || k).join(" and ");
+     h += '<div style="font-size:11px;color:#d29922;margin-top:6px;">' + esc(staleNames) + " figures are carried from the prior run while the feed is down.</div>";
+    }
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
+    bankOrder.forEach((k) => {
+     const b = G.banks[k];
+     const col = bankColors[k];
+     if (!b) {
+      h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-top:3px solid ' + col + ';">' +
+       '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + ({ fed: "Federal Reserve", ecb: "European Central Bank", boj: "Bank of Japan" })[k] + "</div>" +
+       '<div style="font-size:16px;font-weight:700;color:#8b949e;margin-top:6px;">N/A</div>' +
+       '<div style="font-size:11px;color:#8b949e;margin-top:2px;">Series unavailable in the latest run</div></div>';
+      return;
+     }
+     const chgCol = b.change_usd_b == null ? "#8b949e" : (b.change_usd_b >= 0 ? "#3fb950" : "#f85149");
+     const chgTxt = b.change_usd_b == null ? "" :
+      '<div style="font-size:11px;color:' + chgCol + ';margin-top:4px;font-weight:600;">' + (b.change_usd_b >= 0 ? "+" : "-") + "$" + Math.abs(b.change_usd_b).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B" + (b.change_pct != null ? " (" + (b.change_pct >= 0 ? "+" : "") + b.change_pct + "%)" : "") + " " + esc(b.change_label || "") + "</div>";
+     const localTxt = k === "fed" ? "" :
+      '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + esc(b.currency) + " " + Number(b.level_local_b).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B at " + (k === "ecb" ? b.fx_rate + " USD per EUR" : b.fx_rate + " JPY per USD") + " (" + fmtD(b.fx_date) + ")</div>";
+     h += '<div style="background:#161b26;border-radius:10px;padding:12px;border-top:3px solid ' + col + ';">' +
+      '<div style="font-size:12px;font-weight:600;color:#e8ecf1;">' + esc(b.label) + "</div>" +
+      '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + (b.cadence === "monthly" ? "Monthly, print dated " : "Weekly, ") + fmtD(b.obs_date) + "</div>" +
+      '<div style="font-size:18px;font-weight:700;color:#e8ecf1;margin-top:6px;">' + fmtB0(b.level_usd_b) + "</div>" +
+      (b.share_pct != null ? '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + b.share_pct + "% of global total</div>" : "") +
+      localTxt + chgTxt +
+      (b.carried_over ? '<div style="font-size:11px;color:#d29922;margin-top:4px;">Carried from the prior run</div>' : "") +
+      "</div>";
+    });
+    h += "</div>";
+    // Combined history chart, inline SVG with three bank lines and the total
+    const gh = (G.history || []).filter((r) => r && r.global_usd_b != null);
+    if (gh.length > 5) {
+     const series = [
+      { key: "global_usd_b", label: "Global total", color: "#3fb950", w: 2.5 },
+      { key: "fed_usd_b", label: "Fed", color: "#58a6ff", w: 1.5 },
+      { key: "ecb_usd_b", label: "ECB", color: "#d29922", w: 1.5 },
+      { key: "boj_usd_b", label: "BOJ", color: "#a371f7", w: 1.5 }
+     ];
+     let mn = Infinity, mx = -Infinity;
+     gh.forEach((r) => series.forEach((s) => { const v = r[s.key]; if (v != null) { if (v < mn) mn = v; if (v > mx) mx = v; } }));
+     const padV = (mx - mn) * 0.08 || 1; mn -= padV; mx += padV;
+     const W = 720, H = 190, PL = 58, PR = 10, PT = 12, PB = 22;
+     const X = (i) => PL + (W - PL - PR) * (i / (gh.length - 1));
+     const Y = (v) => PT + (H - PT - PB) * (1 - (v - mn) / (mx - mn));
+     const fmtAxis = (v) => "$" + Math.round(v).toLocaleString() + "B";
+     let svg = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:auto;display:block;" role="img">';
+     svg += '<line x1="' + PL + '" y1="' + Y(mx - padV) + '" x2="' + (W - PR) + '" y2="' + Y(mx - padV) + '" stroke="#2a3448" stroke-width="1"/>';
+     svg += '<line x1="' + PL + '" y1="' + Y(mn + padV) + '" x2="' + (W - PR) + '" y2="' + Y(mn + padV) + '" stroke="#2a3448" stroke-width="1"/>';
+     svg += '<text x="2" y="' + (Y(mx - padV) + 4) + '" fill="#8b949e" font-size="11">' + fmtAxis(mx - padV) + "</text>";
+     svg += '<text x="2" y="' + (Y(mn + padV) + 4) + '" fill="#8b949e" font-size="11">' + fmtAxis(mn + padV) + "</text>";
+     series.forEach((s) => {
+      const pts = [];
+      gh.forEach((r, i) => { if (r[s.key] != null) pts.push(X(i).toFixed(1) + "," + Y(r[s.key]).toFixed(1)); });
+      if (pts.length > 1) svg += '<polyline fill="none" stroke="' + s.color + '" stroke-width="' + s.w + '" points="' + pts.join(" ") + '"/>';
+     });
+     const fd = gh[0].date.split("-"), ld = gh[gh.length - 1].date.split("-");
+     svg += '<text x="' + PL + '" y="' + (H - 6) + '" fill="#8b949e" font-size="11">' + MONTHS_L[Number(fd[1]) - 1] + " " + Number(fd[2]) + "</text>";
+     svg += '<text x="' + (W - PR) + '" y="' + (H - 6) + '" fill="#8b949e" font-size="11" text-anchor="end">' + MONTHS_L[Number(ld[1]) - 1] + " " + Number(ld[2]) + "</text>";
+     svg += "</svg>";
+     h += '<div style="margin:12px 0;"><div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;">' +
+      series.map((s) => '<span style="font-size:11px;color:#8b949e;"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:' + s.color + ';margin-right:5px;"></span>' + s.label + "</span>").join("") +
+      '</div><div style="background:#0d1420;border:1px solid #2a3448;border-radius:10px;padding:8px;">' + svg + "</div>" +
+      '<div style="font-size:11px;color:#8b949e;margin-top:6px;">The Bank of Japan prints monthly, so its line steps between release dates and every point carries the print in effect, most recently ' + fmtD(gh[gh.length - 1].boj_obs_date) + '. The Fed and ECB print weekly. Dollar totals move with exchange rates as well as with the balance sheets themselves.</div></div>';
+    }
+   }
    // Net liquidity history chart (simple bars)
    if (L.history && L.history.length > 10) {
     const hist = L.history.slice(-60);
@@ -2905,9 +2991,12 @@ function bindZoomHandlers() {
     '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">The multiple expansion engine:</b> abundant liquidity means cheap capital. Institutions lever up and push cash out the risk curve, expanding P/E multiples across the board.</p>' +
     '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">The dollar wrecking ball:</b> the world runs on dollars. A strong DXY tightens financial conditions globally, choking emerging markets and multinationals on expensive USD debt.</p>' +
     '<p style="margin:0 0 8px;"><b style="color:#e8ecf1;">Stealth QE:</b> true net US liquidity = Fed assets minus the Treasury General Account minus reverse repo. Even during QT, a draining TGA or RRP can push net liquidity higher, sparking stealth bull markets.</p>' +
+    '<p style="margin:0 0 8px;">The global aggregate above adds the European Central Bank and the Bank of Japan to the Fed, each converted into dollars at the exchange rate in effect on the date its balance sheet was struck. Together the three banks set the global supply of reserve assets, and their combined balance sheet has tracked risk asset valuations more closely than any single domestic series.</p>' +
+    '<p style="margin:0 0 8px;">Read the dollar totals with care. A rising aggregate does not always mean fresh money creation, because a weaker dollar mechanically inflates the translated value of the ECB and Bank of Japan balance sheets even when both are flat or shrinking in local terms. The local currency figures on each card separate genuine balance sheet change from the currency translation effect.</p>' +
+    '<p style="margin:0 0 8px;">Cadence differs by bank. The Fed and the ECB report weekly while the Bank of Japan reports monthly, so the Japanese contribution moves in monthly steps and lags the other two by design.</p>' +
     '<p style="margin:0;"><b style="color:#e8ecf1;">Desk rule of thumb:</b> scores of 75+ mean structural tailwinds favor risk assets (expand exposure, buy dips). Scores of 25 or below mean contraction (tighten stops, favor defensives, hold cash).</p>' +
     "</div></div>";
-   h += '<div class="panel-asof">As of ' + esc(L.as_of || "") + " · Sources: FRED (WALCL, WTREGEN, RRPONTSYD), Yahoo Finance (DXY, VIX, HYG, IEF)</div>";
+   h += '<div class="panel-asof">As of ' + esc(L.as_of || "") + " · Sources: FRED (WALCL, WTREGEN, RRPONTSYD, ECBASSETSW, JPNASSETS, DEXUSEU, DEXJPUS), Yahoo Finance (DXY, VIX, HYG, IEF)</div>";
    return h;
   }
 
@@ -3964,8 +4053,8 @@ function bindZoomHandlers() {
   // Global Liquidity, Pro-gated (always show section; gatedSafe shows the
   // locked teaser for free users and the full panel for Pro via D.liquidity).
   SEC.globalliquidity = '<div class="section" style="max-width:none;"><div class="section-title">Global Liquidity ' + PRO_BADGE + '</div>' +
-   '<div class="section-sub">Net US liquidity from the Fed balance sheet, the Treasury cash balance, and reverse repo, scored against the dollar, credit spreads, and volatility. Updates every trading morning.</div>' +
-   gatedSafe("Global Liquidity", "Net US liquidity score, Fed balance sheet decomposition, and the four-factor regime read.",
+   '<div class="section-sub">Net US liquidity from the Fed balance sheet, the Treasury cash balance, and reverse repo, scored against the dollar, credit spreads, and volatility, with the ECB and Bank of Japan balance sheets tracked alongside in dollar terms. Updates every trading morning.</div>' +
+   gatedSafe("Global Liquidity", "Net US liquidity score, Fed balance sheet decomposition, the four-factor regime read, and the Fed, ECB, and Bank of Japan balance sheets in dollar terms.",
     () => '<div class="card">' + liquidityHtml() + "</div>") +
    "</div>";
   // render interactive vol divergence chart after DOM insert
