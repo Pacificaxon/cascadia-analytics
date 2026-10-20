@@ -9071,7 +9071,7 @@ function oasDistressHtml() {
   if (O.score == null) return "";
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
   const c = colorMap[O.color] || "#e8ecf1";
-  return '<div style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+  return '<div id="risk-credit-stress" class="risk-anchor" style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
    '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">CREDIT STRESS</div>' +
    '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + O.score + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
    '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(O.regime || "") + "</div></div>";
@@ -9614,7 +9614,7 @@ function taylorGapFreeCard() {
  if (T.score == null) return "";
  const c = GM_COLORS[T.color] || "#e8ecf1";
  const g = Math.round(T.score);
- return '<div style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+ return '<div id="risk-taylor-gap" class="risk-anchor" style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
   '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">TAYLOR GAP</div>' +
   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + (g > 0 ? "+" : "") + g + '<span style="font-size:14px;color:#8b949e;"> bps</span></div>' +
   '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(T.regime || "") + "</div></div>";
@@ -10888,6 +10888,163 @@ function volSurfaceHtml() {
   app.innerHTML = h;
  });
 
+ /* ================= RISK MODELS: CATEGORIES, INDEX, ANCHORS ================= */
+ // Single source of truth for the #/risk page layout. The Pro route renders
+ // category bands plus each model section (wrapped in an anchor) straight from
+ // this list, and the Risk Model Index counts and links derive from it too,
+ // so the counts can never drift from the sections actually on the page.
+ const RISK_CATEGORIES = [
+  { key: "macro", num: "01", name: "Macro",
+    sub: "Fiscal sustainability, monetary policy, offshore dollar funding, and the liquidity structure underneath every other gauge.",
+    models: [
+     { id: "risk-macro-regime", name: "Macro Regime", fn: () => macroRegimeHtml() },
+     { id: "risk-fiscal-dominance", name: "Fiscal Dominance", fn: () => fiscalDominanceHtml() },
+     { id: "risk-eurodollar-stress", name: "Eurodollar Stress", fn: () => eurodollarStressHtml() },
+     { id: "risk-economic-nowcast", name: "Economic Nowcast Momentum", fn: () => economicNowcastHtml() },
+     { id: "risk-taylor-gap", name: "Taylor Gap", fn: () => taylorGapHtml() },
+     { id: "risk-sovereign-fragmentation", name: "Sovereign Fragmentation", fn: () => sovereignFragmentationHtml() },
+     { id: "risk-liquidity-drain", name: "Liquidity Drain", fn: () => liquidityDrainHtml() },
+     { id: "risk-systemic-leverage", name: "Systemic Leverage", fn: () => marginLeverageHtml() },
+     { id: "risk-credit-stress", name: "Credit Stress", fn: () => oasDistressHtml() },
+    ] },
+  { key: "quantitative", num: "02", name: "Quantitative",
+    sub: "Statistical composites built from volatility, flows, positioning, and cross-asset signals.",
+    models: [
+     { id: "risk-fear-index", name: "Quantitative Fear Index", fn: () => fearIndexHtml() },
+     { id: "risk-realized-vol-shock", name: "Realized Vol Shock", fn: () => rvShockHtml() },
+     { id: "risk-contagion", name: "Contagion", fn: () => contagionHtml() },
+     { id: "risk-flow-divergence", name: "Institutional Flow Divergence", fn: () => flowDivergenceHtml() },
+     { id: "risk-offense-defense", name: "Offense vs Defense", fn: () => sectorRotationHtml() },
+    ] },
+  { key: "technical", num: "03", name: "Technical",
+    sub: "Price structure, breadth, and concentration. What the tape itself is pricing.",
+    models: [
+     { id: "risk-correction-risk", name: "Correction Risk", fn: () => correctionRiskHtml() },
+     { id: "risk-concentration", name: "Concentration", fn: () => concentrationHtml() },
+    ] },
+ ];
+ const RISK_TOC_CSS =
+  ".risk-anchor{scroll-margin-top:88px;}" +
+  ".risk-flash{animation:riskFlash 1.8s ease-out;}" +
+  "@keyframes riskFlash{0%{box-shadow:0 0 0 2px #c9a961,0 0 24px rgba(201,169,97,0.5);}100%{box-shadow:0 0 0 0 rgba(201,169,97,0);}}" +
+  ".risk-toc{background:#0d1522;border:1px solid #1c2b3e;border-radius:12px;padding:18px;margin:14px 0 6px;}" +
+  ".risk-toc-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}" +
+  ".risk-toc-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#c9a961;}" +
+  ".risk-toc-meta{font-size:12px;color:#8b949e;}" +
+  ".risk-toc-btns{display:flex;gap:10px;flex-wrap:wrap;}" +
+  ".risk-toc-cat{position:relative;flex:1 1 200px;min-width:180px;}" +
+  ".risk-toc-cat.open{z-index:60;}" +
+  ".risk-toc-btn{width:100%;display:flex;align-items:center;gap:10px;background:#121d2d;border:1px solid #1c2b3e;border-left:3px solid #1c2b3e;border-radius:10px;padding:12px 14px;cursor:pointer;color:#e8ecf1;font-family:inherit;text-align:left;transition:border-color .2s ease,box-shadow .2s ease;}" +
+  ".risk-toc-btn:hover{border-color:#c9a961;border-left-color:#c9a961;}" +
+  ".risk-toc-cat.open .risk-toc-btn{border-color:#c9a961;border-left-color:#dfb76c;box-shadow:inset 0 -2px 0 #c9a961;}" +
+  ".risk-toc-num{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;color:#c9a961;}" +
+  ".risk-toc-btnname{font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap;}" +
+  ".risk-toc-count{margin-left:auto;font-size:11px;color:#8b949e;white-space:nowrap;}" +
+  ".risk-toc-chev{display:inline-block;color:#c9a961;font-size:12px;line-height:1;transition:transform .25s ease;}" +
+  ".risk-toc-cat.open .risk-toc-chev{transform:rotate(180deg);}" +
+  ".risk-toc-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0d1522;border:1px solid #1c2b3e;border-top:2px solid #c9a961;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,0.5);max-height:0;opacity:0;overflow:hidden;pointer-events:none;transform:translateY(-4px);transition:max-height .3s ease,opacity .25s ease,transform .25s ease;}" +
+  ".risk-toc-cat.open .risk-toc-drop{max-height:70vh;opacity:1;pointer-events:auto;transform:none;overflow-y:auto;}" +
+  ".risk-toc-link{display:block;width:100%;background:none;border:0;border-left:3px solid transparent;border-bottom:1px solid #1c2b3e;padding:10px 14px;color:#c8d0dc;font-size:13px;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s ease,color .15s ease,border-color .15s ease;}" +
+  ".risk-toc-link:last-child{border-bottom:0;}" +
+  ".risk-toc-link:hover{background:#121d2d;color:#fff;border-left-color:#c9a961;}" +
+  ".risk-cat-band{display:flex;align-items:center;gap:14px;background:#0d1522;border:1px solid #1c2b3e;border-left:3px solid #c9a961;border-radius:10px;padding:16px 18px;margin:42px 0 2px;}" +
+  ".risk-cat-num{font-family:var(--mono);font-size:22px;font-weight:800;color:#c9a961;line-height:1;}" +
+  ".risk-cat-name{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;}" +
+  ".risk-cat-sub{font-size:12.5px;color:#8b949e;margin-top:3px;line-height:1.45;}" +
+  ".risk-cat-count{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#c9a961;white-space:nowrap;}" +
+  "@media (max-width:640px){.risk-toc-btns{flex-direction:column;}.risk-toc-cat{flex:1 1 auto;width:100%;min-width:0;}.risk-cat-band{flex-wrap:wrap;}.risk-cat-count{margin-left:0;}}";
+ function riskTocHtml() {
+  const total = RISK_CATEGORIES.reduce((n, c) => n + c.models.length, 0);
+  let h = "<style>" + RISK_TOC_CSS + "</style>" +
+   '<div class="risk-toc" id="risk-toc">' +
+   '<div class="risk-toc-head"><span class="risk-toc-title">Risk Model Index</span>' +
+   '<span class="risk-toc-meta">' + total + " models across " + RISK_CATEGORIES.length + " categories. Pick a category, then a model, to jump straight to it.</span></div>" +
+   '<div class="risk-toc-btns">';
+  RISK_CATEGORIES.forEach((cat) => {
+   h += '<div class="risk-toc-cat" data-cat="' + cat.key + '">' +
+    '<button type="button" class="risk-toc-btn" data-risk-cat="' + cat.key + '" aria-expanded="false" aria-haspopup="true">' +
+    '<span class="risk-toc-num">' + cat.num + '</span>' +
+    '<span class="risk-toc-btnname">' + cat.name + '</span>' +
+    '<span class="risk-toc-count">' + cat.models.length + (cat.models.length === 1 ? " model" : " models") + '</span>' +
+    '<span class="risk-toc-chev">&#9662;</span></button>' +
+    '<div class="risk-toc-drop" role="menu">';
+   cat.models.forEach((m) => {
+    h += '<button type="button" class="risk-toc-link" data-risk-target="' + m.id + '" role="menuitem">' + m.name + "</button>";
+   });
+   h += "</div></div>";
+  });
+  h += "</div></div>";
+  return h;
+ }
+ function riskCatBandHtml(cat) {
+  return '<div class="risk-cat-band"><span class="risk-cat-num">' + cat.num + "</span>" +
+   '<div><div class="risk-cat-name">' + cat.name + '</div>' +
+   '<div class="risk-cat-sub">' + cat.sub + "</div></div>" +
+   '<span class="risk-cat-count">' + cat.models.length + (cat.models.length === 1 ? " model" : " models") + "</span></div>";
+ }
+ function riskAnchorWrap(id, html) {
+  return '<div class="risk-anchor" id="' + id + '">' + html + "</div>";
+ }
+ function bindRiskToc() {
+  const toc = document.getElementById("risk-toc");
+  if (!toc) return;
+  const closeAll = (except) => {
+   toc.querySelectorAll(".risk-toc-cat.open").forEach((c) => {
+    if (c !== except) {
+     c.classList.remove("open");
+     const b = c.querySelector(".risk-toc-btn");
+     if (b) b.setAttribute("aria-expanded", "false");
+    }
+   });
+  };
+  toc.querySelectorAll(".risk-toc-btn").forEach((btn) => {
+   btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const cat = btn.closest(".risk-toc-cat");
+    const wasOpen = cat.classList.contains("open");
+    closeAll(cat);
+    cat.classList.toggle("open", !wasOpen);
+    btn.setAttribute("aria-expanded", String(!wasOpen));
+   });
+  });
+  toc.querySelectorAll(".risk-toc-link").forEach((link) => {
+   link.addEventListener("click", () => {
+    const target = document.getElementById(link.getAttribute("data-risk-target"));
+    closeAll(null);
+    toc.querySelectorAll(".risk-toc-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
+    if (target) {
+     target.scrollIntoView({ behavior: "smooth", block: "start" });
+     target.classList.remove("risk-flash");
+     void target.offsetWidth;
+     target.classList.add("risk-flash");
+     setTimeout(() => target.classList.remove("risk-flash"), 1900);
+    }
+   });
+  });
+  // Document-level closers, replaced on every bind so they never stack up
+  // across renders. They look the TOC up live, so a stale closure left over
+  // from a previous page render is a harmless no-op.
+  if (window.__riskTocDocClick) document.removeEventListener("click", window.__riskTocDocClick);
+  if (window.__riskTocDocKey) document.removeEventListener("keydown", window.__riskTocDocKey);
+  window.__riskTocDocClick = (e) => {
+   const t = document.getElementById("risk-toc");
+   if (t && !(e.target.closest && e.target.closest("#risk-toc"))) {
+    t.querySelectorAll(".risk-toc-cat.open").forEach((c) => c.classList.remove("open"));
+    t.querySelectorAll(".risk-toc-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
+   }
+  };
+  window.__riskTocDocKey = (e) => {
+   if (e.key !== "Escape") return;
+   const t = document.getElementById("risk-toc");
+   if (t) {
+    t.querySelectorAll(".risk-toc-cat.open").forEach((c) => c.classList.remove("open"));
+    t.querySelectorAll(".risk-toc-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
+   }
+  };
+  document.addEventListener("click", window.__riskTocDocClick);
+  document.addEventListener("keydown", window.__riskTocDocKey);
+ }
+
  route("risk", async function () {
   const mySeq = window._renderSeq || 0;
   await ensureProData();
@@ -10917,10 +11074,10 @@ function volSurfaceHtml() {
    const nowc = rh.economic_nowcast || {};
    const frag = rh.sovereign_fragmentation || {};
    const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
-   const card = (name, score, regime, color) => {
+   const card = (name, score, regime, color, anchorId) => {
     if (score == null) return "";
     const c = colorMap[color] || "#e8ecf1";
-    return '<div style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+    return '<div' + (anchorId ? ' id="' + anchorId + '" class="risk-anchor"' : "") + ' style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
      '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
      '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + score + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
      '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div></div>";
@@ -10932,50 +11089,46 @@ function volSurfaceHtml() {
     ' <span style="font-size:11px;color:#8b949e;font-weight:400;">as of ' + esc((D.generated_at || "").slice(0, 10)) + '</span></div>' +
     '<div class="section-sub">Current scores, free. The full breakdown, charts, history, and in-depth analysis are Pro.</div>' +
     compositeBanner() +
+    riskTocHtml() +
     '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">' +
-    card("Correction Risk", cr.score, cr.regime, cr.color) +
-    card("Liquidity Drain", ld.score, ld.regime, ld.color) +
-    card("Realized Vol Shock", rv.score, rv.regime, rv.color) +
-    card("Contagion", cg.score, cg.regime, cg.color) +
-    card("Flow Divergence", fd.score, fd.regime, fd.color) +
-    card("Concentration", dc.score, dc.regime, dc.color) +
-    card("Margin Leverage", ml.score, ml.regime, ml.color) +
-    card("Sector Rotation", sr.score, sr.regime, sr.color) +
-    card("Fear Index", fi.score, fi.regime, fiColor) +
+    card("Correction Risk", cr.score, cr.regime, cr.color, "risk-correction-risk") +
+    card("Liquidity Drain", ld.score, ld.regime, ld.color, "risk-liquidity-drain") +
+    card("Realized Vol Shock", rv.score, rv.regime, rv.color, "risk-realized-vol-shock") +
+    card("Contagion", cg.score, cg.regime, cg.color, "risk-contagion") +
+    card("Flow Divergence", fd.score, fd.regime, fd.color, "risk-flow-divergence") +
+    card("Concentration", dc.score, dc.regime, dc.color, "risk-concentration") +
+    card("Margin Leverage", ml.score, ml.regime, ml.color, "risk-systemic-leverage") +
+    card("Sector Rotation", sr.score, sr.regime, sr.color, "risk-offense-defense") +
+    card("Fear Index", fi.score, fi.regime, fiColor, "risk-fear-index") +
     oasDistressFreeCard() +
     card("Treasury Capacity", tslr.score, tslr.regime, tslr.color) +
     card("Real Yield Shock", rys.score, rys.regime, rys.color) +
     card("Gamma Regime", gfl.score, gfl.regime, gfl.color) +
     card("Earnings Drift", pead.score, pead.regime, pead.color) +
     card("Squeeze Fragility", sqz.score, sqz.regime, sqz.color) +
-    card("Macro Regime", mr.score, mr.regime, mr.color) +
-    card("Fiscal Dominance", fisc.score, fisc.regime, fisc.color) +
-    card("Eurodollar Stress", euro.score, euro.regime, euro.color) +
-    card("Nowcast Momentum", nowc.score, nowc.regime, nowc.color) +
+    card("Macro Regime", mr.score, mr.regime, mr.color, "risk-macro-regime") +
+    card("Fiscal Dominance", fisc.score, fisc.regime, fisc.color, "risk-fiscal-dominance") +
+    card("Eurodollar Stress", euro.score, euro.regime, euro.color, "risk-eurodollar-stress") +
+    card("Nowcast Momentum", nowc.score, nowc.regime, nowc.color, "risk-economic-nowcast") +
     taylorGapFreeCard() +
-    card("Sovereign Fragmentation", frag.score, frag.regime, frag.color) +
+    card("Sovereign Fragmentation", frag.score, frag.regime, frag.color, "risk-sovereign-fragmentation") +
     "</div>" +
     proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Macro Regime Model, Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, Sovereign Credit Fragmentation, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;
+   bindRiskToc();
    return;
   }
   let h = '<div class="crumb">RISK MODELS</div>' +
    '<div class="hero"><div><h1 class="hero-h">Risk Models</h1>' +
    "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>";
   h += compositeBanner();
-  h += correctionRiskHtml();
-  h += liquidityDrainHtml();
-  h += rvShockHtml();
-  h += oasDistressHtml();
-  h += macroRegimeHtml();
-  h += globalMacroHtml();
-  h += contagionHtml();
-  h += flowDivergenceHtml();
-  h += concentrationHtml();
-  h += marginLeverageHtml();
-  h += sectorRotationHtml();
-  h += fearIndexHtml();
+  h += riskTocHtml();
+  RISK_CATEGORIES.forEach((cat) => {
+   h += riskCatBandHtml(cat);
+   cat.models.forEach((m) => { h += riskAnchorWrap(m.id, m.fn()); });
+  });
   app.innerHTML = h;
+  bindRiskToc();
   bindZoomHandlers();
   // Draw Fear Index 30-day history chart (data stashed by fearIndexHtml)
   const fh = window.__fearHistChart;
