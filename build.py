@@ -522,6 +522,7 @@ def main():
         "vol_surface": load(os.path.join(MR, "vol_surface.json")) if os.path.exists(os.path.join(MR, "vol_surface.json")) else {},
         "real_yield_shock": load(os.path.join(MR, "real_yield_shock.json")) if os.path.exists(os.path.join(MR, "real_yield_shock.json")) else {},
         "macro_regime": load(os.path.join(MR, "macro_regime.json")) if os.path.exists(os.path.join(MR, "macro_regime.json")) else {},
+        "advanced_macro": load(os.path.join(MR, "advanced_macro.json")) if os.path.exists(os.path.join(MR, "advanced_macro.json")) else {},
     }
     # Per-ticker transcript tone detail files
     import glob
@@ -594,6 +595,23 @@ def main():
     _gf_risks = [r for r in (_gamma_risk(_gf.get("spy")), _gamma_risk(_gf.get("qqq"))) if r is not None]
     _gf_score = round(sum(_gf_risks) / len(_gf_risks), 1) if _gf_risks else None
 
+    # Global Macro group: five structural models inside advanced_macro.json.
+    # Headline conventions differ per model and are documented here because
+    # the composite loop below depends on them:
+    #   fiscal_dominance / eurodollar_stress / sovereign_fragmentation:
+    #     score is a plain 0-100 risk score (higher = more risk).
+    #   economic_nowcast: score is a 0-100 MOMENTUM score (higher = stronger
+    #     economy = LOWER risk); the composite consumes it inverted.
+    #   taylor_gap: the headline "score" slot carries the raw policy gap in
+    #     basis points (can be negative); the composite maps it with
+    #     risk = clamp(50 + gap_bps / 4, 0, 100).
+    _am_models = (pro_sections.get("advanced_macro", {}) or {}).get("models", {}) or {}
+    _am_fd = _am_models.get("fiscal_dominance", {}) or {}
+    _am_eu = _am_models.get("eurodollar_stress", {}) or {}
+    _am_nc = _am_models.get("economic_nowcast", {}) or {}
+    _am_tg = _am_models.get("taylor_gap", {}) or {}
+    _am_sf = _am_models.get("sovereign_fragmentation", {}) or {}
+
     # Free risk headlines (score + regime only, no analysis) for the #/risk teaser
     site["risk_headlines"] = {
         "correction_risk": {"score": pro_sections.get("correction_risk", {}).get("totalRiskScore"),
@@ -643,6 +661,21 @@ def main():
         "macro_regime": {"score": pro_sections.get("macro_regime", {}).get("score"),
                          "regime": pro_sections.get("macro_regime", {}).get("regime"),
                          "color": pro_sections.get("macro_regime", {}).get("color")},
+        "fiscal_dominance": {"score": _am_fd.get("score"),
+                             "regime": _am_fd.get("regime"),
+                             "color": _am_fd.get("color")},
+        "eurodollar_stress": {"score": _am_eu.get("score"),
+                              "regime": _am_eu.get("regime"),
+                              "color": _am_eu.get("color")},
+        "economic_nowcast": {"score": _am_nc.get("score"),
+                             "regime": _am_nc.get("regime"),
+                             "color": _am_nc.get("color")},
+        "taylor_gap": {"score": _am_tg.get("gap_bps"),
+                       "regime": _am_tg.get("regime"),
+                       "color": _am_tg.get("color")},
+        "sovereign_fragmentation": {"score": _am_sf.get("score"),
+                                    "regime": _am_sf.get("regime"),
+                                    "color": _am_sf.get("color")},
     }
 
     # Cascadia Composite Risk Index (CCRI): overall assessment across all risk models.
@@ -678,6 +711,15 @@ def main():
         "real_yield_shock": (+1, "Macro & Liquidity", "Real Yield Shock", 3),
         "gamma_flip": (+1, "Systematic & Volatility", "Gamma Regime", 2),
         "macro_regime": (+1, "Macro & Liquidity", "Macro Regime", 2),
+        # Global Macro group (advanced_macro.json). The nowcast headline is a
+        # momentum score where higher means a stronger economy, so direction
+        # -1 inverts it into a risk contribution. The Taylor headline carries
+        # the raw policy gap in bps; its risk mapping lives in the raw loop.
+        "fiscal_dominance": (+1, "Macro & Liquidity", "Fiscal Dominance", 2),
+        "eurodollar_stress": (+1, "Macro & Liquidity", "Eurodollar Stress", 2),
+        "sovereign_fragmentation": (+1, "Macro & Liquidity", "Sovereign Fragmentation", 2),
+        "economic_nowcast": (-1, "Macro & Liquidity", "Nowcast Momentum", 2),
+        "taylor_gap": (+1, "Macro & Liquidity", "Taylor Gap", 2),
         "pead_screener": (+1, "Structural & Breadth", "Earnings Drift", 3),
         "squeeze_radar": (+1, "Flow & Leverage", "Squeeze Fragility", 3),
         "flow_divergence": (+1, "Flow & Leverage", "Flow Divergence", 2),
@@ -692,6 +734,10 @@ def main():
             # Flow divergence is an oscillator; extreme either way = risk
             if _key == "flow_divergence":
                 _risk = abs(float(_s)) * 12.0
+            elif _key == "taylor_gap":
+                # Headline value is the raw policy gap in bps, centered so
+                # a neutral gap maps to 50 and +/-200 bps spans the range
+                _risk = 50.0 + float(_s) / 4.0
             else:
                 _risk = float(_s) if _direction > 0 else 100.0 - float(_s)
             _raw[_key] = (max(0.0, min(100.0, _risk)), _pillar, _dname, _tier)

@@ -243,6 +243,7 @@
    if (sections.vol_surface) flat.vol_surface = sections.vol_surface;
    if (sections.real_yield_shock) flat.real_yield_shock = sections.real_yield_shock;
    if (sections.macro_regime) flat.macro_regime = sections.macro_regime;
+   if (sections.advanced_macro) flat.advanced_macro = sections.advanced_macro;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -4206,6 +4207,11 @@ function bindZoomHandlers() {
   { key: "squeeze_fragility", name: "Squeeze Fragility Radar", desc: "Short squeeze risk, notified when fragility spikes." },
   { key: "vol_surface", name: "Volatility Surface", desc: "VIX term structure and SKEW, notified on backwardation or extreme tail demand." },
   { key: "macro_regime", name: "Macro Regime (Sovereign Blowout)", desc: "Four-regime 10Y yield probability model, notified when blowout risk builds." },
+  { key: "fiscal_dominance", name: "Fiscal Dominance (Debt Spiral)", desc: "Federal interest burden against tax receipts, notified when the debt spiral score reaches 70." },
+  { key: "eurodollar_stress", name: "Eurodollar & Offshore Dollar Stress", desc: "Fed swap line draws and broad dollar velocity, notified when offshore dollar stress builds." },
+  { key: "economic_nowcast", name: "Economic Nowcast Momentum", desc: "WEI, Sahm Rule, and claims momentum, notified on recessionary drift or a Sahm Rule trigger." },
+  { key: "taylor_gap", name: "Taylor Rule Policy Gap", desc: "Fed restrictiveness against the Taylor prescription, notified when the gap moves beyond plus or minus 100 bps." },
+  { key: "sovereign_fragmentation", name: "Sovereign Fragmentation (BTP/Bund)", desc: "Eurozone peripheral spreads, notified when the BTP/Bund spread widens through 180 bps." },
  ];
 
  function premarketHtml() {
@@ -9393,6 +9399,274 @@ function macroRegimeHtml() {
   });
  }
 
+// === Global Macro group (advanced_macro.json) ===
+// Five structural gauges: fiscal dominance, eurodollar stress, nowcast
+// momentum, Taylor policy gap, sovereign fragmentation. The nowcast
+// headline is a momentum score (high = strong economy); the Taylor
+// headline value is the raw policy gap in bps, not a 0-100 score.
+const GM_COLORS = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+const GM_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function gmMonthLabel(d) {
+ if (!d) return "";
+ const p = String(d).split("-");
+ return (GM_MONTHS[Number(p[1]) - 1] || "") + " " + p[0];
+}
+function gmQuarterLabel(d) {
+ if (!d) return "";
+ const p = String(d).split("-");
+ return "Q" + (Math.floor((Number(p[1]) - 1) / 3) + 1) + " " + p[0];
+}
+function gmCard(label, val, sub) {
+ return '<div style="background:#161b26;border-radius:10px;padding:12px;text-align:center;">' +
+  '<div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
+  '<div style="font-size:22px;font-weight:800;color:#e8ecf1;">' + val + "</div>" +
+  (sub ? '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
+}
+function gmBanner(label, big, unit, regime, color, sub) {
+ const c = GM_COLORS[color] || "#e8ecf1";
+ return '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
+  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + label + "</div>" +
+  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + big + (unit ? '<span style="font-size:16px;color:#8b949e;">' + unit + "</span>" : "") + "</div></div>" +
+  '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div>" +
+  (sub ? '<div style="font-size:12px;color:#8b949e;margin-top:4px;">' + sub + "</div>" : "") + "</div></div>";
+}
+function gmChart(id, chartKey) {
+ return '<div class="zoomable-chart" data-chart="' + chartKey + '" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="' + id + '"></canvas>' +
+  '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
+}
+function gmAsof(model, dateText) {
+ return '<div class="panel-asof">As of ' + esc(dateText || (model.as_of || "").slice(0, 10)) +
+  (model.frequency ? " \u00B7 updated " + esc(model.frequency) : "") + "</div></div>";
+}
+function gmMissing(title) {
+ return '<div class="section"><div class="section-title">' + title + " " + PRO_BADGE + "</div>" +
+  '<div class="card"><p style="color:var(--muted)">Data unavailable for this gauge right now. It will return with the next successful refresh, and no estimate is shown in its place.</p></div></div>';
+}
+function gmExplainer(paras) {
+ return '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' + paras + "</div></div>";
+}
+function gmModels() { return (D.advanced_macro || {}).models || {}; }
+
+function fiscalDominanceHtml() {
+ const M = gmModels().fiscal_dominance || {};
+ if (M.score == null) return gmMissing("Fiscal Dominance & Debt Coverage");
+ const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
+ const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
+ let h = '<div class="section"><div class="section-title">Fiscal Dominance & Debt Coverage ' + PRO_BADGE + "</div>" +
+  '<div class="section-sub">Interest expense against the tax base, the structural gauge underneath every yield model on this page. When the burden grows heavy enough, monetary policy stops being fully the central bank\u2019s to set.</div>';
+ h += gmBanner("DEBT SPIRAL SCORE", M.score, "/100", M.regime, M.color,
+  "Interest burden " + (M.interest_burden_pct != null ? f2(M.interest_burden_pct) + "% of tax receipts" : "N/A") +
+  " in " + gmQuarterLabel(M.as_of));
+ h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
+  gmCard("INTEREST BURDEN", M.interest_burden_pct != null ? f2(M.interest_burden_pct) + "%" : "N/A", "share of federal tax receipts") +
+  gmCard("INTEREST OUTLAYS", M.interest_b != null ? "$" + Math.round(M.interest_b).toLocaleString() + "B" : "N/A", "annual rate, gross interest payments") +
+  gmCard("TAX RECEIPTS", M.receipts_b != null ? "$" + Math.round(M.receipts_b).toLocaleString() + "B" : "N/A", "annual rate, tax receipts only") +
+  gmCard("DEBT TO GDP", M.debt_gdp_pct != null ? f1(M.debt_gdp_pct) + "%" : "N/A", "total public debt" + (M.debt_gdp_as_of ? ", " + gmQuarterLabel(M.debt_gdp_as_of) : "")) +
+  "</div>";
+ if ((M.history || []).length) {
+  h += '<div style="font-size:12px;color:#8b949e;margin:4px 0;">Interest burden over the last 16 quarters. The desk bands sit at 15 percent for structural constraint and 22 percent for binding fiscal dominance.</div>';
+  h += gmChart("fiscal-dominance-chart", "fiscal-dominance");
+ }
+ h += gmAsof(M, gmQuarterLabel(M.as_of));
+ h += gmExplainer(
+  "Debt sustainability is the structural cause sitting underneath the yield models. When a government borrows heavily during an expansion, interest expense compounds against the tax base, and past a certain burden the central bank loses room to maneuver. Tightening policy to fight inflation raises the Treasury\u2019s own borrowing cost, widens the deficit it is trying to cool, and forces still more issuance into the market. That feedback loop is fiscal dominance, and this gauge measures how close the United States is to the zone where it binds.<br><br>" +
+  "The burden divides federal interest payments by federal tax receipts, both as published in the national accounts. Receipts here cover tax receipts only, so the measure is tighter than ratios built on total federal revenue. Below 12 percent the burden is benign and debt service sits comfortably inside the tax base. Between 15 and 20 percent interest expense passes national defense spending and auctions begin to need concession yields to clear. Above 22 percent the desk treats the constraint as binding, because at that point capping the government\u2019s borrowing cost starts to compete directly with the inflation mandate.<br><br>" +
+  "The maturity profile of the debt matters alongside the level, since a shorter average maturity rolls the stock into new coupons faster when rates rise. That rollover wall is tracked qualitatively in our desk work rather than inside this gauge, because the free structured feeds do not publish a clean maturity distribution. What this gauge gives you is the trajectory of the burden itself, quarter by quarter, and it moves slowly by design. Fiscal dominance is a regime variable rather than a trading signal, and it conditions how violent any term premium repricing can become.");
+ return h;
+}
+
+function eurodollarStressHtml() {
+ const M = gmModels().eurodollar_stress || {};
+ if (M.score == null) return gmMissing("Offshore Dollar Funding & Eurodollar Stress");
+ const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
+ const sz = (v) => v != null ? (v > 0 ? "+" : "") + Number(v).toFixed(2) + "\u03C3" : "N/A";
+ const swaps = M.swap_draws_m == null ? "N/A" : (M.swap_draws_m >= 1000 ? "$" + (M.swap_draws_m / 1000).toFixed(1) + "B" : "$" + Math.round(M.swap_draws_m) + "M");
+ let h = '<div class="section"><div class="section-title">Offshore Dollar Funding & Eurodollar Stress ' + PRO_BADGE + "</div>" +
+  '<div class="section-sub">Stress in the offshore dollar system, read through Federal Reserve swap line draws and the velocity of the broad trade-weighted dollar.</div>';
+ h += gmBanner("EURODOLLAR STRESS", M.score, "/100", M.regime, M.color,
+  "Swap draws sit at " + swaps + " and dollar velocity at " + sz(M.velocity_z));
+ h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
+  gmCard("SWAP LINE DRAWS", swaps, "Fed liquidity swaps outstanding" + (M.swap_as_of ? ", " + esc(String(M.swap_as_of).slice(0, 10)) : "")) +
+  gmCard("BROAD DOLLAR INDEX", M.broad_dollar != null ? f2(M.broad_dollar) : "N/A", "trade-weighted, goods and services") +
+  gmCard("DOLLAR VELOCITY 20D", sz(M.velocity_z), "20-day change in its own recent distribution") +
+  "</div>";
+ if ((M.history || []).length) {
+  h += '<div style="font-size:12px;color:#8b949e;margin:4px 0;">Stress score over the last 120 trading days. Sustained readings above 45 have accompanied offshore funding strains, and spikes toward 70 mark an active squeeze.</div>';
+  h += gmChart("eurodollar-stress-chart", "eurodollar-stress");
+ }
+ h += gmAsof(M);
+ h += gmExplainer(
+  "Most dollars never touch the United States. Offshore banks and corporations carry trillions in dollar liabilities outside the Federal Reserve\u2019s direct oversight, and that Eurodollar system has to roll its funding continuously. When offshore institutions cannot source dollars, they sell their most liquid dollar assets first, which means Treasuries and mega-cap equities, and a funding problem abroad becomes a margin cascade at home. Crises in this system rarely start with a headline. They start with plumbing.<br><br>" +
+  "The cleanest tell is the Federal Reserve\u2019s central bank liquidity swaps. Foreign central banks draw dollars through these lines only when their domestic banks cannot fund themselves in the market, so the balance sits near zero in calm times and spikes violently in a squeeze. Draws above five billion dollars mean someone offshore is running short. The second input is the velocity of the broad trade-weighted dollar, measured as the 20-day change standardized against its own recent history. A dollar rising too fast tightens conditions for every offshore borrower at once, and a move beyond two standard deviations acts as a wrecking ball for dollar debtors.<br><br>" +
+  "The cross-currency basis, the premium foreign borrowers pay to swap their own currency into dollars, prices this same shortage in the market. It is tracked qualitatively in our desk work because no free structured feed publishes it reliably, and the swap lines plus dollar velocity capture the same stress with a lag of days rather than minutes. When this gauge rises, the correct instinct is to respect it. Offshore dollar shortages have preceded or amplified nearly every major dislocation of the modern era.");
+ return h;
+}
+
+function economicNowcastHtml() {
+ const M = gmModels().economic_nowcast || {};
+ if (M.score == null) return gmMissing("Economic Nowcast Momentum");
+ const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
+ const dp = M.claims_drift_pct;
+ let h = '<div class="section"><div class="section-title">Economic Nowcast Momentum ' + PRO_BADGE + "</div>" +
+  '<div class="section-sub">A momentum composite of the fastest reliable activity data. High readings mean a strong economy rather than high risk, and this gauge feeds the composite risk index inverted.</div>';
+ h += gmBanner("NOWCAST MOMENTUM", M.score, "/100", M.regime, M.color,
+  "Weekly Economic Index at " + (M.wei != null ? f2(M.wei) + "%" : "N/A") +
+  (M.sahm_triggered ? ", and the Sahm Rule is triggered" : ", with the Sahm Rule untriggered"));
+ h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
+  gmCard("NY FED WEI", M.wei != null ? f2(M.wei) + "%" : "N/A", "scaled to annual GDP growth") +
+  gmCard("SAHM RULE", M.sahm != null ? f2(M.sahm) : "N/A", M.sahm_triggered ? "TRIGGERED at 0.50 or higher" : "trigger sits at 0.50" + (M.sahm_as_of ? ", " + gmMonthLabel(M.sahm_as_of) : "")) +
+  gmCard("CLAIMS DRIFT", dp != null ? (dp > 0 ? "+" : "") + f2(dp) + "%" : "N/A", "4-week claims against the 52-week mean") +
+  gmCard("INITIAL CLAIMS 4WK", M.claims_4wk != null ? Math.round(M.claims_4wk).toLocaleString() : "N/A", "52-week mean " + (M.claims_52wk != null ? Math.round(M.claims_52wk).toLocaleString() : "N/A")) +
+  "</div>";
+ if ((M.history || []).length) {
+  h += '<div style="font-size:12px;color:#8b949e;margin:4px 0;">Momentum score over the last 52 weeks. The recessionary zone sits at 35 and below, and strong momentum at 65 and above.</div>';
+  h += gmChart("nowcast-momentum-chart", "nowcast-momentum");
+ }
+ h += gmAsof(M);
+ h += gmExplainer(
+  "This gauge is named carefully. Markets reprice on the gap between data and expectations, and a true surprise index needs analyst consensus for every release, which only paid feeds carry. What free data supports is a momentum composite of the fastest reliable activity measures, and that is what this model is. It tracks how quickly the economy is actually moving right now, which is the run-rate surprises get measured against.<br><br>" +
+  "The Weekly Economic Index from the New York Fed scales a basket of high-frequency series to annual GDP growth, so it catches turning points weeks before the quarterly accounts. The Sahm Rule watches the unemployment rate against its own recent lows and has flagged every recession since 1970 shortly after it began, with a trigger at half a percentage point. Claims drift compares the four-week average of initial jobless claims with its 52-week mean, because labor softening shows up in claims before it shows in payrolls.<br><br>" +
+  "The composite reads high when the economy is running hot and low when momentum is rolling over, and that direction matters for how it is used. A high score is a strong economy and therefore low risk, so the gauge feeds the composite risk index inverted, turning recessionary drift into a rising risk contribution. Read it as a run-rate rather than a verdict. Momentum near the middle of the range means the economy is moving at roughly the pace expectations already assume, and the extremes on either side are where positioning gets dangerous.");
+ return h;
+}
+
+function taylorGapHtml() {
+ const M = gmModels().taylor_gap || {};
+ if (M.gap_bps == null) return gmMissing("Taylor Rule Policy Gap");
+ const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
+ const gap = M.gap_bps;
+ const gapTxt = (gap > 0 ? "+" : "") + Math.round(gap);
+ let h = '<div class="section"><div class="section-title">Taylor Rule Policy Gap ' + PRO_BADGE + "</div>" +
+  '<div class="section-sub">The effective fed funds rate against the rate the Taylor Rule prescribes. The gap is the cleanest single measure of how restrictive policy really is.</div>';
+ h += gmBanner("POLICY GAP", gapTxt, " bps", M.regime, M.color,
+  "Effective fed funds " + (M.effr != null ? f2(M.effr) + "%" : "N/A") +
+  " against a Taylor prescription of " + (M.taylor_rate != null ? f2(M.taylor_rate) + "%" : "N/A"));
+ h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
+  gmCard("EFFECTIVE FED FUNDS", M.effr != null ? f2(M.effr) + "%" : "N/A", (M.effr_basis === "daily" ? "daily print" : "monthly average") + (M.effr_as_of ? ", " + esc(String(M.effr_as_of).slice(0, 10)) : "")) +
+  gmCard("TAYLOR PRESCRIPTION", M.taylor_rate != null ? f2(M.taylor_rate) + "%" : "N/A", "rule-implied policy rate") +
+  gmCard("CORE PCE INFLATION", M.core_pce_yoy != null ? f2(M.core_pce_yoy) + "%" : "N/A", "12-month change, target 2.00%") +
+  gmCard("OUTPUT GAP", M.output_gap != null ? (M.output_gap > 0 ? "+" : "") + f2(M.output_gap) + "%" : "N/A", "Okun mapping from unemployment at " + (M.unrate != null ? f2(M.unrate) + "%" : "N/A")) +
+  "</div>";
+ if ((M.history || []).length) {
+  h += '<div style="font-size:12px;color:#8b949e;margin:4px 0;">Effective fed funds against the Taylor prescription over the last 24 months. Where the gold line runs above the purple line, policy is tighter than the rule prescribes.</div>';
+  h += gmChart("taylor-gap-chart", "taylor-gap");
+ }
+ h += gmAsof(M, gmMonthLabel(M.as_of));
+ h += gmExplainer(
+  "The Taylor Rule converts the Federal Reserve\u2019s reaction function into arithmetic. It prescribes a policy rate from four ingredients, a real neutral rate, current inflation, half the distance between inflation and target, and half the output gap. Comparing the actual effective fed funds rate with that prescription produces the policy gap, and the gap measures whether policy is restrictive, neutral, or stimulative relative to the economy in front of it.<br><br>" +
+  "Two ingredients are parameters rather than observations, and they are disclosed rather than hidden. The real neutral rate is set at 1.25 percent, inside the range most estimates cluster around, and the natural unemployment rate is set at 4.20 percent, the Congressional Budget Office long-run estimate. The output gap comes from Okun\u2019s law, which maps each point of unemployment above the natural rate to roughly two points of lost output. Core PCE inflation is used because it is the measure the Fed targets and the least distorted by food and energy swings.<br><br>" +
+  "A gap beyond plus 100 basis points means the Fed is holding policy well above its own historical reaction pattern, and that degree of restraint has usually ended in credit stress. A gap beyond minus 100 means policy is looser than the rule prescribes, the configuration that has historically fueled speculative excess. The middle ground is where multiples can breathe. Watch the direction of travel as much as the level, because a gap closing from deeply restrictive toward neutral has marked some strong equity entry points, while the same narrowing late in an easing cycle has meant the opposite.");
+ return h;
+}
+
+function sovereignFragmentationHtml() {
+ const M = gmModels().sovereign_fragmentation || {};
+ if (M.score == null) return gmMissing("Sovereign Credit Fragmentation");
+ const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
+ const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
+ const yrow = (name, cur, sub) =>
+  "<tr><td style=\"font-weight:600;color:#e8ecf1;\">" + name + "</td><td>" + (cur != null ? f2(cur) + "%" : "N/A") + "</td><td>" + sub + "</td></tr>";
+ let h = '<div class="section"><div class="section-title">Sovereign Credit Fragmentation ' + PRO_BADGE + "</div>" +
+  '<div class="section-sub">Italian and French 10-year yields against the German Bund, the market\u2019s running vote on whether the eurozone holds together under a global rate shock.</div>';
+ h += gmBanner("FRAGMENTATION RISK", M.score, "/100", M.regime, M.color,
+  "BTP/Bund spread " + (M.btp_bund_bps != null ? f1(M.btp_bund_bps) + " bps" : "N/A") +
+  " in " + gmMonthLabel(M.as_of));
+ h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
+  gmCard("BTP/BUND SPREAD", M.btp_bund_bps != null ? f1(M.btp_bund_bps) + " bps" : "N/A", "crisis threshold sits at 220 bps") +
+  gmCard("OAT/BUND SPREAD", M.oat_bund_bps != null ? f1(M.oat_bund_bps) + " bps" : "N/A", "core political and budget friction") +
+  gmCard("GERMAN BUND 10Y", M.germany_10y_latest != null ? f2(M.germany_10y_latest) + "%" : "N/A", "latest print, " + gmMonthLabel(M.germany_latest_as_of)) +
+  "</div>";
+ h += '<div class="card" style="padding:0;overflow:hidden;margin:12px 0;"><div class="table-wrap"><table class="coverage">' +
+  "<thead><tr><th>Sovereign 10Y Benchmark</th><th>Yield</th><th>Basis</th></tr></thead><tbody>" +
+  yrow("Italy BTP 10Y", M.italy_10y, "monthly, " + gmMonthLabel(M.as_of)) +
+  yrow("Germany Bund 10Y", M.germany_10y, "monthly, " + gmMonthLabel(M.as_of)) +
+  yrow("France OAT 10Y", M.france_10y, "monthly, " + gmMonthLabel(M.as_of)) +
+  "</tbody></table></div></div>" +
+  '<div style="font-size:11px;color:#8b949e;margin:-4px 0 12px;">Spreads are computed on the latest month all three series share, because the Italian print lags the German and French releases. The Bund card above shows the newest German print on its own.</div>';
+ if ((M.history || []).length) {
+  h += gmChart("fragmentation-chart", "fragmentation");
+ }
+ h += gmAsof(M, gmMonthLabel(M.as_of));
+ h += gmExplainer(
+  "A currency union shares one central bank across many sovereign balance sheets, and that asymmetry is where European stress begins. When global rates rise, capital leaves the fiscally weaker sovereigns and concentrates in the German Bund, the bloc\u2019s risk-free anchor. The spread between Italian and German 10-year yields is therefore the market\u2019s running vote on whether the union holds together under pressure.<br><br>" +
+  "Below 120 basis points the vote is calm and funding conditions across the bloc are broadly uniform. Between 150 and 200 the tension is real, because Italian banks hold large portfolios of their own government\u2019s debt and widening spreads transmit straight into domestic credit. Above 220 the desk treats the situation as a crisis in formation, with banking contagion across European lenders a live possibility and an ECB intervention, most likely through its Transmission Protection Instrument, becoming the base case.<br><br>" +
+  "The French OAT spread rides alongside because France sits in the core, and stress there signals something different from peripheral weakness. A widening OAT/Bund spread reflects political and budgetary deadlock inside the bloc\u2019s second economy, and it removes the assumption that core paper beyond Germany is unconditionally safe. These are monthly OECD observations, so the gauge moves at the speed of official statistics rather than market prices. That lag is acceptable for a structural gauge, and the direction across several months matters more than any single print.");
+ return h;
+}
+
+// Group wrapper for the five Global Macro sections on #/risk.
+function globalMacroHtml() {
+ let h = '<div class="section" style="margin-top:28px;"><div class="section-title" style="font-size:19px;">Global Macro</div>' +
+  '<div class="section-sub">Five structural gauges covering fiscal sustainability, offshore dollar funding, nowcast momentum, policy restrictiveness, and eurozone credit cohesion. They move slowly and condition everything else on this page.</div></div>';
+ h += fiscalDominanceHtml();
+ h += eurodollarStressHtml();
+ h += economicNowcastHtml();
+ h += taylorGapHtml();
+ h += sovereignFragmentationHtml();
+ return h;
+}
+
+// Free-tier headline card for the Taylor gap: the value is basis points,
+// not a 0-100 score, so it gets its own card rather than the generic one.
+function taylorGapFreeCard() {
+ const T = (D.risk_headlines || {}).taylor_gap || {};
+ if (T.score == null) return "";
+ const c = GM_COLORS[T.color] || "#e8ecf1";
+ const g = Math.round(T.score);
+ return '<div style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+  '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">TAYLOR GAP</div>' +
+  '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + (g > 0 ? "+" : "") + g + '<span style="font-size:14px;color:#8b949e;"> bps</span></div>' +
+  '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(T.regime || "") + "</div></div>";
+}
+
+// Draw the Global Macro history charts. Call after bindZoomHandlers()
+// in the Pro #/risk route.
+function drawAdvancedMacroCharts() {
+ const models = gmModels();
+ const line = (id, labels, datasets, yTitle) => {
+  const cv = document.getElementById(id);
+  if (!cv || !labels.length || !window.Chart) return;
+  const old = Chart.getChart(cv);
+  if (old) old.destroy();
+  new Chart(cv, {
+   data: { labels: labels, datasets: datasets },
+   options: { animation: false, responsive: true, maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+    scales: {
+     x: { ticks: { color: "#6b7280", maxTicksLimit: 8 }, grid: { display: false } },
+     y: { title: { display: true, text: yTitle, color: "#8b949e" },
+          ticks: { color: "#8b949e" }, grid: { color: "rgba(42,46,57,0.4)" } },
+    }},
+  });
+ };
+ const ds = (label, data, color) => ({ type: "line", label: label, data: data,
+  borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0.2 });
+ const fd = models.fiscal_dominance || {};
+ if ((fd.history || []).length)
+  line("fiscal-dominance-chart", fd.history.map((r) => gmQuarterLabel(r.date)),
+   [ds("Interest burden %", fd.history.map((r) => r.ratio), "#f85149")], "% of receipts");
+ const eu = models.eurodollar_stress || {};
+ if ((eu.history || []).length)
+  line("eurodollar-stress-chart", eu.history.map((r) => r.date),
+   [ds("Stress score", eu.history.map((r) => r.score), "#d29922")], "score");
+ const nc = models.economic_nowcast || {};
+ if ((nc.history || []).length)
+  line("nowcast-momentum-chart", nc.history.map((r) => r.date),
+   [ds("Momentum score", nc.history.map((r) => r.score), "#58a6ff")], "score");
+ const tg = models.taylor_gap || {};
+ if ((tg.history || []).length)
+  line("taylor-gap-chart", tg.history.map((r) => gmMonthLabel(r.date)),
+   [ds("Effective fed funds %", tg.history.map((r) => r.effr), "#c9a961"),
+    ds("Taylor prescription %", tg.history.map((r) => r.taylor_rate), "#a371f7")], "%");
+ const sf = models.sovereign_fragmentation || {};
+ if ((sf.history || []).length)
+  line("fragmentation-chart", sf.history.map((r) => gmMonthLabel(r.date)),
+   [ds("BTP/Bund (bps)", sf.history.map((r) => r.btp_bund_bps), "#f85149"),
+    ds("OAT/Bund (bps)", sf.history.map((r) => r.oat_bund_bps), "#c9a961")], "bps");
+}
+
 // === real_yield_shock.js ===
 function realYieldShockHtml() {
   const R = D.real_yield_shock || {};
@@ -9955,7 +10229,9 @@ function volSurfaceHtml() {
    margin_leverage: "Margin Lev.", sector_rotation: "Rotation", fear_index: "Fear",
    oas_distress: "Credit", treasury_slr: "Treasury Cap.", real_yield_shock: "Real Yield",
    gamma_flip: "Gamma", pead_screener: "Earn Drift", squeeze_radar: "Squeeze",
-   macro_regime: "Macro Regime" };
+   macro_regime: "Macro Regime", fiscal_dominance: "Fiscal Dom.",
+   eurodollar_stress: "Eurodollar", economic_nowcast: "Nowcast",
+   taylor_gap: "Taylor Gap", sovereign_fragmentation: "Fragment." };
   let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
    '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8b949e;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
    '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8b949e;">/100</span></div>' +
@@ -10636,6 +10912,10 @@ function volSurfaceHtml() {
    const sqz = rh.squeeze_radar || {};
    const gfl = rh.gamma_flip || {};
    const mr = rh.macro_regime || {};
+   const fisc = rh.fiscal_dominance || {};
+   const euro = rh.eurodollar_stress || {};
+   const nowc = rh.economic_nowcast || {};
+   const frag = rh.sovereign_fragmentation || {};
    const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
    const card = (name, score, regime, color) => {
     if (score == null) return "";
@@ -10669,8 +10949,13 @@ function volSurfaceHtml() {
     card("Earnings Drift", pead.score, pead.regime, pead.color) +
     card("Squeeze Fragility", sqz.score, sqz.regime, sqz.color) +
     card("Macro Regime", mr.score, mr.regime, mr.color) +
+    card("Fiscal Dominance", fisc.score, fisc.regime, fisc.color) +
+    card("Eurodollar Stress", euro.score, euro.regime, euro.color) +
+    card("Nowcast Momentum", nowc.score, nowc.regime, nowc.color) +
+    taylorGapFreeCard() +
+    card("Sovereign Fragmentation", frag.score, frag.regime, frag.color) +
     "</div>" +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Macro Regime Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Macro Regime Model, Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, Sovereign Credit Fragmentation, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;
    return;
   }
@@ -10683,6 +10968,7 @@ function volSurfaceHtml() {
   h += rvShockHtml();
   h += oasDistressHtml();
   h += macroRegimeHtml();
+  h += globalMacroHtml();
   h += contagionHtml();
   h += flowDivergenceHtml();
   h += concentrationHtml();
@@ -10765,6 +11051,7 @@ function volSurfaceHtml() {
   }
   drawOasDistressChart();
   drawMacroRegimeChart();
+  drawAdvancedMacroCharts();
   // Draw contagion chart inline
   const cg = D.contagion || {};
   const cgHist = cg.history || [];
@@ -10952,6 +11239,7 @@ function volSurfaceHtml() {
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
    '<li>✓ All ' + (((D.risk_headlines || {}).composite || {}).model_count || 15) + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Macro Regime, with charts, history, and plain-English explainers</li>' +
+   '<li>✓ Global Macro suite: Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, and Sovereign Credit Fragmentation (BTP/Bund and OAT/Bund)</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
    '<li>✓ Volatility Surface, VIX term structure regimes, four-quadrant matrix, and per-ticker 25-delta risk reversals</li>' +
