@@ -688,6 +688,14 @@ function bindZoomHandlers() {
        balance: "Balance Sheet, " + (el.dataset.ticker || ""),
        cashflow: "Cash Flow, " + (el.dataset.ticker || ""),
        comps: "Relative Valuation, Growth vs Multiple",
+       "oas-distress": "OAS Distress, HY OAS vs Quality Spread",
+       "macro-regime": "Macro Regime, Probability History",
+       "fiscal-dominance": "Fiscal Dominance, Interest Burden",
+       "eurodollar-stress": "Eurodollar Stress",
+       "nowcast-momentum": "Economic Nowcast Momentum",
+       "taylor-gap": "Taylor Rule Policy Gap",
+       fragmentation: "Sovereign Fragmentation, BTP/OAT vs Bund",
+       erp: "Implied Equity Risk Premium",
       };
       // For GEX ticker (HTML, not a Chart.js chart): show enlarged HTML
       if (kind === "gex-ticker") {
@@ -1485,6 +1493,16 @@ function bindZoomHandlers() {
         // Rebuild the comps scatter at modal size, same metric the inline
         // view is currently showing (EV/Revenue or Forward P/E toggle).
         const cfg = buildCompsChartConfig(window._compsUsePE === true, true);
+        if (cfg) new Chart(zc, cfg);
+       } else if (kind === "oas-distress") {
+        const cfg = oasDistressChartConfig();
+        if (cfg) new Chart(zc, cfg);
+       } else if (kind === "macro-regime") {
+        const cfg = macroRegimeChartConfig();
+        if (cfg) new Chart(zc, cfg);
+       } else if (kind === "fiscal-dominance" || kind === "eurodollar-stress" ||
+                  kind === "nowcast-momentum" || kind === "taylor-gap" || kind === "fragmentation") {
+        const cfg = gmHistoryChartConfig(kind);
         if (cfg) new Chart(zc, cfg);
        }
       } catch (e) { console.error("Zoom chart error", e); }
@@ -9965,16 +9983,13 @@ function oasDistressHtml() {
    '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(O.regime || "") + "</div></div>";
  }
 
- // Draw the 60-day HY OAS vs quality spread chart. Call after bindZoomHandlers()
- // in the Pro #/risk route (see insertion step 3 above).
- function drawOasDistressChart() {
+ // Chart config shared by the inline Risk render and the click-to-zoom
+ // redraw (kind "oas-distress" in bindZoomHandlers).
+ function oasDistressChartConfig() {
   const O = D.oas_distress || {};
   const hist = O.history || [];
-  const cv = document.getElementById("oas-distress-chart");
-  if (!cv || !hist.length || !window.Chart) return;
-  const old = Chart.getChart(cv);
-  if (old) old.destroy();
-  new Chart(cv, {
+  if (!hist.length) return null;
+  return {
    data: {
     labels: hist.map((r) => r.date),
     datasets: [
@@ -9991,7 +10006,19 @@ function oasDistressHtml() {
      y: { title: { display: true, text: "bps", color: "#8d99aa" },
           ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
     }},
-  });
+  };
+ }
+
+ // Draw the 60-day HY OAS vs quality spread chart. Call after bindZoomHandlers()
+ // in the Pro #/risk route (see insertion step 3 above).
+ function drawOasDistressChart() {
+  const cv = document.getElementById("oas-distress-chart");
+  if (!cv || !window.Chart) return;
+  const cfg = oasDistressChartConfig();
+  if (!cfg) return;
+  const old = Chart.getChart(cv);
+  if (old) old.destroy();
+  new Chart(cv, cfg);
  }
 
 // === macro_regime quadrant layer ===
@@ -10254,16 +10281,13 @@ function macroRegimeHtml() {
   return h;
  }
 
- // Draw the 120-day regime probability history. Call after bindZoomHandlers()
- // in the Pro #/risk route.
- function drawMacroRegimeChart() {
+ // Chart config shared by the inline Risk render and the click-to-zoom
+ // redraw (kind "macro-regime" in bindZoomHandlers).
+ function macroRegimeChartConfig() {
   const M = D.macro_regime || {};
   const hist = M.history || [];
-  const cv = document.getElementById("macro-regime-chart");
-  if (!cv || !hist.length || !window.Chart) return;
-  const old = Chart.getChart(cv);
-  if (old) old.destroy();
-  new Chart(cv, {
+  if (!hist.length) return null;
+  return {
    data: {
     labels: hist.map((r) => r.date),
     datasets: [
@@ -10284,7 +10308,19 @@ function macroRegimeHtml() {
      y: { title: { display: true, text: "probability %", color: "#8d99aa" },
           ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
     }},
-  });
+  };
+ }
+
+ // Draw the 120-day regime probability history. Call after bindZoomHandlers()
+ // in the Pro #/risk route.
+ function drawMacroRegimeChart() {
+  const cv = document.getElementById("macro-regime-chart");
+  if (!cv || !window.Chart) return;
+  const cfg = macroRegimeChartConfig();
+  if (!cfg) return;
+  const old = Chart.getChart(cv);
+  if (old) old.destroy();
+  new Chart(cv, cfg);
  }
 
 // === Global Macro group (advanced_macro.json) ===
@@ -10508,51 +10544,87 @@ function taylorGapFreeCard() {
   '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(T.regime || "") + "</div></div>";
 }
 
+// Global Macro history series, shared by the inline Risk renders and the
+// click-to-zoom redraws (kinds are the gmChart data-chart keys, wired in
+// bindZoomHandlers). Returns null when a model has no history yet.
+const GM_CANVAS = {
+ "fiscal-dominance": "fiscal-dominance-chart",
+ "eurodollar-stress": "eurodollar-stress-chart",
+ "nowcast-momentum": "nowcast-momentum-chart",
+ "taylor-gap": "taylor-gap-chart",
+ "fragmentation": "fragmentation-chart",
+};
+function gmSeriesFor(kind) {
+ const models = gmModels();
+ const ds = (label, data, color) => ({ type: "line", label: label, data: data,
+  borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0.2 });
+ if (kind === "fiscal-dominance") {
+  const fd = models.fiscal_dominance || {};
+  if (!(fd.history || []).length) return null;
+  return { labels: fd.history.map((r) => gmQuarterLabel(r.date)),
+   datasets: [ds("Interest burden %", fd.history.map((r) => r.ratio), "#f37d83")],
+   yTitle: "% of receipts" };
+ }
+ if (kind === "eurodollar-stress") {
+  const eu = models.eurodollar_stress || {};
+  if (!(eu.history || []).length) return null;
+  return { labels: eu.history.map((r) => r.date),
+   datasets: [ds("Stress score", eu.history.map((r) => r.score), "#e0aa46")],
+   yTitle: "score" };
+ }
+ if (kind === "nowcast-momentum") {
+  const nc = models.economic_nowcast || {};
+  if (!(nc.history || []).length) return null;
+  return { labels: nc.history.map((r) => r.date),
+   datasets: [ds("Momentum score", nc.history.map((r) => r.score), "#58a6ff")],
+   yTitle: "score" };
+ }
+ if (kind === "taylor-gap") {
+  const tg = models.taylor_gap || {};
+  if (!(tg.history || []).length) return null;
+  return { labels: tg.history.map((r) => gmMonthLabel(r.date)),
+   datasets: [ds("Effective fed funds %", tg.history.map((r) => r.effr), "#d9a441"),
+    ds("Taylor prescription %", tg.history.map((r) => r.taylor_rate), "#a371f7")],
+   yTitle: "%" };
+ }
+ if (kind === "fragmentation") {
+  const sf = models.sovereign_fragmentation || {};
+  if (!(sf.history || []).length) return null;
+  return { labels: sf.history.map((r) => gmMonthLabel(r.date)),
+   datasets: [ds("BTP/Bund (bps)", sf.history.map((r) => r.btp_bund_bps), "#f37d83"),
+    ds("OAT/Bund (bps)", sf.history.map((r) => r.oat_bund_bps), "#d9a441")],
+   yTitle: "bps" };
+ }
+ return null;
+}
+function gmChartOptions(yTitle) {
+ return { animation: false, responsive: true, maintainAspectRatio: false,
+  interaction: { mode: "index", intersect: false },
+  plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+  scales: {
+   x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
+   y: { title: { display: true, text: yTitle, color: "#8d99aa" },
+        ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
+  }};
+}
+function gmHistoryChartConfig(kind) {
+ const s = gmSeriesFor(kind);
+ if (!s) return null;
+ return { data: { labels: s.labels, datasets: s.datasets }, options: gmChartOptions(s.yTitle) };
+}
+
 // Draw the Global Macro history charts. Call after bindZoomHandlers()
 // in the Pro #/risk route.
 function drawAdvancedMacroCharts() {
- const models = gmModels();
- const line = (id, labels, datasets, yTitle) => {
-  const cv = document.getElementById(id);
-  if (!cv || !labels.length || !window.Chart) return;
+ Object.keys(GM_CANVAS).forEach((kind) => {
+  const cv = document.getElementById(GM_CANVAS[kind]);
+  if (!cv || !window.Chart) return;
+  const cfg = gmHistoryChartConfig(kind);
+  if (!cfg) return;
   const old = Chart.getChart(cv);
   if (old) old.destroy();
-  new Chart(cv, {
-   data: { labels: labels, datasets: datasets },
-   options: { animation: false, responsive: true, maintainAspectRatio: false,
-    interaction: { mode: "index", intersect: false },
-    plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
-    scales: {
-     x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
-     y: { title: { display: true, text: yTitle, color: "#8d99aa" },
-          ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
-    }},
-  });
- };
- const ds = (label, data, color) => ({ type: "line", label: label, data: data,
-  borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0.2 });
- const fd = models.fiscal_dominance || {};
- if ((fd.history || []).length)
-  line("fiscal-dominance-chart", fd.history.map((r) => gmQuarterLabel(r.date)),
-   [ds("Interest burden %", fd.history.map((r) => r.ratio), "#f37d83")], "% of receipts");
- const eu = models.eurodollar_stress || {};
- if ((eu.history || []).length)
-  line("eurodollar-stress-chart", eu.history.map((r) => r.date),
-   [ds("Stress score", eu.history.map((r) => r.score), "#e0aa46")], "score");
- const nc = models.economic_nowcast || {};
- if ((nc.history || []).length)
-  line("nowcast-momentum-chart", nc.history.map((r) => r.date),
-   [ds("Momentum score", nc.history.map((r) => r.score), "#58a6ff")], "score");
- const tg = models.taylor_gap || {};
- if ((tg.history || []).length)
-  line("taylor-gap-chart", tg.history.map((r) => gmMonthLabel(r.date)),
-   [ds("Effective fed funds %", tg.history.map((r) => r.effr), "#d9a441"),
-    ds("Taylor prescription %", tg.history.map((r) => r.taylor_rate), "#a371f7")], "%");
- const sf = models.sovereign_fragmentation || {};
- if ((sf.history || []).length)
-  line("fragmentation-chart", sf.history.map((r) => gmMonthLabel(r.date)),
-   [ds("BTP/Bund (bps)", sf.history.map((r) => r.btp_bund_bps), "#f37d83"),
-    ds("OAT/Bund (bps)", sf.history.map((r) => r.oat_bund_bps), "#d9a441")], "bps");
+  new Chart(cv, cfg);
+ });
 }
 
 // === real_yield_shock.js ===
