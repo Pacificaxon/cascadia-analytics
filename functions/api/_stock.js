@@ -84,7 +84,7 @@ export function upstreamError(request, ticker, err) {
 //     the function indefinitely.
 const CRUMB_TTL_MS = 10 * 60 * 1000;
 const CRUMB_HOSTS = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
-const CRUMB_DELAYS_MS = [0, 400, 1100, 2300];
+const CRUMB_DELAYS_MS = [0, 400, 1100, 2300, 4000];
 let _crumbCache = null;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -150,6 +150,7 @@ export async function quoteSummary(ticker, modules, crumb, cookies) {
   // A 429 (rate limit) or 401 (crumb rejected) gets one retry on a freshly
   // negotiated crumb before the caller surfaces an upstream error.
   if (res.status === 429 || res.status === 401) {
+    await sleep(800);
     invalidateCrumb();
     const fresh = await getCrumb();
     res = await fetch(build(fresh.crumb), {
