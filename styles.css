@@ -493,3 +493,69 @@ table.fin-table tr:last-child td { border-bottom: none; }
 .acad-slider::-moz-range-track { height: 4px; border-radius: 2px; background: #2a3448; }
 .acad-slider::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #c9a961; border: none; }
 .acad-formula { font-family: monospace; font-size: 15px; }
+
+/* ---------- ticker page: artifact layout (tkx, Oct 2026) ----------
+   Port of the Muse artifact ticker page language, scoped to the ticker
+   route via the .tk-page wrapper so no other route shifts. Deep-navy
+   panels, hairline borders, 14px radius, mono kickers, tabular numerals. */
+.tk-page { --tkx-panel: #121b29; --tkx-line: #2a3448; }
+.tk-page .card { border-radius: 14px; padding: 26px; }
+.tk-page .locked-teaser { border-radius: 14px; }
+.tkx-topbar {
+  display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px 16px;
+  margin: 24px 0 0; padding-bottom: 12px; border-bottom: 1px solid var(--tkx-line);
+}
+.tkx-kick { font-family: var(--mono); font-size: 11px; letter-spacing: 1.8px; color: var(--faint); text-transform: uppercase; }
+.tkx-snap { font-family: var(--mono); font-size: 11px; letter-spacing: 1.8px; color: var(--gold); text-transform: uppercase; }
+.tkx-hero { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 18px 32px; margin: 26px 0 24px; }
+.tkx-symrow { display: flex; align-items: center; gap: 16px; }
+.tkx-logo { display: inline-flex; }
+.tkx-logo img { width: 44px !important; height: 44px !important; border-radius: 10px !important; }
+.tkx-sym { font-size: clamp(46px, 7vw, 76px); font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1.02; margin: 0; font-variant-numeric: tabular-nums; }
+.tkx-coname { color: var(--muted); font-size: 17px; margin-top: 8px; }
+.tkx-ind { font-size: 12.5px; color: var(--faint); margin-top: 3px; }
+.tkx-hero-r { text-align: right; }
+.tkx-scores { display: flex; gap: 16px; align-items: flex-start; justify-content: flex-end; margin-bottom: 16px; }
+.tkx-cp-k { font-family: var(--mono); font-size: 11px; letter-spacing: 1.8px; color: var(--faint); text-transform: uppercase; }
+.tkx-cp-v { font-size: clamp(38px, 5vw, 56px); font-weight: 800; color: #fff; letter-spacing: -0.02em; line-height: 1.08; font-variant-numeric: tabular-nums; }
+.tkx-cp-meta { display: flex; gap: 14px; align-items: baseline; justify-content: flex-end; margin-top: 6px; }
+.tkx-asof { font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: 0.6px; }
+.tkx-herocards { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 14px; }
+.tkx-hcard {
+  background: var(--tkx-panel); border: 1px solid var(--tkx-line); border-radius: 14px; padding: 22px 24px;
+}
+.tkx-hcard.tkx-gold { border-left: 3px solid var(--gold); }
+.tkx-k { font-family: var(--mono); font-size: 10.5px; letter-spacing: 1.8px; color: var(--faint); text-transform: uppercase; margin-bottom: 12px; }
+.tkx-v { font-size: 36px; font-weight: 800; color: #fff; letter-spacing: -0.01em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tkx-v.gold { color: var(--gold); }
+.tkx-sub { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+.tkx-scenarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+.tkx-scard { background: var(--tkx-panel); border: 1px solid var(--tkx-line); border-radius: 14px; padding: 20px 22px; }
+.tkx-scard.bear { border-top: 3px solid #f87171; }
+.tkx-scard.base { border-top: 3px solid #e8a33d; }
+.tkx-scard.bull { border-top: 3px solid #34c47c; }
+.tkx-scard-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.tkx-sname { font-size: 14.5px; font-weight: 700; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
+.tkx-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+.tkx-scard.bear .tkx-dot { background: #f87171; }
+.tkx-scard.base .tkx-dot { background: #e8a33d; }
+.tkx-scard.bull .tkx-dot { background: #34c47c; }
+.tkx-wacc { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.8px; color: var(--faint); text-transform: uppercase; white-space: nowrap; }
+.tkx-sval { font-size: 31px; font-weight: 800; color: #fff; letter-spacing: -0.01em; margin: 14px 0 8px; font-variant-numeric: tabular-nums; }
+.tkx-srow { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 13px; font-weight: 600; }
+.tkx-ends { font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: 0.4px; white-space: nowrap; }
+.tkx-meta { font-family: var(--mono); font-size: 11.5px; color: var(--faint); letter-spacing: 0.6px; margin-top: 12px; }
+.tkx-sechead { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px 24px; margin: 34px 0 14px; }
+.tkx-sechead .tkx-k { margin-bottom: 8px; }
+.tkx-h2 { font-size: 30px; font-weight: 800; color: #fff; letter-spacing: -0.01em; line-height: 1.15; }
+.tkx-secdesc { color: var(--muted); font-size: 13px; text-align: right; max-width: 360px; }
+@media (max-width: 760px) {
+  .tkx-herocards { grid-template-columns: 1fr; }
+  .tkx-scenarios { grid-template-columns: 1fr; }
+  .tkx-hero { flex-direction: column; align-items: flex-start; }
+  .tkx-hero-r { text-align: left; }
+  .tkx-scores { justify-content: flex-start; }
+  .tkx-cp-meta { justify-content: flex-start; }
+  .tkx-secdesc { text-align: left; }
+  .tk-page .card { padding: 20px; }
+}

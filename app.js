@@ -6815,14 +6815,32 @@ route("alerts", function () {
   const score = cascadiaScore(t);
   const attrScore = t.scorecard && t.scorecard.score;
   const attrBand = attrScore != null ? (attrScore >= 80 ? "Highly Attractive" : attrScore >= 65 ? "Attractive" : attrScore >= 50 ? "Fair" : attrScore >= 35 ? "Unattractive" : "Avoid") : null;
-  let h = '<div class="tk-kicker">DCF COVERAGE · SINGLE-NAME RESEARCH</div>';
-  h += '<div class="ticker-head" style="display:flex;align-items:center;gap:12px;"><div>' + tickerLogo(tk) + '</div><div><h1 style="margin:0;">' + esc(tk) + '</h1>' + ((t.name && t.name.toUpperCase() !== tk.toUpperCase()) ? '<span class="co-name">' + esc(t.name) + "</span>" : "");
+  // Artifact-style hero (Oct 2026 restyle, user-approved port of the Muse
+  // artifact ticker layout): kicker row, large symbol / current price hero,
+  // blended hero cards, Bear/Base/Bull scenario cards. Same live fields and
+  // the same upside computations as the previous layout; presentation only.
+  const asOfRaw = refreshTs(t);
+  const blendUp = t.blended != null && t.price ? (t.blended / t.price - 1) * 100 : null;
+  const scenYears = t.fcf && t.fcf.base && t.fcf.base.years && t.fcf.base.years.length ? t.fcf.base.years : null;
+  const endYear = scenYears ? scenYears[scenYears.length - 1] : null;
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const pdParts = /^(\d{4})-(\d{2})-(\d{2})/.exec(t.price_date || "");
+  const priceDateFmt = pdParts ? monthNames[Number(pdParts[2]) - 1] + " " + Number(pdParts[3]) + ", " + pdParts[1] : asOfRaw;
+  let h = '<div class="tk-page">';
+  // Top kicker row: page kicker on the left, gold model snapshot on the right
+  h += '<div class="tkx-topbar"><span class="tkx-kick">DCF COVERAGE · SINGLE-NAME RESEARCH</span>' +
+   '<span class="tkx-snap">MODEL SNAPSHOT' + (asOfRaw ? " · " + esc(String(asOfRaw).toUpperCase()) : "") + "</span></div>";
+  // Hero block: logo + large symbol and company name left, current price right
+  h += '<div class="tkx-hero"><div class="tkx-hero-l"><div class="tkx-symrow">' +
+   (tickerLogo(tk) ? '<span class="tkx-logo">' + tickerLogo(tk) + "</span>" : "") +
+   '<h1 class="tkx-sym">' + esc(tk) + "</h1></div>" +
+   ((t.name && t.name.toUpperCase() !== tk.toUpperCase()) ? '<div class="tkx-coname">' + esc(t.name) + "</div>" : "");
   const ind = tickerIndustry(tk);
-  if (ind) h += '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + esc(ind) + "</div>";
-  h += "</div>";
+  if (ind) h += '<div class="tkx-ind">' + esc(ind) + "</div>";
+  h += '</div><div class="tkx-hero-r">';
   // Scores: Cascadia Score and Growth & Value Index (scorecard), labelled and distinguishable
   if (isPro()) {
-    h += '<div style="display:flex;gap:16px;align-items:center;margin-left:8px;">';
+    h += '<div class="tkx-scores">';
     if (score != null) {
       h += '<div style="text-align:center;"><span class="score-badge" style="border:2px solid #c9a961;color:#c9a961;" title="' + esc(scoreTooltip(t)) + '">' + score + '</span><div style="font-size:10px;color:#c9a961;margin-top:4px;letter-spacing:0.5px;font-weight:600;">CASCADIA</div></div>';
     }
@@ -6831,29 +6849,41 @@ route("alerts", function () {
     }
     h += '</div>';
   }
-  h += "</div>";
-  h += '<div class="price-line"><span class="price-big">' + fmt$(t.price) + "</span>" +
-   '<span class="price-date">AS OF ' + esc(refreshTs(t)) + "</span>" +
-   '<span class="' + ratingCls(t.rating) + '">' + esc(ratingLabel(t.rating) || "") + "</span></div>";
-
-  // target cards
-  h += '<div class="target-cards">' +
+  h += '<div class="tkx-cp-k">CURRENT PRICE</div><div class="tkx-cp-v">' + fmt$(t.price) + '</div>' +
+   '<div class="tkx-cp-meta"><span class="' + ratingCls(t.rating) + '">' + esc(ratingLabel(t.rating) || "") + '</span>' +
+   '<span class="tkx-asof">AS OF ' + esc(asOfRaw) + "</span></div>";
+  h += "</div></div>";
+  // Hero cards: blended target / blended upside-downside / current price
+  h += '<div class="tkx-herocards">' +
+   '<div class="tkx-hcard tkx-gold"><div class="tkx-k">BLENDED TARGET</div>' +
+   '<div class="tkx-v gold">' + fmt$(t.blended, 2) + '</div>' +
+   '<div class="tkx-sub">25% Bear · 50% Base · 25% Bull</div></div>' +
+   '<div class="tkx-hcard"><div class="tkx-k">BLENDED UPSIDE / DOWNSIDE</div>' +
+   '<div class="tkx-v ' + cls(blendUp) + '">' + fmtPct(blendUp) + '</div>' +
+   '<div class="tkx-sub">Versus current price</div></div>' +
+   '<div class="tkx-hcard"><div class="tkx-k">CURRENT PRICE</div>' +
+   '<div class="tkx-v">' + fmt$(t.price) + '</div>' +
+   '<div class="tkx-sub">As of ' + esc(priceDateFmt) + '</div></div>' +
+   "</div>";
+  // Scenario cards: Bear / Base / Bull with model WACC and forecast horizon
+  h += '<div class="tkx-scenarios">' +
    [["Bear", t.bear, "bear", t.bear != null && t.price ? (t.bear / t.price - 1) * 100 : null],
     ["Base", t.base, "base", t.upside_base],
     ["Bull", t.bull, "bull", t.bear != null && t.price ? (t.bull / t.price - 1) * 100 : null]
    ].map((c) =>
-    '<div class="target-card ' + c[2] + '"><div class="lbl">' + c[0] + '</div>' +
-    '<div class="val">' + fmt$(c[1], 0) + '</div>' +
-    '<div class="up ' + cls(c[3]) + '">' + fmtPct(c[3]) + " vs price</div></div>"
+    '<div class="tkx-scard ' + c[2] + '"><div class="tkx-scard-top"><span class="tkx-sname"><span class="tkx-dot"></span>' + c[0] + '</span>' +
+    (t.wacc ? '<span class="tkx-wacc">WACC ' + (t.wacc * 100).toFixed(2) + "%</span>" : "") + '</div>' +
+    '<div class="tkx-sval">' + fmt$(c[1]) + '</div>' +
+    '<div class="tkx-srow"><span class="' + cls(c[3]) + '">' + fmtPct(c[3]) + " vs current</span>" +
+    (endYear ? '<span class="tkx-ends">Ends ' + endYear + "</span>" : "") + "</div></div>"
    ).join("") + "</div>";
-  h += '<div class="blended-bar"><span class="blbl">Blended target (bear/base/bull probability-weighted)</span>' +
-   '<span class="blval">' + fmt$(t.blended, 2) + "</span></div>";
-  if (t.wacc) h += '<div class="wacc-line">WACC ' + (t.wacc * 100).toFixed(2) + "%" +
-   (t.shares_m ? " · " + t.shares_m.toFixed(1) + "M DILUTED SHARES" : "") + "</div>";
+  if (t.shares_m) h += '<div class="tkx-meta">' + t.shares_m.toFixed(1) + "M DILUTED SHARES</div>";
 
-  // price history
+  // price history, with the artifact section treatment (kicker + large heading)
   if (t.history && t.history.length > 5) {
-   h += '<div class="card"><h3>Price History</h3><div class="chart-box"><canvas id="price-chart"></canvas></div></div>';
+   h += '<div class="tkx-sechead"><div><div class="tkx-k">HISTORICAL CLOSE</div><div class="tkx-h2">Price History</div></div>' +
+    '<div class="tkx-secdesc">Closing price history. Hover or tap the chart for values.</div></div>' +
+    '<div class="card"><div class="chart-box"><canvas id="price-chart"></canvas></div></div>';
   }
 
   // FCF chart (free, interactive tooltips)
@@ -7075,6 +7105,7 @@ route("alerts", function () {
    '<div class="card" id="sandbox-card"></div>');
   h += "</div>";
 
+  h += "</div>"; // close .tk-page
   app.innerHTML = h;
   drawPriceChart(t);
   drawFcfChart(t);
