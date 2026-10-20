@@ -2518,46 +2518,238 @@ function bindZoomHandlers() {
   return h;
  }
 
+ /* ================= MARKET INTERNALS: CATEGORIES, INDEX, ANCHORS ================= */
+ // Single source of truth for the #/monitor page layout, mirroring the #/risk
+ // Risk Model Index. The route builds each section into a bucket keyed by the
+ // `key` fields below, then assembles the page straight from this list (band,
+ // then each section wrapped in an anchor), and the Market Internals Index
+ // counts and links derive from it too, so the counts can never drift from
+ // the sections actually on the page. Within each category, free sections
+ // (free users see the real content) are ordered above Pro sections (free
+ // users see a locked teaser); that order drives both the page and the
+ // dropdown. Sections whose data is missing simply do not render, and their
+ // index entry is skipped with them.
+ const MONITOR_CATEGORIES = [
+  { key: "macro", num: "01", name: "Macro",
+    sub: "Rates, inflation expectations, Treasury plumbing, and positioning. The policy backdrop every other signal trades against.",
+    models: [
+     { id: "monitor-cot-positioning", key: "cot", name: "COT Positioning", free: true },
+     { id: "monitor-fed-funds-futures", key: "fedfunds", name: "Fed Funds Futures", free: true },
+     { id: "monitor-breakeven-inflation", key: "breakeven", name: "10Y Breakeven Inflation", free: true },
+     { id: "monitor-implied-erp", key: "erp", name: "Implied ERP", free: true },
+     { id: "monitor-treasury-slr", key: "treasury", name: "Treasury Absorption & SLR Gauge", free: false },
+     { id: "monitor-macroeconomic-analysis", key: "macroanalysis", name: "Macroeconomic Analysis", free: false },
+    ] },
+  { key: "quantitative", num: "02", name: "Quantitative",
+    sub: "Volatility, options positioning, and sentiment statistics. What derivatives markets and surveys say about fear and crowding.",
+    models: [
+     { id: "monitor-aaii-sentiment", key: "aaii", name: "AAII Sentiment", free: true },
+     { id: "monitor-credit-spreads", key: "panel-creditvol", name: "Credit Spreads vs VIX", free: false },
+     { id: "monitor-volatility-divergence", key: "panel-voldiv", name: "Volatility Divergence", free: false },
+     { id: "monitor-gex", key: "gex", name: "Gamma Exposure (GEX)", free: false },
+     { id: "monitor-volatility-skew", key: "skew", name: "Volatility Skew", free: false },
+     { id: "monitor-volatility-surface", key: "volsurface", name: "Volatility Surface", free: false },
+     { id: "monitor-opex-tracker", key: "opex", name: "OPEX Cycle Tracker", free: false },
+     { id: "monitor-gamma-flip", key: "gammaflip", name: "Gamma Flip Barometer", free: false },
+    ] },
+  { key: "technical", num: "03", name: "Technical",
+    sub: "Breadth, rotation, and trend structure. What participation and leadership say about the health of the advance.",
+    models: [
+     { id: "monitor-market-breadth", key: "panel-breadth", name: "Market Breadth", free: false },
+     { id: "monitor-alligator-jaw", key: "panel-jaw", name: "Alligator Jaw", free: false },
+     { id: "monitor-theme-rotation", key: "panel-themerot", name: "Theme Rotation", free: false },
+     { id: "monitor-small-midcap", key: "panel-smallmid", name: "Small/Mid Cap Monitor", free: false },
+     { id: "monitor-rsi-cyclical-defensive", key: "rsi", name: "RSI: Cyclicals vs Defensives", free: false },
+     { id: "monitor-market-leadership", key: "leadership", name: "Market Leadership", free: false },
+    ] },
+ ];
+ // Panel name (from D.panels) to bucket key. Panels that match nothing here
+ // keep their data order and render after the category groups, unchanged.
+ function monitorPanelKey(name) {
+  const n = String(name || "");
+  if (/market breadth/i.test(n)) return "panel-breadth";
+  if (/credit spread/i.test(n)) return "panel-creditvol";
+  if (/volatility divergence/i.test(n)) return "panel-voldiv";
+  if (/alligator/i.test(n)) return "panel-jaw";
+  if (/theme rotation/i.test(n)) return "panel-themerot";
+  if (/small.*mid|mid.*cap/i.test(n)) return "panel-smallmid";
+  return null;
+ }
+ const MONITOR_TOC_CSS =
+  ".monitor-anchor{scroll-margin-top:88px;}" +
+  ".monitor-anchor-panel{margin-bottom:16px;}" +
+  ".monitor-flash{animation:monitorFlash 1.8s ease-out;}" +
+  "@keyframes monitorFlash{0%{box-shadow:0 0 0 2px #c9a961,0 0 24px rgba(201,169,97,0.5);}100%{box-shadow:0 0 0 0 rgba(201,169,97,0);}}" +
+  ".monitor-toc{background:#0d1522;border:1px solid #1c2b3e;border-radius:12px;padding:18px;margin:14px 0 6px;}" +
+  ".monitor-toc-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}" +
+  ".monitor-toc-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#c9a961;}" +
+  ".monitor-toc-meta{font-size:12px;color:#8b949e;}" +
+  ".monitor-toc-btns{display:flex;gap:10px;flex-wrap:wrap;}" +
+  ".monitor-toc-cat{position:relative;flex:1 1 200px;min-width:180px;}" +
+  ".monitor-toc-cat.open{z-index:60;}" +
+  ".monitor-toc-btn{width:100%;display:flex;align-items:center;gap:10px;background:#121d2d;border:1px solid #1c2b3e;border-left:3px solid #1c2b3e;border-radius:10px;padding:12px 14px;cursor:pointer;color:#e8ecf1;font-family:inherit;text-align:left;transition:border-color .2s ease,box-shadow .2s ease;}" +
+  ".monitor-toc-btn:hover{border-color:#c9a961;border-left-color:#c9a961;}" +
+  ".monitor-toc-cat.open .monitor-toc-btn{border-color:#c9a961;border-left-color:#dfb76c;box-shadow:inset 0 -2px 0 #c9a961;}" +
+  ".monitor-toc-num{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;color:#c9a961;}" +
+  ".monitor-toc-btnname{font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap;}" +
+  ".monitor-toc-count{margin-left:auto;font-size:11px;color:#8b949e;white-space:nowrap;}" +
+  ".monitor-toc-chev{display:inline-block;color:#c9a961;font-size:12px;line-height:1;transition:transform .25s ease;}" +
+  ".monitor-toc-cat.open .monitor-toc-chev{transform:rotate(180deg);}" +
+  ".monitor-toc-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0d1522;border:1px solid #1c2b3e;border-top:2px solid #c9a961;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,0.5);max-height:0;opacity:0;overflow:hidden;pointer-events:none;transform:translateY(-4px);transition:max-height .3s ease,opacity .25s ease,transform .25s ease;}" +
+  ".monitor-toc-cat.open .monitor-toc-drop{max-height:70vh;opacity:1;pointer-events:auto;transform:none;overflow-y:auto;}" +
+  ".monitor-toc-link{display:block;width:100%;background:none;border:0;border-left:3px solid transparent;border-bottom:1px solid #1c2b3e;padding:10px 14px;color:#c8d0dc;font-size:13px;font-family:inherit;cursor:pointer;text-align:left;transition:background .15s ease,color .15s ease,border-color .15s ease;}" +
+  ".monitor-toc-link:last-child{border-bottom:0;}" +
+  ".monitor-toc-link:hover{background:#121d2d;color:#fff;border-left-color:#c9a961;}" +
+  ".monitor-cat-band{display:flex;align-items:center;gap:14px;background:#0d1522;border:1px solid #1c2b3e;border-left:3px solid #c9a961;border-radius:10px;padding:16px 18px;margin:42px 0 2px;}" +
+  ".monitor-cat-num{font-family:var(--mono);font-size:22px;font-weight:800;color:#c9a961;line-height:1;}" +
+  ".monitor-cat-name{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;}" +
+  ".monitor-cat-sub{font-size:12.5px;color:#8b949e;margin-top:3px;line-height:1.45;}" +
+  ".monitor-cat-count{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#c9a961;white-space:nowrap;}" +
+  "@media (max-width:640px){.monitor-toc-btns{flex-direction:column;}.monitor-toc-cat{flex:1 1 auto;width:100%;min-width:0;}.monitor-cat-band{flex-wrap:wrap;}.monitor-cat-count{margin-left:0;}}";
+ // availableKeys: the bucket keys that actually rendered this page load.
+ // Index entries for sections with no data are skipped so every dropdown
+ // target on the page resolves.
+ function monitorTocHtml(availableKeys) {
+  const cats = MONITOR_CATEGORIES.map((cat) => ({
+   cat: cat,
+   models: cat.models.filter((m) => !availableKeys || availableKeys[m.key]),
+  })).filter((c) => c.models.length);
+  const total = cats.reduce((n, c) => n + c.models.length, 0);
+  let h = "<style>" + MONITOR_TOC_CSS + "</style>" +
+   '<div class="monitor-toc" id="monitor-toc">' +
+   '<div class="monitor-toc-head"><span class="monitor-toc-title">Market Internals Index</span>' +
+   '<span class="monitor-toc-meta">' + total + " sections across " + cats.length + " categories. Pick a category, then a section, to jump straight to it.</span></div>" +
+   '<div class="monitor-toc-btns">';
+  cats.forEach((c) => {
+   const cat = c.cat;
+   h += '<div class="monitor-toc-cat" data-cat="' + cat.key + '">' +
+    '<button type="button" class="monitor-toc-btn" data-monitor-cat="' + cat.key + '" aria-expanded="false" aria-haspopup="true">' +
+    '<span class="monitor-toc-num">' + cat.num + '</span>' +
+    '<span class="monitor-toc-btnname">' + cat.name + '</span>' +
+    '<span class="monitor-toc-count">' + c.models.length + (c.models.length === 1 ? " section" : " sections") + '</span>' +
+    '<span class="monitor-toc-chev">&#9662;</span></button>' +
+    '<div class="monitor-toc-drop" role="menu">';
+   c.models.forEach((m) => {
+    h += '<button type="button" class="monitor-toc-link" data-monitor-target="' + m.id + '" role="menuitem">' + m.name + "</button>";
+   });
+   h += "</div></div>";
+  });
+  h += "</div></div>";
+  return h;
+ }
+ function monitorCatBandHtml(cat, count) {
+  return '<div class="monitor-cat-band"><span class="monitor-cat-num">' + cat.num + "</span>" +
+   '<div><div class="monitor-cat-name">' + cat.name + '</div>' +
+   '<div class="monitor-cat-sub">' + cat.sub + "</div></div>" +
+   '<span class="monitor-cat-count">' + count + (count === 1 ? " section" : " sections") + "</span></div>";
+ }
+ function monitorAnchorWrap(id, html, isPanel) {
+  return '<div class="monitor-anchor' + (isPanel ? " monitor-anchor-panel" : "") + '" id="' + id + '">' + html + "</div>";
+ }
+ function bindMonitorToc() {
+  const toc = document.getElementById("monitor-toc");
+  if (!toc) return;
+  const closeAll = (except) => {
+   toc.querySelectorAll(".monitor-toc-cat.open").forEach((c) => {
+    if (c !== except) {
+     c.classList.remove("open");
+     const b = c.querySelector(".monitor-toc-btn");
+     if (b) b.setAttribute("aria-expanded", "false");
+    }
+   });
+  };
+  toc.querySelectorAll(".monitor-toc-btn").forEach((btn) => {
+   btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const cat = btn.closest(".monitor-toc-cat");
+    const wasOpen = cat.classList.contains("open");
+    closeAll(cat);
+    cat.classList.toggle("open", !wasOpen);
+    btn.setAttribute("aria-expanded", String(!wasOpen));
+   });
+  });
+  toc.querySelectorAll(".monitor-toc-link").forEach((link) => {
+   link.addEventListener("click", () => {
+    const target = document.getElementById(link.getAttribute("data-monitor-target"));
+    closeAll(null);
+    toc.querySelectorAll(".monitor-toc-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
+    if (target) {
+     target.scrollIntoView({ behavior: "smooth", block: "start" });
+     target.classList.remove("monitor-flash");
+     void target.offsetWidth;
+     target.classList.add("monitor-flash");
+     setTimeout(() => target.classList.remove("monitor-flash"), 1900);
+    }
+   });
+  });
+  // Document-level closers, replaced on every bind so they never stack up
+  // across renders. They look the TOC up live, so a stale closure left over
+  // from a previous page render is a harmless no-op.
+  if (window.__monitorTocDocClick) document.removeEventListener("click", window.__monitorTocDocClick);
+  if (window.__monitorTocDocKey) document.removeEventListener("keydown", window.__monitorTocDocKey);
+  window.__monitorTocDocClick = (e) => {
+   const t = document.getElementById("monitor-toc");
+   if (t && !(e.target.closest && e.target.closest("#monitor-toc"))) {
+    t.querySelectorAll(".monitor-toc-cat.open").forEach((c) => c.classList.remove("open"));
+    t.querySelectorAll(".monitor-toc-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
+   }
+  };
+  window.__monitorTocDocKey = (e) => {
+   if (e.key !== "Escape") return;
+   const t = document.getElementById("monitor-toc");
+   if (t) {
+    t.querySelectorAll(".monitor-toc-cat.open").forEach((c) => c.classList.remove("open"));
+    t.querySelectorAll(".monitor-toc-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
+   }
+  };
+  document.addEventListener("click", window.__monitorTocDocClick);
+  document.addEventListener("keydown", window.__monitorTocDocKey);
+ }
+
  route("monitor", function () {
   try {
   const panels = D.panels || [];
+  // Section buckets, keyed to MONITOR_CATEGORIES. The route builds each
+  // section into SEC exactly as before, and the tail of the route assembles
+  // the page by category from the buckets.
+  const SEC = {};
+  const leftoverPanels = [];
   let h = '<div class="crumb">MARKET INTERNALS · VOLATILITY · MACRO</div>';
   h += '<div class="hero"><div>' +
    '<h1 class="hero-h">Market Internals</h1>' +
    "<p class='hero-sub'>Breadth, positioning, volatility, and macro, the market\u2019s internal risk signals in one view.</p></div>" +
    '</div>';
 
-  // market internals (Pro)
-  h += '<div class="section" id="internals-sec"><div class="section-title">Market Internals</div>' +
-   '<div class="section-sub">Breadth, valuation-vs-earnings, rotation, and credit signals.</div>';
-  // AAII Investor Sentiment, FREE, at the top
+  // Free sections, built into buckets and placed by category at assembly.
+  // AAII Investor Sentiment, FREE
   if (D.aaii_sentiment && D.aaii_sentiment.bullish != null) {
-   h += aaiiSentimentHtml(D.aaii_sentiment);
+   SEC.aaii = aaiiSentimentHtml(D.aaii_sentiment);
   }
-  // COT Positioning, FREE, at the top
+  // COT Positioning, FREE
   if (D.cot_data && D.cot_data.markets) {
-   h += cotHtml(D.cot_data);
+   SEC.cot = cotHtml(D.cot_data);
   }
   // FOMC Fed Funds Futures, FREE, updates every morning
   if (D.fed_funds && D.fed_funds.available) {
-   h += fedFundsHtml(D.fed_funds);
+   SEC.fedfunds = fedFundsHtml(D.fed_funds);
   }
   // 10Y Breakeven Inflation, FREE, updates every morning
   if (D.breakeven_inflation && D.breakeven_inflation.latest != null) {
-   h += breakevenHtml(D.breakeven_inflation);
+   SEC.breakeven = breakevenHtml(D.breakeven_inflation);
   }
-  // Treasury Absorption & SLR Gauge, FREE headline (Pro users see the full section below)
+  // Treasury Absorption & SLR Gauge, FREE headline card. It renders at the
+  // top of the Pro section bucket below (the card returns empty for Pro
+  // users, who see the full section in the same anchored block).
   if (D.treasury_slr && D.treasury_slr.score != null) {
-   h += treasurySlrFreeCard(D.treasury_slr);
+   SEC.treasuryCard = treasurySlrFreeCard(D.treasury_slr);
   }
   // Implied ERP, FREE data + chart, PRO analysis
   if (D.implied_erp && D.implied_erp.erp != null) {
-   h += erpHtml(D.implied_erp, isPro);
+   SEC.erp = erpHtml(D.implied_erp, isPro);
   }
-  // Market Internals trackers - each individually Pro-locked with badge
-  h += '<div class="section"><div class="section-title">Market Internals Trackers</div>' +
-   '<div class="section-sub">Breadth, positioning, volatility, and rotation signals. Free users see previews below.</div></div>';
-  h += '<div style="display:flex;flex-direction:column;gap:16px;">' + panels.map((p) => {
+  // Market Internals tracker panels, each individually Pro-locked with
+  // badge, built into per-panel buckets keyed by monitorPanelKey.
+  const panelHtmlList = panels.map((p) => {
    try {
     // Market Breadth: dedicated institutional UI (bars, stat cards, sectors, summary)
     if (/market breadth/i.test(p.name)) {
@@ -2640,7 +2832,12 @@ function bindZoomHandlers() {
     console.error("Panel render failed:", p.name, panelErr);
     return '<div class="card"><p style="color:#f85149;">Failed to load ' + esc(p.name) + '</p></div>';
    }
-   }).join("") + "</div>";
+   });
+  panels.forEach((p, i) => {
+   const bk = monitorPanelKey(p.name);
+   if (bk) SEC[bk] = panelHtmlList[i];
+   else leftoverPanels.push(panelHtmlList[i]);
+  });
 
   /* ---------- tracker explainers (visual first, explanation after) ---------- */
   /* ---------- GEX tracker HTML (Pro-gated) ---------- */
@@ -3529,7 +3726,7 @@ function bindZoomHandlers() {
     ' (' + rsiSignal + '). Ratio ' + ratioVal +
     ' vs 50-day MA ' + maVal + '.</div>' +
     '<div class="panel-asof">As of ' + esc((D.rsi_cd_history.as_of || "").slice(0, 10)) + "</div>";
-   h += '<div class="section" style="max-width:none;"><div class="section-title">RSI: Cyclicals vs Defensives ' + PRO_BADGE + '</div>' +
+   SEC.rsi = '<div class="section" style="max-width:none;"><div class="section-title">RSI: Cyclicals vs Defensives ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Risk-on / risk-off momentum, 14-period RSI on the XLY÷XLP ratio. Above 70 = cyclicals overbought, below 30 = oversold.</div>' +
     gated("RSI: Cyclicals vs Defensives", "14-period RSI on the XLY÷XLP ratio, spot sector rotation extremes before they reverse.", rsiHtml + explainer) +
     "</div>";
@@ -3555,7 +3752,7 @@ function bindZoomHandlers() {
     're-simulating every option\u2019s gamma via Black-Scholes across hypothetical price levels and finding where total GEX crosses zero. ' +
     'Data: CBOE delayed options chains, refreshed daily at 7:00 AM PT on trading days.</p>' +
     "</div>";
-   h += '<div class="section" style="max-width:none;"><div class="section-title">Gamma Exposure (GEX) ' + PRO_BADGE + '</div>' +
+   SEC.gex = '<div class="section" style="max-width:none;"><div class="section-title">Gamma Exposure (GEX) ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Options dealer positioning, will market makers dampen or amplify the next move? Updates daily at 7:00 AM PT.</div>' +
     gated("Gamma Exposure (GEX)", "Daily dealer gamma positioning for QQQ and SPY, spot the volatility regime before it shifts.", gexHtml + gexExplainer) +
     "</div>";
@@ -3577,14 +3774,14 @@ function bindZoomHandlers() {
     'Watch the trend: <i>steepening</i> skew into a selloff often marks capitulation bottoms.</p>' +
     '<p><b>Data:</b> CBOE delayed options chains, refreshed daily. SPY used as SPX proxy (SPX chain often blocked).</p>' +
     "</div>";
-   h += '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>' +
+   SEC.skew = '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Put vs call implied volatility, what is smart money paying for? Updates daily.</div>' +
     gated("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.", skewHtml + skewExplainer) +
     "</div>";
   }
 
   // Volatility Surface, Pro-gated (term structure + 25-delta risk reversal)
-  h += gatedSafe("Volatility Surface",
+  SEC.volsurface = gatedSafe("Volatility Surface",
    "VIX term structure regimes, the four-quadrant surface matrix, and per-ticker 25-delta risk reversals.",
    volSurfaceHtml);
 
@@ -3601,17 +3798,19 @@ function bindZoomHandlers() {
     '<p><b>For swing traders.</b> The week into OPEX is typically range-bound (dealers suppress volatility). ' +
     'The week after is the "window of weakness" where trends emerge. Size positions around these structural shifts.</p>' +
     '</div>';
-   h += '<div class="section" style="max-width:none;"><div class="section-title">OPEX Cycle Tracker ' + PRO_BADGE + '</div>' +
+   SEC.opex = '<div class="section" style="max-width:none;"><div class="section-title">OPEX Cycle Tracker ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Options expiration calendar, max pain strikes, and dealer positioning. Updates daily.</div>' +
     gated("OPEX Cycle Tracker", "Max pain strikes, put/call OI, and expiration calendar. Front-run dealer hedging flows.", opexHtml + opexExplainer) +
     "</div>";
   }
-  // Treasury Absorption & SLR Gauge, Pro details (free users see the headline card above)
-  h += gatedSafe("Treasury Absorption & SLR Gauge",
+  // Treasury Absorption & SLR Gauge, Pro details. The free headline card
+  // (SEC.treasuryCard, empty for Pro users) renders directly above the full
+  // section inside the same anchored block.
+  SEC.treasury = (SEC.treasuryCard || "") + gatedSafe("Treasury Absorption & SLR Gauge",
    "Bank reserve levels, TGA and RRP drains, and dealer balance sheet capacity.",
    treasurySlrHtml);
   // Dealer Gamma Flip Barometer, Pro-gated (teaser for free users)
-  h += gatedSafe("Dealer Gamma Flip Barometer",
+  SEC.gammaflip = gatedSafe("Dealer Gamma Flip Barometer",
    "SPY and QQQ gamma flip levels, dealer hedging regimes, and distance to the flip.",
    gammaFlipHtml);
   // render interactive vol divergence chart after DOM insert
@@ -4159,10 +4358,9 @@ function bindZoomHandlers() {
    // Click/tap to zoom: bind handlers for all zoomable charts
    bindZoomHandlers();
   }, 200);
-  h += "</div>";
 
   // Macroeconomic Analysis, Pro-gated (always show section; gatedSafe shows teaser for free users)
-  h += '<div class="section" id="macro-sec" style="max-width:none;"><div class="section-title">Macroeconomic Analysis ' + PRO_BADGE + '</div>' +
+  SEC.macroanalysis = '<div class="section" id="macro-sec" style="max-width:none;"><div class="section-title">Macroeconomic Analysis ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">CPI, PPI, retail sales, and PMI, the macro backdrop driving Fed policy and market regimes. Updates as reports are released.</div>' +
    gatedSafe("Macroeconomic Analysis", "CPI, PPI, retail sales, consumer health, and PMI, the macro forces moving markets.",
     () => macroAnalysisHtml(D.macro_indicators || { history: [] })) +
@@ -4170,11 +4368,30 @@ function bindZoomHandlers() {
 
   // Market Leadership, Pro-gated
   if (D.leadership && D.leadership.available && (D.leadership.leaders || []).length) {
-   h += gated("Market Leadership", "Automated S&P 500 leader tracking with composite scoring and rotation signals.",
+   SEC.leadership = gated("Market Leadership", "Automated S&P 500 leader tracking with composite scoring and rotation signals.",
     leadershipHtml(D.leadership));
   }
 
+  // Assemble the page from the buckets, grouped by category, with the
+  // Market Internals Index at the top. Category order and free-above-Pro
+  // order inside each category come from MONITOR_CATEGORIES. Sections with
+  // no data this load are skipped on the page and in the index alike.
+  const avail = {};
+  Object.keys(SEC).forEach((k) => { if (SEC[k]) avail[k] = true; });
+  h += monitorTocHtml(avail);
+  MONITOR_CATEGORIES.forEach((cat) => {
+   const rendered = cat.models.filter((m) => SEC[m.key]);
+   if (!rendered.length) return;
+   h += monitorCatBandHtml(cat, rendered.length);
+   rendered.forEach((m) => {
+    h += monitorAnchorWrap(m.id, SEC[m.key], m.key.indexOf("panel-") === 0);
+   });
+  });
+  // Panels with no category match render last, in their original order.
+  leftoverPanels.forEach((html) => { h += html; });
+
   app.innerHTML = h;
+  bindMonitorToc();
   try { drawLeadershipChart(); } catch (e) { console.error("Leadership chart failed:", e); }
   } catch (routeErr) {
    console.error("Monitor route failed:", routeErr);
