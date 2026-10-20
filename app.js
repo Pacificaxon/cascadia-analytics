@@ -41,7 +41,7 @@
   "ENS": { domain: "enersys.com", industry: "Electrical Equipment" },
   "EQIX": { domain: "equinix.com", industry: "Data Center REIT" },
   "GOOGL": { domain: "abc.xyz", industry: "Technology" },
-  "IA": { domain: "i-a.com", industry: "Technology" },
+  "IA": { domain: "innovative-ss.com", industry: "Aerospace & Defense" },
   "INTC": { domain: "intel.com", industry: "Semiconductors" },
   "IRM": { domain: "ironmountain.com", industry: "Data Center REIT" },
   "ISRG": { domain: "intuitive.com", industry: "Medical Devices" },
@@ -226,6 +226,7 @@
    if (sections.earnings_dashboard) flat.earnings_dashboard = sections.earnings_dashboard;
    if (sections.liquidity) flat.liquidity = sections.liquidity;
    if (sections.comps_matrix) flat.comps_matrix = sections.comps_matrix;
+   if (sections.risk_headlines) flat.risk_headlines = sections.risk_headlines;
    if (sections.correction_risk) flat.correction_risk = sections.correction_risk;
    if (sections.liquidity_drain) flat.liquidity_drain = sections.liquidity_drain;
    if (sections.rv_shock) flat.rv_shock = sections.rv_shock;
@@ -279,6 +280,13 @@
  const D = new Proxy(_D_raw, {
   get(target, prop) {
    if (prop === "_dcf_targets" || prop === "_fcf_projections") return undefined;
+   // risk_headlines: the free bundle carries every model headline plus a
+   // stripped composite (score + regime only). The Pro bundle carries the
+   // full composite with attribution. Merge so Pro users get the full
+   // composite while the per-model headlines still come from the free bundle.
+   if (prop === "risk_headlines" && PRO_DATA && PRO_DATA.risk_headlines) {
+    return Object.assign({}, target.risk_headlines, PRO_DATA.risk_headlines);
+   }
    // Pro sections from API
    if (PRO_DATA && PRO_DATA[prop] !== undefined) return PRO_DATA[prop];
    // DCF targets per ticker
@@ -1454,11 +1462,16 @@ function bindZoomHandlers() {
     });
    }
   } catch (e) {}
-  // Save scroll position of the route we're leaving
+  // Save scroll position of the route we're leaving, and note whether this
+  // render is a fresh navigation (hash changed) or a same-route re-render
+  // (auth refresh, tab return). Fresh navigations land at the top; only
+  // same-route re-renders may restore a saved position.
+  let _hashChanged = false;
   try {
     const prevHash = sessionStorage.getItem("__last_hash");
     if (prevHash && prevHash !== location.hash) {
       sessionStorage.setItem("__scroll_" + prevHash, String(window.scrollY || 0));
+      _hashChanged = true;
     }
     sessionStorage.setItem("__last_hash", location.hash);
   } catch (e) {}
@@ -1474,18 +1487,21 @@ function bindZoomHandlers() {
   else routes.home();
   // Draw GEX strike charts after HTML is in the DOM
   drawGexStrikeCharts();
-  // Restore scroll position if returning to same route (e.g., after tab switch)
-  // Skip on fresh navigation (hash changed) to avoid jumping
+  // Fresh navigation (hash changed): always land at the top of the new
+  // route. In-page TOC anchor jumps never call render(), so they are not
+  // affected. Same-route re-render (hash unchanged, e.g. after a tab
+  // switch): restore the saved position if there is one.
   try {
-   const prevHash = sessionStorage.getItem("__last_hash");
-   // __last_hash was just set to current hash above, so check if we have a saved position
-   // and the page is at the top (indicating a reset happened)
-   const saved = sessionStorage.getItem("__scroll_" + location.hash);
-   if (saved != null && window.scrollY === 0) {
-    const y = parseInt(saved, 10);
-    if (!isNaN(y) && y > 100) {
-     // Only restore if user had scrolled significantly
-     requestAnimationFrame(() => window.scrollTo(0, y));
+   if (_hashChanged) {
+    window.scrollTo(0, 0);
+   } else {
+    const saved = sessionStorage.getItem("__scroll_" + location.hash);
+    if (saved != null && window.scrollY === 0) {
+     const y = parseInt(saved, 10);
+     if (!isNaN(y) && y > 100) {
+      // Only restore if user had scrolled significantly
+      requestAnimationFrame(() => window.scrollTo(0, y));
+     }
     }
    }
   } catch (e) {}
@@ -1957,7 +1973,7 @@ function bindZoomHandlers() {
    "</div>" +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
    '<div><div style="font-size:11px;color:#e8ecf1;">SKEW</div>' +
-   '<div style="font-size:20px;font-weight:700;color:' + rc + ';">+' + d.skew.toFixed(1) + " vp</div>" +
+   '<div style="font-size:20px;font-weight:700;color:' + rc + ';">' + (d.skew >= 0 ? "+" : "") + d.skew.toFixed(1) + " vp</div>" +
    '<div style="font-size:12px;color:' + rc + ';">' + esc(d.regime_label || "") + "</div></div>" +
    '<div><div style="font-size:11px;color:#e8ecf1;">TREND</div>' +
    '<div style="font-size:14px;font-weight:600;color:#e8ecf1;">' + trendIcon + " " + trendText + "</div>" +
@@ -2400,6 +2416,23 @@ function bindZoomHandlers() {
   if (r.startsWith("sell")) return "rating-sell";
   return "rating-hold";
  }
+ // Display label for a rating. Source data occasionally stores a rating in
+ // all caps ("BUY"); normalize those to title case so every rating renders
+ // the same way. Mixed-case ratings pass through untouched.
+ function ratingLabel(r) {
+  if (!r) return r;
+  const s = String(r);
+  if (s === s.toUpperCase() && s !== s.toLowerCase()) {
+   return s.toLowerCase().replace(/\b\w/g, (ch) => ch.toUpperCase());
+  }
+  return s;
+ }
+ // Format a 0-100 headline score to at most 1 decimal. Raw model floats can
+ // carry binary residue (71.19999999999999); never print those to the page.
+ function fmtScore(v) {
+  if (v == null || v === "" || isNaN(+v)) return "N/A";
+  return (+v).toFixed(1).replace(/\.0$/, "");
+ }
 
  /* ================= HOME ================= */
  route("home", function () {
@@ -2462,7 +2495,7 @@ function bindZoomHandlers() {
     "<td>" + fmt$(t.bear, 0) + "</td><td>" + fmt$(t.base, 0) +
     "</td><td>" + fmt$(t.bull, 0) + "</td><td>" + fmt$(t.blended, 0) + "</td>" +
     '<td class="' + upsideCls(t.upside_base) + '">' + fmtPct(t.upside_base) + "</td>" +
-    '<td class="' + ratingCls(t.rating) + '">' + esc(t.rating || " - ") + "</td></tr>";
+    '<td class="' + ratingCls(t.rating) + '">' + esc(ratingLabel(t.rating) || " - ") + "</td></tr>";
   }).join("");
   h += "</tbody></table></div></div>";
 
@@ -3718,7 +3751,7 @@ function bindZoomHandlers() {
       "</div>" +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
       '<div><div style="font-size:11px;color:#e8ecf1;">SKEW</div>' +
-      '<div style="font-size:20px;font-weight:700;color:' + rc + ';">+' + d.skew.toFixed(1) + " vp</div></div>" +
+      '<div style="font-size:20px;font-weight:700;color:' + rc + ';">' + (d.skew >= 0 ? "+" : "") + d.skew.toFixed(1) + " vp</div></div>" +
       '<div><div style="font-size:11px;color:#e8ecf1;">TREND</div>' +
       '<div style="font-size:14px;font-weight:600;color:#e8ecf1;">' + trendIcon + " " + trendLabel + "</div>" +
       (d.skew_change != null ? '<div style="font-size:11px;color:#e8ecf1;">' + (d.skew_change >= 0 ? "+" : "") + d.skew_change.toFixed(1) + " vs 5d avg</div>" : "") + "</div>" +
@@ -3967,6 +4000,11 @@ function bindZoomHandlers() {
     '<div class="section-sub">Risk-on / risk-off momentum, 14-period RSI on the XLY÷XLP ratio. Above 70 = cyclicals overbought, below 30 = oversold.</div>' +
     gated("RSI: Cyclicals vs Defensives", "14-period RSI on the XLY÷XLP ratio, spot sector rotation extremes before they reverse.", rsiHtml + explainer) +
     "</div>";
+  } else if (!isPro()) {
+   SEC.rsi = '<div class="section" style="max-width:none;"><div class="section-title">RSI: Cyclicals vs Defensives ' + PRO_BADGE + '</div>' +
+    '<div class="section-sub">Risk-on / risk-off momentum, 14-period RSI on the XLY÷XLP ratio. Above 70 = cyclicals overbought, below 30 = oversold.</div>' +
+    proTeaser("RSI: Cyclicals vs Defensives", "14-period RSI on the XLY÷XLP ratio, spot sector rotation extremes before they reverse.") +
+    "</div>";
   }
 
   // GEX (Gamma Exposure), Pro-gated, daily refresh at 7:00 AM PT
@@ -3993,6 +4031,13 @@ function bindZoomHandlers() {
     '<div class="section-sub">Options dealer positioning, will market makers dampen or amplify the next move? Updates daily at 7:00 AM PT.</div>' +
     gated("Gamma Exposure (GEX)", "Daily dealer gamma positioning for QQQ and SPY, spot the volatility regime before it shifts.", gexHtml + gexExplainer) +
     "</div>";
+  } else if (!isPro()) {
+   // Free users never receive the Pro data bundle, so without this fallback
+   // the section, its index entry, and its anchor would all be missing.
+   SEC.gex = '<div class="section" style="max-width:none;"><div class="section-title">Gamma Exposure (GEX) ' + PRO_BADGE + '</div>' +
+    '<div class="section-sub">Options dealer positioning, will market makers dampen or amplify the next move? Updates daily at 7:00 AM PT.</div>' +
+    proTeaser("Gamma Exposure (GEX)", "Daily dealer gamma positioning for QQQ and SPY, spot the volatility regime before it shifts.") +
+    "</div>";
   }
 
   // Volatility Skew, Pro-gated, indices on homepage
@@ -4014,6 +4059,11 @@ function bindZoomHandlers() {
    SEC.skew = '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Put vs call implied volatility, what is smart money paying for? Updates daily.</div>' +
     gated("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.", skewHtml + skewExplainer) +
+    "</div>";
+  } else if (!isPro()) {
+   SEC.skew = '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>' +
+    '<div class="section-sub">Put vs call implied volatility, what is smart money paying for? Updates daily.</div>' +
+    proTeaser("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.") +
     "</div>";
   }
 
@@ -4614,6 +4664,8 @@ function bindZoomHandlers() {
   if (D.leadership && D.leadership.available && (D.leadership.leaders || []).length) {
    SEC.leadership = gated("Market Leadership", "Automated S&P 500 leader tracking with composite scoring and rotation signals.",
     leadershipHtml(D.leadership));
+  } else if (!isPro()) {
+   SEC.leadership = proTeaser("Market Leadership", "Automated S&P 500 leader tracking with composite scoring and rotation signals.");
   }
 
   // Assemble the page from the buckets, grouped by category, with the
@@ -6739,7 +6791,7 @@ route("alerts", function () {
   h += "</div>";
   h += '<div class="price-line"><span class="price-big">' + fmt$(t.price) + "</span>" +
    '<span class="price-date">AS OF ' + esc(refreshTs(t)) + "</span>" +
-   '<span class="' + ratingCls(t.rating) + '">' + esc(t.rating || "") + "</span></div>";
+   '<span class="' + ratingCls(t.rating) + '">' + esc(ratingLabel(t.rating) || "") + "</span></div>";
 
   // target cards
   h += '<div class="target-cards">' +
@@ -8845,7 +8897,7 @@ route("alerts", function () {
    const fs = +document.getElementById("f-score").value || 0;
    const fu = document.getElementById("f-upside").value === "" ? -999 : +document.getElementById("f-upside").value;
    return ORDER.map((tk) => ({ tk, t: TICKERS[tk], s: cascadiaScore(TICKERS[tk]) }))
-    .filter((r) => (!fr || (r.t.rating || "").startsWith(fr)) && (r.s == null || r.s >= fs) && ((r.t.upside_base || -999) >= fu))
+    .filter((r) => (!fr || (r.t.rating || "").toLowerCase().startsWith(fr.toLowerCase())) && (r.s == null || r.s >= fs) && ((r.t.upside_base || -999) >= fu))
     .sort((a, b) => (b.s || 0) - (a.s || 0));
   }
   function draw() {
@@ -8857,7 +8909,7 @@ route("alerts", function () {
     "<td>" + (attr != null ? '<span class="score-badge ' + scoreClass(attr) + '" style="width:36px;height:36px;font-size:13px;" title="Investment Scorecard: ' + attrBand + '">' + attr + "</span>" : " - ") + "</td>" +
     "<td>" + fmt$(r.t.price) + "</td><td>" + fmt$(r.t.base, 0) + "</td>" +
     '<td class="' + cls(r.t.upside_base) + '">' + fmtPct(r.t.upside_base) + "</td>" +
-    '<td class="' + ratingCls(r.t.rating) + '">' + esc(r.t.rating || " - ") + "</td></tr>"; }).join("") ||
+    '<td class="' + ratingCls(r.t.rating) + '">' + esc(ratingLabel(r.t.rating) || " - ") + "</td></tr>"; }).join("") ||
     '<tr><td colspan="7" style="text-align:center;color:var(--muted)">No matches.</td></tr>';
    body.querySelectorAll("tr[data-tk]").forEach((tr) => tr.addEventListener("click", () => nav("ticker/" + tr.dataset.tk)));
   }
@@ -9534,7 +9586,7 @@ function oasDistressHtml() {
   const c = colorMap[O.color] || "#e8ecf1";
   return '<div id="risk-credit-stress" class="risk-anchor" style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
    '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">CREDIT STRESS</div>' +
-   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + O.score + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(O.score) + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
    '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(O.regime || "") + "</div></div>";
  }
 
@@ -10130,22 +10182,34 @@ function drawAdvancedMacroCharts() {
 
 // === real_yield_shock.js ===
 function realYieldShockHtml() {
-  const R = D.real_yield_shock || {};
   const isProUser = typeof isPro === "function" ? isPro() : false;
+  let R = D.real_yield_shock || {};
+  if (!isProUser) {
+   // Free bundle: the full section is Pro data, so free users read the
+   // headline values from risk_headlines, the same source as the #/risk
+   // Daily Snapshot card (score, regime, real yield, as-of date).
+   const H = (D.risk_headlines || {}).real_yield_shock || {};
+   R = { regime: H.regime, color: H.color, tips_10y: H.tips_10y, score: H.score, as_of: H.as_of };
+  }
   const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149" };
   const c = colorMap[R.color] || "#e8ecf1";
   const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
   const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
   let h = '<div class="section"><div class="section-title">Real Yield Shock Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">The 10-year TIPS yield is the market\u2019s real cost of capital. When real yields rise, equity multiples tend to compress, and this gauge tracks that pressure.</div>';
-  // Gauge banner (free): regime badge, 10Y real yield, fair P/E vs benchmark P/E
+  // Gauge banner: regime badge plus headline values. Pro users also see
+  // fair P/E vs benchmark P/E; free users see the shock score instead.
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
    '<div style="font-size:13px;font-weight:800;padding:6px 14px;border-radius:20px;background:' + c + '22;color:' + c + ';border:1px solid ' + c + ';">' + esc(R.regime || "N/A") + "</div>" +
-   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;flex:1;min-width:260px;">' +
-   '<div><div style="font-size:11px;color:#8b949e;">10Y REAL YIELD</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.tips_10y != null ? f2(R.tips_10y) + "%" : "N/A") + "</div></div>" +
-   '<div><div style="font-size:11px;color:#8b949e;">FAIR P/E</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.fair_pe != null ? f1(R.fair_pe) + "x" : "N/A") + "</div></div>" +
-   '<div><div style="font-size:11px;color:#8b949e;">BENCHMARK P/E</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.benchmark_pe != null ? f1(R.benchmark_pe) + "x" : "N/A") + "</div></div>" +
-   "</div></div>";
+   '<div style="display:grid;grid-template-columns:repeat(' + (isProUser ? 3 : 2) + ',1fr);gap:8px;flex:1;min-width:260px;">' +
+   '<div><div style="font-size:11px;color:#8b949e;">10Y REAL YIELD</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.tips_10y != null ? f2(R.tips_10y) + "%" : "N/A") + "</div></div>";
+  if (isProUser) {
+   h += '<div><div style="font-size:11px;color:#8b949e;">FAIR P/E</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.fair_pe != null ? f1(R.fair_pe) + "x" : "N/A") + "</div></div>" +
+   '<div><div style="font-size:11px;color:#8b949e;">BENCHMARK P/E</div><div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + (R.benchmark_pe != null ? f1(R.benchmark_pe) + "x" : "N/A") + "</div></div>";
+  } else {
+   h += '<div><div style="font-size:11px;color:#8b949e;">SHOCK SCORE</div><div style="font-size:26px;font-weight:800;color:' + c + ';">' + (R.score != null ? fmtScore(R.score) : "N/A") + '<span style="font-size:14px;color:#8b949e;">/100</span></div></div>';
+  }
+  h += "</div></div>";
   if (isProUser) {
    // Pro details: implied compression + real yield z-score
    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
@@ -10722,7 +10786,7 @@ function volSurfaceHtml() {
    h += '</div><div style="font-size:11px;color:#8b949e;margin-top:8px;">Highest risk contributors right now</div></div>';
   } else {
    h += '<div style="flex:1;"><div style="font-size:13px;color:#8b949e;margin-bottom:10px;">What is driving this reading? The four-pillar attribution, primary driver, and top risk contributors are Pro.</div>' +
-    '<button class="btn" onclick="showPricingModal()" style="font-size:13px;">See Pro Plans</button></div>';
+    '<button class="btn" id="teaser-pricing" style="font-size:13px;">See Pro Plans</button></div>';
   }
   h += "</div>";
   return h;
@@ -11001,12 +11065,14 @@ function volSurfaceHtml() {
   return '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
    '<input id="' + inputId + '" type="text" placeholder="TICKER (e.g. CRWD)" value="' + esc(initial || "") + '" ' +
    'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
-   '<button onclick="runMetricsSearch(\'' + inputId + "','" + resultId + '\')" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
+   '<button id="' + inputId + '-btn" type="button" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
    '<div id="' + resultId + '"></div>';
  }
  function wireMetricsInput(inputId, resultId, autoRun) {
   const inp = document.getElementById(inputId);
   if (!inp) return;
+  const btn = document.getElementById(inputId + "-btn");
+  if (btn) btn.addEventListener("click", () => runMetricsSearch(inputId, resultId));
   inp.addEventListener("keydown", (e) => { if (e.key === "Enter") runMetricsSearch(inputId, resultId); });
   if (autoRun && inp.value.trim()) runMetricsSearch(inputId, resultId);
  }
@@ -11182,9 +11248,11 @@ function volSurfaceHtml() {
    '<div style="display:flex;gap:8px;margin:12px 0;max-width:420px;">' +
    '<input id="quality-ticker" type="text" placeholder="TICKER (e.g. CRWD)" value="' + esc(initial) + '" ' +
    'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
-   '<button onclick="runQualitySearch()" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
+   '<button id="quality-btn" type="button" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></div>' +
    '<div id="quality-result"></div></div>';
   const inp = document.getElementById("quality-ticker");
+  const qBtn = document.getElementById("quality-btn");
+  if (qBtn) qBtn.addEventListener("click", () => runQualitySearch());
   if (inp) {
    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") runQualitySearch(); });
    if (initial) runQualitySearch();
@@ -11540,7 +11608,7 @@ function volSurfaceHtml() {
     const c = colorMap[color] || "#e8ecf1";
     return '<div' + (anchorId ? ' id="' + anchorId + '" class="risk-anchor"' : "") + ' style="background:#161b26;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
      '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
-     '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + score + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
+     '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(score) + '<span style="font-size:14px;color:#8b949e;">/100</span></div>' +
      '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div></div>";
    };
    let freeH = '<div class="crumb">RISK MODELS</div>' +
@@ -11934,8 +12002,10 @@ function volSurfaceHtml() {
    // Ask new Pro users if they want the morning briefing newsletter
    setTimeout(() => maybeShowNewsletterPrompt(), 2500);
   }
-  // Don't render until auth resolves - prevents logged-out flicker for Pro users
-  // refreshAuth() renders when complete
+  // Render immediately from the free bundle so the page is never blank.
+  // refreshAuth() re-renders only if Pro state flips or Pro data arrives,
+  // so a free or anonymous first load depends on this call, not on auth.
+  render();
   refreshAuth();
   // Debug mode: add ?debug=1 to URL to see auth status (for iOS troubleshooting)
   if (location.search.includes("debug=1") || location.hash.includes("debug=1")) {

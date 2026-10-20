@@ -556,7 +556,7 @@ def main():
     # Real yield shock 0-100 risk score from 10Y TIPS (higher = more duration risk)
     _ry_tips = pro_sections.get("real_yield_shock", {}).get("tips_10y")
     try:
-        _ry_score = max(0.0, min(100.0, (float(_ry_tips) - 1.0) * 40.0)) if _ry_tips is not None else None
+        _ry_score = round(max(0.0, min(100.0, (float(_ry_tips) - 1.0) * 40.0)), 1) if _ry_tips is not None else None
     except (TypeError, ValueError):
         _ry_score = None
 
@@ -648,7 +648,9 @@ def main():
                          "color": pro_sections.get("treasury_slr", {}).get("color")},
         "real_yield_shock": {"score": _ry_score,
                              "regime": pro_sections.get("real_yield_shock", {}).get("regime"),
-                             "color": pro_sections.get("real_yield_shock", {}).get("color")},
+                             "color": pro_sections.get("real_yield_shock", {}).get("color"),
+                             "tips_10y": pro_sections.get("real_yield_shock", {}).get("tips_10y"),
+                             "as_of": pro_sections.get("real_yield_shock", {}).get("as_of")},
         "pead_screener": {"score": _pead_score,
                          "regime": f"{_pead_neg}/{len(_pead_cands)} fading" if _pead_score is not None else None,
                          "color": "rose" if (_pead_score or 0) >= 50 else "amber" if (_pead_score or 0) >= 25 else "emerald"},
@@ -779,16 +781,28 @@ def main():
                            sorted(_items, key=lambda x: x[1], reverse=True)],
             })
         _pillar_list.sort(key=lambda x: x["score"], reverse=True)
+        # Free bundle: composite score + regime only (user decision
+        # 2026-10-19). The full attribution (components, pillars, primary
+        # driver) is Pro-only and ships in the Pro bundle below; app.js
+        # merges it over this stripped object for verified Pro users.
         site["risk_headlines"]["composite"] = {
             "score": round(_avg, 1),
             "regime": _regime,
             "color": _color,
-            "components": [{"model": _k, "risk": round(_v, 1),
-                            "weight": round(_w * 100, 2)} for _k, _v, _, _, _w in _components],
             "model_count": len(_components),
-            "pillars": _pillar_list,
-            "primary_driver": _pillar_list[0]["pillar"] if _pillar_list else None,
-            "weighted": True,
+        }
+        pro_sections["risk_headlines"] = {
+            "composite": {
+                "score": round(_avg, 1),
+                "regime": _regime,
+                "color": _color,
+                "components": [{"model": _k, "risk": round(_v, 1),
+                                "weight": round(_w * 100, 2)} for _k, _v, _, _, _w in _components],
+                "model_count": len(_components),
+                "pillars": _pillar_list,
+                "primary_driver": _pillar_list[0]["pillar"] if _pillar_list else None,
+                "weighted": True,
+            }
         }
 
     pro_out = {"generated_at": site.get("generated_at"), "sections": pro_sections}
