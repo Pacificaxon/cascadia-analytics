@@ -9100,6 +9100,144 @@ function oasDistressHtml() {
   });
  }
 
+// === macro_regime quadrant layer ===
+// Growth vs Inflation 4-Quadrant Engine: SVG quadrant map with the real
+// 90-day trajectory, quadrant probability cards, the probability-blended
+// tactical allocation, and the financial conditions plumbing strip.
+function quadrantSectionHtml(M) {
+  const Q = M.quadrant;
+  if (!Q) return "";
+  const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
+  const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
+  const signed = (v) => v != null ? (v > 0 ? "+" : "") + Number(v).toFixed(2) : "N/A";
+  const quadColors = { reflation: "#d29922", goldilocks: "#3fb950", deflation: "#58a6ff", stagflation: "#f85149" };
+  const quadFill = { reflation: "rgba(210,153,34,0.10)", goldilocks: "rgba(63,185,80,0.10)", deflation: "rgba(88,166,255,0.10)", stagflation: "rgba(248,81,73,0.10)" };
+  const quadDesc = { reflation: "Growth rising, inflation rising", goldilocks: "Growth rising, inflation falling", deflation: "Growth falling, inflation falling", stagflation: "Growth falling, inflation rising" };
+  const quadNum = { reflation: "I", goldilocks: "II", deflation: "III", stagflation: "IV" };
+  const quadName = { reflation: "Reflation", goldilocks: "Goldilocks", deflation: "Deflation", stagflation: "Stagflation" };
+  if (Q.z_growth == null || Q.z_inflation == null || !Q.probabilities) {
+   return '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:6px;">Growth and Inflation Quadrant</div>' +
+    '<p style="color:var(--muted);font-size:13px;margin:0;">Quadrant data is unavailable in this snapshot. One or both momentum axes could not be computed from the available series, so the model reports N/A rather than an estimate. The sovereign yield layer below is unaffected.</p></div>';
+  }
+  const P = Q.probabilities;
+  const dc = quadColors[Q.dominant] || "#e8ecf1";
+  let h = "";
+  // Dominant quadrant callout
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
+   '<div style="text-align:center;min-width:120px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">GROWTH Z / INFLATION Z</div>' +
+   '<div style="font-size:26px;font-weight:800;color:#e8ecf1;">' + signed(Q.z_growth) + ' <span style="color:#8b949e;">/</span> ' + signed(Q.z_inflation) + '</div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + dc + ';">' + esc(Q.quadrant_label || "") + ' \u00B7 ' + esc(Q.dominant_name || "") + '</div>' +
+   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">The dominant quadrant carries a ' + f1(P[Q.dominant]) + '% probability weight from the distance softmax. The dashed path on the map traces the weekly position over the past 90 days, with each point computed only from data available on that date.</div></div></div>';
+  // (1) 2D quadrant plot in SVG
+  const W = 660, H = 436, x0 = 62, x1 = 618, y0 = 24, y1 = 376;
+  const clamp = (z) => Math.max(-3, Math.min(3, z));
+  const px = (z) => x0 + (clamp(z) + 3) / 6 * (x1 - x0);
+  const py = (z) => y1 - (clamp(z) + 3) / 6 * (y1 - y0);
+  const zx = px(0), zy = py(0);
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block;" role="img" aria-label="Growth and inflation quadrant plot">';
+  svg += '<rect x="' + x0 + '" y="' + y0 + '" width="' + (zx - x0).toFixed(1) + '" height="' + (zy - y0).toFixed(1) + '" fill="' + quadFill.stagflation + '"/>';
+  svg += '<rect x="' + zx.toFixed(1) + '" y="' + y0 + '" width="' + (x1 - zx).toFixed(1) + '" height="' + (zy - y0).toFixed(1) + '" fill="' + quadFill.reflation + '"/>';
+  svg += '<rect x="' + x0 + '" y="' + zy.toFixed(1) + '" width="' + (zx - x0).toFixed(1) + '" height="' + (y1 - zy).toFixed(1) + '" fill="' + quadFill.deflation + '"/>';
+  svg += '<rect x="' + zx.toFixed(1) + '" y="' + zy.toFixed(1) + '" width="' + (x1 - zx).toFixed(1) + '" height="' + (y1 - zy).toFixed(1) + '" fill="' + quadFill.goldilocks + '"/>';
+  [-3, -2, -1, 0, 1, 2, 3].forEach((t) => {
+   const gx = px(t), gy = py(t), zero = t === 0;
+   svg += '<line x1="' + gx.toFixed(1) + '" y1="' + y0 + '" x2="' + gx.toFixed(1) + '" y2="' + y1 + '" stroke="' + (zero ? "#8b949e" : "rgba(139,148,158,0.18)") + '" stroke-width="' + (zero ? 1.4 : 1) + '"/>';
+   svg += '<line x1="' + x0 + '" y1="' + gy.toFixed(1) + '" x2="' + x1 + '" y2="' + gy.toFixed(1) + '" stroke="' + (zero ? "#8b949e" : "rgba(139,148,158,0.18)") + '" stroke-width="' + (zero ? 1.4 : 1) + '"/>';
+   svg += '<text x="' + gx.toFixed(1) + '" y="' + (y1 + 16) + '" fill="#8b949e" font-size="10" text-anchor="middle">' + (t > 0 ? "+" + t : t) + '</text>';
+   svg += '<text x="' + (x0 - 8) + '" y="' + (gy + 3).toFixed(1) + '" fill="#8b949e" font-size="10" text-anchor="end">' + (t > 0 ? "+" + t : t) + '</text>';
+  });
+  const lbl = (k, x, y, anchor) => '<text x="' + x + '" y="' + y + '" fill="' + quadColors[k] + '" font-size="12" font-weight="700" text-anchor="' + anchor + '">' + quadNum[k] + ' \u00B7 ' + quadName[k].toUpperCase() + ' \u00B7 ' + f1(P[k]) + '%</text>';
+  svg += lbl("stagflation", x0 + 10, y0 + 20, "start");
+  svg += lbl("reflation", x1 - 10, y0 + 20, "end");
+  svg += lbl("deflation", x0 + 10, y1 - 12, "start");
+  svg += lbl("goldilocks", x1 - 10, y1 - 12, "end");
+  const traj = Q.trajectory || [];
+  if (traj.length > 1) {
+   svg += '<polyline fill="none" stroke="#e8ecf1" stroke-width="1.6" stroke-dasharray="5 4" opacity="0.7" points="' + traj.map((p) => px(p.z_growth).toFixed(1) + "," + py(p.z_inflation).toFixed(1)).join(" ") + '"/>';
+  }
+  traj.forEach((p, i) => {
+   if (i === traj.length - 1) return;
+   svg += '<circle cx="' + px(p.z_growth).toFixed(1) + '" cy="' + py(p.z_inflation).toFixed(1) + '" r="3.5" fill="#8b949e"><title>' + esc(p.date) + ' \u00B7 Growth Z ' + f2(p.z_growth) + ' \u00B7 Inflation Z ' + f2(p.z_inflation) + '</title></circle>';
+  });
+  svg += '<circle cx="' + px(Q.z_growth).toFixed(1) + '" cy="' + py(Q.z_inflation).toFixed(1) + '" r="8" fill="#d29922" stroke="#ffffff" stroke-width="2.5"><title>' + esc(Q.as_of || "") + ' \u00B7 Growth Z ' + f2(Q.z_growth) + ' \u00B7 Inflation Z ' + f2(Q.z_inflation) + '</title></circle>';
+  svg += '<text x="' + x0 + '" y="' + (H - 6) + '" fill="#8b949e" font-size="10" text-anchor="start">\u2190 Growth contraction</text>';
+  svg += '<text x="' + ((x0 + x1) / 2) + '" y="' + (H - 6) + '" fill="#e8ecf1" font-size="11" font-weight="700" text-anchor="middle">Growth momentum (Z)</text>';
+  svg += '<text x="' + x1 + '" y="' + (H - 6) + '" fill="#8b949e" font-size="10" text-anchor="end">Growth acceleration \u2192</text>';
+  svg += '<text transform="rotate(-90 16 ' + ((y0 + y1) / 2) + ')" x="16" y="' + ((y0 + y1) / 2) + '" fill="#e8ecf1" font-size="11" font-weight="700" text-anchor="middle">Inflation momentum (Z)</text>';
+  svg += "</svg>";
+  h += '<div class="card" style="padding:16px;margin:12px 0;">' + svg +
+   '<div style="font-size:11px;color:#8b949e;margin-top:8px;">Reflation sits top right, goldilocks bottom right, deflation bottom left, and stagflation top left. Inflation momentum builds toward the top of the map while disinflation deepens toward the bottom.</div></div>';
+  // (2) Quadrant probability cards
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin:12px 0;">';
+  ["reflation", "goldilocks", "deflation", "stagflation"].forEach((k) => {
+   const qc = quadColors[k], dom = k === Q.dominant;
+   h += '<div style="background:#161b26;border-radius:10px;padding:12px 14px;' + (dom ? "border:1px solid " + qc + ";" : "border:1px solid transparent;") + '">' +
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">' +
+    '<div style="font-size:13px;font-weight:700;color:' + qc + ';">' + quadNum[k] + ' \u00B7 ' + quadName[k] + '</div>' +
+    '<div style="font-size:18px;font-weight:800;color:' + qc + ';">' + f1(P[k]) + '%</div></div>' +
+    '<div style="height:6px;background:#1f2937;border-radius:3px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + Math.min(100, P[k] || 0) + '%;background:' + qc + ';border-radius:3px;"></div></div>' +
+    '<div style="font-size:11px;color:#8b949e;">' + quadDesc[k] + (dom ? ' \u00B7 <span style="color:' + qc + ';font-weight:700;">DOMINANT</span>' : "") + '</div></div>';
+  });
+  h += "</div>";
+  // Axis component transparency
+  const gc = Q.growth_components || {}, ic = Q.inflation_components || {};
+  const gw = Q.growth_weights_used || {}, iw = Q.inflation_weights_used || {};
+  const compNames = { copper_gold: "Copper/gold ratio", indpro_momentum: "Industrial production", curve: "Curve level", breakeven: "Breakeven inflation", cpi_momentum: "CPI momentum", oil: "Crude oil" };
+  const compCell = (k, comps, weights) =>
+   '<div style="flex:1;min-width:130px;"><div style="font-size:11px;color:#8b949e;">' + compNames[k] + (weights[k] != null ? ' \u00B7 weight ' + Math.round(weights[k] * 100) + '%' : '') + '</div>' +
+   '<div style="font-size:16px;font-weight:700;color:#e8ecf1;">' + signed(comps[k]) + '</div></div>';
+  const missing = Object.keys(compNames).filter((k) => (k in gc ? gc[k] : ic[k]) == null);
+  h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What is driving the two axes</div>' +
+   '<div style="font-size:11px;color:#8b949e;margin-bottom:6px;">GROWTH AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
+   ["copper_gold", "indpro_momentum", "curve"].map((k) => compCell(k, gc, gw)).join("") + '</div>' +
+   '<div style="font-size:11px;color:#8b949e;margin:10px 0 6px;">INFLATION AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
+   ["breakeven", "cpi_momentum", "oil"].map((k) => compCell(k, ic, iw)).join("") + '</div>' +
+   (missing.length ? '<div style="font-size:11px;color:#d29922;margin-top:8px;">Reduced coverage in this snapshot. ' + missing.map((k) => compNames[k]).join(", ") + ' could not be computed, so the remaining weights were renormalized to sum to one.</div>' : "") +
+   '</div>';
+  // (3) Tactical allocation, blended by the live probabilities
+  const A = Q.allocation;
+  if (A) {
+   const allocRows = [
+    ["Equities", A.equities, "#58a6ff"],
+    ["Fixed income and duration", A.fixed_income, "#3fb950"],
+    ["Commodities and real assets", A.commodities, "#d29922"],
+    ["Cash and T-bills", A.cash, "#8b949e"],
+   ];
+   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:4px;">Tactical allocation, blended by quadrant probabilities</div>' +
+    '<div style="font-size:12px;color:#8b949e;margin-bottom:12px;">Target weights blend all four desk playbooks by their live probabilities and sum to 100%. The tilts and mandate come from the dominant quadrant, ' + esc(quadName[Q.dominant] || "") + '.</div>';
+   allocRows.forEach((r) => {
+    h += '<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:#e8ecf1;">' + r[0] + '</span><span style="font-weight:700;color:#e8ecf1;">' + (r[1] != null ? f1(r[1]) + "%" : "N/A") + '</span></div>' +
+     '<div style="height:8px;background:#1f2937;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, r[1] || 0) + '%;background:' + r[2] + ';border-radius:4px;"></div></div></div>';
+   });
+   const chip = (t, up) => '<span style="display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;margin:0 6px 6px 0;' + (up ? "background:rgba(63,185,80,0.12);border:1px solid rgba(63,185,80,0.45);color:#56d364;" : "background:rgba(248,81,73,0.10);border:1px solid rgba(248,81,73,0.45);color:#ff7b72;") + '">' + esc(t) + '</span>';
+   h += '<div style="margin-top:12px;"><div style="font-size:11px;color:#56d364;font-weight:700;margin-bottom:6px;">TACTICAL OVERWEIGHTS</div><div>' + (A.overweight || []).map((t) => chip(t, true)).join("") + '</div>' +
+    '<div style="font-size:11px;color:#ff7b72;font-weight:700;margin:6px 0;">TACTICAL UNDERWEIGHTS</div><div>' + (A.underweight || []).map((t) => chip(t, false)).join("") + '</div>' +
+    '<p style="font-size:13px;color:#9ba3af;line-height:1.6;margin:10px 0 0;">' + esc(A.mandate || "") + '</p></div></div>';
+  }
+  // (4) Financial conditions and plumbing strip
+  const PL = Q.plumbing || {};
+  const nf = PL.nfci || {}, cs = PL.curve_slope || {}, tp = PL.term_premium || {}, rp = PL.real_policy || {};
+  const pc = (label, val, sub) =>
+   '<div class="card"><div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
+   '<div style="font-size:24px;font-weight:800;color:#e8ecf1;">' + val + '</div>' +
+   (sub ? '<div style="font-size:11px;color:#8b949e;margin-top:4px;">' + sub + "</div>" : "") + "</div>";
+  const stanceTxt = rp.stance ? rp.stance.charAt(0).toUpperCase() + rp.stance.slice(1) : null;
+  h += '<div style="font-size:13px;font-weight:700;color:#e8ecf1;margin:16px 0 4px;">Financial conditions and plumbing</div>' +
+   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:8px 0 12px;">' +
+   pc("CHICAGO FED NFCI", nf.value != null ? f2(nf.value) : "N/A",
+     (nf.label ? esc(nf.label) : "National financial conditions index") + (nf.as_of ? " \u00B7 weekly, as of " + esc(nf.as_of) : "")) +
+   pc("10Y REAL YIELD", PL.real_yield_10y != null ? f2(PL.real_yield_10y) + "%" : "N/A",
+     "TIPS yield, the real hurdle rate behind equity discounting") +
+   pc("CURVE SLOPE (10Y - 2Y)", cs.bps != null ? Math.round(cs.bps) + " bps" : "N/A",
+     "FRED T10Y2Y" + (cs.as_of ? " \u00B7 as of " + esc(cs.as_of) : "")) +
+   pc("REAL POLICY RATE", rp.real_rate != null ? f2(rp.real_rate) + "%" : "N/A",
+     "Effective fed funds minus core PCE year over year, against an assumed neutral band of " + f2(rp.r_star_low) + "% to " + f2(rp.r_star_high) + "%" + (stanceTxt ? " \u00B7 stance " + stanceTxt : "")) +
+   pc("TERM PREMIUM (KIM-WRIGHT 10Y)", tp.level != null ? f2(tp.level) + "%" : "N/A",
+     "Shared with the sovereign layer below" + (tp.as_of ? " \u00B7 as of " + esc(String(tp.as_of).slice(0, 10)) : "")) +
+   "</div>";
+  return h;
+ }
+
 // === macro_regime.js ===
 function macroRegimeHtml() {
   const M = D.macro_regime || {};
@@ -9121,9 +9259,12 @@ function macroRegimeHtml() {
    return "monthly, " + (monthNames[Number(parts[1]) - 1] || "") + " " + parts[0];
   };
   let h = '<div class="section"><div class="section-title">Macro Regime Model ' + PRO_BADGE + '</div>' +
-   '<div class="section-sub">A four-regime probability model for the path of the US 10-year Treasury yield over the next 6 to 12 months. The model weighs whether long yields are being driven by fiscal supply and term premium repricing, by a higher-for-longer plateau, or by the growth and liquidity forces that pull yields back down.</div>';
+   '<div class="section-sub">Two layers read the same macro tape. The quadrant engine maps growth and inflation momentum to a regime and a desk playbook, and the sovereign layer below prices where the US 10-year yield goes from here over the next 6 to 12 months, weighing fiscal supply and term premium repricing against the growth and liquidity forces that pull yields back down.</div>';
+  // Quadrant layer first (visuals before the sovereign detail)
+  h += quadrantSectionHtml(M);
   // Score banner
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
+  h += '<div style="font-size:13px;font-weight:700;color:#e8ecf1;margin:16px 0 4px;">Sovereign yield layer</div>' +
+   '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">BLOWOUT RISK</div>' +
    '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(M.regime || "") + '</div>' +
@@ -9209,7 +9350,9 @@ function macroRegimeHtml() {
   // (6) Explainer AFTER the visuals
   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
    '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
-   "The model frames the next 6 to 12 months for the US 10-year yield as a contest between four regimes. A fiscal blowout, where heavy Treasury supply and fading foreign demand push long yields toward 5.60%. A higher-for-longer plateau around 4.85%, where sticky inflation and a heavy issuance calendar keep yields elevated without disorder. A growth deceleration toward 4.05%, where a credit or labor slowdown restores the traditional duration bid. And a liquidity shock toward 3.30%, where a funding fracture forces emergency easing. Probabilities start from the framework priors and shift every day with observable signals, so the mix reflects where the evidence is building rather than a fixed view.<br><br>" +
+   "The first layer reads the economy itself rather than bond prices. Every asset class ultimately prices two forces, growth and inflation, so the model standardizes each into a momentum score. The growth score blends the copper to gold ratio, industrial production momentum, and the level of the curve, while the inflation score blends breakeven inflation, consumer price momentum, and crude oil. The position on the map selects one of four quadrants, and a distance-weighted softmax converts that position into probabilities instead of a single asserted regime. The allocation panel blends the four desk playbooks by those probabilities, so positioning migrates gradually as the economy moves rather than flipping on one data print.<br><br>" +
+   "The plumbing strip tracks how tightly money is moving while that migration unfolds. The Chicago Fed conditions index summarizes credit availability across debt, equity, and shadow banking channels. The real policy rate strips core inflation out of the effective fed funds rate and compares the result with an assumed neutral band, which shows whether policy is adding restraint or quietly easing. Loose plumbing alongside building inflation momentum is the combination that tends to feed the blowout odds in the sovereign layer, because ample credit lets heavy Treasury supply clear at rising yields until demand finally balks.<br><br>" +
+   "The sovereign layer frames the next 6 to 12 months for the US 10-year yield as a contest between four regimes. A fiscal blowout, where heavy Treasury supply and fading foreign demand push long yields toward 5.60%. A higher-for-longer plateau around 4.85%, where sticky inflation and a heavy issuance calendar keep yields elevated without disorder. A growth deceleration toward 4.05%, where a credit or labor slowdown restores the traditional duration bid. And a liquidity shock toward 3.30%, where a funding fracture forces emergency easing. Probabilities start from the framework priors and shift every day with observable signals, so the mix reflects where the evidence is building rather than a fixed view.<br><br>" +
    "The mechanism that matters most is the term premium, the extra compensation investors demand for holding duration instead of rolling Treasury bills. A nominal yield is the expected path of short-term policy rates plus that premium. For a decade after the financial crisis, quantitative easing pinned term premiums below zero. Quantitative tightening and multi-trillion-dollar coupon supply are now normalizing the premium back toward its historical range, and that normalization lifts long yields even while inflation expectations stay anchored. A term-premium-driven rise tightens financial conditions without any change in the expected policy path, which is why it catches equity valuations off guard.<br><br>" +
    "The spillovers travel through the probability-weighted foreign yields in the table above. Bunds, gilts, and JGBs share the global duration bid, so a US-led repricing rarely stays contained. Domestically, real yields above 2.00% act as a gravity well for equity multiples because every future earnings stream is discounted harder, and mortgage rates follow the 10-year closely enough that yields near 5.00% freeze housing turnover.<br><br>" +
    "Circuit breakers cap the tail. Pension funds and life insurers run automatic liability-matching programs when funded status crosses full funding at higher yields, creating a non-discretionary bid. The Treasury can shift issuance toward bills and lean on its buyback program if the long end breaks. The Federal Reserve can slow or halt quantitative tightening if repo stress threatens dealer financing. And with global debt above 330% of GDP, the economy is far more rate-sensitive than in past cycles, so sustained yields above 5.50% tend to break something and force the flight-to-quality bid. The distribution is skewed toward higher yields, but it is not unbounded." +
