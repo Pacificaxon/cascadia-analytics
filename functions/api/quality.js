@@ -10,6 +10,7 @@
  */
 
 import { verifyPro, jsonResponse, handleOptions } from "./_auth.js";
+import { getCrumb } from "./_stock.js";
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
@@ -25,24 +26,6 @@ export async function onRequest(context) {
   if (!v.ok) return jsonResponse({ error: v.error }, v.status, request);
   if (!v.is_pro) return jsonResponse({ error: "forbidden" }, 403, request);
   return onRequestGet(context);
-}
-
-async function getCrumb() {
-  // Step 1: get cookies from Yahoo homepage
-  const cookieRes = await fetch("https://fc.yahoo.com", {
-    headers: { "User-Agent": UA },
-    redirect: "manual",
-  });
-  const setCookie = cookieRes.headers.get("set-cookie") || "";
-  const cookies = setCookie.split(",").map((c) => c.split(";")[0].trim()).filter(Boolean).join("; ");
-
-  // Step 2: get crumb token
-  const crumbRes = await fetch("https://query1.finance.yahoo.com/v1/test/getcrumb", {
-    headers: { "User-Agent": UA, Cookie: cookies },
-  });
-  if (!crumbRes.ok) throw new Error("crumb fetch failed: " + crumbRes.status);
-  const crumb = (await crumbRes.text()).trim();
-  return { crumb, cookies };
 }
 
 async function onRequestGet(context) {

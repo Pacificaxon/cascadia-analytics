@@ -66,12 +66,38 @@ export function upstreamError(request, ticker, err) {
   );
 }
 
-// Yahoo cookie-and-crumb flow, identical to metrics.js / quality.js /
-// alignment.js / earnings360.js.
-export async function getCrumb() {
+// Yahoo cookie-and-crumb flow, shared by every on-demand endpoint (the
+// stock-*.js endpoints here, and metrics.js / quality.js / alignment.js /
+// earnings360.js, which import this instead of keeping private copies).
+//
+// Yahoo rate-limits the getcrumb endpoint with intermittent HTTP 429 bursts.
+// A research page load fires several crumb handshakes at once across its
+// panels, and a single unretried 429 used to blank whichever panel lost the
+// race (the user hit this on CAH's profile header, October 20). The flow
+// therefore:
+//   - caches one crumb per isolate for a short TTL, so concurrent panels in
+//     the same isolate share a single handshake (Yahoo crumbs stay valid far
+//     longer than 10 minutes; the TTL is deliberately conservative),
+//   - retries transient failures with backoff, alternating between the
+//     query1 and query2 hosts,
+//   - bounds each attempt with a timeout so a hung upstream cannot stall
+//     the function indefinitely.
+const CRUMB_TTL_MS = 10 * 60 * 1000;
+const CRUMB_HOSTS = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
+const CRUMB_DELAYS_MS = [0, 400, 1100, 2300];
+let _crumbCache = null;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+export function invalidateCrumb() {
+  _crumbCache = null;
+}
+
+async function fetchCrumbOnce(host) {
   const cookieRes = await fetch("https://fc.yahoo.com", {
     headers: { "User-Agent": UA },
     redirect: "manual",
+    signal: AbortSignal.timeout(15000),
   });
   const setCookie = cookieRes.headers.get("set-cookie") || "";
   const cookies = setCookie
@@ -79,23 +105,58 @@ export async function getCrumb() {
     .map((c) => c.split(";")[0].trim())
     .filter(Boolean)
     .join("; ");
-  const crumbRes = await fetch("https://query1.finance.yahoo.com/v1/test/getcrumb", {
+  const crumbRes = await fetch("https://" + host + "/v1/test/getcrumb", {
     headers: { "User-Agent": UA, Cookie: cookies },
+    signal: AbortSignal.timeout(15000),
   });
   if (!crumbRes.ok) throw new Error("crumb fetch failed: " + crumbRes.status);
   const crumb = (await crumbRes.text()).trim();
+  if (!crumb || crumb.length > 64) throw new Error("crumb fetch failed: malformed crumb");
   return { crumb, cookies };
 }
 
+export async function getCrumb() {
+  if (_crumbCache && _crumbCache.expires > Date.now()) {
+    return { crumb: _crumbCache.crumb, cookies: _crumbCache.cookies };
+  }
+  let lastErr = null;
+  for (let attempt = 0; attempt < CRUMB_DELAYS_MS.length; attempt++) {
+    if (CRUMB_DELAYS_MS[attempt]) {
+      await sleep(CRUMB_DELAYS_MS[attempt] + Math.floor(Math.random() * 250));
+    }
+    try {
+      const got = await fetchCrumbOnce(CRUMB_HOSTS[attempt % CRUMB_HOSTS.length]);
+      _crumbCache = { crumb: got.crumb, cookies: got.cookies, expires: Date.now() + CRUMB_TTL_MS };
+      return got;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error("crumb fetch failed");
+}
+
 export async function quoteSummary(ticker, modules, crumb, cookies) {
-  const url =
+  const build = (c) =>
     "https://query2.finance.yahoo.com/v10/finance/quoteSummary/" +
     encodeURIComponent(ticker) +
     "?modules=" +
     modules +
     "&crumb=" +
-    encodeURIComponent(crumb);
-  const res = await fetch(url, { headers: { "User-Agent": UA, Cookie: cookies } });
+    encodeURIComponent(c);
+  let res = await fetch(build(crumb), {
+    headers: { "User-Agent": UA, Cookie: cookies },
+    signal: AbortSignal.timeout(30000),
+  });
+  // A 429 (rate limit) or 401 (crumb rejected) gets one retry on a freshly
+  // negotiated crumb before the caller surfaces an upstream error.
+  if (res.status === 429 || res.status === 401) {
+    invalidateCrumb();
+    const fresh = await getCrumb();
+    res = await fetch(build(fresh.crumb), {
+      headers: { "User-Agent": UA, Cookie: fresh.cookies },
+      signal: AbortSignal.timeout(30000),
+    });
+  }
   if (!res.ok) throw new Error("Yahoo returned HTTP " + res.status);
   const json = await res.json();
   const result = json && json.quoteSummary && json.quoteSummary.result && json.quoteSummary.result[0];
