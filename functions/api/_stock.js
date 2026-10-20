@@ -73,24 +73,67 @@ export function upstreamError(request, ticker, err) {
 // Yahoo rate-limits the getcrumb endpoint with intermittent HTTP 429 bursts.
 // A research page load fires several crumb handshakes at once across its
 // panels, and a single unretried 429 used to blank whichever panel lost the
-// race (the user hit this on CAH's profile header, October 20). The flow
-// therefore:
-//   - caches one crumb per isolate for a short TTL, so concurrent panels in
-//     the same isolate share a single handshake (Yahoo crumbs stay valid far
-//     longer than 10 minutes; the TTL is deliberately conservative),
-//   - retries transient failures with backoff, alternating between the
-//     query1 and query2 hosts,
-//   - bounds each attempt with a timeout so a hung upstream cannot stall
-//     the function indefinitely.
+// race (the user hit this on CAH's profile header, October 20). Retries
+// alone still lose when Yahoo clamps the egress IP for tens of seconds, so
+// the negotiated crumb is shared as widely as the platform allows:
+//   - one crumb per isolate (module state) and per edge POP (Cache API, the
+//     same pattern getCikMap uses below), each for a 10-minute TTL, so in
+//     steady state almost no request negotiates at all, and a request that
+//     lands during a throttle window usually finds a usable crumb already
+//     cached (quoteSummary itself is throttled far less than getcrumb),
+//   - retries with backoff, alternating between the query1 and query2
+//     hosts, when a fresh negotiation really is required,
+//   - a timeout on each attempt so a hung upstream cannot stall the
+//     function indefinitely.
+// The cached value is Yahoo's own anonymous session cookie plus crumb, not
+// user data; it is stored only in the edge cache, never sent to clients.
 const CRUMB_TTL_MS = 10 * 60 * 1000;
 const CRUMB_HOSTS = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
 const CRUMB_DELAYS_MS = [0, 400, 1100, 2300, 4000];
+const CRUMB_CACHE_KEY = "https://cascadia.internal/yahoo/crumb.json";
 let _crumbCache = null;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export function invalidateCrumb() {
   _crumbCache = null;
+  try {
+    if (typeof caches !== "undefined" && caches.default) {
+      caches.default.delete(CRUMB_CACHE_KEY).catch(() => {});
+    }
+  } catch (e) {
+    /* cache is best-effort */
+  }
+}
+
+async function crumbFromEdgeCache() {
+  try {
+    if (typeof caches === "undefined" || !caches.default) return null;
+    const hit = await caches.default.match(CRUMB_CACHE_KEY);
+    if (!hit) return null;
+    const j = await hit.json();
+    if (j && j.crumb && j.cookies) return { crumb: j.crumb, cookies: j.cookies };
+  } catch (e) {
+    /* cache is best-effort */
+  }
+  return null;
+}
+
+async function crumbToEdgeCache(got) {
+  try {
+    if (typeof caches === "undefined" || !caches.default) return;
+    await caches.default.put(
+      CRUMB_CACHE_KEY,
+      new Response(JSON.stringify(got), {
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "public, max-age=" + CRUMB_TTL_MS / 1000,
+        },
+      })
+    );
+  } catch (e) {
+    /* cache is best-effort */
+  }
 }
 
 async function fetchCrumbOnce(host) {
@@ -119,6 +162,11 @@ export async function getCrumb() {
   if (_crumbCache && _crumbCache.expires > Date.now()) {
     return { crumb: _crumbCache.crumb, cookies: _crumbCache.cookies };
   }
+  const shared = await crumbFromEdgeCache();
+  if (shared) {
+    _crumbCache = { crumb: shared.crumb, cookies: shared.cookies, expires: Date.now() + CRUMB_TTL_MS };
+    return shared;
+  }
   let lastErr = null;
   for (let attempt = 0; attempt < CRUMB_DELAYS_MS.length; attempt++) {
     if (CRUMB_DELAYS_MS[attempt]) {
@@ -127,6 +175,7 @@ export async function getCrumb() {
     try {
       const got = await fetchCrumbOnce(CRUMB_HOSTS[attempt % CRUMB_HOSTS.length]);
       _crumbCache = { crumb: got.crumb, cookies: got.cookies, expires: Date.now() + CRUMB_TTL_MS };
+      await crumbToEdgeCache(got);
       return got;
     } catch (e) {
       lastErr = e;
