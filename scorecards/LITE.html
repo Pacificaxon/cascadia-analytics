@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LITE Investment Scorecard</title>
+<style>
+:root { --accent: #2471a3; --ink: #1a1a1a; --muted: #666; --line: #ddd; --bg: #fff; --card: #f8f9fa; }
+:root[data-theme="dark"] { --ink: #e8e8e8; --muted: #aaa; --line: #444; --bg: #1a1a1a; --card: #2a2a2a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink: #e8e8e8; --muted: #aaa; --line: #444; --bg: #1a1a1a; --card: #2a2a2a; } }
+* { box-sizing: border-box; }
+body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); max-width: 900px; margin: 0 auto; padding: 24px; font-size: 14px; line-height: 1.5; }
+h1 { font-size: 28px; margin: 0; } h2 { font-size: 18px; margin: 24px 0 8px; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 16px; }
+.ticker { font-size: 32px; font-weight: 800; color: var(--accent); }
+.price { font-size: 24px; font-weight: 700; text-align: right; }
+.sub { color: var(--muted); font-size: 13px; }
+.tag { display: inline-block; font-size: 10px; background: #e8f0fe; color: #1a56db; border-radius: 3px; padding: 1px 5px; margin-left: 4px; vertical-align: middle; white-space: nowrap; }
+:root[data-theme="dark"] .tag { background: #1a3a5c; }
+.page1-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; margin: 16px 0; }
+.score-card { border: 1px solid var(--line); border-radius: 8px; padding: 16px; text-align: center; }
+.gauge { width: 100%; max-width: 240px; }
+.gauge-num { font-size: 42px; font-weight: 800; fill: var(--ink); }
+.gauge-band { font-size: 13px; font-weight: 700; fill: var(--muted); letter-spacing: 1px; }
+.conf { color: var(--muted); font-size: 13px; margin-top: 8px; }
+.pillar { margin: 12px 0; }
+.pillar-head { display: flex; align-items: center; gap: 10px; }
+.pillar-name { font-weight: 700; min-width: 150px; }
+.bar { flex: 1; height: 12px; background: #e0e0e0; border-radius: 6px; overflow: hidden; }
+.fill { height: 100%; border-radius: 6px; }
+.pillar-score { font-weight: 800; font-size: 16px; min-width: 30px; text-align: right; font-variant-numeric: tabular-nums; }
+.pillar-why { color: var(--muted); font-size: 13px; margin: 4px 0 0 160px; }
+.thesis { border: 1px solid var(--line); border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
+.thesis li { margin: 8px 0; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+td.num, th.num { text-align: right; }
+.val-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.val-box { background: var(--card); border-radius: 8px; padding: 12px; }
+.val-box h3 { margin: 0 0 8px; font-size: 14px; color: var(--accent); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.catalyst { border-left: 3px solid var(--accent); padding: 6px 0 6px 12px; margin: 10px 0; }
+.cat-date { font-weight: 700; color: var(--accent); }
+.risk-head { color: #c0392b; }
+.scrollx { overflow-x: auto; }
+.disclaimer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); margin-top: 24px; padding-top: 12px; }
+.disclaimer-strong { font-weight: 700; text-align: center; margin-top: 8px; }
+.missing { font-size: 12px; color: var(--muted); }
+@media print {
+  @page { margin: 0.6in; }
+  body { padding: 0; }
+  .page-break { page-break-before: always; }
+  .disclaimer { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE ONE -->
+<div class="header">
+  <div><div class="ticker">LITE</div><div class="sub">Lumentum Holdings Inc. (NASDAQ)</div>
+  <div class="sub">As-of: 20-Oct-2026 | Latest Filing: FY2026 10-K (filed Aug 2026) | Currency: USD</div></div>
+  <div><div class="price">$833.05 <span class="tag">[Mkt 20-Oct-26]</span></div><div class="sub">Market Cap: $75.5B <span class="tag">[Mkt 20-Oct-26]</span></div></div>
+</div>
+
+<div class="page1-grid">
+  <div class="score-card">
+    <h2 style="border:none;margin:0 0 8px">Attractiveness Score</h2>
+    
+    <svg viewBox="0 0 200 110" class="gauge">
+      <path d="M 20 95 A 80 80 0 0 1 180 95" fill="none" stroke="#e0e0e0" stroke-width="18" stroke-linecap="round"/>
+      <path d="M 20 95 A 80 80 0 0 1 127.1 19.7" fill="none" stroke="#f1c40f" stroke-width="18" stroke-linecap="round"/>
+      <text x="100" y="78" text-anchor="middle" class="gauge-num">61</text>
+      <text x="100" y="98" text-anchor="middle" class="gauge-band">FAIR</text>
+    </svg>
+    <div class="conf">Confidence: <strong>High</strong> (0 pillars excluded)</div>
+  </div>
+  <div>
+    <h2 style="border:none;margin:0 0 4px">Pillar Breakdown</h2>
+    
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">1. Operating Quality</span>
+        <div class="bar"><div class="fill" style="width:74%;background:#f39c12"></div></div>
+        <span class="pillar-score">74</span></div>
+      <div class="pillar-why">Record GAAP gross margin of 41.7% in FY2026 exiting at 47.4%, a net cash balance sheet, and a vertically integrated indium phosphide platform, held back by demonstrated cyclicality and heavy capacity commitments.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">2. Recent Trend</span>
+        <div class="bar"><div class="fill" style="width:88%;background:#2471a3"></div></div>
+        <span class="pillar-score">88</span></div>
+      <div class="pillar-why">Revenue growth accelerated through FY2026 from 58.4% to 109.3% year on year by Q4, with gross margin up 1,370 basis points for the year and guidance raised to a $1.25B quarterly run-rate.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">3. Forward Growth</span>
+        <div class="bar"><div class="fill" style="width:80%;background:#1e8449"></div></div>
+        <span class="pillar-score">80</span></div>
+      <div class="pillar-why">Street consensus carries FY2027 revenue to about $6.34B and FY2028 toward $9.95B, with OCS backlog above $400M and CPO orders layering in from calendar 2027, against the reality that hyper-growth decays as the base scales.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">4. Valuation</span>
+        <div class="bar"><div class="fill" style="width:22%;background:#e74c3c"></div></div>
+        <span class="pillar-score">22</span></div>
+      <div class="pillar-why">The computed base target of $352.13 offers 57.7% downside from $833.05 and the blended target of $413.35 offers 50.4% downside, while the reverse DCF shows the price embedding growth above the bull case.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-name">5. Catalysts & Risk</span>
+        <div class="bar"><div class="fill" style="width:45%;background:#2471a3"></div></div>
+        <span class="pillar-score">45</span></div>
+      <div class="pillar-why">The November 5 print and CPO delivery start are live catalysts in both directions, balanced against digestion risk, conversion-driven share growth, and an expectations bar with no slack.</div>
+    </div>
+  </div>
+</div>
+
+<div class="thesis">
+  <h2 style="border:none;margin:0 0 8px">Investment Thesis</h2>
+  <ul><li><strong>The optics supercycle is real and it is in the numbers:</strong> AI data center build-outs have turned optical links into a primary means of connectivity, and Lumentum sits at the center of that shift with indium phosphide laser chips, cloud transceivers, optical circuit switches, and co-packaged optics. Revenue grew 83.2% in FY2026 to $3,014.0M and exited the year at a $1,006.3M quarter, up 109.3% year on year [10-K/PR].</li><li><strong>Mix shift has reset the margin structure:</strong> GAAP gross margin expanded from 18.5% in FY2024 to 41.7% in FY2026 and reached 47.4% in Q4 as datacom mix rose, while GAAP operating margin swung from a 31.9% loss in FY2024 to a 17.4% profit in FY2026, exiting the year at 27.8% [10-K]. The detailed EBIT bridge carries that trajectory forward and produces mature free cash flow margins of 21.0% in the bear case, 25.5% in the base case, and 27.4% in the bull case [DCF model].</li><li><strong>The business is superb and the price already knows it:</strong> At $833.05 the market capitalizes Lumentum at roughly $75.5B, and the reverse DCF shows the price embedding a 56.4% five-year revenue CAGR at the base-case mature free cash flow margin of 25.5%, above even the bull case blended CAGR of 42.1% [DCF model]. Our computed base target of $352.13 sits 57.7% below the price, so the rating follows the rules for an overvalued but healthy business.</li></ul>
+</div>
+
+<h2>Key Operating Metrics</h2>
+<div class="scrollx"><table>
+<tr><th>Metric</th><th class="num">Latest</th><th class="num">YoY Change</th><th class="num">3Y Trend</th></tr>
+<tr><td>Revenue (FY2026)</td><td class="num">$3,014.0M <span class="tag">[10-K]</span></td><td class="num">+83.2% <span class="tag">[10-K]</span></td><td class="num">Up</td></tr><tr><td>Revenue (Q4 FY2026)</td><td class="num">$1,006.3M <span class="tag">[PR Q4]</span></td><td class="num">+109.3% <span class="tag">[PR Q4]</span></td><td class="num">Up</td></tr><tr><td>GAAP Gross Margin (FY2026)</td><td class="num">41.7% <span class="tag">[10-K]</span></td><td class="num">28.0% in FY2025 <span class="tag">[10-K]</span></td><td class="num">Up</td></tr><tr><td>GAAP Operating Margin (Q4 FY2026)</td><td class="num">27.8% <span class="tag">[PR Q4]</span></td><td class="num">-1.7% in Q4 FY2025 <span class="tag">[PR Q4]</span></td><td class="num">Up</td></tr><tr><td>Non-GAAP EPS (FY2026)</td><td class="num">$8.67 <span class="tag">[PR Q4]</span></td><td class="num">$2.06 in FY2025 <span class="tag">[PR Q4]</span></td><td class="num">Up</td></tr><tr><td>Net Cash</td><td class="num">$1,101.0M <span class="tag">[10-K]</span></td><td class="num">Debt $1,637.4M vs cash $2,738.4M <span class="tag">[10-K]</span></td><td class="num">Up</td></tr><tr><td>Q1 FY2027 Revenue Guide</td><td class="num">$1,225M to $1,275M <span class="tag">[PR Q4]</span></td><td class="num">Set with Q4 results <span class="tag">[PR Q4]</span></td><td class="num">Up</td></tr>
+</table></div>
+
+<!-- PAGE TWO -->
+<div class="page-break"></div>
+
+<h2>Historical Financial Trend</h2>
+<div class="scrollx"><table>
+<tr><th>Metric</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025</th><th class="num">FY2026</th><th class="num">Q4 FY2026</th></tr>
+<tr><td>Revenue</td><td class="num">$1,767.0M <span class="tag">[10-K]</span></td><td class="num">$1,359.2M <span class="tag">[10-K]</span></td><td class="num">$1,645.0M <span class="tag">[10-K]</span></td><td class="num">$3,014.0M <span class="tag">[10-K]</span></td><td class="num">$1,006.3M <span class="tag">[PR Q4]</span></td></tr><tr><td>Gross Margin (GAAP)</td><td class="num">32.2% <span class="tag">[10-K]</span></td><td class="num">18.5% <span class="tag">[10-K]</span></td><td class="num">28.0% <span class="tag">[10-K]</span></td><td class="num">41.7% <span class="tag">[10-K]</span></td><td class="num">47.4% <span class="tag">[PR Q4]</span></td></tr><tr><td>Operating Margin (GAAP)</td><td class="num">-6.5% <span class="tag">[10-K]</span></td><td class="num">-31.9% <span class="tag">[10-K]</span></td><td class="num">-10.9% <span class="tag">[10-K]</span></td><td class="num">17.4% <span class="tag">[10-K]</span></td><td class="num">27.8% <span class="tag">[PR Q4]</span></td></tr><tr><td>Operating Income</td><td class="num">-$115.7M <span class="tag">[10-K]</span></td><td class="num">-$434.0M <span class="tag">[10-K]</span></td><td class="num">-$180.1M <span class="tag">[10-K]</span></td><td class="num">$524.8M <span class="tag">[10-K]</span></td><td class="num">$279.3M <span class="tag">[10-K/PR Q4]</span></td></tr><tr><td>Non-GAAP EPS</td><td class="num">n/a <span class="tag">[10-K]</span></td><td class="num">n/a <span class="tag">[10-K]</span></td><td class="num">$2.06 <span class="tag">[PR Q4]</span></td><td class="num">$8.67 <span class="tag">[PR Q4]</span></td><td class="num">$3.23 <span class="tag">[PR Q4]</span></td></tr>
+</table></div>
+
+<h2>Valuation</h2>
+<div class="val-grid">
+  <div class="val-box"><h3>Absolute (20/10)</h3><p>Price $833.05 [Mkt 20-Oct-26]<br>DCF Bear $154.45, Base $352.13, Bull $794.71, Blended $413.35 [DCF model]<br>Market cap about $75.5B on 90.6M shares outstanding [Mkt]</p><p>The reverse DCF prices in a five-year revenue CAGR of 56.4% at the base-case mature free cash flow margin of 25.5% produced by the EBIT bridge. The scenario set carries blended five-year CAGRs of 17.8% in the bear case, 29.7% in the base case, and 42.1% in the bull case, so the market price sits above the entire modeled range.</p></div>
+  <div class="val-box"><h3>Versus Peers (55/8)</h3><p>The initiation framework benchmarks mature free cash flow margins at about 14% for Coherent and about 10% for Fabrinet [Cons]. The Lumentum EBIT bridge produces mature free cash flow margins of 21.0% in the bear case, 25.5% in the base case, and 27.4% in the bull case, above both peers, because the bridge credits Lumentum with premium laser chip mix and the operating leverage already visible in its reported 27.8% Q4 GAAP operating margin. Current reported operating margins run near 11.8% at Coherent and 10.2% at Fabrinet [Mkt], which frames how much of the Lumentum margin story is company-specific mix rather than industry tide.</p></div>
+  <div class="val-box"><h3>Versus History (35/7)</h3><p>Lumentum has traded from a 52-week low of $152.54 to a high of $1,143.00 [Mkt]. The current price sits in the upper reaches of that range after a re-rating driven by four consecutive quarters of accelerating revenue growth, which means the entry point carries the full expectations load of the supercycle.</p></div>
+</div>
+
+<div class="two-col">
+<div>
+<h2>Catalyst Timeline</h2>
+<div class="catalyst"><span class="cat-date">Nov 2026 <span class="tag">[PR Q4]</span></span><br>Q1 FY2027 Earnings (Two-Sided): The guide calls for revenue of $1,225M to $1,275M and non-GAAP EPS of $4.05 to $4.35. Delivery at the top end confirms the run-rate, while any sequential softness meets a price that embeds years of flawless compounding.</div><div class="catalyst"><span class="cat-date">2026-2027 <span class="tag">[PR Q2/PR Q4]</span></span><br>CPO and OCS Revenue Layering (Positive): Co-packaged optics orders begin delivering in the first half of calendar 2027 and the optical circuit switch backlog scales, adding second and third growth engines on top of cloud transceivers.</div><div class="catalyst"><span class="cat-date">2027 <span class="tag">[10-K]</span></span><br>Conversion and Share Count Path (Two-Sided): Early conversion requests for $757.8M of note principal arrived after fiscal year end, with principal settled in cash. The pace of equitization sets the true diluted share count the market should capitalize.</div>
+<h2>What Would Change Our Score</h2>
+<p>Sustained delivery above a 40% revenue growth path with GAAP gross margin holding in the high 40s and CPO revenue arriving at scale would pull the equity toward the bull case and force the base case up. A single quarter of hyperscaler digestion, or gross margin slipping back below 40%, would expose how much of the price depends on an unbroken trajectory and move the equity toward the bear case quickly.</p>
+</div>
+<div>
+<h2>Top Risk Factors (Item 1A)</h2>
+<p><strong class="risk-head">1. Valuation and Embedded Expectations:</strong> The reverse DCF at $833.05 implies the market expects revenue to compound at 56.4% for five years at a 25.5% free cash flow margin, a path above our bull case on the same blended basis. Even our bull target of $794.71 sits below the current price, so the margin of safety is negative across the full scenario range. <span class="tag">[DCF model]</span></p><p><strong class="risk-head">2. Hyperscaler Digestion Cycle:</strong> This industry digests violently. Lumentum revenue fell 23.1% in FY2024 to $1,359.2M as telecom and cloud customers worked down inventory, and GAAP operating margin reached a 31.9% loss. A single digestion pause at one large cloud customer would hit a cost base now carrying $2.4B of purchase commitments. <span class="tag">[10-K]</span></p><p><strong class="risk-head">3. Customer Concentration:</strong> Growth rests on a small set of AI infrastructure buyers whose capex plans can shift by quarter. The initiation framework flags datacom bookings and design wins as the KPIs to watch precisely because order concentration makes revenue lumpier than the current trajectory suggests. <span class="tag">[10-K]</span></p><p><strong class="risk-head">4. Capacity and Capex Intensity:</strong> Lumentum owns its indium phosphide fabs, and FY2026 capex ran at 15.0% of revenue with $451.3M spent. The bridge assumes capex glides down from 16% toward 10% of revenue in the base case. If the capacity race forces sustained mid-teens capex, free cash flow conversion lands below the modeled path. <span class="tag">[10-K]</span></p><p><strong class="risk-head">5. Convert Overhang and Competition:</strong> All convertible series are classified current after the conversion trigger was met, and share count has already moved from 71.4M in January 2026 to 89.7M by August 2026 before the preferred and equity awards. Coherent competes at greater scale, and hyperscaler in-house silicon photonics work remains a slow-moving threat to merchant optics content. <span class="tag">[10-K]</span></p>
+<h2>Forward Growth Drivers</h2>
+<ul><li>Components revenue of $649.4M in Q4 FY2026, up 102.7% year on year, with Systems up 122.6% to $356.9M <span class="tag">[PR Q4]</span></li><li>Optical circuit switch backlog above $400M disclosed with Q2 FY2026 results, alongside an incremental multi-hundred-million-dollar co-packaged optics order deliverable in the first half of calendar 2027 <span class="tag">[PR Q2]</span></li><li>NVIDIA purchased approximately 2.9M shares of Series A convertible preferred stock for $2.0B in March 2026, converting one for one into common stock <span class="tag">[10-K]</span></li><li>1.6T adoption advancing in the cloud module business, with an initial order for ELS modules and a broadening set of near-package optics engagements <span class="tag">[PR Q4]</span></li></ul>
+</div>
+</div>
+
+<div class="missing">
+<h2>Missing / Modified Data Log</h2>
+<ul><li>Segment revenue is no longer reported after the move to a single reporting segment in Q1 FY2026; product type (Components and Systems) is the finest verified split.</li><li>FY2023 and FY2024 non-GAAP EPS are shown as n/a rather than reconstructed from older releases.</li><li>Earnings call transcript tone analysis populates on the next scheduled tracker run.</li></ul>
+</div>
+
+<div class="disclaimer">
+This scorecard is for educational and informational purposes only. It is not financial, investment, or tax advice, and nothing here is a recommendation to buy or sell any security. It is generated by an AI model and does not consider your individual circumstances. All figures are approximate, may be out of date, and are not guaranteed to be accurate. Verify independently and consult a licensed professional before investing. You are responsible for your own investment decisions.
+<div class="disclaimer-strong">Not financial advice. For educational purposes only. Do your own research.</div>
+</div>
+
+</body>
+</html>

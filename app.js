@@ -46,6 +46,7 @@
   "IRM": { domain: "ironmountain.com", industry: "Data Center REIT" },
   "ISRG": { domain: "intuitive.com", industry: "Medical Devices" },
   "LEU": { domain: "centrusenergy.com", industry: "Uranium" },
+  "LITE": { domain: "lumentum.com", industry: "Optical Components" },
   "LRCX": { domain: "lamresearch.com", industry: "Semiconductor Equipment" },
   "MELI": { domain: "mercadolibre.com", industry: "E-commerce" },
   "META": { domain: "meta.com", industry: "Social Media" },
