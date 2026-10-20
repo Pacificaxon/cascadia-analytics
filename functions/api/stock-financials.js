@@ -7,9 +7,12 @@
  * negative as a cash outflow, free cash flow = operating cash flow + capex).
  *
  * Primary source: SEC EDGAR company concepts (us-gaap), annual 10-K / 20-F /
- * 40-F facts only, latest filed value per fiscal year. Fallback: Yahoo
- * quoteSummary statement modules behind the house crumb flow, for filers
- * EDGAR cannot serve. Unreported line items stay null and render as N/A.
+ * 40-F facts only, latest filed value per fiscal year. EDGAR's per-concept
+ * store is incomplete for some filers, so a thin or stale concept pass falls
+ * through to the same filer's companyfacts document before Yahoo is tried.
+ * Fallback: Yahoo quoteSummary statement modules behind the house crumb
+ * flow, for filers EDGAR cannot serve. Unreported line items stay null and
+ * render as N/A.
  * Auth: Supabase JWT + profiles.is_pro via _auth.js (401 / 403).
  */
 
@@ -50,6 +53,17 @@ const CASHFLOW_TAGS = {
   financing_cash_flow: ["NetCashProvidedByUsedInFinancingActivities", "NetCashProvidedByUsedInFinancingActivitiesContinuingOperations"],
 };
 
+// Pick the USD unit (or USD/shares for per-share rows) out of a units map.
+function pickUnitFacts(units) {
+  const unitNames = Object.keys(units || {});
+  if (!unitNames.length) return [];
+  const preferred =
+    unitNames.find((u) => u === "USD") ||
+    unitNames.find((u) => u.indexOf("USD") === 0) ||
+    unitNames[0];
+  return (units[preferred] || []).map((e) => ({ ...e, _unit: preferred }));
+}
+
 async function conceptFacts(cik, tag) {
   const url =
     "https://data.sec.gov/api/xbrl/companyconcept/CIK" + cik + "/us-gaap/" + tag + ".json";
@@ -57,15 +71,31 @@ async function conceptFacts(cik, tag) {
   if (res.status === 404) return [];
   if (!res.ok) throw new Error("EDGAR concept fetch failed: " + res.status);
   const json = await res.json();
-  const units = json.units || {};
-  const unitNames = Object.keys(units);
-  if (!unitNames.length) return [];
-  // Prefer USD (or USD/shares for per-share rows) when the filer reports in it.
-  const preferred =
-    unitNames.find((u) => u === "USD") ||
-    unitNames.find((u) => u.indexOf("USD") === 0) ||
-    unitNames[0];
-  return (units[preferred] || []).map((e) => ({ ...e, _unit: preferred }));
+  return pickUnitFacts(json.units);
+}
+
+// EDGAR's per-concept store is incomplete for some filers (Abbott's core
+// income tags return empty or missing concept files while its filings carry
+// the facts). The companyfacts document for the same CIK carries every tag
+// in one payload, so it serves as the second EDGAR source. Fetched lazily,
+// once, and shared across tags.
+function companyFactsSource(cik) {
+  let docPromise = null;
+  return async function factsForTag(tag) {
+    if (!docPromise) {
+      docPromise = (async () => {
+        const url = "https://data.sec.gov/api/xbrl/companyfacts/CIK" + cik + ".json";
+        const res = await fetch(url, { headers: { "User-Agent": SEC_UA, Accept: "application/json" } });
+        if (!res.ok) throw new Error("EDGAR companyfacts fetch failed: " + res.status);
+        return res.json();
+      })();
+    }
+    const doc = await docPromise;
+    const gaap = (doc.facts && doc.facts["us-gaap"]) || {};
+    const entry = gaap[tag];
+    if (!entry) return [];
+    return pickUnitFacts(entry.units);
+  };
 }
 
 // Annual facts only: fiscal-year focus, annual forms, duration of roughly a
@@ -92,26 +122,33 @@ function annualByYear(facts, duration) {
   return out;
 }
 
-async function firstTagByYear(cik, tags, duration) {
+// A single failed concept fetch degrades that tag to "no data" instead of
+// aborting the whole statement build.
+async function firstTagByYear(factsForTag, tags, duration) {
   for (const tag of tags) {
-    const facts = await conceptFacts(cik, tag);
+    let facts = [];
+    try {
+      facts = await factsForTag(tag);
+    } catch (e) {
+      facts = [];
+    }
     const byYear = annualByYear(facts, duration);
     if (Object.keys(byYear).length) return byYear;
   }
   return {};
 }
 
-async function edgarFinancials(cik) {
+async function edgarFinancials(factsForTag) {
   const incomeKeys = Object.keys(INCOME_TAGS);
   const incomeMaps = {};
-  for (const k of incomeKeys) incomeMaps[k] = await firstTagByYear(cik, INCOME_TAGS[k], true);
-  const daMap = await firstTagByYear(cik, DA_TAGS, true);
+  for (const k of incomeKeys) incomeMaps[k] = await firstTagByYear(factsForTag, INCOME_TAGS[k], true);
+  const daMap = await firstTagByYear(factsForTag, DA_TAGS, true);
   const balanceMaps = {};
-  for (const k of Object.keys(BALANCE_TAGS)) balanceMaps[k] = await firstTagByYear(cik, BALANCE_TAGS[k], false);
-  const debtCur = await firstTagByYear(cik, DEBT_CURRENT_TAGS, false);
-  const debtNon = await firstTagByYear(cik, DEBT_NONCURRENT_TAGS, false);
+  for (const k of Object.keys(BALANCE_TAGS)) balanceMaps[k] = await firstTagByYear(factsForTag, BALANCE_TAGS[k], false);
+  const debtCur = await firstTagByYear(factsForTag, DEBT_CURRENT_TAGS, false);
+  const debtNon = await firstTagByYear(factsForTag, DEBT_NONCURRENT_TAGS, false);
   const cfMaps = {};
-  for (const k of Object.keys(CASHFLOW_TAGS)) cfMaps[k] = await firstTagByYear(cik, CASHFLOW_TAGS[k], true);
+  for (const k of Object.keys(CASHFLOW_TAGS)) cfMaps[k] = await firstTagByYear(factsForTag, CASHFLOW_TAGS[k], true);
 
   const yearsOf = (maps) => {
     const s = new Set();
@@ -217,16 +254,34 @@ export async function onRequest(context) {
   const ticker = cleanTicker(request);
   if (!ticker) return missingTicker(request);
 
+  // An EDGAR result counts as usable only with at least two income rows and
+  // a current one; a partial concept store can otherwise surface decades-old
+  // rows (Abbott's surviving revenue tag stops in 2017) as if they were the
+  // latest five years.
+  const usable = (f) => {
+    if (!f) return false;
+    const rows = f.income.filter((r) => r.revenue !== null || r.net_income !== null);
+    if (rows.length < 2) return false;
+    const newest = Math.max(...rows.map((r) => r.year));
+    return newest >= new Date().getUTCFullYear() - 3;
+  };
+
   let fin = null;
   let source = null;
   try {
     const cikMap = await getCikMap(context);
     const cik = cikMap[ticker];
     if (cik) {
-      const ed = await edgarFinancials(cik);
-      if (ed.income.filter((r) => r.revenue !== null || r.net_income !== null).length >= 2) {
+      const ed = await edgarFinancials((tag) => conceptFacts(cik, tag));
+      if (usable(ed)) {
         fin = ed;
         source = "SEC EDGAR company filings";
+      } else {
+        const ed2 = await edgarFinancials(companyFactsSource(cik));
+        if (usable(ed2)) {
+          fin = ed2;
+          source = "SEC EDGAR company filings";
+        }
       }
     }
   } catch (e) {
@@ -235,13 +290,22 @@ export async function onRequest(context) {
   if (!fin) {
     try {
       const { crumb, cookies } = await getCrumb();
-      const r = await quoteSummary(
-        ticker,
-        "incomeStatementHistory,balanceSheetHistory,cashflowStatementHistory",
-        crumb,
-        cookies
-      );
-      fin = yahooFinancials(r);
+      const fetchYahoo = async () => {
+        const r = await quoteSummary(
+          ticker,
+          "incomeStatementHistory,balanceSheetHistory,cashflowStatementHistory",
+          crumb,
+          cookies
+        );
+        return yahooFinancials(r);
+      };
+      fin = await fetchYahoo();
+      // Yahoo intermittently answers with empty statement modules; one retry
+      // before declaring the panel unavailable.
+      if (!fin.income.length && !fin.balance.length && !fin.cashflow.length) {
+        await new Promise((r) => setTimeout(r, 900));
+        fin = await fetchYahoo();
+      }
       source = "company filings via Yahoo Finance";
     } catch (err) {
       return upstreamError(request, ticker, err);
