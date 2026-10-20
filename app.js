@@ -248,6 +248,7 @@
    if (sections.macro_regime) flat.macro_regime = sections.macro_regime;
    if (sections.advanced_macro) flat.advanced_macro = sections.advanced_macro;
    if (sections.leadership_canary) flat.leadership_canary = sections.leadership_canary;
+   if (sections.axon_altdata) flat.axon_altdata = sections.axon_altdata;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -7250,6 +7251,13 @@ route("alerts", function () {
    h += "</div>";
   }
 
+  // Cascadia Alternative Data Translation Model (Pro, AXON only)
+  if (tk === "AXON") {
+   h += '<div class="section"><div class="section-title">Cascadia Alternative Data Translation Model ' + PRO_BADGE + '</div>';
+   h += gated("Cascadia Alternative Data Translation Model, Pro", "Axon net new ARR forecasting bridge computed from reported ARR, a verified federal and municipal contract pipeline, and the AI product bookings Axon has actually disclosed, with an interactive scenario simulator.", axonAltDataHtml());
+   h += "</div>";
+  }
+
   // Cascadia Research Report (Pro)
   h += '<div class="section"><div class="section-title">Cascadia Research Report ' + PRO_BADGE + '</div>';
   h += gated("Cascadia Research Report, Pro", "Full institutional research report with model detail.",
@@ -7279,7 +7287,7 @@ route("alerts", function () {
   app.innerHTML = h;
   drawPriceChart(t);
   drawFcfChart(t);
-  if (isPro()) { initSandbox(tk, t); loadAgencyRisk(tk); }
+  if (isPro()) { initSandbox(tk, t); loadAgencyRisk(tk); if (tk === "AXON") wireAxonAltSim(); }
   wireEarningsTabs(tk);
   wireFinTabs(tk);
   wireIncomeChart(tk);
@@ -8154,6 +8162,112 @@ route("alerts", function () {
    "</tr></thead><tbody>" +
    row("Upcoming quarter", qRow) + row("Full year", aRow) +
    '</tbody></table></div><div class="panel-asof" style="color:#8d99aa;">As of ' + esc(asOf) + " · Source: Yahoo Finance</div></div>";
+ }
+
+ /* ---------- Cascadia Alternative Data Translation Model (Pro, AXON) ---------- */
+ function fmtAltM(v) {
+  if (v == null) return "N/A";
+  const s = (Math.round(v * 10) / 10).toLocaleString("en-US", { maximumFractionDigits: 1 });
+  return "$" + s + "M";
+ }
+ function axonAltDataHtml() {
+  const d = D.axon_altdata;
+  if (!d || !d.bridge) return '<div class="card"><p style="color:var(--muted)">Alternative data model output is not available yet.</p></div>';
+  const b = d.bridge, st = d.street || {}, disc = d.disclosures || {}, fin = disc.latest_quarter_financials || {};
+  const kpi = (k, v, sub, gold) =>
+   '<div class="card" style="margin:0;padding:14px 16px;">' +
+   '<div style="font-size:11px;letter-spacing:0.08em;color:var(--muted);">' + k + "</div>" +
+   '<div style="font-size:24px;font-weight:700;margin-top:4px;' + (gold ? "color:#e0aa46;" : "") + '">' + v + "</div>" +
+   '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + sub + "</div></div>";
+  let h = '<div class="card" style="padding:18px;">';
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;">' +
+   kpi("LATEST REPORTED ARR", fmtAltM(b.base_arr_m), esc(b.base_arr_label) + ", observed from the earnings release", false) +
+   kpi("MODEL NET NEW ARR", "+" + fmtAltM(b.model_net_new_arr_m), "Trailing four-quarter average, modeled", false) +
+   kpi("PROJECTED ARR, " + esc(b.target_quarter.toUpperCase()), fmtAltM(b.projected_arr_m), "Earnings " + esc(b.earnings_date || "TBD"), true) +
+   kpi("PROJECTED GROWTH YOY", "+" + b.projected_yoy_pct + "%", "Against " + fmtAltM(b.prior_year_arr_m) + " in " + esc(b.target_quarter.replace("FY2026", "FY2025")), false) +
+   kpi("SENSITIVITY RANGE", fmtAltM(b.range.low_arr_m) + " to " + fmtAltM(b.range.high_arr_m), "Seasonal low to recent run-rate high", false) +
+   "</div>";
+  // Net new ARR history bars, visuals before explanation
+  const rows = (d.arr_series || []).filter((r) => r.net_new_m != null);
+  const maxV = Math.max.apply(null, rows.map((r) => r.net_new_m).concat([b.model_net_new_arr_m]));
+  h += '<div style="margin-top:20px;"><div style="font-size:12px;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;">NET NEW ARR BY QUARTER, REPORTED, WITH THE MODEL FORECAST FOR ' + esc(b.target_quarter.toUpperCase()) + "</div>";
+  rows.forEach((r) => {
+   h += '<div style="display:flex;align-items:center;gap:10px;margin:4px 0;"><span style="width:86px;font-size:12px;color:var(--muted);">' + esc(r.label.replace(" FY", " ")) + '</span>' +
+    '<div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;"><div style="height:14px;width:' + Math.round(r.net_new_m / maxV * 100) + '%;background:#4dd2aa;border-radius:3px;"></div></div>' +
+    '<span style="width:64px;text-align:right;font-size:12px;">+' + fmtAltM(r.net_new_m) + "</span></div>";
+  });
+  h += '<div style="display:flex;align-items:center;gap:10px;margin:4px 0;"><span style="width:86px;font-size:12px;color:#e0aa46;">' + esc(b.target_quarter.replace(" FY", " ")) + ' model</span>' +
+   '<div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;"><div style="height:14px;width:' + Math.round(b.model_net_new_arr_m / maxV * 100) + '%;background:#e0aa46;border-radius:3px;"></div></div>' +
+   '<span style="width:64px;text-align:right;font-size:12px;color:#e0aa46;">+' + fmtAltM(b.model_net_new_arr_m) + "</span></div></div>";
+  h += '<p style="margin-top:14px;">The bridge is computed from reported figures only. ' + esc(b.formula) + ". " + esc(b.contract_overlay_note) + ".</p>";
+  if (st.revenue_consensus_m != null) {
+   h += '<p style="color:var(--muted);">Street context for the same quarter, from the estimates this site already collects. Revenue consensus sits at ' + fmtAltM(st.revenue_consensus_m) + " across " + st.revenue_analysts + " analysts and EPS consensus at $" + st.eps_consensus + " across " + st.eps_analysts + " analysts. " + esc(st.net_new_arr_note) + ".</p>";
+  }
+  h += "</div>";
+  // Contract pipeline table
+  h += '<div class="card" style="padding:18px;margin-top:14px;"><div style="font-size:13px;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;">VERIFIED CONTRACT PIPELINE</div>';
+  h += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr>' +
+   ["Agency", "Scope", "Value", "Term", "Annualized", "Status"].map((c) => '<th style="text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.15);color:var(--muted);">' + c + "</th>").join("") +
+   "</tr></thead><tbody>";
+  (d.contracts || []).forEach((c) => {
+   h += "<tr>" +
+    '<td style="padding:8px;vertical-align:top;">' + esc(c.agency) + "</td>" +
+    '<td style="padding:8px;vertical-align:top;">' + esc(c.scope) + "</td>" +
+    '<td style="padding:8px;vertical-align:top;white-space:nowrap;">' + fmtAltM(c.value_m) + "</td>" +
+    '<td style="padding:8px;vertical-align:top;">' + esc(c.term_label) + "</td>" +
+    '<td style="padding:8px;vertical-align:top;white-space:nowrap;">' + fmtAltM(c.annualized_m) + " / yr</td>" +
+    '<td style="padding:8px;vertical-align:top;">' + esc(c.status) + "</td></tr>" +
+    '<tr><td colspan="6" style="padding:0 8px 10px;color:var(--muted);font-size:12px;">' + esc(c.bridge_note) + ' Source, ' + esc(c.source_name) + ".</td></tr>";
+  });
+  h += "</tbody></table></div>" +
+   '<p style="color:var(--muted);margin-top:6px;">Identified annualized pipeline from awarded and approved items totals ' + fmtAltM((d.identified_pipeline || {}).awarded_or_approved_annualized_m) + " at full run rate. " + esc((d.identified_pipeline || {}).note || "") + ".</p></div>";
+  // Simulator
+  h += '<div class="card" style="padding:18px;margin-top:14px;"><div style="font-size:13px;font-weight:700;letter-spacing:0.05em;margin-bottom:6px;">SCENARIO SIMULATOR</div>' +
+   '<p style="color:var(--muted);margin-top:0;">Toggle each pipeline item and watch both readouts recompute from the displayed, sourced inputs. The ARR sensitivity counts one quarter of the ICE annualized order value as an explicit upper bound, as if the full order value were recurring subscription revenue recognized evenly. LAPD adds nothing in the target quarter because deployment is phased from 2028, and the unawarded TASER solicitation adds nothing until an award exists.</p>' +
+   '<label style="display:block;margin:6px 0;"><input type="checkbox" id="axs-ice" checked> ICE body-worn camera orders, ' + fmtAltM(((d.contracts || []).find((c) => c.id === "ice_bwc") || {}).annualized_m) + ' annualized, signed</label>' +
+   '<label style="display:block;margin:6px 0;"><input type="checkbox" id="axs-lapd" checked> LAPD ecosystem contract, ' + fmtAltM(((d.contracts || []).find((c) => c.id === "lapd") || {}).annualized_m) + ' annualized at full deployment, approved</label>' +
+   '<label style="display:block;margin:6px 0;"><input type="checkbox" id="axs-rfi"> ICE TASER solicitation, ' + fmtAltM(((d.contracts || []).find((c) => c.id === "ice_taser_rfi") || {}).annualized_m) + ' annualized if awarded, not yet awarded</label>' +
+   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px;">' +
+   '<div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:12px 14px;"><div style="font-size:11px;letter-spacing:0.08em;color:var(--muted);">IDENTIFIED ANNUALIZED PIPELINE</div><div id="axs-pipe" style="font-size:22px;font-weight:700;margin-top:4px;">-</div></div>' +
+   '<div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:12px 14px;"><div style="font-size:11px;letter-spacing:0.08em;color:var(--muted);">PROJECTED ARR WITH SENSITIVITIES, ' + esc(b.target_quarter.toUpperCase()) + '</div><div id="axs-arr" style="font-size:22px;font-weight:700;margin-top:4px;color:#e0aa46;">-</div></div>' +
+   "</div></div>";
+  // Disclosed product metrics and financial context
+  h += '<div class="card" style="padding:18px;margin-top:14px;"><div style="font-size:13px;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;">PRODUCT ADOPTION, WHAT AXON HAS DISCLOSED</div>';
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">';
+  (disc.items || []).forEach((it) => {
+   h += '<div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:12px 14px;"><div style="font-size:12px;color:var(--muted);">' + esc(it.label) + '</div><div style="font-size:20px;font-weight:700;margin-top:3px;">' + esc(it.value) + '</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">' + esc(it.detail) + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">' + esc(it.source) + "</div></div>";
+  });
+  h += '<div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:12px 14px;"><div style="font-size:12px;color:var(--muted);">Draft One attach rate</div><div style="font-size:20px;font-weight:700;margin-top:3px;">N/A</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">' + esc(disc.draftone_attach_note || "") + '</div></div>' +
+   '<div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:12px 14px;"><div style="font-size:12px;color:var(--muted);">Body-worn camera share of contracts</div><div style="font-size:20px;font-weight:700;margin-top:3px;">N/A</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">' + esc(disc.bwc_share_note || "") + "</div></div></div>";
+  h += '<p style="color:var(--muted);">Latest quarter financial context, ' + esc(fin.label || "") + '. Revenue ' + fmtAltM(fin.revenue_m) + " with GAAP gross margin of " + fin.gross_margin_gaap_pct + "% and adjusted gross margin of " + fin.gross_margin_adj_pct + "%. Software and Services contributed " + fmtAltM(fin.software_services_revenue_m) + " and Connected Devices " + fmtAltM(fin.connected_devices_revenue_m) + ", with Platform Solutions at " + fmtAltM(fin.platform_solutions_revenue_m) + " inside Connected Devices. Net revenue retention reached " + fin.nrr_pct + "% and future contracted bookings stood at $" + fin.future_contracted_bookings_b + 'B. Trailing twelve month revenue computes to ' + fmtAltM(disc.ttm_revenue_m) + ". " + esc(fin.source || "") + ".</p></div>";
+  // Telemetry unavailable panels
+  h += '<div class="card" style="padding:18px;margin-top:14px;"><div style="font-size:13px;font-weight:700;letter-spacing:0.05em;margin-bottom:10px;">ALTERNATIVE DATA TELEMETRY</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">';
+  (((d.telemetry || {}).panels) || []).forEach((p) => {
+   h += '<div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:12px 14px;"><div style="font-size:12px;color:var(--muted);">' + esc(p.label) + '</div><div style="font-size:20px;font-weight:700;margin-top:3px;">N/A</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">' + esc(p.reason) + "</div></div>";
+  });
+  h += '</div><div class="panel-asof" style="margin-top:12px;">Model output as of ' + esc((d.metadata || {}).generated_at || "") + ". Observed figures carry their sources inline. Modeled figures follow the formula above. Unavailable panels state the reason rather than carrying an estimate.</div></div>";
+  return h;
+ }
+ function wireAxonAltSim() {
+  const d = D.axon_altdata;
+  if (!d || !d.bridge) return;
+  const ice = document.getElementById("axs-ice"), lapd = document.getElementById("axs-lapd"), rfi = document.getElementById("axs-rfi");
+  const pipeEl = document.getElementById("axs-pipe"), arrEl = document.getElementById("axs-arr");
+  if (!ice || !lapd || !rfi || !pipeEl || !arrEl) return;
+  const byId = {};
+  (d.contracts || []).forEach((c) => { byId[c.id] = c; });
+  function upd() {
+   let pipe = 0;
+   if (ice.checked) pipe += byId.ice_bwc.annualized_m;
+   if (lapd.checked) pipe += byId.lapd.annualized_m;
+   if (rfi.checked) pipe += byId.ice_taser_rfi.annualized_m;
+   let arr = d.bridge.projected_arr_m;
+   if (ice.checked) arr += byId.ice_bwc.annualized_m / 4;
+   pipeEl.textContent = fmtAltM(pipe) + " / yr";
+   arrEl.textContent = fmtAltM(arr);
+  }
+  [ice, lapd, rfi].forEach((el) => el.addEventListener("change", upd));
+  upd();
  }
 
  /* ---------- Earnings Call Tone (Pro, Gemini Flash NLP) ---------- */
@@ -13051,6 +13165,7 @@ function volSurfaceHtml() {
    '<li>✓ Interactive FCF simulation sandbox</li>' +
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ Earnings call transcript tone analysis, executive confidence scoring via AI</li>' +
+   '<li>✓ Cascadia Alternative Data Translation Model for Axon, a net new ARR forecasting bridge with a verified contract pipeline and interactive scenario simulator</li>' +
    '<li>✓ Catalyst Compass, probabilistic Bull/Base/Bear scenario matrix on options-implied bounds for any ticker</li>' +
 '<li>✓ Fundamentals Tracker, 56 institutional-grade metrics for any ticker</li>' +
 '<li>✓ Quality Snapshot, on-demand ROIC, cash conversion, and Rule of 40 scoring</li>' +

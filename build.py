@@ -550,6 +550,7 @@ def main():
         "macro_regime": load(os.path.join(MR, "macro_regime.json")) if os.path.exists(os.path.join(MR, "macro_regime.json")) else {},
         "advanced_macro": load(os.path.join(MR, "advanced_macro.json")) if os.path.exists(os.path.join(MR, "advanced_macro.json")) else {},
         "leadership_canary": load(os.path.join(MR, "leadership_canary.json")) if os.path.exists(os.path.join(MR, "leadership_canary.json")) else {},
+        "axon_altdata": load(os.path.join(MR, "axon_altdata.json")) if os.path.exists(os.path.join(MR, "axon_altdata.json")) else {},
     }
     # Per-ticker transcript tone detail files
     import glob
