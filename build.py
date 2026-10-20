@@ -519,6 +519,7 @@ def main():
         "treasury_slr": load(os.path.join(MR, "treasury_slr.json")) if os.path.exists(os.path.join(MR, "treasury_slr.json")) else {},
         "squeeze_radar": load(os.path.join(MR, "squeeze_radar.json")) if os.path.exists(os.path.join(MR, "squeeze_radar.json")) else {},
         "gamma_flip": load(os.path.join(MR, "gamma_flip.json")) if os.path.exists(os.path.join(MR, "gamma_flip.json")) else {},
+        "vol_surface": load(os.path.join(MR, "vol_surface.json")) if os.path.exists(os.path.join(MR, "vol_surface.json")) else {},
         "real_yield_shock": load(os.path.join(MR, "real_yield_shock.json")) if os.path.exists(os.path.join(MR, "real_yield_shock.json")) else {},
     }
     # Per-ticker transcript tone detail files

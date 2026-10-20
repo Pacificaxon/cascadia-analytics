@@ -240,6 +240,7 @@
    if (sections.treasury_slr) flat.treasury_slr = sections.treasury_slr;
    if (sections.squeeze_radar) flat.squeeze_radar = sections.squeeze_radar;
    if (sections.gamma_flip) flat.gamma_flip = sections.gamma_flip;
+   if (sections.vol_surface) flat.vol_surface = sections.vol_surface;
    if (sections.real_yield_shock) flat.real_yield_shock = sections.real_yield_shock;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
@@ -3579,6 +3580,11 @@ function bindZoomHandlers() {
     gated("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.", skewHtml + skewExplainer) +
     "</div>";
   }
+
+  // Volatility Surface, Pro-gated (term structure + 25-delta risk reversal)
+  h += gatedSafe("Volatility Surface",
+   "VIX term structure regimes, the four-quadrant surface matrix, and per-ticker 25-delta risk reversals.",
+   volSurfaceHtml);
 
   // OPEX Cycle Tracker, Pro-gated
   if (D.opex && D.opex.tickers) {
@@ -9387,6 +9393,155 @@ function gammaFlipHtml() {
   '<div class="panel-asof">As of ' + esc((G.as_of || "").slice(0, 10)) + " · Source: CBOE delayed options chains</div></div>";
  return h;
 }
+
+// === vol_surface.js ===
+let _volSortKey = "ticker";
+let _volSortDir = 1;
+function volSurfaceRowsHtml(rows) {
+ const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+ const sgn = (v, d) => (v == null ? "N/A" : (v > 0 ? "+" : "") + Number(v).toFixed(d == null ? 2 : d));
+ return rows.map((r) => {
+  if (!r.e || !r.e.available) {
+   return '<tr style="border-bottom:1px solid #1c2434;">' +
+    '<td style="padding:8px 10px;font-weight:700;color:#e8ecf1;">' + esc(r.tk) + '</td>' +
+    '<td colspan="7" style="padding:8px 10px;color:#8b949e;">N/A, options data unavailable</td></tr>';
+  }
+  const e = r.e;
+  const spreadC = e.term_spread > 0 ? "#f85149" : "#3fb950";
+  const rrC = e.risk_reversal_25d >= 0 ? "#d29922" : (e.risk_reversal_25d < -8 ? "#f85149" : "#e8ecf1");
+  const sentC = colorMap[e.skew_color] || "#e8ecf1";
+  return '<tr style="border-bottom:1px solid #1c2434;">' +
+   '<td style="padding:8px 10px;font-weight:700;color:#e8ecf1;">' + esc(r.tk) +
+   (e.stale ? ' <span style="font-size:10px;color:#d29922;">STALE</span>' : "") + '</td>' +
+   '<td style="padding:8px 10px;color:#c8d0dc;">$' + Number(e.spot).toFixed(2) + '</td>' +
+   '<td style="padding:8px 10px;color:#c8d0dc;">' + Number(e.atm_iv_30d).toFixed(1) + '%</td>' +
+   '<td style="padding:8px 10px;color:#c8d0dc;">' + Number(e.atm_iv_90d).toFixed(1) + '%</td>' +
+   '<td style="padding:8px 10px;font-weight:600;color:' + spreadC + ';">' + sgn(e.term_spread, 2) + ' pts</td>' +
+   '<td style="padding:8px 10px;font-weight:600;color:' + rrC + ';">' + sgn(e.risk_reversal_25d, 2) + ' pts</td>' +
+   '<td style="padding:8px 10px;color:#c8d0dc;">' + (e.skew_ratio == null ? "N/A" : Number(e.skew_ratio).toFixed(3)) + '</td>' +
+   '<td style="padding:8px 10px;font-size:11px;font-weight:700;color:' + sentC + ';">' + esc(e.skew_sentiment || "") + '</td></tr>';
+ }).join("");
+}
+function volSurfaceSort(key) {
+ if (_volSortKey === key) _volSortDir = -_volSortDir; else { _volSortKey = key; _volSortDir = 1; }
+ const rows = (window._volSurfaceRows || []).slice();
+ const val = (r) => {
+  if (key === "ticker") return r.tk;
+  const e = r.e || {};
+  if (!e.available) return null;
+  return e[key];
+ };
+ rows.sort((a, b) => {
+  const va = val(a), vb = val(b);
+  if (va == null && vb == null) return 0;
+  if (va == null) return 1;
+  if (vb == null) return -1;
+  return (va < vb ? -1 : va > vb ? 1 : 0) * _volSortDir;
+ });
+ const tb = document.getElementById("vol-surface-tbody");
+ if (tb) tb.innerHTML = volSurfaceRowsHtml(rows);
+}
+function volSurfaceHtml() {
+ const V = D.vol_surface || {};
+ const M = V.macro || {};
+ if (M.vix == null) {
+  return '<div class="section"><div class="section-title">Volatility Surface ' + PRO_BADGE + '</div>' +
+   '<div class="card"><p style="color:var(--muted)">Volatility surface data unavailable. Check back after the next refresh.</p></div></div>';
+ }
+ const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+ const frontC = colorMap[M.vix_vix3m_color] || "#e8ecf1";
+ const skewIdxC = M.skew_index > 140 ? "#f85149" : (M.skew_index < 120 ? "#3fb950" : "#d29922");
+
+ let h = '<div class="section"><div class="section-title">Volatility Surface ' + PRO_BADGE + '</div>' +
+  '<div class="section-sub">The two dimensions a derivatives desk prices first. Time to maturity runs down the term structure, strike moneyness runs across the skew. Daily Snapshot.</div>';
+
+ // Macro term structure index cards
+ const idxCard = (label, val, sub, c) =>
+  '<div style="background:#161b26;border:1px solid #2a3142;border-radius:10px;padding:14px;">' +
+  '<div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + label + '</div>' +
+  '<div style="font-size:26px;font-weight:800;color:' + (c || "#e8ecf1") + ';margin:2px 0;">' + val + '</div>' +
+  '<div style="font-size:11px;color:#8b949e;">' + sub + '</div></div>';
+ h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0;">' +
+  idxCard("VIX9D (9-DAY)", Number(M.vix9d).toFixed(2), "Front of the curve, immediate event risk") +
+  idxCard("VIX (30-DAY)", Number(M.vix).toFixed(2), "The market standard vol gauge") +
+  idxCard("VIX3M (90-DAY)", Number(M.vix3m).toFixed(2), "Back end of the front curve") +
+  idxCard("VIX6M (180-DAY)", Number(M.vix6m).toFixed(2), "Structural uncertainty horizon") +
+  idxCard("CBOE SKEW", Number(M.skew_index).toFixed(1), esc(M.skew_regime || ""), skewIdxC) +
+  "</div>";
+
+ // Ratio gauges
+ const gauge = (label, ratio, regime, c, lo, hi, marks) => {
+  const pos = ratio == null ? 0 : Math.min(100, Math.max(0, (ratio - lo) / (hi - lo) * 100));
+  let bars = '<div style="position:relative;height:10px;background:#1a2030;border-radius:5px;margin:10px 0 4px;">' +
+   '<div style="position:absolute;left:0;top:0;height:100%;width:' + pos + '%;background:' + c + ';border-radius:5px;"></div>';
+  (marks || []).forEach((mk) => {
+   const mp = (mk.v - lo) / (hi - lo) * 100;
+   bars += '<div style="position:absolute;left:' + mp + '%;top:-3px;width:2px;height:16px;background:#8b949e;"></div>' +
+    '<div style="position:absolute;left:' + mp + '%;top:14px;transform:translateX(-50%);font-size:10px;color:#8b949e;white-space:nowrap;">' + mk.label + '</div>';
+  });
+  bars += '</div><div style="height:14px;"></div>';
+  return '<div style="background:#161b26;border:1px solid #2a3142;border-radius:10px;padding:14px;">' +
+   '<div style="display:flex;justify-content:space-between;align-items:baseline;">' +
+   '<span style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">' + label + '</span>' +
+   '<span style="font-size:20px;font-weight:800;color:' + c + ';">' + (ratio == null ? "N/A" : Number(ratio).toFixed(3)) + '</span></div>' +
+   bars +
+   '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + '</div></div>';
+ };
+ h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:0 0 14px;">' +
+  gauge("VIX / VIX3M TERM RATIO", M.vix_vix3m_ratio, M.vix_vix3m_regime, frontC, 0.80, 1.10,
+   [{ v: 0.85, label: "0.85 extreme contango" }, { v: 1.00, label: "1.00 backwardation" }]) +
+  gauge("VIX9D / VIX ULTRA-SHORT RATIO", M.vix9d_vix_ratio, M.vix9d_vix_regime, "#58a6ff", 0.80, 1.20,
+   [{ v: 0.90, label: "0.90 calm" }, { v: 1.05, label: "1.05 event spike" }]) +
+  "</div>";
+
+ // Quadrant matrix
+ const Q = V.quadrant || {};
+ const quadCell = (id, name, desc) => {
+  const active = Q.quadrant === id;
+  const style = active
+   ? "background:rgba(201,169,97,0.13);border:2px solid #c9a961;"
+   : "background:#12161f;border:1px solid #232b3d;";
+  return '<div style="' + style + 'border-radius:10px;padding:14px;">' +
+   '<div style="font-size:11px;color:' + (active ? "#c9a961" : "#8b949e") + ';font-weight:700;letter-spacing:0.5px;">QUADRANT ' + id + (active ? " · CURRENT" : "") + '</div>' +
+   '<div style="font-size:15px;font-weight:700;color:#e8ecf1;margin:3px 0;">' + name + '</div>' +
+   '<div style="font-size:12px;color:#8b949e;">' + desc + '</div></div>';
+ };
+ h += '<div style="font-size:12px;color:#8b949e;margin:4px 0 8px;">Surface matrix. Vertical axis is the term structure, backwardation on top. Horizontal axis is skew, flat or inverted on the left, steep downside skew on the right.</div>' +
+  '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
+  quadCell("I", "Parabolic Speculation", "Call squeeze regime. Calls bid over puts into a backwardated curve.") +
+  quadCell("II", "Systemic Crisis", "Forced liquidation. Puts heavily bid and the front end inverted.") +
+  quadCell("III", "Pure Complacency", "Low spot vol in contango with flat skew. Cheap optionality.") +
+  quadCell("IV", "Orderly Bull Trend", "Institutional collar hedging. Standard downside skew, no panic.") +
+  "</div>";
+ if (Q.quadrant) {
+  h += '<div style="margin:10px 0 4px;font-size:13px;color:#c8d0dc;">Current read <b style="color:#c9a961;">Quadrant ' + esc(Q.quadrant) + ", " + esc(Q.name || "") + '</b>. ' + esc(Q.detail || "") + '</div>';
+ }
+
+ // Per-ticker table (indices first, then coverage)
+ const rows = [];
+ ["SPY", "QQQ"].forEach((tk) => { if (V.indices && V.indices[tk]) rows.push({ tk: tk, e: V.indices[tk] }); });
+ Object.keys(V.tickers || {}).sort().forEach((tk) => rows.push({ tk: tk, e: V.tickers[tk] }));
+ window._volSurfaceRows = rows;
+ const th = (label, key) => '<th onclick="volSurfaceSort(\'' + key + '\')" style="padding:9px 10px;text-align:left;font-size:11px;color:#8b949e;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;">' + label + ' &#8597;</th>';
+ h += '<div style="overflow-x:auto;margin-top:14px;"><table style="width:100%;border-collapse:collapse;min-width:760px;">' +
+  '<thead><tr style="border-bottom:2px solid #2a3142;">' +
+  th("TICKER", "ticker") + th("SPOT", "spot") + th("30D ATM IV", "atm_iv_30d") + th("90D ATM IV", "atm_iv_90d") +
+  th("TERM SPREAD", "term_spread") + th("25D RISK REVERSAL", "risk_reversal_25d") + th("SKEW RATIO", "skew_ratio") +
+  '<th style="padding:9px 10px;text-align:left;font-size:11px;color:#8b949e;letter-spacing:0.5px;">SKEW SENTIMENT</th>' +
+  '</tr></thead><tbody id="vol-surface-tbody">' + volSurfaceRowsHtml(rows) + '</tbody></table></div>';
+
+ // Explainer after the visuals
+ h += '<div class="card" style="margin:14px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">Term structure.</b> In calm markets the vol curve slopes upward, back-month implied vol above front-month, because longer horizons carry more uncertainty. When the VIX to VIX3M ratio pushes above 1.00 the curve has flipped into backwardation, front-month event risk is dominating, and that configuration has historically accompanied forced liquidation rather than orderly selling.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">Skew and the risk reversal.</b> The 25-delta risk reversal compares the implied vol of an out-of-the-money call against an out-of-the-money put on the same expiry. Equity skew normally runs negative, puts richer than calls, because institutions perpetually buy downside insurance. Readings below minus 8 vol points mark saturated tail hedging, while a reading at or above zero means calls are bid over puts, the signature of speculative upside chasing. The skew ratio divides that gap by at-the-money vol so readings stay comparable across vol regimes.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#e8ecf1;">Single-name term spreads.</b> A name whose 30-day ATM vol sits well above its 90-day vol is pricing a near-term catalyst, most often earnings. A spread beyond plus 5 points is a severe inversion and usually collapses right after the event prints. Names in healthy contango, spread below minus 3, carry no acute front-month pricing.</p>' +
+  '<p style="margin:0;"><b style="color:#e8ecf1;">How we calculate it.</b> Macro readings come from the Cboe volatility indices. Per-ticker figures come from CBOE delayed options chains, using the expiries nearest 30 and 90 days out, the at-the-money strike, and strikes near 1.05 times spot for the call and 0.95 times spot for the put as the 25-delta approximation. Strikes with no valid implied vol are skipped, never interpolated.</p>' +
+  "</div></div>";
+
+ h += '<div class="panel-asof">Daily Snapshot as of ' + esc((V.as_of || "").slice(0, 10)) + " · Sources: Cboe indices via Yahoo Finance, CBOE delayed options chains</div></div>";
+ return h;
+}
  function contagionHtml() {  const C = D.contagion || {};
   if (!C.composite) {
    return '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker ' + PRO_BADGE + '</div>' +
@@ -10484,6 +10639,7 @@ function gammaFlipHtml() {
    '<li>✓ All 15 Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, with charts, history, and plain-English explainers</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
+   '<li>✓ Volatility Surface, VIX term structure regimes, four-quadrant matrix, and per-ticker 25-delta risk reversals</li>' +
    '<li>✓ Full market internals suite: Volatility Divergence, Alligator Jaw, Credit Spreads vs VIX, Market Breadth, Theme Rotation, Small/Mid Cap Monitor, RSI Cyclicals vs Defensives, Macroeconomic Analysis</li>' +
    '<li>✓ Quantitative Factor Screener, full S&P 500 on ROIC, PEG, FCF yield, Piotroski, and more, with CSV export</li>' +
    '<li>✓ Technical Factor Screener, Minervini Stage-2 trend template across the S&P 500</li>' +
