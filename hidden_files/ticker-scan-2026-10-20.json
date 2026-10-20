@@ -1,0 +1,4812 @@
+{
+ "generated": "2026-10-20",
+ "totals": {
+  "OK": 1149,
+  "BROKEN": 11,
+  "NA": 19
+ },
+ "verdicts": {
+  "ALAB": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Bellwether Read-Throughs": [
+    "OK",
+    ""
+   ]
+  },
+  "AMKR": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Bellwether Read-Throughs": [
+    "OK",
+    ""
+   ]
+  },
+  "AMPX": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "AMZN": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "BROKEN",
+    "narrative review dataset missing for ticker (earnings_history covers 33/43); clean empty state rendered"
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "ASML": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "NA",
+    "no insider transactions in dataset"
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "BROKEN",
+    "narrative review dataset missing for ticker (earnings_history covers 33/43); clean empty state rendered"
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "AVAV": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "AVGO": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Company News": [
+    "OK",
+    ""
+   ],
+   "Bellwether Read-Throughs": [
+    "OK",
+    ""
+   ]
+  },
+  "AXON": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Company News": [
+    "OK",
+    ""
+   ]
+  },
+  "BSX": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "CDNL": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Bellwether Read-Throughs": [
+    "OK",
+    ""
+   ]
+  },
+  "CSX": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "DLR": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "BROKEN",
+    "narrative review dataset missing for ticker (earnings_history covers 33/43); clean empty state rendered"
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "ENS": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "BROKEN",
+    "narrative review dataset missing for ticker (earnings_history covers 33/43); clean empty state rendered"
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "EQIX": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "BROKEN",
+    "narrative review dataset missing for ticker (earnings_history covers 33/43); clean empty state rendered"
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "GOOGL": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "BROKEN",
+    "narrative review dataset missing for ticker (earnings_history covers 33/43); clean empty state rendered"
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "IA": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "INTC": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Company News": [
+    "OK",
+    ""
+   ],
+   "Bellwether Read-Throughs": [
+    "OK",
+    ""
+   ]
+  },
+  "IRM": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "BROKEN",
+    "narrative review dataset missing for ticker (earnings_history covers 33/43); clean empty state rendered"
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "ISRG": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "LEU": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "BROKEN",
+    "implied CAGR null in source data (verdict #N/A); sensitivity table renders but implied-CAGR block degraded"
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Company News": [
+    "OK",
+    ""
+   ]
+  },
+  "LRCX": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "BROKEN",
+    "narrative review dataset missing for ticker (earnings_history covers 33/43); clean empty state rendered"
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "MELI": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "META": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Company News": [
+    "OK",
+    ""
+   ]
+  },
+  "MITK": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Bellwether Read-Throughs": [
+    "OK",
+    ""
+   ]
+  },
+  "MRNA": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "MRVL": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Company News": [
+    "OK",
+    ""
+   ],
+   "Bellwether Read-Throughs": [
+    "OK",
+    ""
+   ]
+  },
+  "MSFT": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "BROKEN",
+    "narrative review dataset missing for ticker (earnings_history covers 33/43); clean empty state rendered"
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "MSI": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "NSC": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "PANW": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "BROKEN",
+    "narrative review dataset missing for ticker (earnings_history covers 33/43); clean empty state rendered"
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "PLPC": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "NA",
+    "no-data state; collector available=false (CBOE block)"
+   ],
+   "Volatility Skew": [
+    "NA",
+    "no-data state; collector available=false"
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "POWW": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "NA",
+    "no-data state; collector available=false"
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "RBRK": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "RNMBY": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "NA",
+    "no insider transactions in dataset"
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "NA",
+    "no dark pool record"
+   ],
+   "Gamma Exposure (GEX)": [
+    "NA",
+    "no-data state; collector available=false (CBOE block)"
+   ],
+   "Volatility Skew": [
+    "NA",
+    "no-data state; collector available=false"
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "ROAD": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "NA",
+    "no prints met collector criteria in last 10 trading days"
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "SMTC": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Company News": [
+    "OK",
+    ""
+   ],
+   "Bellwether Read-Throughs": [
+    "OK",
+    ""
+   ]
+  },
+  "SNPS": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Bellwether Read-Throughs": [
+    "OK",
+    ""
+   ]
+  },
+  "TSM": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Earnings Call Tone": [
+    "OK",
+    ""
+   ]
+  },
+  "TTMI": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ],
+   "Bellwether Read-Throughs": [
+    "OK",
+    ""
+   ]
+  },
+  "UNP": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "VIAV": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "VLO": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  },
+  "VST": {
+   "Hero/Targets": [
+    "OK",
+    ""
+   ],
+   "Cascadia Score": [
+    "OK",
+    ""
+   ],
+   "Price Chart": [
+    "OK",
+    ""
+   ],
+   "FCF Chart": [
+    "OK",
+    ""
+   ],
+   "Reverse DCF": [
+    "OK",
+    ""
+   ],
+   "Valuation Multiples": [
+    "OK",
+    ""
+   ],
+   "Financials": [
+    "OK",
+    ""
+   ],
+   "Moving Averages": [
+    "OK",
+    ""
+   ],
+   "Trading Trends": [
+    "OK",
+    ""
+   ],
+   "Insider Transactions": [
+    "OK",
+    ""
+   ],
+   "Agency Risk": [
+    "OK",
+    ""
+   ],
+   "Fundamentals Tracker": [
+    "OK",
+    ""
+   ],
+   "Seasonality": [
+    "OK",
+    ""
+   ],
+   "Unusual Options Flow": [
+    "OK",
+    ""
+   ],
+   "Catalyst Compass": [
+    "OK",
+    ""
+   ],
+   "Dark Pool Flow": [
+    "OK",
+    ""
+   ],
+   "Gamma Exposure (GEX)": [
+    "OK",
+    ""
+   ],
+   "Volatility Skew": [
+    "OK",
+    ""
+   ],
+   "Short Interest": [
+    "OK",
+    ""
+   ],
+   "Technical Analysis": [
+    "OK",
+    ""
+   ],
+   "Earnings Date & Whisper": [
+    "OK",
+    ""
+   ],
+   "Earnings Revisions": [
+    "OK",
+    ""
+   ],
+   "Earnings History": [
+    "OK",
+    ""
+   ],
+   "Cascadia Research Report": [
+    "OK",
+    ""
+   ],
+   "Investment Scorecard": [
+    "OK",
+    ""
+   ],
+   "Assumption Sandbox": [
+    "OK",
+    ""
+   ],
+   "Macro Takes": [
+    "OK",
+    ""
+   ]
+  }
+ }
+}
