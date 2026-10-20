@@ -3336,10 +3336,10 @@ function bindZoomHandlers() {
       if (e === "elevated_long" || e === "elevated_short") return ' <span style="font-size:10px;background:#e0aa46;color:#000;padding:1px 6px;border-radius:3px;">ELEVATED</span>';
       return "";
      };
-     // Smart money read
+     // Positioning read
      let read;
      if (l.net < 0 && c.net < 0 && s.net > 0) {
-      read = "Institutions net short, retail net long, classic contrarian setup. Smart money is hedged; dumb money is exposed.";
+      read = "Institutions net short, retail net long, a classic contrarian setup. Institutional positioning is hedged while retail length is unhedged.";
      } else if (l.net > 0 && c.net > 0) {
       read = "Both commercials and large specs net long, institutional conviction is bullish.";
      } else if (l.extreme === "extreme_long" || l.extreme === "extreme_short") {
@@ -3365,9 +3365,9 @@ function bindZoomHandlers() {
     cards +
     '<div class="panel-about" style="text-align:left;max-width:none;margin:12px 0;">' +
     "<p><b>What is this?</b> The CFTC's weekly Commitments of Traders report reveals how three groups are positioned in futures: " +
-    "<b style='color:#58a6ff'>Commercials</b> (hedgers, the \"smart money\", contrarian), " +
+    "<b style='color:#58a6ff'>Commercials</b> (hedgers, typically contrarian), " +
     "<b style='color:#c678dd'>Large Speculators</b> (hedge funds, trend followers), " +
-    "<b style='color:#e0aa46'>Small Speculators</b> (retail, often wrong at turning points).</p>" +
+    "<b style='color:#e0aa46'>Small Speculators</b> (smaller non-commercial accounts, whose extremes are watched as a contrarian signal).</p>" +
     "<p><b>How swing traders use it.</b> When Large Specs hit multi-year extremes, the trend is crowded and ripe for reversal. " +
     "When Commercials quietly build extreme positions against the trend, they're front-running the turn. " +
     "Divergences (price makes new highs but specs reduce longs) signal a trap.</p>" +
@@ -3902,7 +3902,7 @@ function bindZoomHandlers() {
      "<p><b>What am I looking at?</b> This chart compares stress in corporate credit markets against stock-market fear. " +
      "The spread proxy (SHY minus HYG, the gap between safe short-term Treasuries and risky high-yield bonds) is converted to a z-score, " +
      "as is the VIX. The red line is the difference: credit stress minus equity fear.</p>" +
-     "<p><b>How to read it.</b> Credit markets are often called the \u2018smart money\u2019, bond investors tend to sniff out trouble before stock investors. " +
+     "<p><b>How to read it.</b> Credit markets tend to move first, and bond investors often sniff out trouble before stock investors. " +
      "When the red line spikes above <b>+2</b>, credit is flashing warning signs that stocks haven\u2019t priced in yet. " +
      "When it drops below <b>−2</b>, stocks are panicking about something credit markets don\u2019t see.</p>" +
      "<p><b>What does today\u2019s reading mean?</b> Spread-minus-VIX is <b>" + (div >= 0 ? "+" : "") + div.toFixed(2) + "</b> " +
@@ -4100,12 +4100,12 @@ function bindZoomHandlers() {
     '<p><b>Data:</b> CBOE delayed options chains, refreshed daily. SPY used as SPX proxy (SPX chain often blocked).</p>' +
     "</div>";
    SEC.skew = '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>' +
-    '<div class="section-sub">Put vs call implied volatility, what is smart money paying for? Updates daily.</div>' +
+    '<div class="section-sub">Put vs call implied volatility, what downside protection is costing. Updates daily.</div>' +
     gated("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.", skewHtml + skewExplainer) +
     "</div>";
   } else if (!isPro()) {
    SEC.skew = '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>' +
-    '<div class="section-sub">Put vs call implied volatility, what is smart money paying for? Updates daily.</div>' +
+    '<div class="section-sub">Put vs call implied volatility, what downside protection is costing. Updates daily.</div>' +
     proTeaser("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.") +
     "</div>";
   }
@@ -5323,7 +5323,7 @@ const ACADEMY_MODULES = [
    },
    {
     heading: "Dark Pools and Short Volume",
-    body: "Off-exchange prints reflect internalized wholesale flow, and under Regulation SHO a dealer filling a customer buy from inventory marks the print short. High dark-pool short ratios therefore frequently coincide with aggressive institutional buying, which is the opposite of the retail interpretation.",
+    body: "Off-exchange prints reflect internalized wholesale flow, and under Regulation SHO a dealer filling a customer buy from inventory marks the print short. High dark-pool short ratios therefore frequently coincide with aggressive institutional buying, which is the opposite of the surface-level reading.",
     formula: "\\text{DPSR} = \\frac{\\text{Short Vol} + \\text{Short Exempt Vol}}{\\text{Total Off-Exchange Vol}}",
     takeaways: [
      "Elevated dark-pool short ratios often accompany institutional accumulation, not distribution.",
@@ -5725,7 +5725,7 @@ ACADEMY_MODULES.push(
    },
    {
     heading: "Utilization, Days to Cover, and Gamma Squeeze Interaction",
-    body: "Retail traders focus on short interest as a percent of float, while institutional desks watch utilization, the share of lendable inventory currently on loan. At 100 percent utilization, borrow inventory is exhausted and any new short demand pays escalating hard-to-borrow fees. Days to cover, computed as short interest divided by average daily volume, flags squeeze vulnerability when it exceeds 5 days. A short squeeze feeds on buy-to-cover orders, while a gamma squeeze feeds on dealer delta hedging from call buying, and the two can reinforce each other in a rapid upward spiral.",
+    body: "Short interest as a percent of float is the widely quoted figure, while institutional desks watch utilization, the share of lendable inventory currently on loan. At 100 percent utilization, borrow inventory is exhausted and any new short demand pays escalating hard-to-borrow fees. Days to cover, computed as short interest divided by average daily volume, flags squeeze vulnerability when it exceeds 5 days. A short squeeze feeds on buy-to-cover orders, while a gamma squeeze feeds on dealer delta hedging from call buying, and the two can reinforce each other in a rapid upward spiral.",
     formula: "\\text{Days to Cover} = \\frac{\\text{Short Interest}}{\\text{Average Daily Volume}}",
     takeaways: [
      "Short squeezes are driven by shorts buying shares to close losing positions, while gamma squeezes are driven by market makers buying stock to stay delta neutral on call flow.",
@@ -6495,7 +6495,7 @@ route("primer", function () {
     '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(m.category) + " · " + esc(m.readTime) + "</div></button>";
   }).join("") + "</nav></div>" +
   '<div class="card" style="margin-top:12px;"><div style="font-size:11px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:8px;">HOUSE PRINCIPLE</div>' +
-  '<div style="font-size:12px;color:#8d99aa;line-height:1.6;">Price action is evaluated through liquidity plumbing, capital efficiency spreads, and derivatives positioning, not through lagging retail indicators.</div></div>' +
+  '<div style="font-size:12px;color:#8d99aa;line-height:1.6;">Price action is evaluated through liquidity plumbing, capital efficiency spreads, and derivatives positioning, not through slower-moving sentiment measures.</div></div>' +
   "</aside>" +
   '<main class="card" style="flex:1;min-width:0;" id="acad-main">' +
   '<div style="border-bottom:1px solid #253142;padding-bottom:14px;margin-bottom:20px;">' +
@@ -6999,7 +6999,7 @@ route("alerts", function () {
   const ts = (D.ticker_skew || {})[tk];
   h += '<div class="section"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>';
   h += gated("Volatility Skew, Pro",
-   "Put vs call implied volatility for " + tk + ", what is smart money paying for?",
+   "Put vs call implied volatility for " + tk + ", what downside protection is costing.",
    (ts && ts.available) ? tickerSkewHtml(tk, ts) : '<div class="card"><p style="color:var(--muted)">No skew data available for this ticker.</p></div>');
   h += "</div>";
 
@@ -7599,7 +7599,7 @@ route("alerts", function () {
     '<b style="color:#2962ff;">SMA 50</b> · <b style="color:#00bcd4;">SMA 200</b> (simple moving averages)</div>' +
     '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
     ["10", "20", "30", "50", "100", "200"].map((p) =>
-     "<tr><td>" + p + "</td><td>" + fmt$((d.sma || {})[p]) + "</td><td>" + fmt$((d.ema || {})[p]) + "</td></tr>"
+     "<tr><td>" + p + "-MA</td><td>" + fmt$((d.sma || {})[p]) + "</td><td>" + fmt$((d.ema || {})[p]) + "</td></tr>"
     ).join("") + "</tbody></table></div>" +
     '<div class="panel-asof">Price ' + fmt$(d.price) + " · as of " + esc(d.as_of || "") + "</div></div>";
   });
@@ -8838,7 +8838,7 @@ route("alerts", function () {
   const keys = Object.keys(tk).sort();
   let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Trend Conviction (is this a real trend?) vs Exhaustion Risk (is momentum diverging?) for every coverage ticker. ' +
-   'High conviction + low exhaustion = healthy trend. High conviction + high exhaustion = crowded trade, tighten up. Updated ' +
+   'High conviction + low exhaustion = strong trend. High conviction + high exhaustion = crowded trade, tighten up. Updated ' +
    esc((((D.trend_signals || {}).timestampUTC) || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning.</div>';
   h += '<div class="card"><div class="table-wrap"><table class="coverage"><thead><tr>' +
    '<th data-tsort="ticker" style="cursor:pointer;">Ticker</th>' +
@@ -8858,7 +8858,7 @@ route("alerts", function () {
   if (!body) return;
   let sortK = "trend", sortD = -1;
   const sigLabel = (s) => {
-   if (s.trendScore >= 60 && s.exhaustionScore < 40) return '<span style="color:#4dd2aa;font-weight:700;">Healthy trend</span>';
+   if (s.trendScore >= 60 && s.exhaustionScore < 40) return '<span style="color:#4dd2aa;font-weight:700;">Strong trend</span>';
    if (s.trendScore >= 60 && s.exhaustionScore >= 60) return '<span style="color:#f37d83;font-weight:700;">Crowded, caution</span>';
    if (s.exhaustionScore >= 60) return '<span style="color:#e0aa46;font-weight:700;">Reversal risk</span>';
    if (s.trendScore < 30) return '<span style="color:#8d99aa;">Chop</span>';
@@ -9108,7 +9108,7 @@ route("alerts", function () {
    app.appendChild(t2);
    const t3 = document.createElement("div");
    t3.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener ' + PRO_BADGE + '</div>' +
-    proTeaser("Trend & Reversal Screener, Pro", "Trend Conviction vs Exhaustion Risk for every coverage ticker. Spot healthy trends, crowded trades, and MACD divergences before reversals.") + "</div>";
+    proTeaser("Trend & Reversal Screener, Pro", "Trend Conviction vs Exhaustion Risk for every coverage ticker. Spot strong trends, crowded trades, and MACD divergences before reversals.") + "</div>";
    app.appendChild(t3);
    const t4 = document.createElement("div");
    t4.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>' +
@@ -9559,7 +9559,7 @@ route("alerts", function () {
   // Explainer AFTER visuals (standing rule)
   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
    '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
-   '<b style="color:#dbe5f1;">The simple version:</b> This tracks how much money stock traders are borrowing to buy shares. When borrowing explodes, it means euphoria: everyone is maxing out to chase the rally. When borrowing collapses, it means forced selling is over and the weak hands are gone. Sentiment surveys tell you how people feel; this tells you what they are doing with real money.<br><br>' +
+   '<b style="color:#dbe5f1;">The simple version:</b> This tracks how much money stock traders are borrowing to buy shares. When borrowing explodes, it means euphoria: everyone is maxing out to chase the rally. When borrowing collapses, it means forced selling is over and leveraged positions have been flushed out. Sentiment surveys tell you how people feel; this tells you what they are doing with real money.<br><br>' +
    '<b style="color:#dbe5f1;">For long-term investors:</b> Ignore headlines about margin debt hitting "record highs": in dollar terms it almost always does during a bull market. What matters is the growth rate. When year-over-year growth passes 35%, the market has historically been close to a top. When it drops below negative 15%, forced liquidations are usually finished and that has marked major bottoms. This data updates monthly, so treat it as a slow background gauge, not a trading signal.<br><br>' +
    '<b style="color:#dbe5f1;">For active traders:</b> Watch for the divergence: the S&P making new highs while margin debt shrinks. That means the rally is running on multiple expansion rather than fresh leveraged capital, and it has preceded major tops by months. A z-score above 2 on the debt-to-market ratio means the market is structurally over-levered and vulnerable to a sharp flush on any catalyst.' +
    "</div></div>";
@@ -9644,7 +9644,7 @@ route("alerts", function () {
   const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
    '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
    '<b style="color:#dbe5f1;">The simple version:</b> This model compares what everyday investors are feeling against what big institutions are actually doing. When the crowd is extremely optimistic but institutions are quietly hedging or selling, the market is vulnerable. When the crowd is fearful but institutions are buying, it is often a good time to be.<br><br>' +
-   '<b style="color:#dbe5f1;">For long-term investors:</b> Extreme readings are rare and worth respecting. A HIGH VULNERABILITY reading means tops tend to form in this setup, so avoid adding aggressively. An INSTITUTIONAL ACCUMULATION reading means fear is high while smart buyers step in, historically a good backdrop for long-term purchases.<br><br>' +
+   '<b style="color:#dbe5f1;">For long-term investors:</b> Extreme readings are rare and worth respecting. A HIGH VULNERABILITY reading means tops tend to form in this setup, so avoid adding aggressively. An INSTITUTIONAL ACCUMULATION reading means fear is high while institutional buyers step in, historically a good backdrop for long-term purchases.<br><br>' +
    '<b style="color:#dbe5f1;">For active traders:</b> The oscillator crossing +2.0 is the highest-conviction short-term risk signal on this page. Treat it like a storm warning: reduce leverage, tighten stops, and do not chase breakouts.' +
    '</div></div>';
 
@@ -11624,7 +11624,7 @@ function volSurfaceHtml() {
    if (sv === null && ev === null) return;
    const cell = (v) => (v === null || v === undefined ? '<td style="text-align:right;color:#647184;">N/A</td>' : '<td style="text-align:right;">' + v.toFixed(2) + "</td>");
    const cellE = (v) => (v === null || v === undefined ? '<td style="text-align:right;color:#647184;">N/A</td>' : '<td style="text-align:right;">' + v.toFixed(2) + "</td>");
-   rows += '<tr><td style="font-weight:600;color:#dbe5f1;">' + p + "-day</td>" + cell(sv) + cellE(ev) + "</tr>";
+   rows += '<tr><td style="font-weight:600;color:#dbe5f1;">' + p + "-MA</td>" + cell(sv) + cellE(ev) + "</tr>";
   });
   const rsi = block.rsi || {};
   const sigChip = block.signal
@@ -12708,7 +12708,7 @@ function volSurfaceHtml() {
 //     '<div style="font-size:12px;color:#8d99aa;margin-bottom:10px;">Overlays: <b style="color:#dbe5f1;">SMA 10</b> · <b style="color:#dbe5f1;">SMA 20</b> · <b style="color:#dbe5f1;">SMA 50</b> · <b style="color:#dbe5f1;">SMA 200</b> (simple moving averages)</div>' +
 //     '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
 //     ["10", "20", "30", "50", "100", "200"].map((p) =>
-//      "<tr><td>" + p + "</td><td>" + fmt$((d.sma || {})[p]) + "</td><td>" + fmt$((d.ema || {})[p]) + "</td></tr>"
+//      "<tr><td>" + p + "-MA</td><td>" + fmt$((d.sma || {})[p]) + "</td><td>" + fmt$((d.ema || {})[p]) + "</td></tr>"
 //     ).join("") + "</tbody></table></div>" +
 //     '<div class="panel-asof">Price ' + fmt$(d.price) + " · as of " + esc(d.as_of || "") + " · Chart by TradingView</div></div>";
 //   });
