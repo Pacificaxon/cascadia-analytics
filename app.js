@@ -1503,6 +1503,11 @@ function bindZoomHandlers() {
   try {
    if (typeof Chart !== "undefined" && Chart.getChart) {
     document.querySelectorAll("canvas").forEach((cv) => {
+     // The zoom modal lives on document.body, outside the routed content,
+     // and manages its own chart. Destroying it here blanked any open zoom
+     // view whenever a re-render fired (auth refresh, tab wake), which is
+     // why click-to-zoom charts showed nothing.
+     if (cv.closest && cv.closest("#chart-zoom-modal")) return;
      try {
       const chart = Chart.getChart(cv);
       if (chart) chart.destroy();
