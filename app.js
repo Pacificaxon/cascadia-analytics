@@ -3407,7 +3407,7 @@ function bindZoomHandlers() {
    } else {
     h += '<div style="background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:16px;margin-top:12px;text-align:center;">' +
      '<div style="font-size:13px;color:#e8ecf1;margin-bottom:8px;">The full analysis of what this ERP reading means for positioning is a Pro feature.</div>' +
-     '<button class="btn" onclick="openProModal()">See Pro Plans</button></div>';
+     '<button class="btn" id="teaser-pricing">See Pro Plans</button></div>';
    }
    h += '</div></div>';
    return h;
@@ -4688,6 +4688,7 @@ function bindZoomHandlers() {
 
   app.innerHTML = h;
   bindMonitorToc();
+  bindVolSurfaceSort();
   try { drawLeadershipChart(); } catch (e) { console.error("Leadership chart failed:", e); }
   } catch (routeErr) {
    console.error("Monitor route failed:", routeErr);
@@ -6488,7 +6489,12 @@ route("alerts", function () {
   if (!isPro()) {
    app.innerHTML = '<div class="section"><div class="section-title">Email Alerts</div>' +
     '<div class="card"><h3>Pro Feature</h3><p>Email alerts for market internals monitors are available to Pro subscribers.</p>' +
-    '<button class="btn-gold" onclick="document.getElementById(\'pro-btn\').click()">Go Pro</button></div></div>';
+    '<button class="btn-gold" id="alerts-go-pro">Go Pro</button></div></div>';
+   // This branch only renders for non-Pro users, and updateProBtn points the
+   // header pro-btn at showPricingModal in exactly that state, so call the
+   // modal directly instead of proxying a click through the header button.
+   const goProBtn = document.getElementById("alerts-go-pro");
+   if (goProBtn) goProBtn.addEventListener("click", showPricingModal);
    return;
   }
 
@@ -10536,6 +10542,11 @@ function volSurfaceSort(key) {
  const tb = document.getElementById("vol-surface-tbody");
  if (tb) tb.innerHTML = volSurfaceRowsHtml(rows);
 }
+// Wire the vol surface table headers after render, the same data-attribute
+// plus addEventListener pattern the screener tables use (data-qsort/data-msort).
+function bindVolSurfaceSort() {
+ document.querySelectorAll("[data-vsort]").forEach((th) => th.addEventListener("click", () => volSurfaceSort(th.dataset.vsort)));
+}
 function volSurfaceHtml() {
  const V = D.vol_surface || {};
  const M = V.macro || {};
@@ -10617,7 +10628,7 @@ function volSurfaceHtml() {
  ["SPY", "QQQ"].forEach((tk) => { if (V.indices && V.indices[tk]) rows.push({ tk: tk, e: V.indices[tk] }); });
  Object.keys(V.tickers || {}).sort().forEach((tk) => rows.push({ tk: tk, e: V.tickers[tk] }));
  window._volSurfaceRows = rows;
- const th = (label, key) => '<th onclick="volSurfaceSort(\'' + key + '\')" style="padding:9px 10px;text-align:left;font-size:11px;color:#8b949e;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;">' + label + ' &#8597;</th>';
+ const th = (label, key) => '<th data-vsort="' + key + '" style="padding:9px 10px;text-align:left;font-size:11px;color:#8b949e;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;">' + label + ' &#8597;</th>';
  h += '<div style="overflow-x:auto;margin-top:14px;"><table style="width:100%;border-collapse:collapse;min-width:760px;">' +
   '<thead><tr style="border-bottom:2px solid #2a3142;">' +
   th("TICKER", "ticker") + th("SPOT", "spot") + th("30D ATM IV", "atm_iv_30d") + th("90D ATM IV", "atm_iv_90d") +
@@ -11316,7 +11327,7 @@ function volSurfaceHtml() {
     h += gated('<div style="background:#161b26;border:1px solid #c9a961;border-radius:12px;padding:32px;text-align:center;">' +
       '<div style="font-size:16px;font-weight:700;color:#c9a961;margin-bottom:8px;">Pro members read the full Week Ahead</div>' +
       '<div style="font-size:14px;color:#e8ecf1;margin-bottom:16px;">Company news, macro, Fed, positioning, and risk model readings for the coming week.</div>' +
-      '<button class="btn" onclick="openProModal()">See Pro Plans</button></div>');
+      '<button class="btn" id="teaser-pricing">See Pro Plans</button></div>');
     h += '<div style="font-size:11px;color:#8b949e;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
     h += '</div>';
     app.innerHTML = h;
