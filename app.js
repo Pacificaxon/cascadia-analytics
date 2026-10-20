@@ -242,6 +242,7 @@
    if (sections.gamma_flip) flat.gamma_flip = sections.gamma_flip;
    if (sections.vol_surface) flat.vol_surface = sections.vol_surface;
    if (sections.real_yield_shock) flat.real_yield_shock = sections.real_yield_shock;
+   if (sections.macro_regime) flat.macro_regime = sections.macro_regime;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -4204,6 +4205,7 @@ function bindZoomHandlers() {
   { key: "pead_drift", name: "Earnings Drift (PEAD)", desc: "Post-earnings drift, notified when distribution dominates." },
   { key: "squeeze_fragility", name: "Squeeze Fragility Radar", desc: "Short squeeze risk, notified when fragility spikes." },
   { key: "vol_surface", name: "Volatility Surface", desc: "VIX term structure and SKEW, notified on backwardation or extreme tail demand." },
+  { key: "macro_regime", name: "Macro Regime (Sovereign Blowout)", desc: "Four-regime 10Y yield probability model, notified when blowout risk builds." },
  ];
 
  function premarketHtml() {
@@ -9098,6 +9100,156 @@ function oasDistressHtml() {
   });
  }
 
+// === macro_regime.js ===
+function macroRegimeHtml() {
+  const M = D.macro_regime || {};
+  if (M.score == null) {
+   return '<div class="section"><div class="section-title">Macro Regime Model ' + PRO_BADGE + '</div>' +
+    '<div class="card"><p style="color:var(--muted)">Macro Regime data unavailable. Check back after the next refresh.</p></div></div>';
+  }
+  const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
+  const c = colorMap[M.color] || "#e8ecf1";
+  const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
+  const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
+  const pct = (v) => v != null ? f1(v) + "%" : "N/A";
+  const bp = (v) => v != null ? (v > 0 ? "+" : "") + Math.round(v) + " bps" : "N/A";
+  const regimeColors = { blowout: "#f85149", plateau: "#d29922", growth: "#58a6ff", liquidity: "#a371f7" };
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthLabel = (d) => {
+   if (!d) return "monthly";
+   const parts = String(d).split("-");
+   return "monthly, " + (monthNames[Number(parts[1]) - 1] || "") + " " + parts[0];
+  };
+  let h = '<div class="section"><div class="section-title">Macro Regime Model ' + PRO_BADGE + '</div>' +
+   '<div class="section-sub">A four-regime probability model for the path of the US 10-year Treasury yield over the next 6 to 12 months. The model weighs whether long yields are being driven by fiscal supply and term premium repricing, by a higher-for-longer plateau, or by the growth and liquidity forces that pull yields back down.</div>';
+  // Score banner
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;flex-wrap:wrap;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8b949e;letter-spacing:0.5px;">BLOWOUT RISK</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#8b949e;">/100</span></div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(M.regime || "") + '</div>' +
+   '<div style="font-size:12px;color:#8b949e;margin-top:4px;">Dominant regime carries a ' + pct((M.probabilities || {})[M.regime_key]) + ' probability weight' +
+   " \u00B7 Expected 10Y " + (M.expected_10y != null ? f2(M.expected_10y) + "%" : "N/A") +
+   " \u00B7 US 10Y now " + ((M.yields || {}).us_10y != null ? f2(M.yields.us_10y) + "%" : "N/A") + "</div></div></div>";
+  // (1) Regime probability bars
+  const scenarios = M.scenarios || [];
+  h += '<div style="display:flex;flex-direction:column;gap:8px;margin:12px 0;">';
+  scenarios.forEach((sc) => {
+   const rc = regimeColors[sc.key] || "#e8ecf1";
+   const dom = sc.key === M.regime_key;
+   h += '<div style="background:#161b26;border-radius:10px;padding:12px 14px;' + (dom ? "border:1px solid " + rc + ";" : "border:1px solid transparent;") + '">' +
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;">' +
+    '<div style="font-size:13px;font-weight:700;color:#e8ecf1;">' + esc(sc.name) + (dom ? ' <span style="font-size:10px;font-weight:800;color:' + rc + ';letter-spacing:0.5px;">DOMINANT</span>' : "") + '</div>' +
+    '<div style="font-size:18px;font-weight:800;color:' + rc + ';">' + pct(sc.prob) + '</div></div>' +
+    '<div style="height:6px;background:#1f2937;border-radius:3px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + Math.min(100, sc.prob || 0) + '%;background:' + rc + ';border-radius:3px;"></div></div>' +
+    '<div style="font-size:11px;color:#8b949e;">US 10Y mean ' + f2(sc.us10y_mean) + "% across a " + f2(sc.range_low) + "% to " + f2(sc.range_high) + "% range" +
+    " \u00B7 Bund " + f2(sc.bund_mean) + "% \u00B7 Gilt " + f2(sc.gilt_mean) + "% \u00B7 JGB " + f2(sc.jgb_mean) + "%</div></div>";
+  });
+  h += "</div>";
+  // (2) Expected value and tails
+  const mc = (label, val, sub) =>
+   '<div style="background:#161b26;border-radius:10px;padding:12px;text-align:center;">' +
+   '<div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
+   '<div style="font-size:22px;font-weight:800;color:#e8ecf1;">' + val + "</div>" +
+   (sub ? '<div style="font-size:11px;color:#8b949e;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
+   mc("EXPECTED 10Y (12M)", M.expected_10y != null ? f2(M.expected_10y) + "%" : "N/A", "probability-weighted across regimes") +
+   mc("SIGMA BAND", M.sigma_bps != null ? "\u00B1" + f1(M.sigma_bps) + " bps" : "N/A", (M.band_low != null ? f2(M.band_low) + "% to " + f2(M.band_high) + "%" : "")) +
+   mc("P(10Y ABOVE 5.00%)", pct(M.p_above_5), "right tail, fiscal stress") +
+   mc("P(10Y BELOW 4.00%)", pct(M.p_below_4), "left tail, flight to quality") +
+   "</div>";
+  // (3) Global sovereign yields table
+  const Y = M.yields || {};
+  const F = M.foreign || {};
+  const row = (name, cur, basis, weighted) =>
+   "<tr><td style=\"font-weight:600;color:#e8ecf1;\">" + name + "</td><td>" + (cur != null ? f2(cur) + "%" : "N/A") + "</td><td>" + basis + "</td><td>" + (weighted != null ? f2(weighted) + "%" : "N/A") + "</td></tr>";
+  h += '<div class="card" style="padding:0;overflow:hidden;margin:12px 0;"><div class="table-wrap"><table class="coverage">' +
+   "<thead><tr><th>Sovereign 10Y Benchmark</th><th>Current</th><th>Basis</th><th>Probability-Weighted</th></tr></thead><tbody>" +
+   row("US Treasury 2Y", Y.us_2y, "daily", null) +
+   row("US Treasury 10Y", Y.us_10y, "daily", M.expected_10y) +
+   row("US Treasury 30Y", Y.us_30y, "daily", null) +
+   row("German Bund 10Y", (F.bund || {}).current, monthLabel((F.bund || {}).as_of), (F.bund || {}).weighted) +
+   row("UK Gilt 10Y", (F.gilt || {}).current, monthLabel((F.gilt || {}).as_of), (F.gilt || {}).weighted) +
+   row("Japan JGB 10Y", (F.jgb || {}).current, monthLabel((F.jgb || {}).as_of), (F.jgb || {}).weighted) +
+   "</tbody></table></div></div>" +
+   '<div style="font-size:11px;color:#8b949e;margin:-4px 0 12px;">Foreign yields are monthly OECD observations and lag the daily US data. The probability-weighted column blends the four regime scenario means by their current probabilities.</div>';
+  // (4) Term premium and curve readouts
+  const TP = M.term_premium || {};
+  const rc2 = (label, val, sub) =>
+   '<div class="card"><div style="font-size:11px;color:#8b949e;">' + label + '</div>' +
+   '<div style="font-size:24px;font-weight:800;color:#e8ecf1;">' + val + '</div>' +
+   (sub ? '<div style="font-size:11px;color:#8b949e;margin-top:4px;">' + sub + "</div>" : "") + "</div>";
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:12px 0;">' +
+   rc2("TERM PREMIUM (KIM-WRIGHT 10Y)", TP.level != null ? f2(TP.level) + "%" : "N/A",
+     (TP.chg_20d_bps != null ? bp(TP.chg_20d_bps) + " over 20 sessions" : "20-session change N/A") + (TP.as_of ? " \u00B7 as of " + esc(String(TP.as_of).slice(0, 10)) : "")) +
+   rc2("2S10S SLOPE", Y.slope_2s10s != null ? Math.round(Y.slope_2s10s) + " bps" : "N/A",
+     "10Y " + bp(Y.chg_10y_20d_bps) + " vs 2Y " + bp(Y.chg_2y_20d_bps) + " over 20 sessions") +
+   rc2("5S30S SLOPE", Y.slope_5s30s != null ? Math.round(Y.slope_5s30s) + " bps" : "N/A",
+     "30Y " + bp(Y.chg_30y_20d_bps) + " over 20 sessions") +
+   rc2("BEAR STEEPENING", Y.bear_steepening ? "ACTIVE" : "NOT ACTIVE",
+     Y.bear_steepening ? "The long end is leading yields higher, the blowout signature." : "The long end is not leading the move higher.") +
+   rc2("10Y REAL YIELD", M.real_yield_10y != null ? f2(M.real_yield_10y) + "%" : "N/A",
+     "TIPS yield, the real cost of capital competing with equities") +
+   rc2("10Y BREAKEVEN INFLATION", M.breakeven_10y != null ? f2(M.breakeven_10y) + "%" : "N/A",
+     "Market-implied average inflation over the next decade") +
+   "</div>";
+  // Active signals (transparency on what tilted the probabilities)
+  const sigs = M.signals || [];
+  if (sigs.length) {
+   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">Signals moving the probabilities today</div>' +
+    '<div style="font-size:13px;color:#9ba3af;line-height:1.7;">' +
+    sigs.map((s) => "\u2022 " + esc(s)).join("<br>") + "</div></div>";
+  }
+  // (5) Probability history chart (drawn by drawMacroRegimeChart)
+  const hist = M.history || [];
+  if (hist.length) {
+   h += '<div class="zoomable-chart" data-chart="macro-regime" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="macro-regime-chart"></canvas>' +
+    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
+  }
+  h += '<div class="panel-asof">As of ' + esc((M.as_of || "").slice(0, 10)) + "</div></div>";
+  // (6) Explainer AFTER the visuals
+  h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#e8ecf1;margin-bottom:8px;">What this model tells you</div>' +
+   '<div style="font-size:13px;color:#9ba3af;line-height:1.6;">' +
+   "The model frames the next 6 to 12 months for the US 10-year yield as a contest between four regimes. A fiscal blowout, where heavy Treasury supply and fading foreign demand push long yields toward 5.60%. A higher-for-longer plateau around 4.85%, where sticky inflation and a heavy issuance calendar keep yields elevated without disorder. A growth deceleration toward 4.05%, where a credit or labor slowdown restores the traditional duration bid. And a liquidity shock toward 3.30%, where a funding fracture forces emergency easing. Probabilities start from the framework priors and shift every day with observable signals, so the mix reflects where the evidence is building rather than a fixed view.<br><br>" +
+   "The mechanism that matters most is the term premium, the extra compensation investors demand for holding duration instead of rolling Treasury bills. A nominal yield is the expected path of short-term policy rates plus that premium. For a decade after the financial crisis, quantitative easing pinned term premiums below zero. Quantitative tightening and multi-trillion-dollar coupon supply are now normalizing the premium back toward its historical range, and that normalization lifts long yields even while inflation expectations stay anchored. A term-premium-driven rise tightens financial conditions without any change in the expected policy path, which is why it catches equity valuations off guard.<br><br>" +
+   "The spillovers travel through the probability-weighted foreign yields in the table above. Bunds, gilts, and JGBs share the global duration bid, so a US-led repricing rarely stays contained. Domestically, real yields above 2.00% act as a gravity well for equity multiples because every future earnings stream is discounted harder, and mortgage rates follow the 10-year closely enough that yields near 5.00% freeze housing turnover.<br><br>" +
+   "Circuit breakers cap the tail. Pension funds and life insurers run automatic liability-matching programs when funded status crosses full funding at higher yields, creating a non-discretionary bid. The Treasury can shift issuance toward bills and lean on its buyback program if the long end breaks. The Federal Reserve can slow or halt quantitative tightening if repo stress threatens dealer financing. And with global debt above 330% of GDP, the economy is far more rate-sensitive than in past cycles, so sustained yields above 5.50% tend to break something and force the flight-to-quality bid. The distribution is skewed toward higher yields, but it is not unbounded." +
+   "</div></div>";
+  return h;
+ }
+
+ // Draw the 120-day regime probability history. Call after bindZoomHandlers()
+ // in the Pro #/risk route.
+ function drawMacroRegimeChart() {
+  const M = D.macro_regime || {};
+  const hist = M.history || [];
+  const cv = document.getElementById("macro-regime-chart");
+  if (!cv || !hist.length || !window.Chart) return;
+  const old = Chart.getChart(cv);
+  if (old) old.destroy();
+  new Chart(cv, {
+   data: {
+    labels: hist.map((r) => r.date),
+    datasets: [
+     { type: "line", label: "Fiscal Blowout %", data: hist.map((r) => r.p_blowout),
+       borderColor: "#f85149", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+     { type: "line", label: "Plateau %", data: hist.map((r) => r.p_plateau),
+       borderColor: "#d29922", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+     { type: "line", label: "Growth Decel. %", data: hist.map((r) => r.p_growth),
+       borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+     { type: "line", label: "Liquidity Shock %", data: hist.map((r) => r.p_liquidity),
+       borderColor: "#a371f7", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+    ]},
+   options: { animation: false, responsive: true, maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { labels: { color: "#8b949e", boxWidth: 12 } } },
+    scales: {
+     x: { ticks: { color: "#6b7280", maxTicksLimit: 8 }, grid: { display: false } },
+     y: { title: { display: true, text: "probability %", color: "#8b949e" },
+          ticks: { color: "#8b949e" }, grid: { color: "rgba(42,46,57,0.4)" } },
+    }},
+  });
+ }
+
 // === real_yield_shock.js ===
 function realYieldShockHtml() {
   const R = D.real_yield_shock || {};
@@ -9659,7 +9811,8 @@ function volSurfaceHtml() {
    contagion: "Contagion", flow_divergence: "Flow Div.", concentration: "Concentration",
    margin_leverage: "Margin Lev.", sector_rotation: "Rotation", fear_index: "Fear",
    oas_distress: "Credit", treasury_slr: "Treasury Cap.", real_yield_shock: "Real Yield",
-   gamma_flip: "Gamma", pead_screener: "Earn Drift", squeeze_radar: "Squeeze" };
+   gamma_flip: "Gamma", pead_screener: "Earn Drift", squeeze_radar: "Squeeze",
+   macro_regime: "Macro Regime" };
   let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #2a3448;">' +
    '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8b949e;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
    '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8b949e;">/100</span></div>' +
@@ -10325,6 +10478,7 @@ function volSurfaceHtml() {
    const pead = rh.pead_screener || {};
    const sqz = rh.squeeze_radar || {};
    const gfl = rh.gamma_flip || {};
+   const mr = rh.macro_regime || {};
    const colorMap = { emerald: "#3fb950", amber: "#d29922", rose: "#f85149", slate: "#8b949e" };
    const card = (name, score, regime, color) => {
     if (score == null) return "";
@@ -10357,8 +10511,9 @@ function volSurfaceHtml() {
     card("Gamma Regime", gfl.score, gfl.regime, gfl.color) +
     card("Earnings Drift", pead.score, pead.regime, pead.color) +
     card("Squeeze Fragility", sqz.score, sqz.regime, sqz.color) +
+    card("Macro Regime", mr.score, mr.regime, mr.color) +
     "</div>" +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Macro Regime Model, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;
    return;
   }
@@ -10370,6 +10525,7 @@ function volSurfaceHtml() {
   h += liquidityDrainHtml();
   h += rvShockHtml();
   h += oasDistressHtml();
+  h += macroRegimeHtml();
   h += contagionHtml();
   h += flowDivergenceHtml();
   h += concentrationHtml();
@@ -10451,6 +10607,7 @@ function volSurfaceHtml() {
    });
   }
   drawOasDistressChart();
+  drawMacroRegimeChart();
   // Draw contagion chart inline
   const cg = D.contagion || {};
   const cgHist = cg.history || [];
@@ -10612,7 +10769,7 @@ function volSurfaceHtml() {
    '<li>✓ Valuation multiples, market cap, EV, TTM and forward multiples</li>' +
    '<li>✓ Interactive price charts with moving averages (10/20/50/100/200-day)</li>' +
    '<li>✓ 5 years of financial statements, income, balance sheet, cash flow</li>' +
-   '<li>✓ Daily Snapshot risk scores, all 15 models, score plus regime</li>' +
+   '<li>✓ Daily Snapshot risk scores, all ' + (((D.risk_headlines || {}).composite || {}).model_count || 15) + ' models, score plus regime</li>' +
    '<li>✓ AAII Investor Sentiment tracker (weekly)</li>' +
    '<li>✓ COT Positioning tracker, commercial, large spec, small spec (weekly)</li>' +
    '<li>✓ Fed funds futures tracker with meeting probabilities</li>' +
@@ -10637,7 +10794,7 @@ function volSurfaceHtml() {
    '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
-   '<li>✓ All 15 Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, with charts, history, and plain-English explainers</li>' +
+   '<li>✓ All ' + (((D.risk_headlines || {}).composite || {}).model_count || 15) + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Macro Regime, with charts, history, and plain-English explainers</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
    '<li>✓ Volatility Surface, VIX term structure regimes, four-quadrant matrix, and per-ticker 25-delta risk reversals</li>' +

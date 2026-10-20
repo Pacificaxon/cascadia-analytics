@@ -521,6 +521,7 @@ def main():
         "gamma_flip": load(os.path.join(MR, "gamma_flip.json")) if os.path.exists(os.path.join(MR, "gamma_flip.json")) else {},
         "vol_surface": load(os.path.join(MR, "vol_surface.json")) if os.path.exists(os.path.join(MR, "vol_surface.json")) else {},
         "real_yield_shock": load(os.path.join(MR, "real_yield_shock.json")) if os.path.exists(os.path.join(MR, "real_yield_shock.json")) else {},
+        "macro_regime": load(os.path.join(MR, "macro_regime.json")) if os.path.exists(os.path.join(MR, "macro_regime.json")) else {},
     }
     # Per-ticker transcript tone detail files
     import glob
@@ -639,6 +640,9 @@ def main():
         "gamma_flip": {"score": _gf_score,
                       "regime": "Dealer regime blend (SPY/QQQ)",
                       "color": "rose" if (_gf_score or 0) >= 60 else "amber" if (_gf_score or 0) >= 45 else "emerald"},
+        "macro_regime": {"score": pro_sections.get("macro_regime", {}).get("score"),
+                         "regime": pro_sections.get("macro_regime", {}).get("regime"),
+                         "color": pro_sections.get("macro_regime", {}).get("color")},
     }
 
     # Cascadia Composite Risk Index (CCRI): overall assessment across all risk models.
@@ -673,6 +677,7 @@ def main():
         "treasury_slr": (-1, "Macro & Liquidity", "Treasury Capacity", 2),
         "real_yield_shock": (+1, "Macro & Liquidity", "Real Yield Shock", 3),
         "gamma_flip": (+1, "Systematic & Volatility", "Gamma Regime", 2),
+        "macro_regime": (+1, "Macro & Liquidity", "Macro Regime", 2),
         "pead_screener": (+1, "Structural & Breadth", "Earnings Drift", 3),
         "squeeze_radar": (+1, "Flow & Leverage", "Squeeze Fragility", 3),
         "flow_divergence": (+1, "Flow & Leverage", "Flow Divergence", 2),
