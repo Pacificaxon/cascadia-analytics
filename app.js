@@ -653,6 +653,7 @@ function bindZoomHandlers() {
        breadth: "Market Breadth",
        rsicd: "RSI: Cyclicals vs Defensives (XLY/XLP)",
        "gex-ticker": "Gamma Exposure, " + (el.dataset.ticker || ""),
+       "fvpath": "Fair Value Across Scenarios, " + (el.dataset.ticker || ""),
        "skew-ticker": "Volatility Skew, " + (el.dataset.ticker || ""),
        "gex-index": "Gamma Exposure, " + (el.dataset.symbol || ""),
        trends: "Trading Trends, " + (el.dataset.ticker || ""),
@@ -1314,6 +1315,9 @@ function bindZoomHandlers() {
            x: { stacked: true, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "MLS (0-100)", color: "#e8ecf1" } },
            y: { stacked: true, ticks: { color: "#fff", font: { size: 14, weight: "bold" } }, grid: { display: false } } } }
         });
+       } else if (kind === "fvpath") {
+        const ft = TICKERS[el.dataset.ticker] || {};
+        if (ft.history && ft.history.length) new Chart(zc, buildFvChartConfig(ft));
        } else if (kind === "trends") {
         const tk2 = el.dataset.ticker;
         const t = (D.ticker_trends || {})[tk2];
@@ -6879,11 +6883,12 @@ route("alerts", function () {
    ).join("") + "</div>";
   if (t.shares_m) h += '<div class="tkx-meta">' + t.shares_m.toFixed(1) + "M DILUTED SHARES</div>";
 
-  // price history, with the artifact section treatment (kicker + large heading)
+  // DCF valuation path, with the artifact section treatment (kicker + large
+  // heading): price history followed by the Bear/Base/Bull fair value paths
   if (t.history && t.history.length > 5) {
-   h += '<div class="tkx-sechead"><div><div class="tkx-k">HISTORICAL CLOSE</div><div class="tkx-h2">Price History</div></div>' +
-    '<div class="tkx-secdesc">Closing price history. Hover or tap the chart for values.</div></div>' +
-    '<div class="card"><div class="chart-box"><canvas id="price-chart"></canvas></div></div>';
+   h += '<div class="tkx-sechead"><div><div class="tkx-k">DCF VALUATION PATH</div><div class="tkx-h2">Fair value across scenarios</div></div>' +
+    '<div class="tkx-secdesc">Monthly closing price history followed by Bear, Base, and Bull DCF fair value paths.</div></div>' +
+    '<div class="card"><div class="zoomable-chart" data-chart="fvpath" data-ticker="' + esc(tk) + '" style="position:relative;cursor:zoom-in;" title="Click to zoom"><div class="chart-box"><canvas id="price-chart"></canvas></div></div></div>';
   }
 
   // FCF chart (free, interactive tooltips)
@@ -8387,36 +8392,93 @@ route("alerts", function () {
  }
 
  /* ---------- charts ---------- */
- function drawPriceChart(t) {
-  const el = document.getElementById("price-chart");
-  if (!el || !t.history || !t.history.length) return;
-  const pts = t.history.filter((_, i) => i % 4 === 0);
-  priceChart = new Chart(el, {
+ // Fair value path chart config, shared by the inline chart and the zoom
+ // modal so both render all four lines identically. Mirrors the Muse
+ // artifact's "Fair value across scenarios" construction: monthly closing
+ // price history, then each scenario's fair value path from the DCF
+ // extractor (t.fv_paths, passed through build.py from the model data).
+ // The first path point sits on the model date at the scenario target;
+ // later points sit on Dec 31 of each forecast year and roll forward to
+ // the horizon-year fair value. Everything is read from the ticker's
+ // current bundle data at render time, never stored as static values, so
+ // a target change in the workbooks moves the lines on the next build.
+ function buildFvChartConfig(t) {
+  const hist = (t.history || []).filter((p) => p && p[1] != null);
+  const step = Math.max(1, Math.ceil(hist.length / 64));
+  const sampled = hist.filter((_, i) => i % step === 0);
+  if (hist.length && sampled[sampled.length - 1] !== hist[hist.length - 1]) sampled.push(hist[hist.length - 1]);
+  const modelMs = Date.parse((D.models_as_of || t.price_date || "") + "T12:00:00Z");
+  const paths = t.fv_paths || {};
+  const scen = [["bear", "Bear", "#f87171"], ["base", "Base", "#e8a33d"], ["bull", "Bull", "#34c47c"]];
+  const labelSet = new Set(sampled.map((p) => p[0]));
+  const pathPts = {};
+  scen.forEach(([k]) => {
+   const arr = paths[k];
+   if (!arr || arr.length < 2) return;
+   const pts = arr.filter((p) => p && p[1] != null).map((p, i) => ({ x: i === 0 && !isNaN(modelMs) ? modelMs : Date.UTC(p[0], 11, 31), y: p[1] }));
+   if (pts.length < 2) return;
+   pathPts[k] = pts;
+   pts.forEach((pt) => labelSet.add(pt.x));
+  });
+  const labels = Array.from(labelSet).sort((a, b) => a - b);
+  const align = (pts) => { const m = new Map(pts.map((p) => [p.x, p.y])); return labels.map((x) => (m.has(x) ? m.get(x) : null)); };
+  const priceData = align(sampled.map((p) => ({ x: p[0], y: p[1] })));
+  const datasets = [{ label: "Price", data: priceData, borderColor: "#c9a961", backgroundColor: "rgba(201,169,97,0.08)",
+   fill: true, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: "#c9a961",
+   pointHoverBorderColor: "#fff", tension: 0.2, spanGaps: true }];
+  scen.forEach(([k, lbl, color]) => {
+   if (!pathPts[k]) return;
+   datasets.push({ label: lbl, data: align(pathPts[k]), borderColor: color, backgroundColor: "#0a0f1a",
+    fill: false, borderWidth: 2.5, pointRadius: 3, pointBorderColor: color, pointBorderWidth: 2,
+    pointHoverRadius: 6, tension: 0.25, spanGaps: true });
+  });
+  const hasPaths = datasets.length > 1;
+  const ann = {};
+  if (hasPaths && !isNaN(modelMs)) {
+   ann.modelDate = { type: "line", xMin: modelMs, xMax: modelMs, borderColor: "rgba(200,208,220,0.45)", borderWidth: 1, borderDash: [4, 5],
+    label: { display: true, content: "MODEL DATE", position: "start", color: "#8b949e", font: { size: 9 } } };
+   if (t.price != null) ann.spot = { type: "line", xMin: modelMs, yMin: t.price, yMax: t.price, borderColor: "rgba(201,169,97,0.45)", borderWidth: 1, borderDash: [2, 5] };
+  }
+  return {
    type: "line",
-   data: { labels: pts.map((p) => { const d = new Date(p[0]); return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); }),
-    datasets: [{ data: pts.map((p) => p[1]), borderColor: "#c9a961", borderWidth: 2, pointRadius: 0, pointHoverRadius: 5,
-     pointHoverBackgroundColor: "#c9a961", pointHoverBorderColor: "#fff", fill: true,
-     backgroundColor: "rgba(201,169,97,0.08)", tension: 0.2 }] },
+   data: { labels, datasets },
    options: { responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    plugins: { legend: { display: false },
+    plugins: {
+     legend: hasPaths ? { labels: { color: "#a8b0bd", boxWidth: 12, font: { size: 11 } } } : { display: false },
+     annotation: { annotations: ann },
      tooltip: { backgroundColor: "#253041", borderColor: "#c9a961", borderWidth: 1,
-      titleColor: "#ffffff", bodyColor: "#c9a961", padding: 12, displayColors: false,
+      titleColor: "#ffffff", bodyColor: "#e8ecf1", padding: 12, displayColors: true,
+      filter: (item) => item.parsed.y != null,
       callbacks: {
-       label: (c) => " Price: " + fmt$(c.parsed.y),
+       title: (items) => {
+        if (!items.length) return "";
+        const x = labels[items[0].dataIndex];
+        const d = new Date(x);
+        if (!isNaN(modelMs) && x >= modelMs) return String(d.getUTCFullYear());
+        return d.toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+       },
+       label: (c) => " " + c.dataset.label + ": " + fmt$(c.parsed.y),
        afterLabel: (c) => {
-        const i = c.dataIndex;
-        if (i > 0) {
-         const prev = c.dataset.data[i - 1], cur = c.parsed.y;
-         const chg = ((cur - prev) / prev * 100);
-         return " Change: " + (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%";
+        if (c.dataset.label !== "Price") return "";
+        for (let i = c.dataIndex - 1; i >= 0; i--) {
+         const prev = priceData[i];
+         if (prev != null) {
+          const chg = (c.parsed.y - prev) / prev * 100;
+          return " Change: " + (chg >= 0 ? "+" : "") + chg.toFixed(2) + "%";
+         }
         }
         return "";
        }
       } } },
-    scales: { x: { ticks: { color: "#7a8494", maxTicksLimit: 8 }, grid: { display: false } },
+    scales: { x: { type: "time", time: { unit: "year" }, ticks: { color: "#7a8494", maxTicksLimit: 10, maxRotation: 0 }, grid: { display: false } },
      y: { ticks: { color: "#7a8494", callback: (v) => "$" + v }, grid: { color: "#333f52" } } } }
-  });
+  };
+ }
+ function drawPriceChart(t) {
+  const el = document.getElementById("price-chart");
+  if (!el || !t.history || !t.history.length) return;
+  priceChart = new Chart(el, buildFvChartConfig(t));
  }
  function drawFcfChart(t) {
   const el = document.getElementById("fcf-chart");
@@ -12463,6 +12525,7 @@ function volSurfaceHtml() {
    '<div style="font-size:13px;color:#e8ecf1;opacity:0.7;margin-bottom:20px;">forever</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#e8ecf1;">' +
    '<li>✓ Full DCF valuation coverage, ' + ORDER.length + ' tickers with Bear/Base/Bull targets</li>' +
+   '<li>✓ Fair value path chart, price history plotted against the Bear, Base, and Bull DCF paths</li>' +
    '<li>✓ Reverse DCF, what the market is pricing in at the current quote</li>' +
    '<li>✓ Valuation multiples, market cap, EV, TTM and forward multiples</li>' +
    '<li>✓ Interactive price charts with moving averages (10/20/50/100/200-day)</li>' +

@@ -320,6 +320,21 @@ def main():
                 if t["shares_m"] is None and s.get("shares_m"):
                     t["shares_m"] = s["shares_m"]
                 t["wacc"] = t["wacc"] or s.get("wacc")
+        # Fair value paths (free): the extractor's per-scenario [year, value]
+        # series for the DCF valuation path chart. Each path is anchored at
+        # the scenario target on the model date and rolls forward to the
+        # horizon-year fair value, so the series visualizes the same free
+        # targets the hero cards show. The raw model inputs the paths derive
+        # from (fcf_m, wacc, shares_m) stay Pro-only; only the derived series
+        # ships free. Rebuilt from data.json on every build, so a workbook
+        # target change flows into the chart on the next daily refresh.
+        fv_paths = {}
+        for sc in ("bear", "base", "bull"):
+            p = scenarios.get(sc, {}).get("path")
+            if p and len(p) >= 2:
+                fv_paths[sc] = p
+        if fv_paths:
+            t["fv_paths"] = fv_paths
         # Backfill FCF for tickers missing it from data.json scenarios
         if tk in fcf_backfill and not t["fcf"].get("base", {}).get("fcf_m"):
             for sc in ("bear", "base", "bull"):
@@ -439,6 +454,7 @@ def main():
     # --- Assemble site data ---
     site = {
         "generated_at": internals.get("as_of"),
+        "models_as_of": data_json.get("as_of"),
         "tickers": tickers,
         "ticker_order": sorted(tickers.keys()),
         "macro_feed": macro_items,
