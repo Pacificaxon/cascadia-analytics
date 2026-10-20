@@ -247,6 +247,7 @@
    if (sections.real_yield_shock) flat.real_yield_shock = sections.real_yield_shock;
    if (sections.macro_regime) flat.macro_regime = sections.macro_regime;
    if (sections.advanced_macro) flat.advanced_macro = sections.advanced_macro;
+   if (sections.leadership_canary) flat.leadership_canary = sections.leadership_canary;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -668,6 +669,7 @@ function bindZoomHandlers() {
        "concentration": "Dynamic Concentration Risk Gauge",
        "margin-leverage": "Systemic Leverage, Margin YoY vs SPY YoY",
        "sector-rotation": "Offense vs Defense, RSPD/RSPS vs XLY/XLP",
+       "canary-rs": "Industry Leadership, Canary RS vs Sector RS",
        cot: "Commitments of Traders",
        macro: "Macroeconomic Analysis",
        leadership: "Market Leadership, MLS by Component",
@@ -1233,6 +1235,17 @@ function bindZoomHandlers() {
            }},
          });
         } catch (e) { console.error("Sector rotation chart error:", e); }
+       } else if (kind === "canary-rs") {
+        const LC = D.leadership_canary || {};
+        const hist = LC.history || [];
+        if (!hist.length) return;
+        try {
+         const canvas = zc.tagName === "CANVAS" ? zc : (zc.querySelector("canvas") || document.getElementById("canary-rs-chart"));
+         if (!canvas) return;
+         const old = Chart.getChart(canvas);
+         if (old) old.destroy();
+         new Chart(canvas, canaryRsChartConfig());
+        } catch (e) { console.error("Canary RS chart error:", e); }
        } else if (kind === "cot") {
         const hist = (D.cot_data.history || []);
         const mkey = D.cot_data.markets.SPX ? "SPX" : Object.keys(D.cot_data.markets)[0];
@@ -2643,6 +2656,7 @@ function bindZoomHandlers() {
      { id: "monitor-market-breadth", key: "panel-breadth", name: "Market Breadth", free: false },
      { id: "monitor-alligator-jaw", key: "panel-jaw", name: "Alligator Jaw", free: false },
      { id: "monitor-theme-rotation", key: "panel-themerot", name: "Theme Rotation", free: false },
+     { id: "monitor-leadership-canary", key: "canaryrs", name: "Industry Leadership & RS Tracker", free: false },
      { id: "monitor-small-midcap", key: "panel-smallmid", name: "Small/Mid Cap Monitor", free: false },
      { id: "monitor-rsi-cyclical-defensive", key: "rsi", name: "RSI: Cyclicals vs Defensives", free: false },
      { id: "monitor-market-leadership", key: "leadership", name: "Market Leadership", free: false },
@@ -4150,6 +4164,22 @@ function bindZoomHandlers() {
   SEC.gammaflip = gatedSafe("Dealer Gamma Flip Barometer",
    "SPY and QQQ gamma flip levels, dealer hedging regimes, and distance to the flip.",
    gammaFlipHtml);
+  // Industry Leadership & Relative Strength Tracker (Canary model), Pro-gated
+  SEC.canaryrs = gatedSafe("Industry Leadership & Relative Strength Tracker",
+   "Sector leadership ranked against SPY, the high-beta canary inside the leading sector, down-day absorption, and rotation diagnostics.",
+   canaryRsHtml);
+  // Draw the canary RS trajectory chart after DOM insert
+  setTimeout(() => {
+   const cv = document.getElementById("canary-rs-chart");
+   const LC = D.leadership_canary || {};
+   if (cv && (LC.history || []).length && window.Chart) {
+    try {
+     const old = Chart.getChart(cv);
+     if (old) old.destroy();
+     new Chart(cv, canaryRsChartConfig());
+    } catch (e) { console.error("Canary RS chart error:", e); }
+   }
+  }, 200);
   // Global Liquidity, Pro-gated (always show section; gatedSafe shows the
   // locked teaser for free users and the full panel for Pro via D.liquidity).
   SEC.globalliquidity = '<div class="section" style="max-width:none;"><div class="section-title">Global Liquidity ' + PRO_BADGE + '</div>' +
@@ -10679,6 +10709,180 @@ function gammaFlipHtml() {
  return h;
 }
 
+// === leadership_canary.js ===
+// Chart config shared by the inline Monitor render and the click-to-zoom
+// redraw (kind "canary-rs" in bindZoomHandlers).
+function canaryRsChartConfig() {
+ const LC = D.leadership_canary || {};
+ const hist = LC.history || [];
+ const canTk = ((LC.canary || {}).primary || {}).ticker || "Canary";
+ const secTk = (LC.canary || {}).sector || "Sector";
+ return {
+  type: "line",
+  data: {
+   labels: hist.map((r) => r.date),
+   datasets: [
+    { label: "Canary " + canTk + " vs " + secTk, data: hist.map((r) => r.canaryRsToSector),
+      borderColor: "#f37d83", borderWidth: 2.5, pointRadius: 0, tension: 0.2 },
+    { label: secTk + " vs SPY", data: hist.map((r) => r.sectorRsToSpy),
+      borderColor: "#d9a441", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2 },
+   ]},
+  options: { animation: false, responsive: true, maintainAspectRatio: false,
+   interaction: { mode: "index", intersect: false },
+   plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } },
+    tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12 } },
+   scales: {
+    x: { ticks: { color: "#647184", maxTicksLimit: 10 }, grid: { display: false } },
+    y: { ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" },
+     title: { display: true, text: "Relative strength, indexed to 100", color: "#8d99aa" } },
+   }},
+ };
+}
+function canaryRsHtml() {
+ const C = D.leadership_canary || {};
+ const O = C.overview || {};
+ const CN = C.canary || {};
+ const P = CN.primary || {};
+ if (!O.status || !P.ticker) {
+  return '<div class="section"><div class="section-title">Industry Leadership & Relative Strength Tracker ' + PRO_BADGE + "</div>" +
+   '<div class="card"><p style="color:var(--muted)">Leadership data is not available yet. The tracker refreshes every trading morning.</p></div></div>';
+ }
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+ const oc = colorMap[O.color] || "#dbe5f1";
+ const cc = colorMap[CN.color] || "#dbe5f1";
+ const sgn = (v) => (v == null ? "N/A" : (v > 0 ? "+" : "") + Number(v).toFixed(2) + "%");
+ const tkHref = (tk) => (ORDER.indexOf(tk) >= 0 ? "#/ticker/" : "#/research/") + tk;
+ const tkLink = (tk) => '<a href="' + tkHref(tk) + '" style="color:#58a6ff;font-weight:700;text-decoration:none;">' + esc(tk) + "</a>";
+ const money = (v) => "$" + Number(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+ const L = O.leadingSector || {};
+ const CH = O.challengerSector || {};
+
+ // Canary spotlight metric tiles
+ const tile = (label, value, sub, col) =>
+  '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
+  '<div style="font-size:11px;color:#8d99aa;">' + label + "</div>" +
+  '<div style="font-size:19px;font-weight:800;color:' + (col || "#dbe5f1") + ';">' + value + "</div>" +
+  '<div style="font-size:11px;color:#8d99aa;">' + sub + "</div></div>";
+ const emaTxt = P.aboveEma21 ? "HELD (BULL)" : "BROKEN (BEAR)";
+ const emaCol = P.aboveEma21 ? "#4dd2aa" : "#f37d83";
+ const divTxt = P.negativeDivergence ? "ACTIVE (FLAG)" : "NONE (ALIGNED)";
+ const divCol = P.negativeDivergence ? "#f37d83" : "#4dd2aa";
+ let lagTxt = "N/A", lagSub = "60-session cross-correlation";
+ if (P.leadLagDays != null) {
+  lagTxt = P.leadLagDays > 0 ? "LEADS " + P.leadLagDays + "D" : (P.leadLagDays < 0 ? "LAGS " + Math.abs(P.leadLagDays) + "D" : "IN SYNC");
+  lagSub = "peak correlation " + (P.leadLagCorr != null ? Number(P.leadLagCorr).toFixed(2) : "N/A") + ", 60 sessions";
+ }
+ const tiles =
+  tile("20D RS SLOPE", sgn(P.rsSlope20d), "vs " + esc(CN.sector || "") + ", 20 sessions", P.rsSlope20d >= 0 ? "#4dd2aa" : "#f37d83") +
+  tile("DOWN-DAY ABSORPTION", sgn(P.absorptionScore), "avg edge on sector down days", P.absorptionScore >= 0 ? "#4dd2aa" : "#f37d83") +
+  tile("21-DAY EMA", emaTxt, "exponential trend support", emaCol) +
+  tile("NEGATIVE DIVERGENCE", divTxt, "sector high vs canary high", divCol) +
+  tile("LEAD-LAG", lagTxt, lagSub, "#dbe5f1");
+
+ // Sector leaderboard rows
+ const lbRows = (C.sectorLeaderboard || []).map((s, i) => {
+  const tag = i === 0 ? ' <span style="font-size:10px;font-weight:700;color:#0a0e17;background:#d9a441;padding:2px 7px;border-radius:10px;">LEADER</span>'
+   : (i === 1 ? ' <span style="font-size:10px;font-weight:700;color:#dbe5f1;background:#253142;padding:2px 7px;border-radius:10px;">CHALLENGER</span>' : "");
+  const rsC = (v) => v >= 0 ? "#4dd2aa" : "#f37d83";
+  return '<tr style="border-bottom:1px solid #1c2434;' + (i === 0 ? "background:rgba(217,164,65,0.07);" : "") + '">' +
+   '<td style="padding:8px 10px;color:#8d99aa;">#' + (i + 1) + "</td>" +
+   '<td style="padding:8px 10px;font-weight:700;color:#dbe5f1;">' + esc(s.ticker) + tag +
+   '<div style="font-size:11px;font-weight:400;color:#8d99aa;">' + esc(s.name) + " · " + esc(s.type) + "</div></td>" +
+   '<td style="padding:8px 10px;text-align:right;color:#dbe5f1;">' + money(s.price) + "</td>" +
+   '<td style="padding:8px 10px;text-align:right;font-weight:600;color:' + rsC(s.rs20d) + ';">' + sgn(s.rs20d) + "</td>" +
+   '<td style="padding:8px 10px;text-align:right;color:' + rsC(s.rs60d) + ';">' + sgn(s.rs60d) + "</td>" +
+   '<td style="padding:8px 10px;text-align:right;color:' + rsC(s.distSma50) + ';">' + sgn(s.distSma50) + "</td>" +
+   '<td style="padding:8px 10px;text-align:right;font-weight:800;color:#d9a441;">' + Number(s.rankScore).toFixed(2) + "</td></tr>";
+ }).join("");
+
+ // Constituent roster rows
+ const statusCol = (s) => s === "ACTIVE CANARY" ? "#d9a441" : s === "ROTATING IN" ? "#4dd2aa" :
+  s === "DIVERGING" || s === "LAGGING" ? "#f37d83" : "#8d99aa";
+ const rosRows = (CN.allConstituents || []).map((r) => {
+  const isCan = r.ticker === P.ticker;
+  const flags = [];
+  if (r.negativeDivergence) flags.push('<span style="color:#f37d83;font-weight:700;">DIVERGENCE</span>');
+  if (r.exhaustionGap) flags.push('<span style="color:#e0aa46;font-weight:700;">EXHAUSTION GAP</span>');
+  const yn = (b) => b ? '<span style="color:#4dd2aa;">ABOVE</span>' : '<span style="color:#f37d83;">BELOW</span>';
+  return '<tr style="border-bottom:1px solid #1c2434;' + (isCan ? "background:rgba(217,164,65,0.07);" : "") + '">' +
+   '<td style="padding:8px 10px;">' + tkLink(r.ticker) +
+   (isCan ? ' <span style="font-size:10px;font-weight:700;color:#0a0e17;background:#d9a441;padding:2px 7px;border-radius:10px;">CANARY</span>' : "") + "</td>" +
+   '<td style="padding:8px 10px;text-align:right;color:#dbe5f1;">' + money(r.price) + "</td>" +
+   '<td style="padding:8px 10px;text-align:right;font-weight:600;color:' + (r.rsSlope20d >= 0 ? "#4dd2aa" : "#f37d83") + ';">' + sgn(r.rsSlope20d) + "</td>" +
+   '<td style="padding:8px 10px;text-align:right;color:' + (r.absorptionScore >= 0 ? "#4dd2aa" : "#f37d83") + ';">' + sgn(r.absorptionScore) + "</td>" +
+   '<td style="padding:8px 10px;text-align:right;color:#dbe5f1;">' + (r.udVolumeRatio == null ? "N/A" : Number(r.udVolumeRatio).toFixed(2)) + "</td>" +
+   '<td style="padding:8px 10px;text-align:center;">' + yn(r.aboveEma21) + "</td>" +
+   '<td style="padding:8px 10px;text-align:center;">' + yn(r.aboveSma50) + "</td>" +
+   '<td style="padding:8px 10px;text-align:center;font-size:11px;">' + (flags.length ? flags.join(" · ") : '<span style="color:#647184;">-</span>') + "</td>" +
+   '<td style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;color:' + statusCol(r.status) + ';">' + esc(r.status || "") + "</td>" +
+   '<td style="padding:8px 10px;text-align:right;font-weight:800;color:#d9a441;">' + Number(r.canaryScore).toFixed(2) + "</td></tr>";
+ }).join("");
+
+ const h =
+  '<div class="section"><div class="section-title">Industry Leadership & Relative Strength Tracker ' + PRO_BADGE + "</div>" +
+  '<div class="section-sub">Which sector leads the market, which high-beta name leads that sector, and whether the leadership is holding. Ranked fresh from price data every trading morning, with nothing about the answer assumed in advance.</div>' +
+  // Macro regime banner
+  '<div style="margin:12px 0;padding:18px;border:1px solid #253142;border-left:4px solid ' + oc + ';border-radius:10px;background:#101620;">' +
+  '<div style="font-size:11px;color:#8d99aa;letter-spacing:1px;">SECTOR ROTATION & LEADERSHIP REGIME</div>' +
+  '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;">' +
+  '<div style="flex:1;min-width:260px;"><div style="font-size:24px;font-weight:800;color:' + oc + ';">' + esc(O.status) + "</div>" +
+  '<p style="font-size:13px;color:#dbe5f1;line-height:1.6;margin:6px 0 0;">' + esc(O.description) + "</p></div>" +
+  '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+  '<div style="background:#0d131d;border:1px solid #253142;border-radius:10px;padding:12px;text-align:center;min-width:150px;">' +
+  '<div style="font-size:11px;color:#8d99aa;">CURRENT #1 LEADER</div>' +
+  '<div style="font-size:19px;font-weight:800;color:#d9a441;">' + esc(L.ticker || "") + '</div>' +
+  '<div style="font-size:11px;color:#8d99aa;">' + esc(L.name || "") + "</div></div>" +
+  '<div style="background:#0d131d;border:1px solid #253142;border-radius:10px;padding:12px;text-align:center;min-width:150px;">' +
+  '<div style="font-size:11px;color:#8d99aa;">#2 CHALLENGER</div>' +
+  '<div style="font-size:19px;font-weight:800;color:#dbe5f1;">' + esc(CH.ticker || "") + '</div>' +
+  '<div style="font-size:11px;color:#8d99aa;">' + esc(CH.name || "") + "</div></div>" +
+  "</div></div></div>" +
+  // Canary spotlight
+  '<div class="card" style="margin:12px 0;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">' +
+  '<div><div style="font-size:11px;color:#d9a441;font-weight:700;letter-spacing:1px;">ACTIVE CANARY SPOTLIGHT, INSIDE ' + esc(CN.sector || "") + "</div>" +
+  '<div style="display:flex;align-items:baseline;gap:10px;margin-top:4px;">' +
+  '<span style="font-size:32px;font-weight:800;color:#f5f7fa;">' + tkLink(P.ticker) + "</span>" +
+  '<span style="font-size:14px;color:#8d99aa;">' + money(P.price) + "</span>" +
+  '<span style="font-size:11px;font-weight:700;color:#f5f7fa;background:' + cc + ';padding:3px 10px;border-radius:12px;">' + esc(CN.status) + "</span></div></div>" +
+  '<div style="text-align:right;"><div style="font-size:11px;color:#8d99aa;">CANARY POWER SCORE</div>' +
+  '<div style="font-size:28px;font-weight:800;color:#f5f7fa;">' + Number(P.canaryScore).toFixed(2) + "</div></div></div>" +
+  '<div style="margin:12px 0;padding:12px 14px;background:#0d131d;border:1px solid #253142;border-radius:8px;font-size:13px;color:#dbe5f1;line-height:1.6;">' +
+  '<b style="color:#d9a441;">Diagnostic.</b> ' + esc(CN.diagnostic) + "</div>" +
+  '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;">' + tiles + "</div></div>" +
+  // Dual RS trajectory chart
+  '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:4px;">90-Day Relative Strength Trajectory</div>' +
+  '<div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">The canary against its sector, and the sector against SPY, both indexed to 100. When the canary line turns down while the sector line still advances, non-confirmation is building.</div>' +
+  '<div class="zoomable-chart" data-chart="canary-rs" style="position:relative;height:280px;margin:8px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="canary-rs-chart"></canvas>' +
+  '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div></div>' +
+  // Sector leaderboard
+  '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">Sector & Industry Leaderboard, Ranked Against SPY</div>' +
+  '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;">' +
+  "<thead><tr style=\"border-bottom:1px solid #253142;color:#8d99aa;font-size:11px;text-align:left;\">" +
+  "<th style=\"padding:8px 10px;\">RANK</th><th style=\"padding:8px 10px;\">BENCHMARK</th>" +
+  "<th style=\"padding:8px 10px;text-align:right;\">PRICE</th><th style=\"padding:8px 10px;text-align:right;\">20D RS</th>" +
+  "<th style=\"padding:8px 10px;text-align:right;\">60D RS</th><th style=\"padding:8px 10px;text-align:right;\">VS 50-SMA</th>" +
+  "<th style=\"padding:8px 10px;text-align:right;\">COMPOSITE</th></tr></thead><tbody>" + lbRows + "</tbody></table></div></div>" +
+  // Constituent roster
+  '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">Constituent Roster Inside ' + esc(CN.sector || "") + ", Scanning for the Baton Hand-Off</div>" +
+  '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;">' +
+  "<thead><tr style=\"border-bottom:1px solid #253142;color:#8d99aa;font-size:11px;text-align:left;\">" +
+  "<th style=\"padding:8px 10px;\">TICKER</th><th style=\"padding:8px 10px;text-align:right;\">PRICE</th>" +
+  "<th style=\"padding:8px 10px;text-align:right;\">20D RS SLOPE</th><th style=\"padding:8px 10px;text-align:right;\">ABSORPTION</th>" +
+  "<th style=\"padding:8px 10px;text-align:right;\">U/D VOL</th><th style=\"padding:8px 10px;text-align:center;\">21-EMA</th>" +
+  "<th style=\"padding:8px 10px;text-align:center;\">50-SMA</th><th style=\"padding:8px 10px;text-align:center;\">FLAGS</th>" +
+  "<th style=\"padding:8px 10px;text-align:center;\">STATUS</th><th style=\"padding:8px 10px;text-align:right;\">SCORE</th></tr></thead><tbody>" + rosRows + "</tbody></table></div></div>" +
+  // Explainer AFTER the visuals
+  '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this tracker tells you</div>' +
+  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">How leadership forms.</b> Capital does not enter a sector evenly. Institutional buyers move first into the highest-conviction, highest-beta names in a complex, and only later rotate down into the large index heavyweights. The stock absorbing that first wave is the canary, and its behavior tends to precede the sector benchmark, which the lead-lag reading in the spotlight quantifies over a rolling 60-session window of cross-correlation.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Why down days matter most.</b> Almost any stock can rise on a green day. The absorption score measures what the canary does when its sector falls, averaging the stock\u2019s return edge over the sector across the sector\u2019s down days in the last 60 sessions. A persistently positive score means buyers are soaking up sell orders into weakness, the signature of sponsorship rather than speculation.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">How leadership cracks.</b> The warning sequence is consistent. First the sector prints a fresh high while the canary stalls below its own, the non-confirmation divergence flagged in the roster. Then the volume signature inverts, with down days drawing heavier volume than up days and the U/D volume ratio sliding under one. Finally the canary loses its 21-day moving average and fails to reclaim it, at which point it turns from a source of strength into a source of funds.</p>' +
+  '<p style="margin:0;"><b style="color:#dbe5f1;">Rotation is not breakdown.</b> When the canary fades while another name in the basket accelerates, or a challenger sector closes on the incumbent, capital is moving rather than leaving. The regime banner separates that healthy hand-off from the genuine risk case, where the canary fails while the surface of the sector still looks calm.</p>' +
+  "</div></div>" +
+  '<div class="panel-asof">As of ' + esc((C.as_of || "").slice(0, 10)) + " · Source: Yahoo Finance daily closes · updated daily" + ((C.metadata || {}).stale ? " · stale" : "") + "</div></div>";
+ return h;
+}
+
 // === vol_surface.js ===
 let _volSortKey = "ticker";
 let _volSortDir = 1;
@@ -12603,6 +12807,7 @@ function volSurfaceHtml() {
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
    '<li>✓ Volatility Surface, VIX term structure regimes, four-quadrant matrix, and per-ticker 25-delta risk reversals</li>' +
    '<li>✓ Full market internals suite: Global Liquidity, Volatility Divergence, Alligator Jaw, Credit Spreads vs VIX, Market Breadth, Theme Rotation, Small/Mid Cap Monitor, RSI Cyclicals vs Defensives, Macroeconomic Analysis</li>' +
+   '<li>✓ Industry Leadership & Relative Strength Tracker, sector canary detection with down-day absorption, lead-lag, and rotation diagnostics</li>' +
    '<li>✓ Quantitative Factor Screener, full S&P 500 on ROIC, PEG, FCF yield, Piotroski, and more, with CSV export</li>' +
    '<li>✓ Technical Factor Screener, Minervini Stage-2 trend template across the S&P 500</li>' +
    '<li>✓ Trend & Reversal Screener, per-ticker trend conviction and exhaustion gauges</li>' +
