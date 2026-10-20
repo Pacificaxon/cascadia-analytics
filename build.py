@@ -301,8 +301,11 @@ def main():
             "shares_m": None,
             "note": {
                 "published_date": m.get("published_date"),
-                "pdf": ("notes/" + tk + ".pdf") if m.get("pdf_exists") else None,
-                "pdf_exists": m.get("pdf_exists", False),
+                # The manifest flag alone misses reports whose PDF is on disk
+                # but whose manifest entry never got pdf_exists set; check the
+                # repo like the scorecard block below does.
+                "pdf": ("notes/" + tk + ".pdf") if (m.get("pdf_exists") or os.path.exists(os.path.join(HERE, "notes", tk + ".pdf"))) else None,
+                "pdf_exists": bool(m.get("pdf_exists")) or os.path.exists(os.path.join(HERE, "notes", tk + ".pdf")),
             },
             "scorecard": {
                 "pdf": ("scorecards/" + tk + ".pdf") if os.path.exists(os.path.join(HERE, "scorecards", tk + ".pdf")) else None,

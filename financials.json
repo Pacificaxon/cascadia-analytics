@@ -4285,5 +4285,1335 @@
     "free_cash_flow": 827000000
    }
   ]
+ },
+ "AMZN": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 716924000000.0,
+    "gross_profit": 360510000000.0,
+    "operating_income": 79975000000.0,
+    "net_income": 77670000000.0,
+    "diluted_eps": 7.17,
+    "ebitda": 165341000000.0
+   },
+   {
+    "year": 2024,
+    "revenue": 637959000000.0,
+    "gross_profit": 311671000000.0,
+    "operating_income": 68593000000.0,
+    "net_income": 59248000000.0,
+    "diluted_eps": 5.53,
+    "ebitda": 123815000000.0
+   },
+   {
+    "year": 2023,
+    "revenue": 574785000000.0,
+    "gross_profit": 270046000000.0,
+    "operating_income": 36852000000.0,
+    "net_income": 30425000000.0,
+    "diluted_eps": 2.9,
+    "ebitda": 89402000000.0
+   },
+   {
+    "year": 2022,
+    "revenue": 513983000000.0,
+    "gross_profit": 225152000000.0,
+    "operating_income": 12248000000.0,
+    "net_income": -2722000000.0,
+    "diluted_eps": -0.27,
+    "ebitda": 38352000000.0
+   },
+   {
+    "year": 2021,
+    "revenue": 469822000000,
+    "gross_profit": null,
+    "operating_income": 24879000000,
+    "net_income": 33364000000,
+    "diluted_eps": 3.24,
+    "ebitda": null
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 818042000000.0,
+    "total_liabilities": 406977000000.0,
+    "total_equity": 411065000000.0,
+    "cash": 86810000000.0,
+    "long_term_debt": 65648000000.0,
+    "total_debt": 152987000000.0
+   },
+   {
+    "year": 2024,
+    "total_assets": 624894000000.0,
+    "total_liabilities": 338924000000.0,
+    "total_equity": 285970000000.0,
+    "cash": 78779000000.0,
+    "long_term_debt": 52623000000.0,
+    "total_debt": 130900000000.0
+   },
+   {
+    "year": 2023,
+    "total_assets": 527854000000.0,
+    "total_liabilities": 325979000000.0,
+    "total_equity": 201875000000.0,
+    "cash": 73387000000.0,
+    "long_term_debt": 58314000000.0,
+    "total_debt": 135611000000.0
+   },
+   {
+    "year": 2022,
+    "total_assets": 462675000000.0,
+    "total_liabilities": 316632000000.0,
+    "total_equity": 146043000000.0,
+    "cash": 53888000000.0,
+    "long_term_debt": 67150000000.0,
+    "total_debt": 140118000000.0
+   },
+   {
+    "year": 2021,
+    "total_assets": 420549000000,
+    "total_liabilities": null,
+    "total_equity": 138245000000,
+    "cash": 36220000000,
+    "long_term_debt": 50553000000,
+    "total_debt": 52044000000
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": 139514000000.0,
+    "capex": -131819000000.0,
+    "financing_cash_flow": 9661000000.0,
+    "free_cash_flow": 7695000000.0
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": 115877000000.0,
+    "capex": -82999000000.0,
+    "financing_cash_flow": -11812000000.0,
+    "free_cash_flow": 32878000000.0
+   },
+   {
+    "year": 2023,
+    "operating_cash_flow": 84946000000.0,
+    "capex": -52729000000.0,
+    "financing_cash_flow": -15879000000.0,
+    "free_cash_flow": 32217000000.0
+   },
+   {
+    "year": 2022,
+    "operating_cash_flow": 46752000000.0,
+    "capex": -63645000000.0,
+    "financing_cash_flow": 9718000000.0,
+    "free_cash_flow": -16893000000.0
+   },
+   {
+    "year": 2021,
+    "operating_cash_flow": 46327000000,
+    "capex": null,
+    "financing_cash_flow": 6291000000,
+    "free_cash_flow": null
+   }
+  ]
+ },
+ "ASML": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 32667300000.0,
+    "gross_profit": 17258000000.0,
+    "operating_income": 11301400000.0,
+    "net_income": 9609400000.0,
+    "diluted_eps": 24.71,
+    "ebitda": 12550300000.0
+   },
+   {
+    "year": 2024,
+    "revenue": 28262900000.0,
+    "gross_profit": 14492000000.0,
+    "operating_income": 9022600000.0,
+    "net_income": 7571600000.0,
+    "diluted_eps": 19.24,
+    "ebitda": 10123600000.0
+   },
+   {
+    "year": 2023,
+    "revenue": 27558500000.0,
+    "gross_profit": 14136100000.0,
+    "operating_income": 9042300000.0,
+    "net_income": 7839000000.0,
+    "diluted_eps": 20.59,
+    "ebitda": 9976000000.0
+   },
+   {
+    "year": 2022,
+    "revenue": 21173400000.0,
+    "gross_profit": 10700100000.0,
+    "operating_income": 6500700000.0,
+    "net_income": 5624200000.0,
+    "diluted_eps": 16.07,
+    "ebitda": 7100500000.0
+   },
+   {
+    "year": 2021,
+    "revenue": 18611000000,
+    "gross_profit": 9809000000,
+    "operating_income": 6750100000,
+    "net_income": 5883200000,
+    "diluted_eps": 14.34,
+    "ebitda": null
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 50566600000.0,
+    "total_liabilities": 30954400000.0,
+    "total_equity": 19612200000.0,
+    "cash": 12916000000.0,
+    "long_term_debt": 2709000000.0,
+    "total_debt": 4390900000.0
+   },
+   {
+    "year": 2024,
+    "total_assets": 48589600000.0,
+    "total_liabilities": 30112800000.0,
+    "total_equity": 18476800000.0,
+    "cash": 12735900000.0,
+    "long_term_debt": 3677300000.0,
+    "total_debt": 4687600000.0
+   },
+   {
+    "year": 2023,
+    "total_assets": 39957500000.0,
+    "total_liabilities": 26505100000.0,
+    "total_equity": 13452400000.0,
+    "cash": 7004700000.0,
+    "long_term_debt": 4631500000.0,
+    "total_debt": 4631600000.0
+   },
+   {
+    "year": 2022,
+    "total_assets": 36300400000.0,
+    "total_liabilities": 27489600000.0,
+    "total_equity": 8810800000.0,
+    "cash": 7268300000.0,
+    "long_term_debt": 3514200000.0,
+    "total_debt": 4260400000.0
+   },
+   {
+    "year": 2021,
+    "total_assets": 30231000000,
+    "total_liabilities": 20090400000,
+    "total_equity": 10140600000,
+    "cash": 6951800000,
+    "long_term_debt": 4075000000,
+    "total_debt": 4584100000
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": null,
+    "capex": -1631200000.0,
+    "financing_cash_flow": -8670500000.0,
+    "free_cash_flow": 11027300000.0
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": null,
+    "capex": -2083100000.0,
+    "financing_cash_flow": -2832100000.0,
+    "free_cash_flow": 9083100000.0
+   },
+   {
+    "year": 2023,
+    "operating_cash_flow": null,
+    "capex": -2196200000.0,
+    "financing_cash_flow": -3003900000.0,
+    "free_cash_flow": 3247200000.0
+   },
+   {
+    "year": 2022,
+    "operating_cash_flow": null,
+    "capex": -1319300000.0,
+    "financing_cash_flow": -7138300000.0,
+    "free_cash_flow": 7167500000.0
+   },
+   {
+    "year": 2021,
+    "operating_cash_flow": 10845800000,
+    "capex": -900700000,
+    "financing_cash_flow": -9891700000,
+    "free_cash_flow": 9945100000
+   }
+  ]
+ },
+ "DLR": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 6112692000.0,
+    "gross_profit": 3385955000.0,
+    "operating_income": 922135000.0,
+    "net_income": 1308589000.0,
+    "diluted_eps": 0.895,
+    "ebitda": 3677788000.0
+   },
+   {
+    "year": 2024,
+    "revenue": 5554968000.0,
+    "gross_profit": 3035853000.0,
+    "operating_income": 756950000.0,
+    "net_income": 602490000.0,
+    "diluted_eps": 0.4025,
+    "ebitda": 2867720000.0
+   },
+   {
+    "year": 2023,
+    "revenue": 5477061000.0,
+    "gross_profit": 2878990000.0,
+    "operating_income": 727546000.0,
+    "net_income": 948838000.0,
+    "diluted_eps": 0.72,
+    "ebitda": 3158491000.0
+   },
+   {
+    "year": 2022,
+    "revenue": 4691834000.0,
+    "gross_profit": 2674272000.0,
+    "operating_income": 661734000.0,
+    "net_income": 377684000.0,
+    "diluted_eps": 0.2775,
+    "ebitda": 2288940000.0
+   },
+   {
+    "year": 2021,
+    "revenue": 4427882000,
+    "gross_profit": null,
+    "operating_income": 694009000,
+    "net_income": 1709259000,
+    "diluted_eps": 5.94,
+    "ebitda": null
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 49410468000.0,
+    "total_liabilities": 24564494000.0,
+    "total_equity": 24845974000.0,
+    "cash": 3451647000.0,
+    "long_term_debt": 17503045000.0,
+    "total_debt": 19655352000.0
+   },
+   {
+    "year": 2024,
+    "total_assets": 45283616000.0,
+    "total_liabilities": 22107836000.0,
+    "total_equity": 23175780000.0,
+    "cash": 3870891000.0,
+    "long_term_debt": 15103069000.0,
+    "total_debt": 18008596000.0
+   },
+   {
+    "year": 2023,
+    "total_assets": 44113258000.0,
+    "total_liabilities": 23116937000.0,
+    "total_equity": 20996321000.0,
+    "cash": 1625495000.0,
+    "long_term_debt": 15613620000.0,
+    "total_debt": 18968001000.0
+   },
+   {
+    "year": 2022,
+    "total_assets": 41484998000.0,
+    "total_liabilities": 21862854000.0,
+    "total_equity": 19622144000.0,
+    "cash": 141773000.0,
+    "long_term_debt": 14446352000.0,
+    "total_debt": 18067847000.0
+   },
+   {
+    "year": 2021,
+    "total_assets": 36369560000,
+    "total_liabilities": 17845778000,
+    "total_equity": 18004568000,
+    "cash": 142698000,
+    "long_term_debt": null,
+    "total_debt": null
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": 2412136000.0,
+    "capex": null,
+    "financing_cash_flow": -486738000.0,
+    "free_cash_flow": 2412136000.0
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": 2261477000.0,
+    "capex": null,
+    "financing_cash_flow": 2063433000.0,
+    "free_cash_flow": 2261477000.0
+   },
+   {
+    "year": 2023,
+    "operating_cash_flow": 1634780000.0,
+    "capex": null,
+    "financing_cash_flow": 963474000.0,
+    "free_cash_flow": 1634780000.0
+   },
+   {
+    "year": 2022,
+    "operating_cash_flow": 1659388000.0,
+    "capex": null,
+    "financing_cash_flow": 2969149000.0,
+    "free_cash_flow": 1659388000.0
+   },
+   {
+    "year": 2021,
+    "operating_cash_flow": 1702228000,
+    "capex": null,
+    "financing_cash_flow": -590630000,
+    "free_cash_flow": null
+   }
+  ]
+ },
+ "ENS": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 3617579000.0,
+    "gross_profit": 1092404000.0,
+    "operating_income": 483748000.0,
+    "net_income": 363735000.0,
+    "diluted_eps": 8.99,
+    "ebitda": 558569000.0
+   },
+   {
+    "year": 2024,
+    "revenue": 3581871000.0,
+    "gross_profit": 982891000.0,
+    "operating_income": 393292000.0,
+    "net_income": 269096000.0,
+    "diluted_eps": 6.5,
+    "ebitda": 434160000.0
+   },
+   {
+    "year": 2023,
+    "revenue": 3708579000.0,
+    "gross_profit": 840138000.0,
+    "operating_income": 295280000.0,
+    "net_income": 175810000.0,
+    "diluted_eps": 4.25,
+    "ebitda": 361321000.0
+   },
+   {
+    "year": 2022,
+    "revenue": 3357319000,
+    "gross_profit": 749968000,
+    "operating_income": 206251000,
+    "net_income": 143911000,
+    "diluted_eps": 3.36,
+    "ebitda": null
+   },
+   {
+    "year": 2021,
+    "revenue": 2977932000,
+    "gross_profit": 739150000,
+    "operating_income": 216375000,
+    "net_income": 143374000,
+    "diluted_eps": 3.32,
+    "ebitda": null
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 3971248000.0,
+    "total_liabilities": 2051760000.0,
+    "total_equity": 1919488000.0,
+    "cash": 343131000.0,
+    "long_term_debt": 1083541000.0,
+    "total_debt": 1202290000.0
+   },
+   {
+    "year": 2024,
+    "total_assets": 3466006000.0,
+    "total_liabilities": 1708934000.0,
+    "total_equity": 1757072000.0,
+    "cash": 333324000.0,
+    "long_term_debt": 801965000.0,
+    "total_debt": 914260000.0
+   },
+   {
+    "year": 2023,
+    "total_assets": 3616674000.0,
+    "total_liabilities": 2012793000.0,
+    "total_equity": 1603881000.0,
+    "cash": 346665000.0,
+    "long_term_debt": 1041989000.0,
+    "total_debt": 1094205000.0
+   },
+   {
+    "year": 2022,
+    "total_assets": 3736646000,
+    "total_liabilities": 2243371000,
+    "total_equity": 1489373000,
+    "cash": 402488000,
+    "long_term_debt": 1243002000,
+    "total_debt": 1243002000
+   },
+   {
+    "year": 2021,
+    "total_assets": 3462797000,
+    "total_liabilities": 1919221000,
+    "total_equity": 1539755000,
+    "cash": 451808000,
+    "long_term_debt": 969618000,
+    "total_debt": 969618000
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": 260298000.0,
+    "capex": -121038000.0,
+    "financing_cash_flow": 90270000.0,
+    "free_cash_flow": 139260000.0
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": 457029000.0,
+    "capex": -86437000.0,
+    "financing_cash_flow": -370560000.0,
+    "free_cash_flow": 370592000.0
+   },
+   {
+    "year": 2023,
+    "operating_cash_flow": 279938000.0,
+    "capex": -88772000.0,
+    "financing_cash_flow": -270450000.0,
+    "free_cash_flow": 191166000.0
+   },
+   {
+    "year": 2022,
+    "operating_cash_flow": -65585000,
+    "capex": -74041000,
+    "financing_cash_flow": 98434000,
+    "free_cash_flow": -139626000
+   },
+   {
+    "year": 2021,
+    "operating_cash_flow": 358375000,
+    "capex": -70020000,
+    "financing_cash_flow": -188724000,
+    "free_cash_flow": 288355000
+   }
+  ]
+ },
+ "EQIX": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 9217000000.0,
+    "gross_profit": 4709000000.0,
+    "operating_income": 1966000000.0,
+    "net_income": 1350000000.0,
+    "diluted_eps": 13.76,
+    "ebitda": 4101000000.0
+   },
+   {
+    "year": 2024,
+    "revenue": 8748000000.0,
+    "gross_profit": 4281000000.0,
+    "operating_income": 1624000000.0,
+    "net_income": 815000000.0,
+    "diluted_eps": 8.5,
+    "ebitda": 3443000000.0
+   },
+   {
+    "year": 2023,
+    "revenue": 8188000000.0,
+    "gross_profit": 3960000000.0,
+    "operating_income": 1451000000.0,
+    "net_income": 969000000.0,
+    "diluted_eps": 10.31,
+    "ebitda": 3370000000.0
+   },
+   {
+    "year": 2022,
+    "revenue": 7263000000.0,
+    "gross_profit": 3512000000.0,
+    "operating_income": 1226000000.0,
+    "net_income": 705000000.0,
+    "diluted_eps": 7.67,
+    "ebitda": 2922000000.0
+   },
+   {
+    "year": 2021,
+    "revenue": 6635537000,
+    "gross_profit": null,
+    "operating_income": 1108162000,
+    "net_income": 500191000,
+    "diluted_eps": 5.53,
+    "ebitda": null
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 40141000000.0,
+    "total_liabilities": 25963000000.0,
+    "total_equity": 14178000000.0,
+    "cash": 1727000000.0,
+    "long_term_debt": 17596000000.0,
+    "total_debt": 22726000000.0
+   },
+   {
+    "year": 2024,
+    "total_assets": 35085000000.0,
+    "total_liabilities": 21533000000.0,
+    "total_equity": 13552000000.0,
+    "cash": 3081000000.0,
+    "long_term_debt": 14007000000.0,
+    "total_debt": 18961000000.0
+   },
+   {
+    "year": 2023,
+    "total_assets": 32651000000.0,
+    "total_liabilities": 20137000000.0,
+    "total_equity": 12514000000.0,
+    "cash": 2096000000.0,
+    "long_term_debt": 12725000000.0,
+    "total_debt": 17454000000.0
+   },
+   {
+    "year": 2022,
+    "total_assets": 30310742000.0,
+    "total_liabilities": 18804910000.0,
+    "total_equity": 11505832000.0,
+    "cash": 1906421000.0,
+    "long_term_debt": 12752247000.0,
+    "total_debt": 16469554000.0
+   },
+   {
+    "year": 2021,
+    "total_assets": 27918698000,
+    "total_liabilities": 17036934000,
+    "total_equity": 10882082000,
+    "cash": 1536358000,
+    "long_term_debt": 11722148000,
+    "total_debt": 11722148000
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": 3911000000.0,
+    "capex": -4311000000.0,
+    "financing_cash_flow": 1272000000.0,
+    "free_cash_flow": -400000000.0
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": 3249000000.0,
+    "capex": -3066000000.0,
+    "financing_cash_flow": 1723000000.0,
+    "free_cash_flow": 183000000.0
+   },
+   {
+    "year": 2023,
+    "operating_cash_flow": 3217000000.0,
+    "capex": -2781000000.0,
+    "financing_cash_flow": 211000000.0,
+    "free_cash_flow": 436000000.0
+   },
+   {
+    "year": 2022,
+    "operating_cash_flow": 2963000000.0,
+    "capex": -2278000000.0,
+    "financing_cash_flow": 857000000.0,
+    "free_cash_flow": 685000000.0
+   },
+   {
+    "year": 2021,
+    "operating_cash_flow": 2547206000,
+    "capex": null,
+    "financing_cash_flow": 413765000,
+    "free_cash_flow": null
+   }
+  ]
+ },
+ "GOOGL": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 402836000000.0,
+    "gross_profit": 240301000000.0,
+    "operating_income": 129039000000.0,
+    "net_income": 132170000000.0,
+    "diluted_eps": 10.81,
+    "ebitda": 180698000000.0
+   },
+   {
+    "year": 2024,
+    "revenue": 350018000000.0,
+    "gross_profit": 203712000000.0,
+    "operating_income": 112390000000.0,
+    "net_income": 100118000000.0,
+    "diluted_eps": 8.04,
+    "ebitda": 135394000000.0
+   },
+   {
+    "year": 2023,
+    "revenue": 307394000000.0,
+    "gross_profit": 174062000000.0,
+    "operating_income": 84293000000.0,
+    "net_income": 73795000000.0,
+    "diluted_eps": 5.8,
+    "ebitda": 97971000000.0
+   },
+   {
+    "year": 2022,
+    "revenue": 282836000000.0,
+    "gross_profit": 156633000000.0,
+    "operating_income": 74842000000.0,
+    "net_income": 59972000000.0,
+    "diluted_eps": 4.56,
+    "ebitda": 85160000000.0
+   },
+   {
+    "year": 2021,
+    "revenue": 257637000000,
+    "gross_profit": null,
+    "operating_income": 78714000000,
+    "net_income": 76033000000,
+    "diluted_eps": 5.61,
+    "ebitda": null
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 595281000000.0,
+    "total_liabilities": null,
+    "total_equity": 415265000000.0,
+    "cash": 30708000000.0,
+    "long_term_debt": 46547000000.0,
+    "total_debt": 59291000000.0
+   },
+   {
+    "year": 2024,
+    "total_assets": 450256000000.0,
+    "total_liabilities": null,
+    "total_equity": 325084000000.0,
+    "cash": 23466000000.0,
+    "long_term_debt": 10883000000.0,
+    "total_debt": 22574000000.0
+   },
+   {
+    "year": 2023,
+    "total_assets": 402392000000.0,
+    "total_liabilities": null,
+    "total_equity": 283379000000.0,
+    "cash": 24048000000.0,
+    "long_term_debt": 11870000000.0,
+    "total_debt": 27121000000.0
+   },
+   {
+    "year": 2022,
+    "total_assets": 365264000000.0,
+    "total_liabilities": null,
+    "total_equity": 256144000000.0,
+    "cash": 21879000000.0,
+    "long_term_debt": 12857000000.0,
+    "total_debt": 29679000000.0
+   },
+   {
+    "year": 2021,
+    "total_assets": 359268000000,
+    "total_liabilities": 107633000000,
+    "total_equity": 251635000000,
+    "cash": 20945000000,
+    "long_term_debt": 15440000000,
+    "total_debt": 15440000000
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": 164713000000.0,
+    "capex": -91447000000.0,
+    "financing_cash_flow": -37388000000.0,
+    "free_cash_flow": 73266000000.0
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": 125299000000.0,
+    "capex": -52535000000.0,
+    "financing_cash_flow": -79733000000.0,
+    "free_cash_flow": 72764000000.0
+   },
+   {
+    "year": 2023,
+    "operating_cash_flow": 101746000000.0,
+    "capex": -32251000000.0,
+    "financing_cash_flow": -72093000000.0,
+    "free_cash_flow": 69495000000.0
+   },
+   {
+    "year": 2022,
+    "operating_cash_flow": 91495000000.0,
+    "capex": -31485000000.0,
+    "financing_cash_flow": -69757000000.0,
+    "free_cash_flow": 60010000000.0
+   },
+   {
+    "year": 2021,
+    "operating_cash_flow": 91652000000,
+    "capex": -24640000000,
+    "financing_cash_flow": -61362000000,
+    "free_cash_flow": 67012000000
+   }
+  ]
+ },
+ "IRM": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 6901737000.0,
+    "gross_profit": 3822257000.0,
+    "operating_income": 1403920000.0,
+    "net_income": 144591000.0,
+    "diluted_eps": 0.49,
+    "ebitda": 2114854000.0
+   },
+   {
+    "year": 2024,
+    "revenue": 6149909000.0,
+    "gross_profit": 3453360000.0,
+    "operating_income": 1212916000.0,
+    "net_income": 180156000.0,
+    "diluted_eps": 0.61,
+    "ebitda": 1907254000.0
+   },
+   {
+    "year": 2023,
+    "revenue": 5480289000.0,
+    "gross_profit": 3122489000.0,
+    "operating_income": 1110043000.0,
+    "net_income": 184234000.0,
+    "diluted_eps": 0.63,
+    "ebitda": 1618627000.0
+   },
+   {
+    "year": 2022,
+    "revenue": 5103574000.0,
+    "gross_profit": 2914454000.0,
+    "operating_income": 1046282000.0,
+    "net_income": 556981000.0,
+    "diluted_eps": 1.9,
+    "ebitda": 1873567000.0
+   },
+   {
+    "year": 2021,
+    "revenue": 4491531000,
+    "gross_profit": null,
+    "operating_income": 854172000,
+    "net_income": null,
+    "diluted_eps": 1.55,
+    "ebitda": null
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 21125019000.0,
+    "total_liabilities": 21769927000.0,
+    "total_equity": -644908000.0,
+    "cash": 158535000.0,
+    "long_term_debt": 16215885000.0,
+    "total_debt": 19051536000.0
+   },
+   {
+    "year": 2024,
+    "total_assets": 18717115000.0,
+    "total_liabilities": 18943618000.0,
+    "total_equity": -226503000.0,
+    "cash": 155716000.0,
+    "long_term_debt": 13003977000.0,
+    "total_debt": 16369312000.0
+   },
+   {
+    "year": 2023,
+    "total_assets": 17473802000.0,
+    "total_liabilities": 17084082000.0,
+    "total_equity": 389720000.0,
+    "cash": 222789000.0,
+    "long_term_debt": 11812500000.0,
+    "total_debt": 14787359000.0
+   },
+   {
+    "year": 2022,
+    "total_assets": 16140514000.0,
+    "total_liabilities": 15408561000.0,
+    "total_equity": 731953000.0,
+    "cash": 141797000.0,
+    "long_term_debt": 10481449000.0,
+    "total_debt": 13286900000.0
+   },
+   {
+    "year": 2021,
+    "total_assets": 14450031000,
+    "total_liabilities": null,
+    "total_equity": 855952000,
+    "cash": 255828000,
+    "long_term_debt": 9271941000,
+    "total_debt": 9581369000
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": 1339999000.0,
+    "capex": -2347115000.0,
+    "financing_cash_flow": 1267914000.0,
+    "free_cash_flow": -1007116000.0
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": 1196708000.0,
+    "capex": -1853950000.0,
+    "financing_cash_flow": 876745000.0,
+    "free_cash_flow": -657242000.0
+   },
+   {
+    "year": 2023,
+    "operating_cash_flow": 1113567000.0,
+    "capex": -1345097000.0,
+    "financing_cash_flow": 425666000.0,
+    "free_cash_flow": -231530000.0
+   },
+   {
+    "year": 2022,
+    "operating_cash_flow": 927695000.0,
+    "capex": -883583000.0,
+    "financing_cash_flow": 639207000.0,
+    "free_cash_flow": 44112000.0
+   },
+   {
+    "year": 2021,
+    "operating_cash_flow": 758902000,
+    "capex": -611082000,
+    "financing_cash_flow": -220806000,
+    "free_cash_flow": 147820000
+   }
+  ]
+ },
+ "LRCX": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 18435591000.0,
+    "gross_profit": 8979059000.0,
+    "operating_income": 5900968000.0,
+    "net_income": 5358217000.0,
+    "diluted_eps": 4.15,
+    "ebitda": 6522609000.0
+   },
+   {
+    "year": 2024,
+    "revenue": 14905386000.0,
+    "gross_profit": 7052791000.0,
+    "operating_income": 4282100000.0,
+    "net_income": 3827772000.0,
+    "diluted_eps": 2.9,
+    "ebitda": 4905157000.0
+   },
+   {
+    "year": 2023,
+    "revenue": 17428516000.0,
+    "gross_profit": 7776925000.0,
+    "operating_income": 5217010000.0,
+    "net_income": 4510931000.0,
+    "diluted_eps": 3.321,
+    "ebitda": 5638104000.0
+   },
+   {
+    "year": 2022,
+    "revenue": 17227039000,
+    "gross_profit": 7871807000,
+    "operating_income": 5381822000,
+    "net_income": 4605286000,
+    "diluted_eps": 32.75,
+    "ebitda": null
+   },
+   {
+    "year": 2021,
+    "revenue": 14626150000,
+    "gross_profit": 6805306000,
+    "operating_income": 4482023000,
+    "net_income": 3908458000,
+    "diluted_eps": 26.9,
+    "ebitda": null
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 21345260000.0,
+    "total_liabilities": 11483641000.0,
+    "total_equity": 9861619000.0,
+    "cash": 6390659000.0,
+    "long_term_debt": 3719694000.0,
+    "total_debt": 4484505000.0
+   },
+   {
+    "year": 2024,
+    "total_assets": 18744728000.0,
+    "total_liabilities": 10205274000.0,
+    "total_equity": 8539454000.0,
+    "cash": 5847856000.0,
+    "long_term_debt": 4466045000.0,
+    "total_debt": 4983334000.0
+   },
+   {
+    "year": 2023,
+    "total_assets": 18781643000.0,
+    "total_liabilities": 10571471000.0,
+    "total_equity": 8210172000.0,
+    "cash": 5337056000.0,
+    "long_term_debt": 4964944000.0,
+    "total_debt": 5011541000.0
+   },
+   {
+    "year": 2022,
+    "total_assets": 17195632000,
+    "total_liabilities": 10917266000,
+    "total_equity": 6278366000,
+    "cash": 3522001000,
+    "long_term_debt": 4962459000,
+    "total_debt": 4962459000
+   },
+   {
+    "year": 2021,
+    "total_assets": 15892152000,
+    "total_liabilities": 9864964000,
+    "total_equity": 6027188000,
+    "cash": 4418263000,
+    "long_term_debt": 4960935000,
+    "total_debt": 4960935000
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": 6173264000.0,
+    "capex": -759186000.0,
+    "financing_cash_flow": -4936643000.0,
+    "free_cash_flow": 5414078000.0
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": 4652269000.0,
+    "capex": -396670000.0,
+    "financing_cash_flow": -3995850000.0,
+    "free_cash_flow": 4255599000.0
+   },
+   {
+    "year": 2023,
+    "operating_cash_flow": 5178938000.0,
+    "capex": -501568000.0,
+    "financing_cash_flow": -2830667000.0,
+    "free_cash_flow": 4677370000.0
+   },
+   {
+    "year": 2022,
+    "operating_cash_flow": 3099674000,
+    "capex": null,
+    "financing_cash_flow": -4578937000,
+    "free_cash_flow": null
+   },
+   {
+    "year": 2021,
+    "operating_cash_flow": 3588163000,
+    "capex": null,
+    "financing_cash_flow": -4166982000,
+    "free_cash_flow": null
+   }
+  ]
+ },
+ "MSFT": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 281724000000.0,
+    "gross_profit": 193893000000.0,
+    "operating_income": 128528000000.0,
+    "net_income": 101832000000.0,
+    "diluted_eps": 13.64,
+    "ebitda": 155445000000.0
+   },
+   {
+    "year": 2024,
+    "revenue": 245122000000.0,
+    "gross_profit": 171008000000.0,
+    "operating_income": 109433000000.0,
+    "net_income": 88136000000.0,
+    "diluted_eps": 11.8,
+    "ebitda": 131680000000.0
+   },
+   {
+    "year": 2023,
+    "revenue": 211915000000.0,
+    "gross_profit": 146052000000.0,
+    "operating_income": 88523000000.0,
+    "net_income": 72361000000.0,
+    "diluted_eps": 9.68,
+    "ebitda": 105140000000.0
+   },
+   {
+    "year": 2022,
+    "revenue": 198270000000,
+    "gross_profit": 135620000000,
+    "operating_income": 83383000000,
+    "net_income": 72738000000,
+    "diluted_eps": 9.65,
+    "ebitda": null
+   },
+   {
+    "year": 2021,
+    "revenue": 168088000000,
+    "gross_profit": 115856000000,
+    "operating_income": 69916000000,
+    "net_income": 61271000000,
+    "diluted_eps": 8.05,
+    "ebitda": null
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 619003000000.0,
+    "total_liabilities": 275524000000.0,
+    "total_equity": 343479000000.0,
+    "cash": 30242000000.0,
+    "long_term_debt": 40152000000.0,
+    "total_debt": 60588000000.0
+   },
+   {
+    "year": 2024,
+    "total_assets": 512163000000.0,
+    "total_liabilities": 243686000000.0,
+    "total_equity": 268477000000.0,
+    "cash": 18315000000.0,
+    "long_term_debt": 42688000000.0,
+    "total_debt": 67127000000.0
+   },
+   {
+    "year": 2023,
+    "total_assets": 411976000000.0,
+    "total_liabilities": 205753000000.0,
+    "total_equity": 206223000000.0,
+    "cash": 34704000000.0,
+    "long_term_debt": 41990000000.0,
+    "total_debt": 59965000000.0
+   },
+   {
+    "year": 2022,
+    "total_assets": 364840000000,
+    "total_liabilities": 198298000000,
+    "total_equity": 166542000000,
+    "cash": 13931000000,
+    "long_term_debt": 49781000000,
+    "total_debt": 52530000000
+   },
+   {
+    "year": 2021,
+    "total_assets": 333779000000,
+    "total_liabilities": 191791000000,
+    "total_equity": 141988000000,
+    "cash": 14224000000,
+    "long_term_debt": 58146000000,
+    "total_debt": 66218000000
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": 136162000000.0,
+    "capex": -64551000000.0,
+    "financing_cash_flow": -51699000000.0,
+    "free_cash_flow": 71611000000.0
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": 118548000000.0,
+    "capex": -44477000000.0,
+    "financing_cash_flow": -37757000000.0,
+    "free_cash_flow": 74071000000.0
+   },
+   {
+    "year": 2023,
+    "operating_cash_flow": 87582000000.0,
+    "capex": -28107000000.0,
+    "financing_cash_flow": -43935000000.0,
+    "free_cash_flow": 59475000000.0
+   },
+   {
+    "year": 2022,
+    "operating_cash_flow": 89035000000,
+    "capex": -23886000000,
+    "financing_cash_flow": -58876000000,
+    "free_cash_flow": 65149000000
+   },
+   {
+    "year": 2021,
+    "operating_cash_flow": 76740000000,
+    "capex": -20622000000,
+    "financing_cash_flow": -48486000000,
+    "free_cash_flow": 56118000000
+   }
+  ]
+ },
+ "PANW": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 9221000000.0,
+    "gross_profit": 6770000000.0,
+    "operating_income": 1243000000.0,
+    "net_income": 1134000000.0,
+    "diluted_eps": 1.6,
+    "ebitda": 1942000000.0
+   },
+   {
+    "year": 2024,
+    "revenue": 8027000000.0,
+    "gross_profit": 5968000000.0,
+    "operating_income": 684000000.0,
+    "net_income": 2578000000.0,
+    "diluted_eps": 3.64,
+    "ebitda": 1280000000.0
+   },
+   {
+    "year": 2023,
+    "revenue": 6892700000.0,
+    "gross_profit": 4983000000.0,
+    "operating_income": 387300000.0,
+    "net_income": 439700000.0,
+    "diluted_eps": 0.64,
+    "ebitda": 869000000.0
+   },
+   {
+    "year": 2022,
+    "revenue": 5501500000,
+    "gross_profit": 3782800000,
+    "operating_income": -188800000,
+    "net_income": -267000000,
+    "diluted_eps": -0.9,
+    "ebitda": null
+   },
+   {
+    "year": 2021,
+    "revenue": 4256100000,
+    "gross_profit": 2981200000,
+    "operating_income": -304100000,
+    "net_income": -498900000,
+    "diluted_eps": -1.73,
+    "ebitda": null
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 23576000000.0,
+    "total_liabilities": 15752000000.0,
+    "total_equity": 7824000000.0,
+    "cash": 2269000000.0,
+    "long_term_debt": null,
+    "total_debt": 338000000.0
+   },
+   {
+    "year": 2024,
+    "total_assets": 19990900000.0,
+    "total_liabilities": 14821200000.0,
+    "total_equity": 5169700000.0,
+    "cash": 1535200000.0,
+    "long_term_debt": null,
+    "total_debt": 1344400000.0
+   },
+   {
+    "year": 2023,
+    "total_assets": 14501100000.0,
+    "total_liabilities": 12752700000.0,
+    "total_equity": 1748400000.0,
+    "cash": 1135300000.0,
+    "long_term_debt": null,
+    "total_debt": 2270700000.0
+   },
+   {
+    "year": 2022,
+    "total_assets": 12253600000,
+    "total_liabilities": 12043600000,
+    "total_equity": 210000000,
+    "cash": 2118500000,
+    "long_term_debt": 3676800000,
+    "total_debt": 3676800000
+   },
+   {
+    "year": 2021,
+    "total_assets": 10241600000,
+    "total_liabilities": 9478000000,
+    "total_equity": 634500000,
+    "cash": 1874200000,
+    "long_term_debt": 3226000000,
+    "total_debt": 3226000000
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": 3716000000.0,
+    "capex": -247000000.0,
+    "financing_cash_flow": -779000000.0,
+    "free_cash_flow": 3469000000.0
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": 3258000000.0,
+    "capex": -157000000.0,
+    "financing_cash_flow": -1343000000.0,
+    "free_cash_flow": 3101000000.0
+   },
+   {
+    "year": 2023,
+    "operating_cash_flow": 2777500000.0,
+    "capex": -146300000.0,
+    "financing_cash_flow": -1726300000.0,
+    "free_cash_flow": 2631200000.0
+   },
+   {
+    "year": 2022,
+    "operating_cash_flow": 1984700000,
+    "capex": null,
+    "financing_cash_flow": -806600000,
+    "free_cash_flow": null
+   },
+   {
+    "year": 2021,
+    "operating_cash_flow": 1503000000,
+    "capex": null,
+    "financing_cash_flow": -1104000000,
+    "free_cash_flow": null
+   }
+  ]
  }
 }
