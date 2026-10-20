@@ -4203,6 +4203,7 @@ function bindZoomHandlers() {
   { key: "gamma_flip", name: "Gamma Flip Barometer", desc: "SPY dealer gamma regime, notified when it flips long/short." },
   { key: "pead_drift", name: "Earnings Drift (PEAD)", desc: "Post-earnings drift, notified when distribution dominates." },
   { key: "squeeze_fragility", name: "Squeeze Fragility Radar", desc: "Short squeeze risk, notified when fragility spikes." },
+  { key: "vol_surface", name: "Volatility Surface", desc: "VIX term structure and SKEW, notified on backwardation or extreme tail demand." },
  ];
 
  function premarketHtml() {
