@@ -1,10 +1,11 @@
-const CACHE_NAME = 'cascadia-pwa-cache-v2';
+const CACHE_NAME = 'cascadia-pwa-cache-v3';
+// Precache only the PWA manifest. The HTML shell and app code are deliberately
+// NOT precached: v2 precached '/' and '/index.html' and served them cache-first
+// under a cache name that never changed, so returning visitors (notably the
+// installed home-screen app) could be stranded on a stale page shell after a
+// layout deploy. Navigations are network-first below.
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/app.js',
-  '/data.js'
+  '/manifest.json'
 ];
 
 // Install the service worker and cache assets
@@ -32,16 +33,39 @@ self.addEventListener('fetch', event => {
         })
         .catch(() => caches.match(event.request))
     );
-  } else {
-    // For static assets, use cache-first
-    event.respondWith(
-      caches.match(event.request)
-        .then(response => response || fetch(event.request))
-    );
+    return;
   }
+  // Page navigations and the HTML shell: network-first so code and layout
+  // updates land on the next visit; the cache is only an offline fallback.
+  if (event.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('/index.html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put('/index.html', responseClone));
+          return response;
+        })
+        .catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
+  // Static assets (app.js is versioned by query string, so each version is an
+  // immutable URL): cache-first per exact URL, populated on first fetch.
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) return response;
+        return fetch(event.request).then(netResponse => {
+          const responseClone = netResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+          return netResponse;
+        });
+      })
+  );
 });
 
-// Clean up old caches
+// Clean up old caches (activating v3 purges the v2 shell cache) and take
+// control of open pages immediately so the fix applies without a restart.
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
