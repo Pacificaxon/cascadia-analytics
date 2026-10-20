@@ -2516,6 +2516,9 @@ function bindZoomHandlers() {
   }
   let h = '<div class="card"><h3>Market Leadership ' + PRO_BADGE + '</h3>';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Top ' + d.leaders.length + ' leaders from ' + (d.universe_size || "S&P 500") + ' stocks · As of ' + esc((d.as_of || "").slice(0, 10)) + '</div>';
+  const leadChartH = Math.max(240, d.leaders.length * 42 + 80);
+  h += '<div class="zoomable-chart" data-chart="leadership" style="position:relative;height:' + leadChartH + 'px;margin-bottom:12px;cursor:zoom-in;" title="Click to zoom"><canvas id="leadership-chart"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#e8ecf1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '<div class="table-wrap"><table class="coverage"><thead><tr>' +
    '<th>Ticker</th><th>Name</th><th>Sector</th><th>MLS</th><th title="Relative Strength percentile vs S&P 500 (0-100)">RS Pctl</th><th>Trend</th><th>Price</th><th>vs 50-day</th>' +
    '</tr></thead><tbody>';
@@ -2549,6 +2552,40 @@ function bindZoomHandlers() {
    'Stocks scoring 85+ with RS percentile above 95 are flagged as leaders. New additions signal emerging strength; removals warn of fading momentum.</p></div>';
   h += '</div>';
   return h;
+ }
+
+ /* ---------- Market Leadership chart: MLS by component, stacked bars ----------
+  * Draws on the #leadership-chart canvas emitted by leadershipHtml. Same
+  * series, weights, and colors as the click-to-zoom modal version. Free
+  * users see a teaser with no canvas, so this returns silently for them. */
+ function drawLeadershipChart() {
+  const cv = document.getElementById("leadership-chart");
+  const leaders = (D.leadership && D.leadership.leaders) || [];
+  if (!cv || !leaders.length) return;
+  const existing = (typeof Chart !== "undefined" && Chart.getChart) ? Chart.getChart(cv) : null;
+  if (existing) existing.destroy();
+  new Chart(cv, {
+   type: "bar",
+   data: {
+    labels: leaders.map((l) => l.ticker),
+    datasets: [
+     { label: "Relative Strength (50%)", data: leaders.map((l) => +(l.rs_score * 0.50).toFixed(1)), backgroundColor: "#58a6ff", borderWidth: 0 },
+     { label: "Trend Efficiency (30%)", data: leaders.map((l) => +(l.trend_score * 0.30).toFixed(1)), backgroundColor: "#d29922", borderWidth: 0 },
+     { label: "Institutional Volume (20%)", data: leaders.map((l) => +(l.vol_score * 0.20).toFixed(1)), backgroundColor: "#3fb950", borderWidth: 0 },
+    ],
+   },
+   options: { indexAxis: "y", responsive: true, maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { labels: { color: "#c8d0dc", boxWidth: 12 } },
+     tooltip: { backgroundColor: "#1e2530", borderColor: "#363c4e", borderWidth: 1, titleColor: "#fff", bodyColor: "#e8ecf1", padding: 12,
+      callbacks: { afterBody: (items) => {
+       const l = leaders[items[0].dataIndex];
+       return "MLS: " + l.mls.toFixed(1) + "  |  " + l.sector + "  |  $" + l.price.toFixed(2);
+      } } } },
+    scales: {
+     x: { stacked: true, max: 100, ticks: { color: "#e8ecf1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "MLS (0-100)", color: "#e8ecf1" } },
+     y: { stacked: true, ticks: { color: "#fff", font: { size: 14, weight: "bold" } }, grid: { display: false } } } }
+  });
  }
 
  /* ================= MARKET INTERNALS: CATEGORIES, INDEX, ANCHORS ================= */
@@ -2780,7 +2817,7 @@ function bindZoomHandlers() {
   }
   // Implied ERP, FREE data + chart, PRO analysis
   if (D.implied_erp && D.implied_erp.erp != null) {
-   SEC.erp = erpHtml(D.implied_erp, isPro);
+   SEC.erp = erpHtml(D.implied_erp, isPro());
   }
   // Dark Pool Flow, FREE aggregate across the coverage universe, built
   // from the same per-ticker FINRA Reg SHO data as the ticker pages.
