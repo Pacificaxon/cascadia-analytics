@@ -2078,7 +2078,7 @@ function bindZoomHandlers() {
    const tc = biasColor[tf.trend] || "#e8ecf1";
    return '<div style="background:#161b26;border-radius:10px;padding:14px;flex:1;min-width:200px;">' +
     '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:8px;">' + name + ' <span style="color:' + tc + ';">' + tf.trend + "</span></div>" +
-    '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">RSI(14): <b>' + tf.rsi.value.toFixed(1) + "</b> (" + tf.rsi.status + ")</div>" +
+    '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">RSI(14): <b>' + (tf.rsi.value == null ? "N/A" : tf.rsi.value.toFixed(1)) + "</b> (" + (tf.rsi.status === "INSUFFICIENT_DATA" ? "Insufficient data" : tf.rsi.status) + ")</div>" +
     '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">MACD: ' + esc(tf.macd.signal) + "</div>" +
     '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">EMA50 vs EMA200: ' + esc(tf.movingAverages.ema50VsEma200) + "</div>" +
     (tf.keyPattern ? '<div style="font-size:12px;color:#e8ecf1;margin-bottom:4px;">Pattern: ' + esc(tf.keyPattern) + "</div>" : "") +
@@ -11053,7 +11053,11 @@ function volSurfaceHtml() {
   try {
    const res = await fetch("/api/metrics?ticker=" + encodeURIComponent(tk));
    const j = await res.json();
-   if (j.error) return { error: j.error };
+   if (j.error || !res.ok) {
+    // Never surface raw upstream errors (e.g. a Yahoo crumb 429) to users.
+    console.warn("metrics fetch failed for " + tk + ":", j.error || ("HTTP " + res.status));
+    return { error: "Fundamentals data is temporarily unavailable for " + tk + ". Please try again in a few minutes." };
+   }
    _metricsCache[tk] = j;
    return j;
   } catch (e) {
@@ -11134,7 +11138,11 @@ function volSurfaceHtml() {
   try {
    const res = await fetch("/api/alignment?ticker=" + encodeURIComponent(tk));
    const j = await res.json();
-   if (j.error) return { error: j.error };
+   if (j.error || !res.ok) {
+    // Never surface raw upstream errors (e.g. a Yahoo crumb 429) to users.
+    console.warn("alignment fetch failed for " + tk + ":", j.error || ("HTTP " + res.status));
+    return { error: "Agency risk data is temporarily unavailable for " + tk + ". Please try again in a few minutes." };
+   }
    _agencyCache[tk] = j;
    return j;
   } catch (e) {

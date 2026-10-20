@@ -215,7 +215,8 @@ export async function onRequestGet(context) {
     return new Response(JSON.stringify(responsePayload), {
       headers: {
         "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=1800, s-maxage=1800, stale-while-revalidate=600"
+        "Cache-Control": "public, max-age=1800, s-maxage=1800, stale-while-revalidate=600",
+        "CDN-Cache-Control": "public, max-age=1800, stale-while-revalidate=600, stale-if-error=86400"
       }
     });
 
