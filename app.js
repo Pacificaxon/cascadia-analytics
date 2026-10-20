@@ -7135,23 +7135,35 @@ route("alerts", function () {
   let h = '<div class="panel-summary">Base-case upside of&nbsp;<b class="' + cls(u) + '">' + fmtPct(u) + "</b>&nbsp;at&nbsp;" + fmt$(t.price) +
    ". " + verdict + "</div>";
 
-  // Price vs targets visual
+  // Price vs targets visual. The axis always spans every marker, spot included,
+  // with padding proportional to the span, and the Bear-to-Bull range is drawn as
+  // a distinct band segment on a dimmer track. A spot outside the target range
+  // therefore renders visibly outside the band at its true proportional position,
+  // never clamped onto the band or merged into its edge.
   if (t.bear != null && t.base != null && t.bull != null && t.price != null) {
-   const lo = Math.min(t.bear, t.price) * 0.9, hi = Math.max(t.bull, t.price) * 1.05;
+   const allVals = [t.bear, t.base, t.bull, t.price];
+   const vMin = Math.min.apply(null, allVals), vMax = Math.max.apply(null, allVals);
+   const vSpan = Math.max(vMax - vMin, Math.abs(vMax) * 0.05, 1);
+   const vPad = vSpan * 0.08;
+   const lo = vMin - vPad, hi = vMax + vPad;
    const pct = (v) => ((v - lo) / (hi - lo) * 100).toFixed(1);
    const dot = (v, color) =>
     '<div style="position:absolute;left:' + pct(v) + '%;top:-4px;bottom:-4px;width:2px;background:' + color + ';" title="' + fmt$(v) + '"></div>';
+   const bandLo = Math.min(t.bear, t.bull), bandHi = Math.max(t.bear, t.bull);
+   const legend = [["Bear", t.bear, "#f87171", false], ["Current", t.price, "#fff", true],
+    ["Base", t.base, "#c9a961", false], ["Bull", t.bull, "#6a9a6a", false]
+   ].slice().sort((a, b) => a[1] - b[1]);
    h += '<div style="margin:20px 0 12px;">' +
     '<div style="font-size:13px;color:#c8d0dc;margin-bottom:12px;font-weight:600;">Price vs targets</div>' +
-    '<div style="position:relative;height:10px;background:#2a3448;border-radius:5px;margin:0 12px;">' +
+    '<div style="position:relative;height:10px;background:#1c2536;border-radius:5px;margin:0 12px;">' +
+    '<div style="position:absolute;left:' + pct(bandLo) + '%;width:' + (pct(bandHi) - pct(bandLo)).toFixed(1) + '%;top:0;bottom:0;background:#2a3448;border-radius:5px;" title="Bear to Bull target range"></div>' +
     dot(t.bear, "#f87171") + dot(t.base, "#c9a961") + dot(t.bull, "#6a9a6a") +
     '<div style="position:absolute;left:' + pct(t.price) + '%;top:-7px;width:14px;height:24px;background:#fff;border-radius:3px;transform:translateX(-50%);box-shadow:0 0 8px rgba(255,255,255,0.4);" title="Current: ' + fmt$(t.price) + '"></div>' +
     "</div>" +
     '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:10px;padding:0 4px;">' +
-    '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#f87171;margin-right:6px;"></span><span style="color:#e8ecf1;">Bear ' + fmt$(t.bear) + '</span></div>' +
-    '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#fff;margin-right:6px;"></span><span style="color:#e8ecf1;font-weight:700;">Current ' + fmt$(t.price) + '</span></div>' +
-    '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#c9a961;margin-right:6px;"></span><span style="color:#e8ecf1;">Base ' + fmt$(t.base) + '</span></div>' +
-    '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#6a9a6a;margin-right:6px;"></span><span style="color:#e8ecf1;">Bull ' + fmt$(t.bull) + '</span></div>' +
+    legend.map((e) =>
+     '<div style="font-size:13px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + e[2] + ';margin-right:6px;"></span><span style="color:#e8ecf1;' + (e[3] ? "font-weight:700;" : "") + '">' + e[0] + " " + fmt$(e[1]) + "</span></div>"
+    ).join("") +
     "</div></div>";
   }
 
