@@ -10558,6 +10558,20 @@ function volSurfaceHtml() {
     }
     if (s.heading) h += '<h2 style="font-size:20px;font-weight:700;color:#fff;margin:24px 0 12px;">' + esc(s.heading) + '</h2>';
     if (s.body) h += '<div style="font-size:15px;color:#e8ecf1;line-height:1.8;white-space:pre-line;">' + esc(s.body) + '</div>';
+    if (s.table && s.table.headers && s.table.rows) {
+     h += '<div style="overflow-x:auto;margin:16px 0 8px;"><table style="width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.55;">';
+     h += '<thead><tr>' + s.table.headers.map((th) => '<th style="text-align:left;padding:10px 12px;border-bottom:2px solid #c9a961;color:#c9a961;font-size:12px;letter-spacing:0.6px;text-transform:uppercase;white-space:nowrap;">' + esc(th) + '</th>').join("") + '</tr></thead><tbody>';
+     s.table.rows.forEach((row, ri) => {
+      h += '<tr style="background:' + (ri % 2 ? "#11161f" : "transparent") + ';">' + row.map((c, ci) => {
+       let st = 'padding:10px 12px;border-bottom:1px solid #2a3142;vertical-align:top;color:#e8ecf1;';
+       if (ci === 0) st += 'font-weight:700;color:#fff;white-space:nowrap;';
+       if (ci === 1) st += 'font-weight:700;color:#c9a961;white-space:nowrap;';
+       if (ci === 2) st += 'white-space:nowrap;';
+       return '<td style="' + st + '">' + esc(c) + '</td>';
+      }).join("") + '</tr>';
+     });
+     h += '</tbody></table></div>';
+    }
    });
    // Pro CTA (free users only) - links to covered ticker pages
    if (!isPro()) {
