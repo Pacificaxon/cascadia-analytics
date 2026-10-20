@@ -11304,6 +11304,457 @@ function volSurfaceHtml() {
    } catch (e) { console.error("Agency flow chart error:", e); }
   }
  }
+ /* ---------- Ticker Research (PRO): on-demand toolkit for any ticker ----------
+   Sections are computed on request by the /api/stock-* functions (each one
+   verifies the Supabase JWT and profiles.is_pro server-side), plus the
+   existing /api/metrics, /api/quality, /api/earnings360, and /api/alignment
+   renderers. The page never shows DCF targets, a rating, a Cascadia Score,
+   or report content; covered names link through to their analyst pages. */
+ let _stockCache = {};
+ function cleanResearchTicker(raw) {
+  return (raw || "").toUpperCase().trim().replace(/[^A-Z0-9.\-]/g, "");
+ }
+ async function fetchStock(endpoint, ticker) {
+  const tk = cleanResearchTicker(ticker);
+  const unavailable = { error: "Data is temporarily unavailable for " + tk + ". Please try again in a few minutes." };
+  if (!tk) return unavailable;
+  const key = endpoint + ":" + tk;
+  if (_stockCache[key] && !_stockCache[key].error) return _stockCache[key];
+  try {
+   if (!supa) return unavailable;
+   try { await supa.auth.refreshSession(); } catch (e) {}
+   const sessRes = await supa.auth.getSession();
+   const session = sessRes && sessRes.data ? sessRes.data.session : null;
+   if (!session || !session.access_token) return unavailable;
+   const res = await fetch("/api/" + endpoint + "?ticker=" + encodeURIComponent(tk), {
+    headers: { Authorization: "Bearer " + session.access_token },
+   });
+   const j = await res.json().catch(() => ({}));
+   if (!res.ok || j.error) {
+    console.warn("Stock endpoint failed", endpoint, tk, res.status, j);
+    return unavailable;
+   }
+   _stockCache[key] = j;
+   return j;
+  } catch (e) {
+   console.error("Stock fetch error", endpoint, tk, e);
+   return unavailable;
+  }
+ }
+ function researchUnavailable(tk) {
+  return '<div class="card"><p style="color:var(--muted)">Data is temporarily unavailable for ' + esc(tk) + ". Please try again in a few minutes.</p></div>";
+ }
+ function researchLoading(label) {
+  return '<div class="card"><p style="color:var(--muted)">Loading ' + esc(label) + "&hellip;</p></div>";
+ }
+ function setResearchHtml(id, html) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+ }
+ function researchStat(label, value) {
+  return '<div style="background:#141a28;border:1px solid #232c40;border-radius:10px;padding:10px 12px;"><div style="font-size:10px;letter-spacing:0.08em;color:#8b93a7;text-transform:uppercase;">' + label + '</div><div style="font-size:16px;font-weight:700;color:#e8ecf1;margin-top:2px;">' + value + "</div></div>";
+ }
+ function researchBigMoney(v) {
+  if (v === null || v === undefined || Number.isNaN(v)) return "N/A";
+  const sign = v < 0 ? "-" : "";
+  const a = Math.abs(v);
+  if (a >= 1e12) return sign + "$" + (a / 1e12).toFixed(2) + "T";
+  if (a >= 1e9) return sign + "$" + (a / 1e9).toFixed(2) + "B";
+  if (a >= 1e6) return sign + "$" + (a / 1e6).toFixed(1) + "M";
+  return sign + "$" + a.toLocaleString();
+ }
+
+ function researchHeaderHtml(tk, d) {
+  const hd = d.header || {};
+  const km = d.keyMetrics || {};
+  const mult = (v) => (v === null || v === undefined ? "N/A" : v.toFixed(2) + "x");
+  let h = '<div class="card" style="padding:20px;">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">';
+  h += "<div><div style=\"font-size:22px;font-weight:800;color:#fff;\">" + esc(hd.name || tk) +
+   ' <span style="font-size:13px;color:#8b93a7;font-weight:600;">' + esc(tk) + (hd.exchange ? " · " + esc(hd.exchange) : "") + "</span></div>";
+  h += '<div style="font-size:12px;color:#8b93a7;margin-top:2px;">' +
+   esc([hd.sector, hd.industry].filter(Boolean).join(" · ") || "Sector data unavailable") + "</div></div>";
+  if (hd.price !== null && hd.price !== undefined) {
+   const chg = hd.change;
+   const chgPct = hd.changePercent;
+   h += '<div style="text-align:right;"><div style="font-size:26px;font-weight:800;color:#fff;">' + fmt$(hd.price) + "</div>" +
+    '<div class="' + cls(chg || 0) + '" style="font-size:13px;font-weight:700;">' +
+    (chg !== null && chg !== undefined ? (chg >= 0 ? "+" : "") + chg.toFixed(2) : " - ") +
+    (chgPct !== null && chgPct !== undefined ? " (" + (chgPct >= 0 ? "+" : "") + chgPct.toFixed(2) + "%)" : "") +
+    '</div><div style="font-size:11px;color:#8b93a7;">As of ' + esc((d.asOf || "").slice(0, 10)) + "</div></div>";
+  }
+  h += "</div>";
+  if (hd.description) {
+   h += '<p style="font-size:13px;line-height:1.65;color:#c8d0dc;margin:14px 0 4px;">' + esc(hd.description) + "</p>";
+  }
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:14px;">';
+  h += researchStat("Market Cap", researchBigMoney(hd.marketCap));
+  h += researchStat("Trailing P/E", mult(km.peTrailing));
+  h += researchStat("Forward P/E", mult(km.peForward));
+  h += researchStat("PEG", km.peg === null || km.peg === undefined ? "N/A" : km.peg.toFixed(2));
+  h += researchStat("Price / Sales", mult(km.priceToSales));
+  h += researchStat("Price / Book", mult(km.priceToBook));
+  h += researchStat("EV / Revenue", mult(km.evToRevenue));
+  h += researchStat("EV / EBITDA", mult(km.evToEbitda));
+  h += researchStat("Dividend Yield", km.dividendYield === null || km.dividendYield === undefined ? "N/A" : km.dividendYield.toFixed(2) + "%");
+  h += researchStat("Beta", km.beta === null || km.beta === undefined ? "N/A" : km.beta.toFixed(2));
+  h += "</div>";
+  if (km.week52Low !== null && km.week52Low !== undefined && km.week52High !== null && km.week52High !== undefined && hd.price !== null && hd.price !== undefined && km.week52High > km.week52Low) {
+   const pos = Math.max(0, Math.min(100, ((hd.price - km.week52Low) / (km.week52High - km.week52Low)) * 100));
+   h += '<div style="margin-top:16px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:#8b93a7;"><span>52-week low ' + fmt$(km.week52Low) + '</span><span style="letter-spacing:0.08em;">52-WEEK RANGE</span><span>52-week high ' + fmt$(km.week52High) + "</span></div>" +
+    '<div style="position:relative;height:8px;background:#1c2536;border-radius:4px;margin-top:6px;"><div style="position:absolute;left:0;top:0;height:8px;width:' + pos.toFixed(1) + '%;background:linear-gradient(90deg,#2a4a73,#c9a961);border-radius:4px;"></div>' +
+    '<div style="position:absolute;top:-4px;left:calc(' + pos.toFixed(1) + '% - 2px);width:4px;height:16px;background:#e8ecf1;border-radius:2px;"></div></div></div>';
+  }
+  return h + "</div>";
+ }
+
+ function researchInsiderHtml(d) {
+  const txns = d.transactions || [];
+  const s = d.summary || { buys: 0, sells: 0, automatic_count: 0 };
+  if (!txns.length) return '<div class="card"><p style="color:var(--muted)">No recent Form 4 filings found.</p></div>';
+  let h = '<div class="card"><div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:13px;">' +
+   '<span>Open-market buys <b style="color:#3fb950;">' + s.buys + "</b></span>" +
+   '<span>Open-market sells <b style="color:#f87171;">' + s.sells + "</b></span>" +
+   '<span style="color:var(--muted)">Automatic and plan transactions ' + (s.automatic_count || 0) + "</span></div>";
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Date</th><th>Insider</th><th>Type</th><th style="text-align:right;">Shares</th><th style="text-align:right;">Price</th><th style="text-align:right;">Value</th></tr></thead><tbody>';
+  h += txns.slice(0, 15).map((x) => {
+   const open = x.category === "open_market";
+   const isBuy = x.type === "buy";
+   const rowStyle = open
+    ? ' style="background:' + (isBuy ? "rgba(63,185,80,0.08)" : "rgba(248,81,73,0.08)") + '"'
+    : ' style="opacity:0.55"';
+   const badge = open
+    ? ' <span style="font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 5px;border-radius:4px;background:' + (isBuy ? "#14532d" : "#5b2121") + ";color:" + (isBuy ? "#4ade80" : "#fca5a5") + ';">OPEN MARKET</span>'
+    : ' <span style="font-size:11px;color:#8b949e;">(' + esc(x.code_label || "") + ")</span>";
+   return "<tr" + rowStyle + "><td>" + esc(x.date || "") + "</td><td>" + esc(x.insider || "") +
+    (x.title ? ' <span style="color:var(--muted);font-size:11px;">' + esc(x.title) + "</span>" : "") + "</td>" +
+    '<td class="' + (isBuy ? "pos" : "neg") + '">' + (isBuy ? "Buy" : "Sell") + badge + "</td>" +
+    '<td style="text-align:right;">' + (x.shares != null ? Number(x.shares).toLocaleString() : " - ") + "</td>" +
+    '<td style="text-align:right;">' + (x.price != null ? fmt$(x.price) : " - ") + "</td>" +
+    '<td style="text-align:right;">' + (x.value != null ? fmt$(x.value) : " - ") + "</td></tr>";
+  }).join("");
+  h += '</tbody></table></div><p style="font-size:11px;color:var(--muted);margin-top:10px;">Open-market purchases and sales carry the strongest signal and are highlighted. Grants, exercises, and tax withholding run through compensation plans and are dimmed. Source, SEC Form 4 filings.</p></div>';
+  return h;
+ }
+
+ function researchEarningsHtml(tk, d) {
+  let h = "";
+  if (d.nextEarningsDate) {
+   h += '<div class="panel-summary" style="margin-bottom:12px;">Next earnings date <b>' + esc(d.nextEarningsDate) + "</b></div>";
+  }
+  const qs = d.quarters || [];
+  if (!qs.length) return researchUnavailable(tk);
+  h += '<div class="card"><div class="table-wrap"><table class="coverage"><thead><tr><th>Quarter End</th><th style="text-align:right;">EPS Est.</th><th style="text-align:right;">EPS Actual</th><th style="text-align:right;">Surprise</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">Revenue Est.</th><th style="text-align:right;">1-Day Reaction</th></tr></thead><tbody>';
+  h += qs.map((q) =>
+   "<tr><td>" + esc(q.quarterEnd || q.quarter || "") + "</td>" +
+   '<td style="text-align:right;">' + (q.epsEstimate != null ? "$" + q.epsEstimate.toFixed(2) : "N/A") + "</td>" +
+   '<td style="text-align:right;">' + (q.epsActual != null ? "$" + q.epsActual.toFixed(2) : "N/A") + "</td>" +
+   '<td style="text-align:right;" class="' + (q.surprisePercent != null ? cls(q.surprisePercent) : "") + '">' + (q.surprisePercent != null ? (q.surprisePercent >= 0 ? "+" : "") + q.surprisePercent.toFixed(1) + "%" : "N/A") + "</td>" +
+   '<td style="text-align:right;">' + researchBigMoney(q.revenueActual) + "</td>" +
+   '<td style="text-align:right;">' + (q.revenueEstimate != null ? researchBigMoney(q.revenueEstimate) : "N/A") + "</td>" +
+   '<td style="text-align:right;">' + (q.reaction1d != null ? (q.reaction1d >= 0 ? "+" : "") + q.reaction1d.toFixed(1) + "%" : "N/A") + "</td></tr>"
+  ).join("");
+  h += '</tbody></table></div><p style="font-size:11px;color:var(--muted);margin-top:10px;">Revenue estimates and one-day price reactions are not carried for on-demand names and show as N/A. Covered names carry the full eight-quarter dashboard on the Earnings page.</p></div>';
+  return h;
+ }
+
+ function researchSeasonalityHtml(seasonality) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const vals = (seasonality || []).filter((m) => m.avgReturn !== null && m.avgReturn !== undefined);
+  if (!vals.length) return '<div class="card"><p style="color:var(--muted)">Not enough price history to compute seasonality.</p></div>';
+  const maxAbs = Math.max.apply(null, vals.map((m) => Math.abs(m.avgReturn)).concat([1]));
+  let h = '<div class="card"><div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;">';
+  h += months.map((mn, i) => {
+   const entry = (seasonality || []).find((m) => m.month === i) || {};
+   const v = entry.avgReturn;
+   if (v === null || v === undefined) return '<div style="background:#161b26;border:1px solid #2a3448;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:11px;font-weight:700;color:#8b93a7;letter-spacing:0.05em;">' + mn + '</div><div style="font-size:16px;font-weight:800;color:#5b6577;margin:4px 0;">N/A</div><div style="font-size:10px;color:#5b6577;">' + (entry.years || 0) + " yrs</div></div>";
+   const pos = v >= 0;
+   const wdt = Math.max(6, Math.round((Math.abs(v) / maxAbs) * 100));
+   return '<div style="background:#161b26;border:1px solid #2a3448;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:11px;font-weight:700;color:#8b93a7;letter-spacing:0.05em;">' + mn + "</div>" +
+    '<div style="font-size:16px;font-weight:800;color:' + (pos ? "#3fb950" : "#f87171") + ';margin:4px 0;">' + (pos ? "+" : "") + v.toFixed(1) + "%</div>" +
+    '<div style="height:5px;background:#232c40;border-radius:3px;overflow:hidden;margin:4px 0;"><div style="height:100%;width:' + wdt + "%;background:" + (pos ? "#3fb950" : "#f85149") + ';"></div></div>' +
+    '<div style="font-size:10px;color:#5b6577;">' + entry.years + " yrs</div></div>";
+  }).join("");
+  h += "</div>";
+  const ranked = vals.slice().sort((a, b) => b.avgReturn - a.avgReturn);
+  if (ranked.length) {
+   h += '<div class="panel-summary" style="margin-top:10px;color:#c8d0dc;">Strongest: <b style="color:#6a9a6a;">' + months[ranked[0].month] + " (" + (ranked[0].avgReturn >= 0 ? "+" : "") + ranked[0].avgReturn.toFixed(1) + '%)</b> · Weakest: <b style="color:#f87171;">' + months[ranked[ranked.length - 1].month] + " (" + ranked[ranked.length - 1].avgReturn.toFixed(1) + "%)</b></div>";
+  }
+  return h + "</div>";
+ }
+
+ function researchGaugesHtml(trend) {
+  if (!trend || trend.status !== "ok") {
+   return '<div class="card"><p style="color:var(--muted)">Trend conviction and exhaustion gauges need at least 210 trading days of history. They unlock as the listing seasons.</p></div>';
+  }
+  function gauge(label, score, color, note) {
+   const pct = score != null ? Math.max(0, Math.min(100, score)) : 0;
+   return '<div style="flex:1;min-width:220px;background:#161b26;border:1px solid #232c40;border-radius:10px;padding:14px;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:11px;letter-spacing:0.08em;color:#8b93a7;text-transform:uppercase;">' + label + '</span>' +
+    '<span style="font-size:24px;font-weight:800;color:' + color + ';">' + (score != null ? score : " - ") + "</span></div>" +
+    '<div style="height:8px;background:#0f1420;border-radius:4px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + pct + "%;background:" + color + ';"></div></div>' +
+    '<div style="font-size:12px;color:#c8d0dc;">' + note + "</div></div>";
+  }
+  const trendColor = trend.trendScore >= 60 ? "#a78bfa" : trend.trendScore >= 40 ? "#d9b45b" : "#5b8def";
+  const exhColor = trend.exhaustionScore >= 60 ? "#f85149" : trend.exhaustionScore >= 35 ? "#f59e0b" : "#3fb950";
+  let h = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">';
+  h += gauge("Trend Conviction", trend.trendScore, trendColor,
+   esc(trend.direction || "") + " · " + esc(trend.alignment || "") + (trend.adx != null ? " · ADX " + trend.adx.toFixed(1) : ""));
+  h += gauge("Exhaustion / Reversal Risk", trend.exhaustionScore, exhColor,
+   (trend.reversalFlags || []).join(" · ") || "No exhaustion signals");
+  return h + "</div>";
+ }
+
+ function researchTimeframeHtml(label, block, dist200) {
+  if (!block) return "";
+  const periods = [10, 20, 30, 50, 100, 200];
+  let rows = "";
+  periods.forEach((p) => {
+   const sv = block.sma ? block.sma[p] : null;
+   const ev = block.ema ? block.ema[p] : null;
+   if (sv === null && ev === null) return;
+   const cell = (v) => (v === null || v === undefined ? '<td style="text-align:right;color:#5b6577;">N/A</td>' : '<td style="text-align:right;">' + v.toFixed(2) + "</td>");
+   const cellE = (v) => (v === null || v === undefined ? '<td style="text-align:right;color:#5b6577;">N/A</td>' : '<td style="text-align:right;">' + v.toFixed(2) + "</td>");
+   rows += '<tr><td style="font-weight:600;color:#c8d0dc;">' + p + "-day</td>" + cell(sv) + cellE(ev) + "</tr>";
+  });
+  const rsi = block.rsi || {};
+  const sigChip = block.signal
+   ? ' <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:' + (block.signal === "Bullish" ? "rgba(63,185,80,0.15);color:#3fb950" : block.signal === "Bearish" ? "rgba(248,81,73,0.15);color:#f87171" : "rgba(139,147,167,0.15);color:#8b93a7") + ';">' + esc(block.signal.toUpperCase()) + "</span>"
+   : "";
+  let h = '<div class="card" style="margin-bottom:12px;">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;"><div style="font-size:14px;font-weight:700;color:#e8ecf1;">' + label + sigChip + "</div>" +
+   '<div style="font-size:12px;color:#8b93a7;">RSI(14) <b style="color:#e8ecf1;">' + (rsi.value != null ? rsi.value.toFixed(1) : "N/A") + "</b>" +
+   (rsi.status === "INSUFFICIENT_DATA" ? " · insufficient data" : rsi.value != null && rsi.value > 70 ? " · overbought" : rsi.value != null && rsi.value < 30 ? " · oversold" : "") +
+   (label === "Daily" && dist200 != null ? ' · <span style="color:#e8ecf1;">' + (dist200 >= 0 ? "+" : "") + dist200.toFixed(1) + "%</span> vs 200-day average" : "") +
+   "</div></div>";
+  h += '<div style="position:relative;height:250px;"><canvas id="research-ma-' + label.toLowerCase() + '"></canvas></div>';
+  if (rows) {
+   h += '<div class="table-wrap" style="margin-top:12px;"><table class="ma-table"><thead><tr><th>Period</th><th style="text-align:right;">SMA</th><th style="text-align:right;">EMA</th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+  }
+  return h + "</div>";
+ }
+
+ function drawResearchTechCharts(tech) {
+  if (typeof Chart === "undefined" || !tech.timeframes) return;
+  const confs = [["daily", "Daily"], ["weekly", "Weekly"], ["monthly", "Monthly"]];
+  confs.forEach(([key, label]) => {
+   const block = tech.timeframes[key];
+   const canvas = document.getElementById("research-ma-" + label.toLowerCase());
+   if (!block || !canvas || !block.chart || !block.chart.dates.length) return;
+   const ch = block.chart;
+   const ds = (labelTxt, data, color, width) => ({
+    label: labelTxt, data, borderColor: color, backgroundColor: color,
+    borderWidth: width || 1.2, pointRadius: 0, tension: 0.15, spanGaps: true,
+   });
+   new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+     labels: ch.dates,
+     datasets: [
+      ds("Price", ch.close, "#d5dbe5", 1.8),
+      ds("SMA 10", ch.sma10, "#f23645"),
+      ds("SMA 20", ch.sma20, "#ff9800"),
+      ds("SMA 50", ch.sma50, "#2962ff"),
+      ds("SMA 200", ch.sma200, "#00bcd4"),
+     ],
+    },
+    options: {
+     responsive: true, maintainAspectRatio: false,
+     interaction: { mode: "index", intersect: false },
+     plugins: { legend: { labels: { color: "#aab2c0", boxWidth: 10, font: { size: 10 } } } },
+     scales: {
+      x: { ticks: { color: "#8b93a7", maxTicksLimit: 6, font: { size: 10 } }, grid: { color: "#1c2436" } },
+      y: { position: "right", ticks: { color: "#8b93a7", font: { size: 10 } }, grid: { color: "#1c2436" } },
+     },
+    },
+   });
+  });
+ }
+
+ async function loadResearchHeader(tk, seq) {
+  const d = await fetchStock("stock-profile", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error) { setResearchHtml("research-header", researchUnavailable(tk)); return; }
+  setResearchHtml("research-header", researchHeaderHtml(tk, d));
+ }
+ async function loadResearchFinancials(tk, seq) {
+  const d = await fetchStock("stock-financials", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error || (!d.income && !d.balance && !d.cashflow)) { setResearchHtml("research-financials", researchUnavailable(tk)); return; }
+  let html;
+  try {
+   html = financialsHtml({ ticker: tk, financials: { income: d.income || [], balance: d.balance || [], cashflow: d.cashflow || [] } });
+  } catch (e) {
+   console.error("Research financials render failed", tk, e);
+   html = researchUnavailable(tk);
+  }
+  if (d.source) html += '<p style="font-size:11px;color:#8b949e;margin-top:8px;">Figures drawn from ' + esc(d.source) + ". Items a filer does not report show as N/A.</p>";
+  setResearchHtml("research-financials", html);
+  const tabs = document.getElementById("fin-" + tk + "-tabs");
+  if (tabs) {
+   tabs.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+    tabs.querySelectorAll("button").forEach((x) => x.classList.remove("active"));
+    b.classList.add("active");
+    ["income", "balance", "cashflow"].forEach((k) => {
+     const p = document.getElementById("fin-" + tk + "-" + k);
+     if (p) p.style.display = k === b.dataset.fin ? "" : "none";
+    });
+   }));
+  }
+ }
+ async function loadResearchTechnicals(tk, seq) {
+  const d = await fetchStock("stock-technicals", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error || !d.timeframes) {
+   setResearchHtml("research-technicals", researchUnavailable(tk));
+   setResearchHtml("research-seasonality", researchUnavailable(tk));
+   return;
+  }
+  const tf = d.timeframes;
+  let h = researchGaugesHtml(d.trend);
+  h += researchTimeframeHtml("Daily", tf.daily, d.dist200);
+  h += researchTimeframeHtml("Weekly", tf.weekly, null);
+  h += researchTimeframeHtml("Monthly", tf.monthly, null);
+  h += '<p style="font-size:11px;color:#8b949e;">Price history as of ' + esc(d.asOf || "") + ". Gauges follow the same formulas as the coverage trend engine.</p>";
+  setResearchHtml("research-technicals", h);
+  drawResearchTechCharts(d);
+  setResearchHtml("research-seasonality", researchSeasonalityHtml(d.seasonality));
+ }
+ async function loadResearchInsider(tk, seq) {
+  const d = await fetchStock("stock-insider", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error) { setResearchHtml("research-insider", researchUnavailable(tk)); return; }
+  setResearchHtml("research-insider", researchInsiderHtml(d));
+ }
+ async function loadResearchEarnings(tk, seq) {
+  const d = await fetchStock("stock-earnings", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error) { setResearchHtml("research-earnings", researchUnavailable(tk)); return; }
+  setResearchHtml("research-earnings", researchEarningsHtml(tk, d));
+ }
+ async function loadResearchOptions(tk, seq) {
+  const d = await fetchStock("stock-options", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error) { setResearchHtml("research-options", researchUnavailable(tk)); return; }
+  if (!d.available || !d.gex) {
+   setResearchHtml("research-options", '<div class="card"><p style="color:var(--muted)">No usable listed options market for ' + esc(tk) + ". Gamma and skew positioning unlock where a liquid chain trades.</p></div>");
+   return;
+  }
+  let h = "";
+  try {
+   h += tickerGexHtml(tk, d.gex);
+   h += gexStrikeChartHtml(tk, d.gex, "research-gex-" + tk);
+  } catch (e) {
+   console.error("Research GEX render failed", tk, e);
+   h += researchUnavailable(tk);
+  }
+  if (d.skew) {
+   try { h += '<div style="margin-top:16px;">' + tickerSkewHtml(tk, d.skew) + "</div>"; }
+   catch (e) { console.error("Research skew render failed", tk, e); }
+  } else {
+   h += '<div class="card" style="margin-top:12px;"><p style="color:var(--muted)">Skew needs a contract pair near 30 days to expiry inside the selection bands, and none qualified for ' + esc(tk) + ".</p></div>";
+  }
+  setResearchHtml("research-options", h);
+  try { drawGexStrikeCharts(); } catch (e) { console.error("Research GEX chart draw failed", tk, e); }
+ }
+
+ function researchSearchFormHtml(val) {
+  return '<form id="research-form" style="display:flex;gap:8px;margin:12px 0;max-width:460px;" autocomplete="off">' +
+   '<input id="research-ticker" type="text" placeholder="TICKER (e.g. AAPL)" value="' + esc(val || "") + '" autocomplete="off" autocapitalize="characters" spellcheck="false" ' +
+   'style="flex:1;background:#161b26;border:1px solid #2a3448;border-radius:8px;padding:10px 12px;color:#e8ecf1;font-size:14px;text-transform:uppercase;" />' +
+   '<button id="research-btn" type="submit" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Research</button></form>';
+ }
+ function wireResearchForm() {
+  const form = document.getElementById("research-form");
+  if (!form) return;
+  form.addEventListener("submit", (e) => {
+   if (e && e.preventDefault) e.preventDefault();
+   const inp = document.getElementById("research-ticker");
+   const tk = cleanResearchTicker(inp ? inp.value : "");
+   if (tk) nav("research/" + tk);
+  });
+ }
+
+ route("research", async function (param) {
+  const mySeq = window._renderSeq || 0;
+  await ensureProData();
+  if (mySeq !== (window._renderSeq || 0)) return;
+  const tk = cleanResearchTicker(param);
+  const hero = '<div class="crumb">TICKER RESEARCH</div>' +
+   '<div class="hero"><div><h1 class="hero-h">Ticker Research</h1>' +
+   "<p class='hero-sub'>The on-demand toolkit for any listed stock. Financial statements, technicals, insider filings, earnings history, and options positioning, computed on request from primary sources.</p></div></div>";
+  if (!isPro()) {
+   app.innerHTML = hero +
+    '<div class="section"><div class="section-title">Ticker Research ' + PRO_BADGE + "</div>" +
+    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
+   return;
+  }
+  if (!tk) {
+   app.innerHTML = hero +
+    '<div class="section"><div class="section-title">Ticker Lookup ' + PRO_BADGE + "</div>" +
+    researchSearchFormHtml("") +
+    '<div class="card"><p style="font-size:13px;line-height:1.65;color:#c8d0dc;">Enter a ticker symbol and the toolkit builds the page on demand. Statements come from SEC filings, insider activity comes from Form 4, options positioning comes from CBOE delayed chains, and technicals are computed from five years of daily prices.</p>' +
+    '<p style="font-size:13px;line-height:1.65;color:#c8d0dc;margin-top:8px;">Names inside our coverage link straight through to their analyst pages, where the rating, DCF targets, and research report live.</p></div></div>';
+   wireResearchForm();
+   const inp = document.getElementById("research-ticker");
+   if (inp) inp.focus();
+   return;
+  }
+  const inCoverage = ORDER.indexOf(tk) >= 0;
+  let h = '<div class="crumb">TICKER RESEARCH</div>' +
+   '<div class="hero"><div><h1 class="hero-h">' + esc(tk) + '</h1>' +
+   "<p class='hero-sub'>On-demand research computed from filings, market data, and CBOE delayed chains.</p></div></div>";
+  h += '<div class="section">' + researchSearchFormHtml(tk) + "</div>";
+  if (inCoverage) {
+   h += '<div class="section"><div class="card" style="border:1px solid #c9a961;background:rgba(201,169,97,0.08);padding:16px 20px;">' +
+    '<div style="font-size:15px;font-weight:700;color:#e8ecf1;">' + esc(tk) + " is inside Cascadia coverage</div>" +
+    '<p style="font-size:13px;color:#c8d0dc;margin:6px 0 10px;">The full analyst page carries our rating, valuation targets, and the research report for this name.</p>' +
+    '<a class="btn" href="#/ticker/' + esc(tk) + '" style="display:inline-block;">Open the ' + esc(tk) + " analyst page</a></div></div>";
+  }
+  h += '<div class="section"><div id="research-header">' + researchLoading("company profile") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Financial Statements ' + PRO_BADGE + '</div><div id="research-financials">' + researchLoading("financial statements") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div><div id="research-metrics">' + researchLoading("fundamentals") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Quality Snapshot ' + PRO_BADGE + '</div><div id="quality-result">' + researchLoading("quality snapshot") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Technical Analysis ' + PRO_BADGE + '</div><div id="research-technicals">' + researchLoading("technicals") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Seasonality ' + PRO_BADGE + '</div><div id="research-seasonality">' + researchLoading("seasonality") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Insider Transactions ' + PRO_BADGE + '</div><div id="research-insider">' + researchLoading("insider filings") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Earnings ' + PRO_BADGE + '</div><div id="research-earnings">' + researchLoading("earnings record") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Options Positioning ' + PRO_BADGE + '</div><div id="research-options">' + researchLoading("options positioning") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Cascadia Catalyst Compass ' + PRO_BADGE + "</div>" +
+   '<div class="card"><p style="font-size:13px;color:#c8d0dc;line-height:1.6;margin-bottom:12px;">A probabilistic Bull, Base, and Bear scenario matrix for the next earnings print, mapped to options-implied price bounds with macro, fundamental, tone, and positioning context. Generation takes about 20 to 30 seconds.</p>' +
+   '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#c9a961;color:#0a0f1a;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Catalyst Compass</button></div>' +
+   '<input type="hidden" id="e360-input-' + tk + '" value="' + esc(tk) + '" />' +
+   '<div id="e360-' + tk + '"></div></div></div>';
+  h += '<div class="section"><div class="section-title">Executive Alignment and Agency Risk ' + PRO_BADGE + '</div><div id="agency-risk-' + tk + '">' + researchLoading("agency risk") + "</div></div>";
+  app.innerHTML = h;
+  wireResearchForm();
+  loadResearchHeader(tk, mySeq);
+  loadResearchFinancials(tk, mySeq);
+  loadResearchTechnicals(tk, mySeq);
+  loadResearchInsider(tk, mySeq);
+  loadResearchEarnings(tk, mySeq);
+  loadResearchOptions(tk, mySeq);
+  (async () => {
+   const m = await fetchMetrics(tk);
+   if (mySeq !== (window._renderSeq || 0)) return;
+   renderMetricsTable(m, "research-metrics");
+  })();
+  (async () => {
+   const q = await fetchQuality(tk);
+   if (mySeq !== (window._renderSeq || 0)) return;
+   renderQualityResult(q);
+  })();
+  const e360Btn = document.getElementById("e360-btn-" + tk);
+  if (e360Btn) {
+   e360Btn.addEventListener("click", () =>
+    runEarnings360Search("e360-input-" + tk, "e360-" + tk, "e360-btn-" + tk));
+  }
+  if (typeof _e360Cache !== "undefined" && _e360Cache[tk] && !_e360Cache[tk].error) {
+   renderEarnings360(_e360Cache[tk], "e360-" + tk);
+  }
+  loadAgencyRisk(tk);
+ });
+
  route("quality", async function (param) {
   const mySeq = window._renderSeq || 0;
   await ensureProData();
@@ -12014,6 +12465,7 @@ function volSurfaceHtml() {
    '<li>✓ Catalyst Compass, probabilistic Bull/Base/Bear scenario matrix on options-implied bounds for any ticker</li>' +
 '<li>✓ Fundamentals Tracker, 56 institutional-grade metrics for any ticker</li>' +
 '<li>✓ Quality Snapshot, on-demand ROIC, cash conversion, and Rule of 40 scoring</li>' +
+   '<li>✓ Ticker Research toolkit for any listed stock, financial statements, technicals, seasonality, insider filings, earnings history, and gamma positioning on demand</li>' +
 '<li>✓ Agency Risk tracker, executive alignment scoring with SEC proxy audits</li>' +
 '<li>✓ Week Ahead memos, Pro-only weekly market outlook</li>' +
 '<li>✓ OPEX Cycle Tracker, options expiration calendar with max-pain levels</li>' +
