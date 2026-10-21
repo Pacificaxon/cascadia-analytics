@@ -7372,10 +7372,12 @@ route("alerts", function () {
  let tkTocObserver = null;
  let tkTocResize = null;
  let tkTocScroll = null;
+ let tkTocBarCleanup = null;
  function cleanupTickerToc() {
   if (tkTocObserver) { try { tkTocObserver.disconnect(); } catch (e) {} tkTocObserver = null; }
   if (tkTocResize) { try { window.removeEventListener("resize", tkTocResize); } catch (e) {} tkTocResize = null; }
   if (tkTocScroll) { try { window.removeEventListener("scroll", tkTocScroll); } catch (e) {} tkTocScroll = null; }
+  if (tkTocBarCleanup) { try { tkTocBarCleanup(); } catch (e) {} tkTocBarCleanup = null; }
  }
  function initTickerToc() {
   cleanupTickerToc();
@@ -7408,6 +7410,28 @@ route("alerts", function () {
    const target = secs[Number(chip.getAttribute("data-toc-idx"))];
    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
   });
+  // Bar self-scroll discipline: the scrollspy may re-center the bar on the
+  // active chip, but never while the user is swiping the bar itself or
+  // within a grace window after their last manual bar scroll. On mobile a
+  // swipe of the bar usually nudges the page as well, which fires the
+  // scrollspy; without this hold the bar visibly snaps back to the active
+  // chip. Manual bar scrolls are told apart from programmatic ones by a
+  // short in-flight window stamped before each programmatic scrollTo.
+  const TOC_HOLD_MS = 2500;
+  let lastUserBarAt = 0;
+  let progBarUntil = 0;
+  const noteUserBar = () => { lastUserBarAt = Date.now(); };
+  const onBarScroll = () => { if (Date.now() >= progBarUntil) noteUserBar(); };
+  bar.addEventListener("pointerdown", noteUserBar);
+  bar.addEventListener("touchstart", noteUserBar, { passive: true });
+  bar.addEventListener("wheel", noteUserBar, { passive: true });
+  bar.addEventListener("scroll", onBarScroll, { passive: true });
+  tkTocBarCleanup = () => {
+   bar.removeEventListener("pointerdown", noteUserBar);
+   bar.removeEventListener("touchstart", noteUserBar);
+   bar.removeEventListener("wheel", noteUserBar);
+   bar.removeEventListener("scroll", onBarScroll);
+  };
   // Scrollspy: the active chip is the last section whose top has scrolled
   // up to the sticky stack (topbar + TOC bar) line; before the first
   // section reaches it, the first chip is active. Recomputed from live
@@ -7420,10 +7444,21 @@ route("alerts", function () {
    activeIdx = idx;
    chips.forEach((c, i) => c.classList.toggle("active", i === idx));
    const chip = chips[idx];
-   if (chip && bar.scrollWidth > bar.clientWidth) {
-    const left = chip.offsetLeft - (bar.clientWidth - chip.offsetWidth) / 2;
-    try { bar.scrollTo({ left: Math.max(0, left), behavior: "smooth" }); } catch (e) { bar.scrollLeft = Math.max(0, left); }
-   }
+   if (!chip || bar.scrollWidth <= bar.clientWidth) return;
+   // Highlighting always updates; moving the bar does not. Skip the move
+   // while the user is interacting with the bar or just did.
+   if (Date.now() - lastUserBarAt < TOC_HOLD_MS) return;
+   // Re-center only the bar container (never scrollIntoView on a chip,
+   // which would also scroll the page), and only when the newly active
+   // chip is not already comfortably inside the visible region.
+   const viewL = bar.scrollLeft, viewR = viewL + bar.clientWidth;
+   const chipL = chip.offsetLeft, chipR = chipL + chip.offsetWidth;
+   if (chipL >= viewL + 4 && chipR <= viewR - 4) return;
+   const maxLeft = bar.scrollWidth - bar.clientWidth;
+   const left = Math.min(Math.max(0, chipL - (bar.clientWidth - chip.offsetWidth) / 2), maxLeft);
+   if (Math.abs(left - bar.scrollLeft) < 1) return;
+   progBarUntil = Date.now() + 800;
+   try { bar.scrollTo({ left: left, behavior: "smooth" }); } catch (e) { bar.scrollLeft = left; }
   };
   const spy = () => {
    const line = stackH + 40;
