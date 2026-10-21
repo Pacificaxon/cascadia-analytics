@@ -490,10 +490,47 @@ table.fin-table tr:last-child td { border-bottom: none; }
 .modal input:focus { outline: none; border-color: var(--gold); }
 .modal .err { color: var(--red); font-size: 13px; min-height: 18px; }
 
+/* ---------- top bar: two-row layout below desktop width ----------
+   The header grid (1fr auto 1fr) holds three children whose combined
+   natural width is ~1,233px signed out and ~1,312px signed in (13-link
+   nav + brand + account buttons). Grid items will not shrink below
+   min-content, so below that width the header forced every page wider
+   than the viewport (the blank right side on phones and iPads). Below
+   1440px the header becomes two rows instead: brand + account buttons
+   on row 1, and the link nav as a full-width strip that scrolls
+   internally on row 2. At 1440px and up the original single-row layout
+   is untouched. */
+@media (max-width: 1439px) {
+  .topbar-inner {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "brand actions" "nav nav";
+    row-gap: 6px;
+  }
+  .topbar-title { grid-area: brand; justify-self: start; justify-content: flex-start; }
+  .topnav {
+    grid-area: nav; max-width: 100%;
+    overflow-x: auto; overflow-y: hidden;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .topnav::-webkit-scrollbar { display: none; }
+  .topnav a { white-space: nowrap; }
+  .topnav.right { grid-area: actions; justify-self: end; overflow: visible; }
+}
+
+@media (max-width: 480px) {
+  /* Phones: the wordmark keeps the icon + CASCADIA; ANALYTICS drops so
+     brand + account buttons share row 1 without crowding out the tap
+     targets. */
+  .topbar-title .brand-word span { display: none; }
+}
+
 @media (max-width: 640px) {
   .container { padding: 0 16px 40px; }
-  .topbar-inner { padding: 12px 16px; }
-  .topbar-title { font-size: 15px; }
+  .topbar-inner { padding: 12px 16px; column-gap: 4px; }
+  .topbar-title { font-size: 14px; gap: 6px; }
+  .topbar-title .brand-icon { width: 28px; height: 28px; }
+  .pro-btn { padding: 8px 11px !important; }
+  .auth-btn { padding: 8px 11px !important; max-width: 118px; }
   .topnav a { font-size: 10px; padding: 7px 7px; }
   .news-row { grid-template-columns: 70px 1fr; padding: 15px 16px; }
   .news-ts { grid-column: 2; text-align: left; }
@@ -508,6 +545,25 @@ table.fin-table tr:last-child td { border-bottom: none; }
 .acad-slider::-moz-range-track { height: 4px; border-radius: 2px; background: #253142; }
 .acad-slider::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #d9a441; border: none; }
 .acad-formula { font-family: monospace; font-size: 15px; }
+
+/* Seasonality month grids (ticker page + Ticker Research): six columns
+   on wide screens with shrinkable tracks; four columns on phones, where
+   six min-content-sized tiles (~62px each) add up wider than the card. */
+.seas-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.seas-grid > div { min-width: 0; }
+@media (max-width: 640px) {
+  .seas-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Primer layout: 280px curriculum sidebar + module column on desktop.
+   On narrow screens they stack (sidebar full-width above the module,
+   no longer sticky) and the interactive sliders may shrink below their
+   default min-content width so the module cards fit the column. */
+@media (max-width: 760px) {
+  #acad-layout { flex-direction: column; align-items: stretch !important; }
+  #acad-side { width: auto !important; position: static !important; }
+  #acad-main .acad-slider { min-width: 0; }
+}
 
 /* ---------- ticker page: artifact layout (tkx, Oct 2026) ----------
    Port of the Muse artifact ticker page language, scoped to the ticker

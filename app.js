@@ -6659,8 +6659,8 @@ route("primer", function () {
   '<p class="hero-sub">Institutional trading and research concepts, taught plainly. ' + ACADEMY_MODULES.length + ' modules across ' + (function(){var c=[],seen={};ACADEMY_MODULES.forEach(function(m){var k=(m.category||'').toLowerCase();if(k&&!seen[k]){seen[k]=1;c.push(k);}});return c.length>1?c.slice(0,-1).join(', ')+', and '+c[c.length-1]:c.join('');})() + '.</p></div></div>' +
   '<div class="card" style="border-left:3px solid #d9a441;margin-bottom:20px;"><div style="font-size:12px;color:#d9a441;font-weight:700;letter-spacing:1px;margin-bottom:6px;">PLEASE READ</div>' +
   '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div></div>" +
-  '<div style="display:flex;gap:20px;align-items:flex-start;">' +
-  '<aside style="width:280px;flex-shrink:0;position:sticky;top:16px;">' +
+  '<div id="acad-layout" style="display:flex;gap:20px;align-items:flex-start;">' +
+  '<aside id="acad-side" style="width:280px;flex-shrink:0;position:sticky;top:16px;">' +
   '<div class="card"><div style="font-size:11px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:10px;">CURRICULUM · FREE</div>' +
   '<input id="acad-search" type="text" placeholder="Search topics, Greeks, models..." value="' + esc(_academyQuery) + '" style="width:100%;margin-bottom:10px;padding:8px 10px;border-radius:8px;border:1px solid #253142;background:#0b1119;color:#dbe5f1;font-size:13px;">' +
   '<nav>' + filtered.map((m) => {
@@ -8174,7 +8174,7 @@ route("alerts", function () {
   const avgs = rets.map(avg);
   const maxA = Math.max(...avgs.filter((v) => v != null).map(Math.abs), 1);
   let h = '<div class="card"><div style="font-size:13px;color:#dbe5f1;margin-bottom:12px;">Average monthly return by calendar month (from available price history).</div>';
-  h += '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;">';
+  h += '<div class="seas-grid">';
   months.forEach((name, i) => {
    const v = avgs[i], n = rets[i].length;
    const barW = v == null ? 0 : Math.abs(v) / maxA * 100;
@@ -12513,7 +12513,7 @@ function volSurfaceHtml() {
   const vals = (seasonality || []).filter((m) => m.avgReturn !== null && m.avgReturn !== undefined);
   if (!vals.length) return '<div class="card"><p style="color:var(--muted)">Not enough price history to compute seasonality.</p></div>';
   const maxAbs = Math.max.apply(null, vals.map((m) => Math.abs(m.avgReturn)).concat([1]));
-  let h = '<div class="card"><div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;">';
+  let h = '<div class="card"><div class="seas-grid">';
   h += months.map((mn, i) => {
    const entry = (seasonality || []).find((m) => m.month === i) || {};
    const v = entry.avgReturn;
