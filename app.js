@@ -178,13 +178,22 @@
    return null;
   }
   try {
-   // Refresh session first to ensure token is valid (fixes 401s from stale tokens)
-   try {
-    await supa.auth.refreshSession();
-   } catch (refreshErr) {
-    console.warn("Session refresh failed:", refreshErr.message);
+   // Use the current session token. getSession() returns a valid token
+   // (supabase-js auto-refreshes an expired one), so only force a refresh
+   // when the session is missing or about to expire. The previous
+   // unconditional refreshSession() emitted TOKEN_REFRESHED on every call,
+   // which re-entered refreshAuth() through the auth listener and
+   // re-triggered this fetch, looping the Pro payload download and the
+   // full-page re-render for the whole session.
+   let { data: { session } } = await supa.auth.getSession();
+   if (!session || (session.expires_at && session.expires_at * 1000 < Date.now() + 30000)) {
+    try {
+     await supa.auth.refreshSession();
+     ({ data: { session } } = await supa.auth.getSession());
+    } catch (refreshErr) {
+     console.warn("Session refresh failed:", refreshErr.message);
+    }
    }
-   const { data: { session } } = await supa.auth.getSession();
    if (!session) {
     console.warn("fetchProData: no session");
     return null;
@@ -316,7 +325,20 @@
   TICKERS = D.tickers || {};
  }
 
- async function refreshAuth() {
+ // Single-flight wrapper: boot calls refreshAuth() directly while the
+ // auth listener fires it again for INITIAL_SESSION, and further auth
+ // events can land mid-flight. Concurrent runs used to interleave into a
+ // storm of duplicate profile queries, duplicate Pro payload downloads,
+ // and repeated full-page re-renders. Collapse them into one run.
+ let _authRefreshInFlight = null;
+ function refreshAuth() {
+  if (_authRefreshInFlight) return _authRefreshInFlight;
+  _authRefreshInFlight = (async () => {
+   try { await refreshAuthImpl(); } finally { _authRefreshInFlight = null; }
+  })();
+  return _authRefreshInFlight;
+ }
+ async function refreshAuthImpl() {
   if (!supa) { proVerified = false; render(); return; }
   const prevProState = isPro();
   const prevProData = PRO_DATA;
@@ -347,9 +369,12 @@
    // Network/Supabase failure: keep previous Pro status (don't fail closed on transient errors)
    console.warn("Auth refresh failed, keeping previous Pro status:", e.message);
   }
-  // Fetch Pro data from server-gated API if verified
+  // Fetch Pro data from server-gated API if verified and not yet loaded.
+  // The payload is a daily snapshot and is fetched once per page load;
+  // auth re-checks (token events, tab wake) must not re-download it.
+  // ensureProData() keeps its own guarded fetch for routes that need it.
   // Never clear existing PRO_DATA on failure, only update on success
-  if (proVerified === true) {
+  if (proVerified === true && !PRO_DATA) {
    const newData = await fetchProData();
    if (newData) {
     PRO_DATA = newData;
@@ -389,7 +414,13 @@
  // Listen for auth changes (login/logout in another tab, token refresh)
  function initAuthListener() {
   if (!supa) return;
-  supa.auth.onAuthStateChange(() => { refreshAuth(); });
+  supa.auth.onAuthStateChange((event) => {
+   // A token rotation changes neither the identity nor the Pro status,
+   // and the refresh flow itself can emit one, so reacting to it
+   // re-entered refreshAuth() and fed the re-render loop.
+   if (event === "TOKEN_REFRESHED") return;
+   refreshAuth();
+  });
  }
 
  function shortEmail(e) {
