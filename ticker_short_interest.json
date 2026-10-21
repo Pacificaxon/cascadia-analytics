@@ -2548,6 +2548,96 @@
     "changePercent": 1.12
    }
   ],
+  "NFLX": [
+   {
+    "date": "2026-03-31",
+    "shortInterest": 80364680,
+    "prevShortInterest": 81067589,
+    "avgDailyVolume": 39093252,
+    "daysToCover": 2.06,
+    "changePercent": -0.87
+   },
+   {
+    "date": "2026-04-15",
+    "shortInterest": 77980436,
+    "prevShortInterest": 80364680,
+    "avgDailyVolume": 32123812,
+    "daysToCover": 2.43,
+    "changePercent": -2.97
+   },
+   {
+    "date": "2026-04-30",
+    "shortInterest": 95064296,
+    "prevShortInterest": 77980436,
+    "avgDailyVolume": 49338292,
+    "daysToCover": 1.93,
+    "changePercent": 21.91
+   },
+   {
+    "date": "2026-05-15",
+    "shortInterest": 98015366,
+    "prevShortInterest": 95064296,
+    "avgDailyVolume": 35446783,
+    "daysToCover": 2.77,
+    "changePercent": 3.1
+   },
+   {
+    "date": "2026-06-15",
+    "shortInterest": 101027252,
+    "prevShortInterest": 101569951,
+    "avgDailyVolume": 36324865,
+    "daysToCover": 2.78,
+    "changePercent": -0.53
+   },
+   {
+    "date": "2026-06-30",
+    "shortInterest": 104117446,
+    "prevShortInterest": 101027252,
+    "avgDailyVolume": 59183633,
+    "daysToCover": 1.76,
+    "changePercent": 3.06
+   },
+   {
+    "date": "2026-07-15",
+    "shortInterest": 99746573,
+    "prevShortInterest": 104117446,
+    "avgDailyVolume": 39050525,
+    "daysToCover": 2.55,
+    "changePercent": -4.2
+   },
+   {
+    "date": "2026-07-31",
+    "shortInterest": 92202002,
+    "prevShortInterest": 99746573,
+    "avgDailyVolume": 56077011,
+    "daysToCover": 1.64,
+    "changePercent": -7.56
+   },
+   {
+    "date": "2026-08-31",
+    "shortInterest": 91476621,
+    "prevShortInterest": 90512500,
+    "avgDailyVolume": 27650849,
+    "daysToCover": 3.31,
+    "changePercent": 1.07
+   },
+   {
+    "date": "2026-09-15",
+    "shortInterest": 94187131,
+    "prevShortInterest": 91476621,
+    "avgDailyVolume": 26198057,
+    "daysToCover": 3.6,
+    "changePercent": 2.96
+   },
+   {
+    "date": "2026-09-30",
+    "shortInterest": 82230159,
+    "prevShortInterest": 94187131,
+    "avgDailyVolume": 39305437,
+    "daysToCover": 2.09,
+    "changePercent": -12.69
+   }
+  ],
   "NSC": [
    {
     "date": "2026-03-31",
