@@ -7671,9 +7671,26 @@ route("alerts", function () {
 
  function sotpHtml(t) {
   const s = t.sotp;
-  if (!s || !s.segments) return '<p style="color:var(--muted)">Not available.</p>';
-  if (s.kind === "scenario") return sotpScenarioHtml(t);
-  if (s.years) return sotpDetailHtml(s);
+  if (!s || !s.segments || !s.segments.length) return "";
+  // A scenario SOTP renders only through the scenario renderer, and only
+  // when the fields that renderer reads unconditionally are all present.
+  // It must never fall through to the detail or summary builds below:
+  // their fields are absent here, which used to print a 2036 table of
+  // "$B" cells under AXON's framing (seen live when a stale cached
+  // app.js met the first scenario data).
+  if (s.kind === "scenario") {
+   const scenarioOk = s.total_equity_b && s.per_share && s.upside &&
+    s.segments.every((sg) => sg.values_b);
+   return scenarioOk ? sotpScenarioHtml(t) : "";
+  }
+  if (s.years && s.totals && s.mix && s.reconciliation) return sotpDetailHtml(s);
+  // Legacy summary build (AXON summary-dict fallback). Render it only
+  // when the summary fields it prints are actually present; any other
+  // segments-bearing object is a different build's data, and rendering
+  // this table for it would show empty cells and borrowed framing.
+  const summaryOk = s.total_revenue_b != null && s.total_ebitda_b != null &&
+   s.segments.every((sg) => sg.revenue_b != null && sg.ebitda_b != null);
+  if (!summaryOk) return "";
   let h = '<div class="card"><h3>Full Sum of the Parts <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;letter-spacing:1px;">· ' + esc(s.as_of || "") + "</span></h3>" +
    '<div class="section-sub">Bottom-up segment build. The parts sum to $' + esc(s.total_revenue_b) + 'B in 2036 revenue, landing just shy of the $30.3B Bull-case target.</div>' +
    '<div class="table-wrap"><table class="sotp-table"><thead><tr>' +
