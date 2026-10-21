@@ -431,16 +431,23 @@
   render();
  }
 
+ // NOTES_PDF_V must be bumped whenever any research note or scorecard PDF
+ // is republished. Devices still running an older service worker serve the
+ // raw notes/ URL cache-first from the first copy ever fetched, so an
+ // unversioned republication never reaches them; the versioned URL is a
+ // fresh cache key that bypasses the stale copy everywhere.
+ const NOTES_PDF_V = "20261021-2";
  function openPdfModal(pdfUrl, title) {
   const root = document.getElementById("modal-root");
+  const versionedUrl = pdfUrl + (pdfUrl.indexOf("?") >= 0 ? "&" : "?") + "v=" + NOTES_PDF_V;
   root.innerHTML =
    '<div class="modal-back" id="pdf-mb" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;flex-direction:column;">' +
    '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#101620;">' +
    '<div style="font-size:13px;font-weight:600;color:#f5f7fa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">' + esc(title || "Research Note") + "</div>" +
-   '<a href="' + esc(pdfUrl) + '" target="_blank" rel="noopener" style="background:transparent;color:#d9a441;border:1px solid #d9a441;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;white-space:nowrap;text-decoration:none;">Open in new tab</a>' +
+   '<a href="' + esc(versionedUrl) + '" target="_blank" rel="noopener" style="background:transparent;color:#d9a441;border:1px solid #d9a441;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;white-space:nowrap;text-decoration:none;">Open in new tab</a>' +
    '<button id="pdf-close" style="background:#d9a441;color:#0a0e17;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0;">Close</button>' +
    "</div>" +
-   '<iframe src="' + esc(pdfUrl) + '" style="flex:1;width:100%;border:none;background:#fff;" title="PDF Viewer"></iframe>' +
+   '<iframe src="' + esc(versionedUrl) + '" style="flex:1;width:100%;border:none;background:#fff;" title="PDF Viewer"></iframe>' +
    '<div style="padding:8px 12px;background:#101620;font-size:11px;color:#8d99aa;text-align:center;">For the best reading experience on mobile, use "Open in new tab" for full-page zoom and page controls.</div>' +
    "</div>";
   document.getElementById("pdf-close").addEventListener("click", () => { root.innerHTML = ""; });
