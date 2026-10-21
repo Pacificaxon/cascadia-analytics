@@ -7242,7 +7242,7 @@ route("alerts", function () {
   h += '<div class="section"><div class="section-title">Earnings Revisions ' + FREE_BADGE + '</div>' + revisionsHtml(tk) + "</div>";
 
   h += '<div class="section"><div class="section-title">Earnings History ' + FREE_BADGE + '</div>';
-  h += gated("Earnings History, Pro", "Four-quarter rolling earnings reviews: verdict, bull/bear cases, KPIs, guidance.", earningsHtml(tk));
+  h += gated("Earnings History, Pro", "Earnings reviews for every covered quarter, with verdict, bull and bear cases, KPIs, and guidance.", earningsHtml(tk));
   h += "</div>";
 
   // Earnings Call Tone (Pro) - AI NLP analysis of executive tone
@@ -8387,8 +8387,9 @@ route("alerts", function () {
  function earningsHtml(tk) {
   const hist = (D.earnings_history || {})[tk] || [];
   if (!hist.length) return '<div class="card"><p style="color:var(--muted)">No earnings reviews yet for this ticker. Coverage begins with the next reported quarter.</p></div>';
-  let h = '<div class="tabs" id="eq-tabs">' + hist.map((q, i) =>
-   '<button data-qi="' + i + '" class="' + (i === 0 ? "active" : "") + '">' + esc(q.quarter) + "</button>").join("") + "</div>";
+  let h = '<div style="margin-bottom:12px;"><label for="eq-select" style="font-size:12px;color:var(--muted);letter-spacing:0.5px;">QUARTER</label><br>' +
+   '<select id="eq-select" style="margin-top:6px;background:#0d131d;color:#f5f7fa;border:1px solid #253142;border-radius:6px;padding:8px 10px;font-size:14px;">' +
+   hist.map((q, i) => '<option value="' + i + '"' + (i === 0 ? " selected" : "") + ">" + esc(q.quarter) + "</option>").join("") + "</select></div>";
   h += '<div id="eq-body">' + hist.map((q, i) => '<div class="eq-pane" data-qi="' + i + '" style="' + (i === 0 ? "" : "display:none") + '">' +
    eqPane(q) + "</div>").join("") + "</div>";
   return h;
@@ -8432,13 +8433,11 @@ route("alerts", function () {
   return h;
  }
  function wireEarningsTabs() {
-  const tabs = document.getElementById("eq-tabs");
-  if (!tabs) return;
-  tabs.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
-   tabs.querySelectorAll("button").forEach((x) => x.classList.remove("active"));
-   b.classList.add("active");
-   document.querySelectorAll(".eq-pane").forEach((p) => p.style.display = p.dataset.qi === b.dataset.qi ? "" : "none");
-  }));
+  const sel = document.getElementById("eq-select");
+  if (!sel) return;
+  sel.addEventListener("change", () => {
+   document.querySelectorAll(".eq-pane").forEach((p) => p.style.display = p.dataset.qi === sel.value ? "" : "none");
+  });
  }
  function wireFinTabs(tk) {
   const tabs = document.getElementById("fin-" + tk + "-tabs");
