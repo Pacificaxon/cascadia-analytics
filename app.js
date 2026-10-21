@@ -55,6 +55,7 @@
   "MRVL": { domain: "marvell.com", industry: "Semiconductors" },
   "MSFT": { domain: "microsoft.com", industry: "Software" },
   "MSI": { domain: "motorolasolutions.com", industry: "Telecom Equipment" },
+  "NFLX": { domain: "netflix.com", industry: "Streaming Media" },
   "NSC": { domain: "nscorp.com", industry: "Railroads" },
   "PANW": { domain: "paloaltonetworks.com", industry: "Cybersecurity" },
   "PLPC": { domain: "preformed.com", industry: "Industrials" },
@@ -468,7 +469,7 @@
  // raw notes/ URL cache-first from the first copy ever fetched, so an
  // unversioned republication never reaches them; the versioned URL is a
  // fresh cache key that bypasses the stale copy everywhere.
- const NOTES_PDF_V = "20261021-9";
+ const NOTES_PDF_V = "20261021-10";
  function openPdfModal(pdfUrl, title) {
   const root = document.getElementById("modal-root");
   // #view=FitH asks the embedded viewer to fit the page to the viewer
