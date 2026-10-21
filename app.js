@@ -1687,7 +1687,7 @@ function bindZoomHandlers() {
    '<div class="modal-back" id="mb"><div class="modal">' +
    '<div class="modal-logo"><img src="logo-icon.png" alt="Cascadia Analytics"></div>' +
    "<h3>Cascadia Analytics Pro</h3>" +
-   "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, seasonality, Cascadia Scores, screeners including the Inflection Growth and Operating Leverage Screener, exports, earnings history, and Cascadia Research Reports. $19/month.</p>" +
+   "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, seasonality, Cascadia Scores, screeners including the Inflection Growth and Operating Leverage Screener, exports, earnings history, and Cascadia Research Reports. $19/month.</p>" +
    statusLine +
    (isPro()
     ? '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-bottom:8px;text-decoration:none;">Manage subscription</a>' +
@@ -7162,7 +7162,7 @@ route("alerts", function () {
   }
 
   // Moving averages (Pro)
-  h += '<div class="section" id="tk-sec-ma" data-toc="Moving Averages"><div class="section-title">Moving Averages ' + FREE_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-ma" data-toc="Moving Averages"><div class="section-title">Moving Averages ' + PRO_BADGE + '</div>';
   h += gated("Moving Averages, Pro", "Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.", '<div class="section-head"><h2>Moving Averages</h2><p>Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.</p></div>' + maHtml(tk));
   h += "</div>";
 
@@ -7303,7 +7303,7 @@ route("alerts", function () {
   // Earnings revisions (free) - Zacks-style 90-day revision trends
   h += '<div class="section" id="tk-sec-revisions" data-toc="Earnings Revisions"><div class="section-title">Earnings Revisions ' + FREE_BADGE + '</div>' + revisionsHtml(tk) + "</div>";
 
-  h += '<div class="section" id="tk-sec-earnings-history" data-toc="Earnings History"><div class="section-title">Earnings History ' + FREE_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-earnings-history" data-toc="Earnings History"><div class="section-title">Earnings History ' + PRO_BADGE + '</div>';
   h += gated("Earnings History, Pro", "Earnings reviews for every covered quarter, with verdict, bull and bear cases, KPIs, and guidance.", earningsHtml(tk));
   h += "</div>";
 
@@ -13770,7 +13770,7 @@ function volSurfaceHtml() {
    '<li>✓ Fed funds futures tracker with meeting probabilities</li>' +
    '<li>✓ 10Y breakeven inflation tracker</li>' +
    '<li>✓ Dark pool flow, insider transactions, trading trends with 13F</li>' +
-   '<li>✓ Earnings revisions and 4-quarter earnings history</li>' +
+   '<li>✓ Earnings revisions</li>' +
    '<li>✓ Coverage premium screener with Cascadia Score and DCF upside</li>' +
    '<li>✓ Company news feed with ticker navigation</li>' +
    '<li>✓ Macro news wire</li>' +
