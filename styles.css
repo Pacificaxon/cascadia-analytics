@@ -575,6 +575,38 @@ table.fin-table tr:last-child td { border-bottom: none; }
   .tk-page .card { padding: 20px; }
 }
 
+/* ---------- ticker page table of contents (tk-toc) ----------
+   Convention: every feature section on the ticker page carries
+   data-toc="<Title>" and a stable id on its root element; app.js builds
+   this bar at render time by scanning the rendered page for [data-toc],
+   so new sections join the TOC automatically. The bar sticks directly
+   beneath the site topbar; app.js refines the sticky top offset and each
+   section's scroll-margin-top from the measured bar heights at runtime
+   (the values here are pre-JS fallbacks). */
+.tk-toc {
+  position: sticky; top: 60px; z-index: 40;
+  display: flex; align-items: center; gap: 8px;
+  margin: 20px 0 4px; padding: 10px 12px;
+  background: #101620; border: 1px solid #253142; border-radius: 10px;
+  box-shadow: var(--shadow);
+  overflow-x: auto; overflow-y: hidden; white-space: nowrap;
+  scrollbar-width: thin; -webkit-overflow-scrolling: touch;
+}
+.tk-toc-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 1.6px;
+  color: var(--faint); text-transform: uppercase; flex: none;
+}
+.tk-toc-chip {
+  flex: none; cursor: pointer; appearance: none;
+  font-family: var(--sans); font-size: 12.5px; font-weight: 600; line-height: 1.2;
+  color: var(--muted); background: #151d29;
+  border: 1px solid #253142; border-radius: 999px; padding: 6px 12px;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.tk-toc-chip:hover { color: var(--text); border-color: var(--gold); }
+.tk-toc-chip.active { color: #0a0e17; background: var(--gold); border-color: var(--gold); }
+.tk-page [data-toc] { scroll-margin-top: 150px; }
+
 /* ---------- artifact internals panel tone (monitor / analysis / risk) ----------
    The artifact's Market Internals panels sit one step lighter than the page
    background (--surface-2). Route hook is set in render() (app.js). */

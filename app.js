@@ -1518,6 +1518,8 @@ function bindZoomHandlers() {
   // re-fires render and wipes inputs). Each render gets a sequence number; async
   // routes abort if a newer render started while they were awaiting.
   window._renderSeq = (window._renderSeq || 0) + 1;
+  // Tear down the ticker-page TOC scrollspy/listeners from the prior page
+  if (typeof cleanupTickerToc === "function") cleanupTickerToc();
   // Destroy existing Chart.js instances before re-rendering (prevents "canvas already in use")
   // Uses Chart.getChart() official API to find charts by canvas element
   try {
@@ -7024,7 +7026,7 @@ route("alerts", function () {
    '<span class="tkx-asof">AS OF ' + esc(asOfRaw) + "</span></div>";
   h += "</div></div>";
   // Hero cards: blended target / blended upside-downside / current price
-  h += '<div class="tkx-herocards">' +
+  h += '<div class="tkx-herocards" id="tk-sec-valuation" data-toc="Valuation">' +
    '<div class="tkx-hcard tkx-gold"><div class="tkx-k">BLENDED TARGET</div>' +
    '<div class="tkx-v gold">' + fmt$(t.blended, 2) + '</div>' +
    '<div class="tkx-sub">25% Bear · 50% Base · 25% Bull</div></div>' +
@@ -7048,11 +7050,15 @@ route("alerts", function () {
     (endYear ? '<span class="tkx-ends">Ends ' + endYear + "</span>" : "") + "</div></div>"
    ).join("") + "</div>";
   if (t.shares_m) h += '<div class="tkx-meta">' + t.shares_m.toFixed(1) + "M DILUTED SHARES</div>";
+  // Table of contents bar: populated by initTickerToc() after render by
+  // scanning the page for [data-toc] sections (see the TOC convention note
+  // above initTickerToc). Empty until then; hidden if no sections qualify.
+  h += '<nav class="tk-toc" id="tk-toc" aria-label="On this page"></nav>';
 
   // DCF valuation path, with the artifact section treatment (kicker + large
   // heading): price history followed by the Bear/Base/Bull fair value paths
   if (t.history && t.history.length > 5) {
-   h += '<div class="tkx-sechead"><div><div class="tkx-k">DCF VALUATION PATH</div><div class="tkx-h2">Fair value across scenarios</div></div>' +
+   h += '<div class="tkx-sechead" id="tk-sec-fvpath" data-toc="Fair Value Across Scenarios"><div><div class="tkx-k">DCF VALUATION PATH</div><div class="tkx-h2">Fair value across scenarios</div></div>' +
     '<div class="tkx-secdesc">Monthly closing price history followed by Bear, Base, and Bull DCF fair value paths.</div></div>' +
     '<div class="card"><div class="zoomable-chart" data-chart="fvpath" data-ticker="' + esc(tk) + '" style="position:relative;cursor:zoom-in;" title="Click to zoom"><div class="chart-box"><canvas id="price-chart"></canvas></div></div></div>';
   }
@@ -7061,23 +7067,23 @@ route("alerts", function () {
   const fcf = t.fcf || {};
   const hasFcf = fcf.base && fcf.base.fcf_m && fcf.base.fcf_m.length;
   if (hasFcf) {
-   h += '<div class="card"><h3>Unlevered Free Cash Flow Projection</h3>' +
+   h += '<div class="card" id="tk-sec-fcf" data-toc="Unlevered Free Cash Flow Projection"><h3>Unlevered Free Cash Flow Projection</h3>' +
     '<div class="section-sub">Modeled unlevered FCF by scenario. Hover or tap a bar for values.</div>' +
     '<div class="zoomable-chart" data-chart="fcf" data-ticker="' + esc(tk) + '" style="position:relative;cursor:zoom-in;" title="Click to zoom"><div class="chart-box"><canvas id="fcf-chart"></canvas></div>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div></div>';
   }
 
   // Reverse DCF note (free)
-  h += '<div class="card"><h3>Reverse DCF</h3><div class="section-sub">What the market is pricing in at the current quote.</div>' +
+  h += '<div class="card" id="tk-sec-rdcf" data-toc="Reverse DCF"><h3>Reverse DCF</h3><div class="section-sub">What the market is pricing in at the current quote.</div>' +
    reverseDcfHtml(t) + "</div>";
 
   // Valuation multiples (free) - logo colors: forest green + gold
-  h += '<div class="card"><h3>Valuation</h3><div class="section-sub">Market cap, enterprise value and trading multiples.</div>' +
+  h += '<div class="card" id="tk-sec-multiples" data-toc="Valuation Multiples"><h3>Valuation</h3><div class="section-sub">Market cap, enterprise value and trading multiples.</div>' +
    valuationHtml(t) + "</div>";
 
   // Sum of the parts (Pro-gated)
   if (t.sotp) {
-   h += '<div class="section"><div class="section-title">Sum of the Parts</div>';
+   h += '<div class="section" id="tk-sec-sotp" data-toc="Sum of the Parts"><div class="section-title">Sum of the Parts</div>';
    h += gated("Sum of the Parts, Pro",
     t.sotp.kind === "scenario"
      ? t.name + " valued segment by segment, each business on its own operating base and scenario multiple, bridged through the balance sheet to equity value per share."
@@ -7088,58 +7094,58 @@ route("alerts", function () {
 
   // Rails three-way comparison (UNP/CSX/NSC, free)
   if (t.rails_comp) {
-   h += '<div class="section"><div class="section-title">Class 1 Rails Comparison</div>' +
+   h += '<div class="section" id="tk-sec-rails" data-toc="Class 1 Rails Comparison"><div class="section-title">Class 1 Rails Comparison</div>' +
     '<div class="section-sub">Side-by-side DCF targets for the three US Class 1 rails.</div>' +
     '<div class="card">' + railsCompHtml(t) + "</div></div>";
   }
 
   // Financial statements (free for all)
   if (t.financials) {
-   h += '<div class="section"><div class="section-title">Financials ' + FREE_BADGE + '</div>';
+   h += '<div class="section" id="tk-sec-financials" data-toc="Financials"><div class="section-title">Financials ' + FREE_BADGE + '</div>';
    h += financialsHtml(t);
    h += "</div>";
   }
 
   // Moving averages (Pro)
-  h += '<div class="section"><div class="section-title">Moving Averages ' + FREE_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-ma" data-toc="Moving Averages"><div class="section-title">Moving Averages ' + FREE_BADGE + '</div>';
   h += gated("Moving Averages, Pro", "Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.", '<div class="section-head"><h2>Moving Averages</h2><p>Daily, weekly, and monthly trend signals with 10/20/30/50/100/200-period SMAs and EMAs.</p></div>' + maHtml(tk));
   h += "</div>";
 
   // Trading Trends (FREE), quarterly hedge fund + insider flows with price
-  h += '<div class="section"><div class="section-title">Trading Trends ' + FREE_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-trends" data-toc="Trading Trends"><div class="section-title">Trading Trends ' + FREE_BADGE + '</div>';
   h += '<div class="section-sub">Quarterly institutional and insider buy/sell flows with the price trend. Hedge fund data from 13F filings, insider data from SEC Form 4.</div>';
   h += tickerTrendsHtml(tk);
   h += "</div>";
 
   // Insider Transactions (FREE), SEC Form 4
-  h += '<div class="section"><div class="section-title">Insider Transactions ' + FREE_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-insider" data-toc="Insider Transactions"><div class="section-title">Insider Transactions ' + FREE_BADGE + '</div>';
   h += '<div class="section-sub">Recent insider buys and sells from SEC Form 4 filings. Open-market transactions signal conviction and are highlighted.</div>';
   h += tickerInsiderHtml(tk);
   h += "</div>";
 
   // Agency Risk (Pro) - Executive Alignment & Agency Risk Score
-  h += '<div class="section"><div class="section-title">Agency Risk ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-agency" data-toc="Agency Risk"><div class="section-title">Agency Risk ' + PRO_BADGE + '</div>';
   h += gated("Agency Risk, Pro", "Executive alignment score: insider ownership, open-market Form 4 flow, and pay-for-performance. Detects value traps and mercenary management.", '<div id="agency-risk-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading agency risk data...</div></div>');
   h += "</div>";
 
   // 56-Metric Fundamentals Tracker (Pro)
-  h += '<div class="section"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-fundamentals" data-toc="Fundamentals Tracker"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>';
   h += gated("Fundamentals Tracker, Pro", "56 institutional metrics: valuation multiples, ROIC, growth rates, margins, and balance sheet health, computed live from financial statements.",
    '<div id="metrics-tracker-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading 56 fundamentals metrics...</div></div>');
   h += "</div>";
 
   // Seasonality (Pro) - average monthly returns from price history
-  h += '<div class="section"><div class="section-title">Seasonality ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-seasonality" data-toc="Seasonality"><div class="section-title">Seasonality ' + PRO_BADGE + '</div>';
   h += gated("Seasonality, Pro", "Average monthly returns by calendar month, computed from price history.", seasonalityHtml(tk));
   h += "</div>";
 
   // Options flow (Pro)
-  h += '<div class="section"><div class="section-title">Unusual Options Flow ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-options" data-toc="Unusual Options Flow"><div class="section-title">Unusual Options Flow ' + PRO_BADGE + '</div>';
   h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
   h += "</div>";
 
   // Catalyst Compass (Pro) - click to generate, AI quota friendly
-  h += '<div class="section"><div class="section-title">Catalyst Compass ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-catalyst" data-toc="Catalyst Compass"><div class="section-title">Catalyst Compass ' + PRO_BADGE + '</div>';
   h += gated("Catalyst Compass, Pro", "Probabilistic scenario matrix for " + tk + ": Bull/Base/Bear outcomes with assigned probabilities on options-implied bounds.",
    '<div style="margin-bottom:12px;"><button id="e360-btn-' + tk + '" style="background:#d9a441;color:#0a0e17;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Generate Catalyst Compass</button></div>' +
    '<input id="e360-input-' + tk + '" type="hidden" value="' + esc(tk) + '" />' +
@@ -7147,14 +7153,14 @@ route("alerts", function () {
   h += "</div>";
 
   // Dark Pool & Off-Exchange Flow (FREE), FINRA Reg SHO daily
-  h += '<div class="section"><div class="section-title">Dark Pool Flow ' + FREE_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-darkpool" data-toc="Dark Pool Flow"><div class="section-title">Dark Pool Flow ' + FREE_BADGE + '</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Institutional off-exchange sentiment for ' + esc(tk) + ' from FINRA Reg SHO daily files. High dark short ratio means dealers are shorting to fill institutional buy orders (accumulation).</div>';
   h += darkPoolHtml(tk);
   h += "</div>";
 
   // Gamma Exposure (Pro), per-ticker dealer positioning
   const tg = (D.ticker_gex || {})[tk];
-  h += '<div class="section"><div class="section-title">Gamma Exposure (GEX) ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-gex" data-toc="Gamma Exposure (GEX)"><div class="section-title">Gamma Exposure (GEX) ' + PRO_BADGE + '</div>';
   h += gated("Gamma Exposure, Pro",
    "Live dealer gamma positioning for " + tk + ", see whether market makers will dampen or amplify the next move.",
    (tg && tg.available) ? tickerGexHtml(tk, tg) +
@@ -7164,21 +7170,21 @@ route("alerts", function () {
 
   // Volatility Skew (Pro), per-ticker put/call IV skew
   const ts = (D.ticker_skew || {})[tk];
-  h += '<div class="section"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-skew" data-toc="Volatility Skew"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>';
   h += gated("Volatility Skew, Pro",
    "Put vs call implied volatility for " + tk + ", what downside protection is costing.",
    (ts && ts.available) ? tickerSkewHtml(tk, ts) + skewCurveChartHtml(tk, ts, "skew-curve-" + tk) : '<div class="card"><p style="color:var(--muted)">No skew data available for this ticker.</p></div>');
   h += "</div>";
 
   // Short Interest (Pro), FINRA biweekly data
-  h += '<div class="section"><div class="section-title">Short Interest ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-short" data-toc="Short Interest"><div class="section-title">Short Interest ' + PRO_BADGE + '</div>';
   h += gated("Short Interest, Pro",
    "Biweekly short interest for " + tk + " from FINRA, red bars show shares short, white line shows days to cover.",
    '<div id="short-interest-' + esc(tk) + '"></div>');
   h += "</div>";
 
   // Technical Analysis (Pro), multi-timeframe
-  h += '<div class="section"><div class="section-title">Technical Analysis ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-technical" data-toc="Technical Analysis"><div class="section-title">Technical Analysis ' + PRO_BADGE + '</div>';
   h += gatedSafe("Technical Analysis, Pro",
    "Multi-timeframe technical analysis (daily, weekly, monthly) with RSI, MACD, moving averages, and key levels for " + tk + ".",
    () => technicalAnalysisHtml(tk));
@@ -7187,7 +7193,7 @@ route("alerts", function () {
   // Company-specific significant news (free)
   const cnews = (D.company_news || []).filter((n) => n.ticker === tk).slice(0, 5);
   if (cnews.length) {
-   h += '<div class="section"><div class="section-title">Company News</div><div class="card">';
+   h += '<div class="section" id="tk-sec-news" data-toc="Company News"><div class="section-title">Company News</div><div class="card">';
    h += cnews.map((n) => '<div class="news-item"><div class="news-headline">' + esc(n.headline) + "</div>" +
     '<div class="panel-summary">' + esc(n.summary || "") + "</div>" +
     '<div class="news-meta"><span>' + esc(n.category || "").replace(/_/g, " ") + " · " + timeAgo(n.timestamp) + "</span>" +
@@ -7203,7 +7209,7 @@ route("alerts", function () {
   // For Pro users, use the full takes with analysis text
   const displayTakes = isPro() && proTakes.length ? proTakes : takes;
   if (takes.length || indTakes.length) {
-   h += '<div class="section"><div class="section-title">Macro Takes</div><div class="card">';
+   h += '<div class="section" id="tk-sec-macro" data-toc="Macro Takes"><div class="section-title">Macro Takes</div><div class="card">';
    // 12-month indicator trends first (structural macro context, free)
    if (indTakes.length) {
     h += '<div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">12-MONTH INDICATOR TRENDS</div>';
@@ -7228,7 +7234,7 @@ route("alerts", function () {
   // Bellwether readthroughs (free)
   const rts = (D.readthroughs || {})[tk] || [];
   if (rts.length) {
-   h += '<div class="section"><div class="section-title">Bellwether Read-Throughs</div><div class="card">';
+   h += '<div class="section" id="tk-sec-bellwether" data-toc="Bellwether Read-Throughs"><div class="section-title">Bellwether Read-Throughs</div><div class="card">';
    h += rts.map((r) => '<div class="news-item"><div class="news-headline">' + esc(r.bellwether) + ", " + esc(r.quarter || "") + "</div>" +
     '<div class="panel-summary">' + esc(r.text) + "</div>" +
     '<div class="news-meta"><span>' + esc(r.date || "") + "</span></div></div>").join("");
@@ -7237,32 +7243,32 @@ route("alerts", function () {
 
   // Earnings history (Pro)
   // Earnings date & whisper (free) - confirmed date, consensus vs whisper
-  h += '<div class="section"><div class="section-title">Earnings Date & Whisper</div>' + earningsDateHtml(tk) + "</div>";
+  h += '<div class="section" id="tk-sec-earnings-date" data-toc="Earnings Date & Whisper"><div class="section-title">Earnings Date & Whisper</div>' + earningsDateHtml(tk) + "</div>";
 
   // Earnings revisions (free) - Zacks-style 90-day revision trends
-  h += '<div class="section"><div class="section-title">Earnings Revisions ' + FREE_BADGE + '</div>' + revisionsHtml(tk) + "</div>";
+  h += '<div class="section" id="tk-sec-revisions" data-toc="Earnings Revisions"><div class="section-title">Earnings Revisions ' + FREE_BADGE + '</div>' + revisionsHtml(tk) + "</div>";
 
-  h += '<div class="section"><div class="section-title">Earnings History ' + FREE_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-earnings-history" data-toc="Earnings History"><div class="section-title">Earnings History ' + FREE_BADGE + '</div>';
   h += gated("Earnings History, Pro", "Earnings reviews for every covered quarter, with verdict, bull and bear cases, KPIs, and guidance.", earningsHtml(tk));
   h += "</div>";
 
   // Earnings Call Tone (Pro) - AI NLP analysis of executive tone
   const toneData = (D.transcript_tone || {})[tk];
   if (toneData) {
-   h += '<div class="section"><div class="section-title">Earnings Call Tone ' + PRO_BADGE + '</div>';
+   h += '<div class="section" id="tk-sec-tone" data-toc="Earnings Call Tone"><div class="section-title">Earnings Call Tone ' + PRO_BADGE + '</div>';
    h += gated("Earnings Tone, Pro", "AI-powered NLP analysis of the latest earnings call: executive confidence, tone classification, pillar breakdown, and Q&A deconstruction.", toneHtml(tk, toneData));
    h += "</div>";
   }
 
   // Cascadia Alternative Data Translation Model (Pro, AXON only)
   if (tk === "AXON") {
-   h += '<div class="section"><div class="section-title">Cascadia Alternative Data Translation Model ' + PRO_BADGE + '</div>';
+   h += '<div class="section" id="tk-sec-altdata" data-toc="Alternative Data Translation Model"><div class="section-title">Cascadia Alternative Data Translation Model ' + PRO_BADGE + '</div>';
    h += gated("Cascadia Alternative Data Translation Model, Pro", "Axon net new ARR forecasting bridge computed from reported ARR, a verified federal and municipal contract pipeline, and the AI product bookings Axon has actually disclosed, with an interactive scenario simulator.", axonAltDataHtml());
    h += "</div>";
   }
 
   // Cascadia Research Report (Pro)
-  h += '<div class="section"><div class="section-title">Cascadia Research Report ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-report" data-toc="Cascadia Research Report"><div class="section-title">Cascadia Research Report ' + PRO_BADGE + '</div>';
   h += gated("Cascadia Research Report, Pro", "Full institutional research report with model detail.",
    t.note && t.note.pdf_exists
     ? '<div class="card"><h3>' + esc(t.name) + ", Research Note</h3>" +
@@ -7272,7 +7278,7 @@ route("alerts", function () {
   h += "</div>";
 
   // Investment Scorecard (Pro)
-  h += '<div class="section"><div class="section-title">Investment Scorecard ' + PRO_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-scorecard" data-toc="Investment Scorecard"><div class="section-title">Investment Scorecard ' + PRO_BADGE + '</div>';
   h += gated("Investment Scorecard, Pro", "One-glance 0-100 Growth & Value Index with five pillar breakdowns.",
    t.scorecard && t.scorecard.pdf_exists
     ? '<div class="card"><h3>' + esc(t.name) + ", Investment Scorecard</h3>" +
@@ -7281,13 +7287,14 @@ route("alerts", function () {
   h += "</div>";
 
   // Assumption sandbox (Pro)
-  h += '<div class="section"><div class="section-title">Assumption Sandbox</div>';
+  h += '<div class="section" id="tk-sec-sandbox" data-toc="Assumption Sandbox"><div class="section-title">Assumption Sandbox</div>';
   h += gated("Assumption Sandbox, Pro", "Rebuild the valuation with your own assumptions: drag the sliders and watch the implied price move.",
    '<div class="card" id="sandbox-card"></div>');
   h += "</div>";
 
   h += "</div>"; // close .tk-page
   app.innerHTML = h;
+  initTickerToc();
   drawPriceChart(t);
   drawFcfChart(t);
   if (isPro()) { initSandbox(tk, t); loadAgencyRisk(tk); if (tk === "AXON") wireAxonAltSim(); }
@@ -7350,6 +7357,98 @@ route("alerts", function () {
    console.error("Ticker render error for " + tk + ":", err);
   }
  });
+
+ /* ================= TICKER TABLE OF CONTENTS =================
+    CONVENTION (standing rule, see AGENTS.md): every feature section on the
+    ticker page renders its root element with a stable id and a
+    data-toc="<Title>" attribute (use the section's on-page heading as the
+    title). initTickerToc() builds the TOC bar at render time by scanning
+    the rendered .tk-page for [data-toc] in document order, so a section
+    that follows the convention appears in the TOC automatically, and a
+    section that is not rendered for this ticker or this visitor (no data,
+    gated away entirely) produces no entry. Free users still get entries
+    for Pro sections that render as teasers. NEVER hardcode a section list
+    for the TOC; the scan is the single source of truth. */
+ let tkTocObserver = null;
+ let tkTocResize = null;
+ let tkTocScroll = null;
+ function cleanupTickerToc() {
+  if (tkTocObserver) { try { tkTocObserver.disconnect(); } catch (e) {} tkTocObserver = null; }
+  if (tkTocResize) { try { window.removeEventListener("resize", tkTocResize); } catch (e) {} tkTocResize = null; }
+  if (tkTocScroll) { try { window.removeEventListener("scroll", tkTocScroll); } catch (e) {} tkTocScroll = null; }
+ }
+ function initTickerToc() {
+  cleanupTickerToc();
+  const bar = document.getElementById("tk-toc");
+  if (!bar) return;
+  const secs = Array.prototype.slice.call(document.querySelectorAll(".tk-page [data-toc]"));
+  if (!secs.length) { bar.style.display = "none"; return; }
+  bar.innerHTML = '<span class="tk-toc-label">On this page</span>' + secs.map((s, i) =>
+   '<button type="button" class="tk-toc-chip" data-toc-idx="' + i + '">' + esc(s.getAttribute("data-toc") || "") + "</button>"
+  ).join("");
+  const chips = Array.prototype.slice.call(bar.querySelectorAll(".tk-toc-chip"));
+  // Sticky geometry: the site topbar is sticky at top:0; the TOC bar sticks
+  // directly beneath it, and jump targets clear both bars via
+  // scroll-margin-top. Measured live so topbar height changes (mobile nav
+  // wrapping, resize) stay correct.
+  const applyOffsets = () => {
+   const topbar = document.querySelector(".topbar");
+   const topH = topbar ? topbar.offsetHeight : 0;
+   bar.style.top = topH + "px";
+   const barH = bar.offsetHeight || 0;
+   secs.forEach((s) => { s.style.scrollMarginTop = (topH + barH + 14) + "px"; });
+   return topH + barH;
+  };
+  let stackH = applyOffsets();
+  // Chip clicks smooth-scroll to the section (buttons, not hash links, so
+  // the click never triggers the hash router or a re-render).
+  bar.addEventListener("click", (ev) => {
+   const chip = ev.target && ev.target.closest ? ev.target.closest(".tk-toc-chip") : null;
+   if (!chip) return;
+   const target = secs[Number(chip.getAttribute("data-toc-idx"))];
+   if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  // Scrollspy: the active chip is the last section whose top has scrolled
+  // up to the sticky stack (topbar + TOC bar) line; before the first
+  // section reaches it, the first chip is active. Recomputed from live
+  // rects, triggered by IntersectionObserver crossings (rootMargin band
+  // just under the sticky bars) and by a throttled scroll listener, so it
+  // stays correct during smooth-scroll jumps and async section growth.
+  let activeIdx = -1;
+  const setActive = (idx) => {
+   if (idx === activeIdx) return;
+   activeIdx = idx;
+   chips.forEach((c, i) => c.classList.toggle("active", i === idx));
+   const chip = chips[idx];
+   if (chip && bar.scrollWidth > bar.clientWidth) {
+    const left = chip.offsetLeft - (bar.clientWidth - chip.offsetWidth) / 2;
+    try { bar.scrollTo({ left: Math.max(0, left), behavior: "smooth" }); } catch (e) { bar.scrollLeft = Math.max(0, left); }
+   }
+  };
+  const spy = () => {
+   const line = stackH + 40;
+   let idx = 0;
+   for (let i = 0; i < secs.length; i++) {
+    if (secs[i].getBoundingClientRect().top <= line) idx = i; else break;
+   }
+   setActive(idx);
+  };
+  tkTocResize = () => { stackH = applyOffsets(); spy(); };
+  window.addEventListener("resize", tkTocResize);
+  let spyTicking = false;
+  tkTocScroll = () => {
+   if (spyTicking) return;
+   spyTicking = true;
+   requestAnimationFrame(() => { spyTicking = false; spy(); });
+  };
+  window.addEventListener("scroll", tkTocScroll, { passive: true });
+  if (typeof IntersectionObserver !== "undefined") {
+   tkTocObserver = new IntersectionObserver(() => { spy(); },
+    { rootMargin: "-" + (stackH + 10) + "px 0px -55% 0px", threshold: 0 });
+   secs.forEach((s) => tkTocObserver.observe(s));
+  }
+  spy();
+ }
 
  function reverseDcfHtml(t) {
   if (t.upside_base == null) return '<p style="color:var(--muted)">Not available.</p>';
