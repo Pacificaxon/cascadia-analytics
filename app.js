@@ -1563,6 +1563,7 @@ function bindZoomHandlers() {
   window._renderSeq = (window._renderSeq || 0) + 1;
   // Tear down the ticker-page TOC scrollspy/listeners from the prior page
   if (typeof cleanupTickerToc === "function") cleanupTickerToc();
+  if (typeof cleanupScreenerToc === "function") cleanupScreenerToc();
   // Destroy existing Chart.js instances before re-rendering (prevents "canvas already in use")
   // Uses Chart.getChart() official API to find charts by canvas element
   try {
@@ -9328,7 +9329,7 @@ route("alerts", function () {
  function quantScreenerHtml() {
   const sd = D.screener_data;
   const meta = (sd && sd.metadata) || {};
-  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener ' + PRO_BADGE + '</div>';
+  let h = '<div class="section" id="scr-sec-quant" data-toc="Quantitative Factor Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Institutional alpha factors across the full S&P 500. Refreshed twice per quarter to capture earnings-season changes. Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC.</div>';
   h += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;">';
   h += '<div style="flex:1;min-width:220px;"><label style="font-size:11px;color:var(--muted);letter-spacing:1px;">SEARCH</label><br>' +
@@ -9477,7 +9478,7 @@ route("alerts", function () {
  function trendScreenerHtml() {
   const tk = ((D.trend_signals || {}).tickers) || {};
   const keys = Object.keys(tk).sort();
-  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener ' + PRO_BADGE + '</div>';
+  let h = '<div class="section" id="scr-sec-trend" data-toc="Trend & Reversal Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Trend Conviction (is this a real trend?) vs Exhaustion Risk (is momentum diverging?) for every coverage ticker. ' +
    'High conviction + low exhaustion = strong trend. High conviction + high exhaustion = crowded trade, tighten up. Updated ' +
    esc((((D.trend_signals || {}).timestampUTC) || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning.</div>';
@@ -9545,7 +9546,7 @@ route("alerts", function () {
  function minerviniHtml() {
   const md = D.minervini_data;
   const meta = (md && md.metadata) || {};
-  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener ' + PRO_BADGE + '</div>';
+  let h = '<div class="section" id="scr-sec-technical" data-toc="Technical Factor Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across the full S&P 500. ' +
    (meta.fullStage2Count != null ? '<b style="color:#4dd2aa;">' + meta.fullStage2Count + ' names pass all 8</b>. ' : '') +
    'Updated ' + esc((meta.lastUpdated || "").slice(0, 16).replace("T", " ")) + ' UTC, every trading morning. Click a row to inspect its criteria card.</div>';
@@ -9706,7 +9707,7 @@ route("alerts", function () {
   const meta = rs.metadata || {};
   const tax = rs.taxonomy || {};
   const sectors = tax.sectors || [];
-  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Sector &amp; Subsector Relative Strength Screener ' + PRO_BADGE + "</div>";
+  let h = '<div class="section" id="scr-sec-rs" data-toc="Sector & Subsector Relative Strength" style="max-width:none;margin-top:32px;"><div class="section-title">Sector &amp; Subsector Relative Strength Screener ' + PRO_BADGE + "</div>";
   let asOf = "";
   if (meta.lastUpdatedUTC) {
    const dt = new Date(meta.lastUpdatedUTC);
@@ -9730,7 +9731,7 @@ route("alerts", function () {
    '<select id="rs-subsector" style="' + selStyle + '"></select></div>';
   h += '<div style="margin-left:auto;font-size:12px;color:#8d99aa;">ACTIVE GROUP: <b id="rs-scope-name" style="color:#f5f7fa;"></b><br>CONSTITUENTS: <b id="rs-scope-count" style="color:#d9a441;"></b></div>';
   h += "</div>";
-  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:20px;">';
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:20px;">';
   h += rsTableHtml("lead", "TOP 10 RELATIVE STRENGTH LEADERS", "MOMENTUM SPONSORSHIP");
   h += rsTableHtml("lag", "BOTTOM 10 RELATIVE STRENGTH LAGGARDS", "STRUCTURAL WEAKNESS");
   h += "</div>";
@@ -9824,7 +9825,7 @@ route("alerts", function () {
  function inflectionScreenerHtml() {
   const inf = D.inflection_screener || {};
   const meta = inf.metadata || {};
-  let h = '<div class="section" id="infl-section" style="max-width:none;margin-top:32px;"><div class="section-title">Inflection Growth &amp; Operating Leverage Screener ' + PRO_BADGE + "</div>";
+  let h = '<div class="section" id="infl-section" data-toc="Inflection Growth & Operating Leverage" style="max-width:none;margin-top:32px;"><div class="section-title">Inflection Growth &amp; Operating Leverage Screener ' + PRO_BADGE + "</div>";
   let asOf = "";
   if (meta.lastUpdatedUTC) {
    const dt = new Date(meta.lastUpdatedUTC);
@@ -9854,7 +9855,7 @@ route("alerts", function () {
   const tabBtn = (id, label, active) =>
    '<button id="' + id + '" class="btn secondary" style="font-size:12px;' + (active ? "background:#d9a441;color:#0a0e17;border-color:#d9a441;" : "") + '">' + label + "</button>";
   h += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px;">';
-  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">VIEW</label><br><div style="display:flex;gap:8px;margin-top:4px;">' +
+  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">VIEW</label><br><div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">' +
    tabBtn("infl-tab-strict", "Strict 4Q Qualifiers (" + (meta.qualifiersCount || 0) + ")", (meta.qualifiersCount || 0) > 0) +
    tabBtn("infl-tab-near", "Near Qualifiers (" + (meta.nearQualifiersCount || 0) + ")", (meta.qualifiersCount || 0) === 0) +
    tabBtn("infl-tab-all", "Combined (" + ((meta.qualifiersCount || 0) + (meta.nearQualifiersCount || 0)) + ")", false) +
@@ -9975,7 +9976,8 @@ route("alerts", function () {
  route("screener", function () {
   const pro = isPro();
   // Coverage screener is FREE; factor screeners below are Pro
-  let h = '<div class="section"><div class="section-title">Premium Screener ' + FREE_BADGE + '</div>' +
+  let h = '<nav class="tk-toc" id="scr-toc" aria-label="On this page"></nav>' +
+   '<div class="section" id="scr-sec-premium" data-toc="Premium Screener"><div class="section-title">Premium Screener ' + FREE_BADGE + '</div>' +
    '<div class="section-sub">Filter the coverage universe. Methodology: the Cascadia Score is a multi-factor composite of valuation (base-case upside), price momentum (MA signals), earnings momentum (latest verdict), and options flow sentiment. Scored 1–100.</div>';
   h += '<div class="card"><div class="filter-bar">' +
    '<select id="f-rating"><option value="">Any rating</option><option>Buy</option><option>Hold</option><option>Sell</option></select>' +
@@ -10035,7 +10037,7 @@ route("alerts", function () {
    initTrendScreener();
    // 56-Metric Fundamentals Tracker (Pro), below trend screener
    const metDiv = document.createElement("div");
-   metDiv.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>' +
+   metDiv.innerHTML = '<div class="section" id="scr-sec-fundamentals" data-toc="Fundamentals Tracker" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">56 fundamental metrics for any ticker: valuation, returns, growth, margins, and financial health, computed live from financial statements.</div>' +
     metricsTrackerInputHtml("metrics-ticker-scr", "metrics-result-scr", "") + "</div>";
    app.appendChild(metDiv);
@@ -10055,31 +10057,131 @@ route("alerts", function () {
    initInflectionScreener();
   } else {
    const t1 = document.createElement("div");
-   t1.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener ' + PRO_BADGE + '</div>' +
+   t1.innerHTML = '<div class="section" id="scr-sec-quant" data-toc="Quantitative Factor Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener ' + PRO_BADGE + '</div>' +
     proTeaser("Quantitative Factor Screener, Pro", "Screen the full S&P 500 on institutional alpha factors: ROIC, PEG, FCF yield, EV/EBITDA, Piotroski F-Score, operating leverage, golden trend. Sliders, sortable columns, CSV export.") + "</div>";
    app.appendChild(t1);
    const t2 = document.createElement("div");
-   t2.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener ' + PRO_BADGE + '</div>' +
+   t2.innerHTML = '<div class="section" id="scr-sec-technical" data-toc="Technical Factor Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Technical Factor Screener ' + PRO_BADGE + '</div>' +
     proTeaser("Technical Factor Screener, Pro", "Mark Minervini Trend Template: 8 Stage-2 uptrend criteria plus a 1-99 RS rating across the full S&P 500. Click any ticker to inspect its full criteria card.") + "</div>";
    app.appendChild(t2);
    const t3 = document.createElement("div");
-   t3.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener ' + PRO_BADGE + '</div>' +
+   t3.innerHTML = '<div class="section" id="scr-sec-trend" data-toc="Trend & Reversal Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Trend & Reversal Screener ' + PRO_BADGE + '</div>' +
     proTeaser("Trend & Reversal Screener, Pro", "Trend Conviction vs Exhaustion Risk for every coverage ticker. Spot strong trends, crowded trades, and MACD divergences before reversals.") + "</div>";
    app.appendChild(t3);
    const t4 = document.createElement("div");
-   t4.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>' +
+   t4.innerHTML = '<div class="section" id="scr-sec-fundamentals" data-toc="Fundamentals Tracker" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>' +
     proTeaser("Fundamentals Tracker, Pro", "56 fundamental metrics for any ticker in the world: valuation multiples, ROIC, growth rates, margins, and balance sheet health, computed live.") + "</div>";
    app.appendChild(t4);
    const t5 = document.createElement("div");
-   t5.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Sector &amp; Subsector Relative Strength Screener ' + PRO_BADGE + '</div>' +
+   t5.innerHTML = '<div class="section" id="scr-sec-rs" data-toc="Sector & Subsector Relative Strength" style="max-width:none;margin-top:32px;"><div class="section-title">Sector &amp; Subsector Relative Strength Screener ' + PRO_BADGE + '</div>' +
     proTeaser("Sector & Subsector Relative Strength Screener, Pro", "Top 10 leaders and bottom 10 laggards for every GICS sector and sub-industry, ranked on a weighted 12-month relative strength model with 1-99 RS ratings across the full S&P 500.") + "</div>";
    app.appendChild(t5);
    const t6 = document.createElement("div");
-   t6.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Inflection Growth &amp; Operating Leverage Screener ' + PRO_BADGE + '</div>' +
+   t6.innerHTML = '<div class="section" id="scr-sec-inflection" data-toc="Inflection Growth & Operating Leverage" style="max-width:none;margin-top:32px;"><div class="section-title">Inflection Growth &amp; Operating Leverage Screener ' + PRO_BADGE + '</div>' +
     proTeaser("Inflection Growth & Operating Leverage Screener, Pro", "Companies whose quarter on quarter revenue growth accelerated across each of the last four quarters while gross margins expanded, with operating leverage, free cash flow, dilution, and Stage 2 trend checks on every row. Strict and near qualifiers, sortable, with CSV export.") + "</div>";
    app.appendChild(t6);
   }
+  initScreenerToc();
  });
+
+ /* ================= SCREENER TABLE OF CONTENTS =================
+    The screener page stacks up to eight sections with no
+    in-page navigation of its own; this bar gives it the same section
+    navigation the ticker pages have. Chips are built at render time by
+    scanning the rendered page for [data-toc] section roots, never from a
+    hardcoded list, so a section that is not rendered for this visitor
+    produces no entry. Pinning mirrors the ticker bar: position fixed
+    beneath the site topbar with an in-flow spacer holding the layout
+    slot, because WebKit does not reliably pin a sticky element that is
+    also a horizontal scroll container. Styles reuse the tk-toc classes. */
+ let scrTocCleanup = null;
+ function cleanupScreenerToc() {
+  if (scrTocCleanup) { try { scrTocCleanup(); } catch (e) {} scrTocCleanup = null; }
+  ["scr-toc-spacer", "scr-top-btn"].forEach((id) => {
+   const n = document.getElementById(id);
+   if (n && n.parentNode) n.parentNode.removeChild(n);
+  });
+  const bar = document.getElementById("scr-toc");
+  if (bar) { bar.classList.remove("is-fixed"); bar.style.left = ""; bar.style.width = ""; bar.style.top = ""; }
+ }
+ function initScreenerToc() {
+  cleanupScreenerToc();
+  const bar = document.getElementById("scr-toc");
+  if (!bar) return;
+  const secs = Array.prototype.slice.call(document.querySelectorAll("#app [data-toc]"));
+  if (secs.length < 2) { bar.style.display = "none"; return; }
+  bar.innerHTML = '<span class="tk-toc-label">On this page</span>' + secs.map((s, i) =>
+   '<button type="button" class="tk-toc-chip" data-scr-idx="' + i + '">' + esc(s.getAttribute("data-toc") || "") + "</button>"
+  ).join("");
+  const chips = Array.prototype.slice.call(bar.querySelectorAll(".tk-toc-chip"));
+  const barCS = getComputedStyle(bar);
+  const spacer = document.createElement("div");
+  spacer.id = "scr-toc-spacer";
+  spacer.setAttribute("aria-hidden", "true");
+  spacer.style.height = (bar.offsetHeight || 0) + "px";
+  spacer.style.marginTop = barCS.marginTop;
+  spacer.style.marginBottom = barCS.marginBottom;
+  bar.parentNode.insertBefore(spacer, bar);
+  bar.classList.add("is-fixed");
+  const topBtn = document.createElement("button");
+  topBtn.type = "button";
+  topBtn.id = "scr-top-btn";
+  topBtn.className = "tk-top-btn";
+  topBtn.textContent = "↑ Sections";
+  topBtn.setAttribute("aria-label", "Back to the sections menu at the top of this page");
+  bar.parentNode.appendChild(topBtn);
+  const onTopBtn = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
+  topBtn.addEventListener("click", onTopBtn);
+  const applyOffsets = () => {
+   const topbar = document.querySelector(".topbar");
+   const topH = topbar ? topbar.offsetHeight : 0;
+   bar.style.top = topH + "px";
+   const barH = bar.offsetHeight || 0;
+   const sr = spacer.getBoundingClientRect();
+   bar.style.left = sr.left + "px";
+   bar.style.width = sr.width + "px";
+   spacer.style.height = barH + "px";
+   secs.forEach((s) => { s.style.scrollMarginTop = (topH + barH + 14) + "px"; });
+  };
+  applyOffsets();
+  const onChip = (ev) => {
+   const chip = ev.target && ev.target.closest ? ev.target.closest(".tk-toc-chip") : null;
+   if (!chip) return;
+   const target = secs[Number(chip.getAttribute("data-scr-idx"))];
+   if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  bar.addEventListener("click", onChip);
+  let activeIdx = -1;
+  const setActive = (idx) => {
+   if (idx === activeIdx) return;
+   activeIdx = idx;
+   chips.forEach((c, i) => c.classList.toggle("active", i === idx));
+  };
+  let ticking = false;
+  const onScroll = () => {
+   if (ticking) return;
+   ticking = true;
+   requestAnimationFrame(() => {
+    ticking = false;
+    const topbar = document.querySelector(".topbar");
+    const line = (topbar ? topbar.offsetHeight : 0) + (bar.offsetHeight || 0) + 14;
+    let idx = 0;
+    secs.forEach((s, i) => { if (s.getBoundingClientRect().top <= line + 2) idx = i; });
+    setActive(idx);
+    const past = window.scrollY > 400 && spacer.getBoundingClientRect().top < 0;
+    topBtn.classList.toggle("show", past);
+   });
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", applyOffsets);
+  onScroll();
+  scrTocCleanup = () => {
+   bar.removeEventListener("click", onChip);
+   topBtn.removeEventListener("click", onTopBtn);
+   window.removeEventListener("scroll", onScroll);
+   window.removeEventListener("resize", applyOffsets);
+  };
+ }
 
  /* ================= EARNINGS DASHBOARD (Pro) ================= */
  route("earnings", async function () {
@@ -11517,7 +11619,7 @@ function squeezeRadarHtml() {
  const s = D.squeeze_radar || {};
  const recs = s.records || [];
 
- let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Short Squeeze Radar ' + PRO_BADGE + "</div>" +
+ let h = '<div class="section" id="scr-sec-squeeze" data-toc="Short Squeeze Radar" style="max-width:none;margin-top:32px;"><div class="section-title">Short Squeeze Radar ' + PRO_BADGE + "</div>" +
   '<div class="section-sub">Where short positioning is most crowded and vulnerable to forced covering. Sorted by squeeze score, highest first.</div>';
 
  if (!recs.length) {
