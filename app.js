@@ -7074,11 +7074,13 @@ route("alerts", function () {
   h += '<div class="card"><h3>Valuation</h3><div class="section-sub">Market cap, enterprise value and trading multiples.</div>' +
    valuationHtml(t) + "</div>";
 
-  // Sum of the parts (AXON only, Pro-gated)
+  // Sum of the parts (Pro-gated)
   if (t.sotp) {
    h += '<div class="section"><div class="section-title">Sum of the Parts</div>';
    h += gated("Sum of the Parts, Pro",
-    "Axon's five-segment bottom-up build: 2036 revenue and EBITDA by business line.",
+    t.sotp.kind === "scenario"
+     ? t.name + " valued segment by segment, each business on its own operating base and scenario multiple, bridged through the balance sheet to equity value per share."
+     : "Axon's five-segment bottom-up build: 2036 revenue and EBITDA by business line.",
     sotpHtml(t));
    h += "</div>";
   }
@@ -7670,6 +7672,7 @@ route("alerts", function () {
  function sotpHtml(t) {
   const s = t.sotp;
   if (!s || !s.segments) return '<p style="color:var(--muted)">Not available.</p>';
+  if (s.kind === "scenario") return sotpScenarioHtml(t);
   if (s.years) return sotpDetailHtml(s);
   let h = '<div class="card"><h3>Full Sum of the Parts <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;letter-spacing:1px;">· ' + esc(s.as_of || "") + "</span></h3>" +
    '<div class="section-sub">Bottom-up segment build. The parts sum to $' + esc(s.total_revenue_b) + 'B in 2036 revenue, landing just shy of the $30.3B Bull-case target.</div>' +
@@ -7688,6 +7691,67 @@ route("alerts", function () {
    '<td class="num">$' + esc(s.total_ebitda_b) + "B</td>" +
    '<td class="num"> - </td></tr>';
   h += "</tbody></table></div></div>";
+  return h;
+ }
+
+ // Scenario SOTP (SE, MELI): per-segment operating bases and Bear/Base/Bull
+ // multiples from the workbook SOTP tab, bridged through net cash/debt to
+ // equity value per share. Data arrives via build.py from data.json, which
+ // refresh_data.py extracts from the workbook tab each morning.
+ function sotpScenarioHtml(t) {
+  const s = t.sotp;
+  const sc = ["bear", "base", "bull"];
+  const moneyB = function(v) { return v == null ? " - " : (v < 0 ? "-$" : "$") + Math.abs(v).toFixed(2) + "B"; };
+  const pctF = function(v) { return v == null ? " - " : (v * 100).toFixed(1) + "%"; };
+  const mult = function(v) { return v == null ? " - " : (v < 0.05 ? v.toFixed(3) : v.toFixed(2)) + "x"; };
+  const multCell = function(sg, k) {
+   const m = sg.metric || "";
+   if (m.indexOf("x ") === 0) return mult(sg.multiples[k]) + " " + esc(m.slice(2));
+   return mult(sg.multiples[k]) + (m ? " " + esc(m) : "");
+  };
+  const perShare = function(vB) { return vB == null || !s.shares_m ? null : vB * 1000 / s.shares_m; };
+  let h = '<div class="card"><h3>Full Sum of the Parts <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;letter-spacing:1px;">· DAILY SNAPSHOT · AS OF ' + esc((s.as_of || "").toUpperCase()) + '</span></h3>' +
+   '<div class="section-sub">Scenario sum-of-the-parts cross-check on the DCF. Each segment is valued on its own operating base and multiple, then bridged through ' + (s.net_cash_b >= 0 ? "net cash" : "net debt") + ' to equity value per share. Built on ' + (s.shares_m ? s.shares_m.toFixed(1) : " - ") + 'M diluted shares at a ' + fmt$(s.spot) + ' spot reference.</div>';
+  // Base-case build
+  h += '<div class="table-wrap"><table class="sotp-table"><thead><tr>' +
+   "<th>Segment</th><th>Operating Base</th><th>Base Multiple</th><th>Base Value</th><th>Per Share</th><th>Share of Total</th>" +
+   "</tr></thead><tbody>";
+  s.segments.forEach(function(sg) {
+   h += "<tr><td><div class=\"sotp-name\">" + esc(sg.name) + "</div>" +
+    '<div class="sotp-note">' + esc(sg.basis_label || "") + (sg.basis_note ? " · " + esc(sg.basis_note) : "") + "</div></td>" +
+    '<td class="num">' + moneyB(sg.basis_b) + "</td>" +
+    '<td class="num">' + multCell(sg, "base") + "</td>" +
+    '<td class="num">' + moneyB(sg.values_b.base) + "</td>" +
+    '<td class="num">' + fmt$(perShare(sg.values_b.base)) + "</td>" +
+    '<td class="num">' + pctF(sg.pct ? sg.pct.base : null) + "</td></tr>";
+  });
+  h += "<tr><td><div class=\"sotp-name\">" + (s.net_cash_b >= 0 ? "Net cash" : "Less: net debt") + "</div>" +
+   '<div class="sotp-note">Balance sheet bridge from the DCF model</div></td>' +
+   '<td class="num"> - </td><td class="num"> - </td>' +
+   '<td class="num">' + moneyB(s.net_cash_b) + "</td>" +
+   '<td class="num">' + fmt$(perShare(s.net_cash_b)) + "</td>" +
+   '<td class="num">' + pctF(s.net_cash_pct ? s.net_cash_pct.base : null) + "</td></tr>";
+  h += '<tr class="sotp-total"><td><div class="sotp-name">Total equity value</div></td>' +
+   '<td class="num"> - </td><td class="num"> - </td>' +
+   '<td class="num">' + moneyB(s.total_equity_b.base) + "</td>" +
+   '<td class="num">' + fmt$(s.per_share.base) + "</td>" +
+   '<td class="num">100.0%</td></tr>';
+  h += "</tbody></table></div>";
+  // Scenario values
+  h += '<div class="table-wrap" style="margin-top:16px;"><table class="sotp-table"><thead><tr>' +
+   "<th>Scenario Values</th><th>Bear</th><th>Base</th><th>Bull</th>" +
+   "</tr></thead><tbody>";
+  h += '<tr><td><div class="sotp-name">SOTP value per share</div></td>' +
+   sc.map(function(k) { return '<td class="num">' + fmt$(s.per_share[k]) + "</td>"; }).join("") + "</tr>";
+  h += '<tr><td><div class="sotp-name">Total equity value</div></td>' +
+   sc.map(function(k) { return '<td class="num">' + moneyB(s.total_equity_b[k]) + "</td>"; }).join("") + "</tr>";
+  h += '<tr><td><div class="sotp-name">Upside vs spot</div></td>' +
+   sc.map(function(k) { return '<td class="num"><span class="' + cls(s.upside[k] * 100) + '">' + fmtPct(s.upside[k] * 100) + "</span></td>"; }).join("") + "</tr>";
+  h += "</tbody></table></div>";
+  if (s.dcf_base != null && s.vs_dcf != null) {
+   h += '<div class="panel-summary" style="margin-top:14px;">The SOTP Base of <b>' + fmt$(s.per_share.base) + '</b> sits <b>' + fmt$(Math.abs(s.vs_dcf)) + " (" + Math.abs((s.vs_dcf_pct || 0) * 100).toFixed(1) + "%) " + (s.vs_dcf >= 0 ? "above" : "below") + '</b> the DCF Base target of <b>' + fmt$(s.dcf_base) + '</b>. The DCF remains our primary valuation, and the SOTP cross-checks it from segment operating scale.</div>';
+  }
+  h += "</div>";
   return h;
  }
 
@@ -13166,6 +13230,7 @@ function volSurfaceHtml() {
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ Earnings call transcript tone analysis, executive confidence scoring via AI</li>' +
    '<li>✓ Cascadia Alternative Data Translation Model for Axon, a net new ARR forecasting bridge with a verified contract pipeline and interactive scenario simulator</li>' +
+   '<li>✓ Sum-of-the-Parts valuations, segment-level scenario builds for Axon, Sea Limited, and MercadoLibre</li>' +
    '<li>✓ Catalyst Compass, probabilistic Bull/Base/Bear scenario matrix on options-implied bounds for any ticker</li>' +
 '<li>✓ Fundamentals Tracker, 56 institutional-grade metrics for any ticker</li>' +
 '<li>✓ Quality Snapshot, on-demand ROIC, cash conversion, and Rule of 40 scoring</li>' +

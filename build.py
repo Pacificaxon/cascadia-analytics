@@ -361,6 +361,11 @@ def main():
         # for market-implied CAGR, not the JS recomputation
         if d.get("reverse_dcf"):
             t["reverse_dcf"] = d["reverse_dcf"]
+        # Scenario sum-of-the-parts (SE, MELI) — extracted from each workbook's
+        # SOTP tab by refresh_data.py into data.json (last-good values kept on
+        # a failed read). Pro-gated on the ticker page, same as AXON below.
+        if d.get("sotp"):
+            t["sotp"] = d["sotp"]
         # AXON sum-of-the-parts (Pro-gated on the ticker page) — full detailed model
         if tk == "AXON":
             try:
