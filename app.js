@@ -439,7 +439,10 @@
  const NOTES_PDF_V = "20261021-2";
  function openPdfModal(pdfUrl, title) {
   const root = document.getElementById("modal-root");
-  const versionedUrl = pdfUrl + (pdfUrl.indexOf("?") >= 0 ? "&" : "?") + "v=" + NOTES_PDF_V;
+  // #view=FitH asks the embedded viewer to fit the page to the viewer
+  // width (honored by the Chrome/Edge/Firefox/Android PDF viewers), so a
+  // note fills a phone screen instead of leaving blank space at the right.
+  const versionedUrl = pdfUrl + (pdfUrl.indexOf("?") >= 0 ? "&" : "?") + "v=" + NOTES_PDF_V + "#view=FitH";
   root.innerHTML =
    '<div class="modal-back" id="pdf-mb" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;flex-direction:column;">' +
    '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#101620;">' +
