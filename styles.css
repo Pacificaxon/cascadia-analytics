@@ -594,16 +594,16 @@ table.fin-table tr:last-child td { border-bottom: none; }
 }
 .tk-toc-label {
   font-family: var(--mono); font-size: 10px; letter-spacing: 1.6px;
-  color: var(--faint); text-transform: uppercase; flex: none;
+  color: var(--gold); text-transform: uppercase; flex: none;
 }
 .tk-toc-chip {
   flex: none; cursor: pointer; appearance: none;
   font-family: var(--sans); font-size: 12.5px; font-weight: 600; line-height: 1.2;
-  color: var(--muted); background: #151d29;
+  color: var(--gold); background: #151d29;
   border: 1px solid #253142; border-radius: 999px; padding: 6px 12px;
   transition: color .15s, border-color .15s, background .15s;
 }
-.tk-toc-chip:hover { color: var(--text); border-color: var(--gold); }
+.tk-toc-chip:hover { color: #f0bd56; border-color: var(--gold); }
 .tk-toc-chip.active { color: #0a0e17; background: var(--gold); border-color: var(--gold); }
 .tk-page [data-toc] { scroll-margin-top: 150px; }
 
