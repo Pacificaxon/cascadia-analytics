@@ -240,6 +240,7 @@
    if (sections.flow_divergence) flat.flow_divergence = sections.flow_divergence;
    if (sections.oas_distress) flat.oas_distress = sections.oas_distress;
    if (sections.pead_screener) flat.pead_screener = sections.pead_screener;
+   if (sections.rs_screener) flat.rs_screener = sections.rs_screener;
    if (sections.treasury_slr) flat.treasury_slr = sections.treasury_slr;
    if (sections.squeeze_radar) flat.squeeze_radar = sections.squeeze_radar;
    if (sections.gamma_flip) flat.gamma_flip = sections.gamma_flip;
@@ -9430,6 +9431,125 @@ route("alerts", function () {
   draw();
  }
 
+ /* Sector & Subsector RS screener (Pro): GICS leaders/laggards on a 1-99 RS rating */
+ function rsRowHtml(s, rank, side) {
+  const href = (ORDER.indexOf(s.ticker) >= 0 ? "#/ticker/" : "#/research/") + esc(s.ticker);
+  const badge = side === "lead"
+   ? "background:#0d2b1d;color:#4dd2aa;border:1px solid #1e5c40;"
+   : "background:#331419;color:#f37d83;border:1px solid #6e2a30;";
+  const rc = (v) => 'text-align:right;color:' + (Number(v) >= 0 ? "#4dd2aa" : "#f37d83") + ";";
+  const pct = (v) => (Number(v) >= 0 ? "+" : "") + Number(v).toFixed(1) + "%";
+  return "<tr>" +
+   '<td><span style="color:#647184;font-size:11px;">#' + rank + '</span> <a href="' + href + '" style="color:#d9a441;font-weight:700;text-decoration:none;">' + esc(s.ticker) + "</a></td>" +
+   '<td style="color:#8d99aa;font-size:12px;">' + esc(s.company || "") + "</td>" +
+   '<td style="text-align:right;">' + fmt$(s.price) + "</td>" +
+   '<td style="text-align:center;"><span style="display:inline-block;min-width:32px;padding:2px 6px;border-radius:6px;font-weight:800;font-size:12px;' + badge + '">' + s.rs_rating + "</span></td>" +
+   '<td style="' + rc(s.ret_1m) + '">' + pct(s.ret_1m) + "</td>" +
+   '<td style="' + rc(s.ret_3m) + '">' + pct(s.ret_3m) + "</td>" +
+   '<td style="' + rc(s.ret_12m) + '">' + pct(s.ret_12m) + "</td>" +
+   '<td style="text-align:right;color:#8d99aa;">' + Number(s.pct_off_high).toFixed(1) + "%</td></tr>";
+ }
+
+ function rsTableHtml(side, title, note) {
+  const color = side === "lead" ? "#4dd2aa" : "#f37d83";
+  const frame = side === "lead" ? "#1e5c40" : "#6e2a30";
+  return '<div class="card" style="padding:0;overflow:hidden;border:1px solid ' + frame + ';">' +
+   '<div style="padding:12px 16px;border-bottom:1px solid #253142;display:flex;justify-content:space-between;align-items:center;">' +
+   '<span style="font-weight:800;font-size:12px;letter-spacing:1px;color:' + color + ';">' + title + "</span>" +
+   '<span style="font-size:10px;color:#647184;letter-spacing:1px;">' + note + "</span></div>" +
+   '<div class="table-wrap"><table class="coverage"><thead><tr>' +
+   "<th>Ticker</th><th>Company</th>" +
+   '<th style="text-align:right;">Price</th><th style="text-align:center;">RS Rating</th>' +
+   '<th style="text-align:right;">1M</th><th style="text-align:right;">3M</th><th style="text-align:right;">12M</th>' +
+   '<th style="text-align:right;">Off 52W High</th>' +
+   '</tr></thead><tbody id="rs-' + side + '-body"></tbody></table></div></div>';
+ }
+
+ function rsScreenerHtml() {
+  const rs = D.rs_screener || {};
+  const meta = rs.metadata || {};
+  const tax = rs.taxonomy || {};
+  const sectors = tax.sectors || [];
+  let h = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Sector &amp; Subsector Relative Strength Screener ' + PRO_BADGE + "</div>";
+  let asOf = "";
+  if (meta.lastUpdatedUTC) {
+   const dt = new Date(meta.lastUpdatedUTC);
+   if (!isNaN(dt)) asOf = dt.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+  }
+  h += '<div class="section-sub">Top 10 leaders and bottom 10 laggards by relative strength for every GICS sector and sub-industry across the S&amp;P 500. Daily Snapshot' + (asOf ? " · as of " + esc(asOf) : "") + (meta.stale ? " · stale, showing the last available snapshot" : "") + ".</div>";
+  if (!sectors.length || !rs.bySector || !rs.bySubsector) {
+   h += '<div class="card"><p style="color:#8d99aa;">RS screener data is not available yet. It populates with the next daily snapshot.</p></div></div>';
+   return h;
+  }
+  const selStyle = "background:#0d131d;border:1px solid #253142;border-radius:6px;color:#f5f7fa;padding:8px 10px;margin-top:4px;max-width:320px;";
+  h += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;">';
+  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">VIEW</label><br><div style="display:flex;gap:8px;margin-top:4px;">' +
+   '<button id="rs-mode-sector" class="btn secondary" style="font-size:12px;background:#d9a441;color:#0a0e17;border-color:#d9a441;">Sector View (' + sectors.length + " sectors)</button>" +
+   '<button id="rs-mode-subsector" class="btn secondary" style="font-size:12px;">Subsector View (' + (tax.subsectors || []).length + " sub-industries)</button>" +
+   "</div></div>";
+  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">SECTOR</label><br>' +
+   '<select id="rs-sector" style="' + selStyle + '">' +
+   sectors.map((s) => '<option value="' + esc(s) + '">' + esc(s) + "</option>").join("") + "</select></div>";
+  h += '<div id="rs-sub-wrap" style="display:none;"><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">SUB-INDUSTRY</label><br>' +
+   '<select id="rs-subsector" style="' + selStyle + '"></select></div>';
+  h += '<div style="margin-left:auto;font-size:12px;color:#8d99aa;">ACTIVE GROUP: <b id="rs-scope-name" style="color:#f5f7fa;"></b><br>CONSTITUENTS: <b id="rs-scope-count" style="color:#d9a441;"></b></div>';
+  h += "</div>";
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:20px;">';
+  h += rsTableHtml("lead", "TOP 10 RELATIVE STRENGTH LEADERS", "MOMENTUM SPONSORSHIP");
+  h += rsTableHtml("lag", "BOTTOM 10 RELATIVE STRENGTH LAGGARDS", "STRUCTURAL WEAKNESS");
+  h += "</div>";
+  h += '<div class="card" style="margin-top:20px;"><div style="font-size:12px;color:#8d99aa;letter-spacing:1px;margin-bottom:8px;">HOW THE RS RATING WORKS</div>' +
+   '<p style="font-size:13px;line-height:1.6;color:#dbe5f1;margin:0;">The raw relative strength score for each stock blends four stepwise quarterly returns from the trailing year of daily adjusted prices. The most recent quarter carries a 40 percent weight and each of the three earlier quarters carries 20 percent, so recent acceleration counts for more than older performance. Raw scores are ranked across the full S&amp;P 500 universe and converted into a percentile rating from 1 to 99. A rating of 99 means the stock outperformed 99 percent of the universe on this model, and a rating of 1 marks the weakest name in the universe. The Off 52W High column shows how far the latest close sits below the trailing 52-week high, which separates leaders still pressing their highs from leaders that have begun to roll over.</p></div>';
+  h += "</div>";
+  return h;
+ }
+
+ function initRsScreener() {
+  const rs = D.rs_screener || {};
+  const tax = rs.taxonomy || {};
+  const sectorSel = document.getElementById("rs-sector");
+  if (!sectorSel) return;
+  const subSel = document.getElementById("rs-subsector");
+  const subWrap = document.getElementById("rs-sub-wrap");
+  const leadBody = document.getElementById("rs-lead-body");
+  const lagBody = document.getElementById("rs-lag-body");
+  let mode = "sector";
+  function current() {
+   if (mode === "sector") return { name: sectorSel.value, g: (rs.bySector || {})[sectorSel.value] || { count: 0, leaders: [], laggards: [] } };
+   return { name: sectorSel.value + " → " + subSel.value, g: (rs.bySubsector || {})[subSel.value] || { count: 0, leaders: [], laggards: [] } };
+  }
+  function syncSubs() {
+   const subs = (tax.sectorToSubsectors || {})[sectorSel.value] || [];
+   subSel.innerHTML = subs.map((s) => '<option value="' + esc(s) + '">' + esc(s) + "</option>").join("");
+  }
+  function draw() {
+   const c = current();
+   document.getElementById("rs-scope-name").textContent = c.name;
+   document.getElementById("rs-scope-count").textContent = c.g.count + " equities";
+   leadBody.innerHTML = (c.g.leaders || []).map((s, i) => rsRowHtml(s, i + 1, "lead")).join("") ||
+    '<tr><td colspan="8" style="text-align:center;color:#8d99aa;padding:20px;">No constituent records available.</td></tr>';
+   lagBody.innerHTML = (c.g.laggards || []).map((s, i) => rsRowHtml(s, i + 1, "lag")).join("") ||
+    '<tr><td colspan="8" style="text-align:center;color:#8d99aa;padding:20px;">No constituent records available.</td></tr>';
+  }
+  function setMode(m) {
+   mode = m;
+   const on = "font-size:12px;background:#d9a441;color:#0a0e17;border-color:#d9a441;";
+   const off = "font-size:12px;";
+   const bS = document.getElementById("rs-mode-sector");
+   const bU = document.getElementById("rs-mode-subsector");
+   bS.style.cssText = m === "sector" ? on : off;
+   bU.style.cssText = m === "subsector" ? on : off;
+   subWrap.style.display = m === "subsector" ? "" : "none";
+   if (m === "subsector") syncSubs();
+   draw();
+  }
+  document.getElementById("rs-mode-sector").addEventListener("click", () => setMode("sector"));
+  document.getElementById("rs-mode-subsector").addEventListener("click", () => setMode("subsector"));
+  sectorSel.addEventListener("change", () => { if (mode === "subsector") syncSubs(); draw(); });
+  subSel.addEventListener("change", draw);
+  draw();
+ }
+
  route("screener", function () {
   const pro = isPro();
   // Coverage screener is FREE; factor screeners below are Pro
@@ -9501,6 +9621,11 @@ route("alerts", function () {
       const sqDiv = document.createElement("div");
       sqDiv.innerHTML = squeezeRadarHtml();
       app.appendChild(sqDiv);
+   // Sector & Subsector RS screener (Pro), below the other screeners
+   const rsDiv = document.createElement("div");
+   rsDiv.innerHTML = rsScreenerHtml();
+   app.appendChild(rsDiv);
+   initRsScreener();
   } else {
    const t1 = document.createElement("div");
    t1.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener ' + PRO_BADGE + '</div>' +
@@ -9518,6 +9643,10 @@ route("alerts", function () {
    t4.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Fundamentals Tracker ' + PRO_BADGE + '</div>' +
     proTeaser("Fundamentals Tracker, Pro", "56 fundamental metrics for any ticker in the world: valuation multiples, ROIC, growth rates, margins, and balance sheet health, computed live.") + "</div>";
    app.appendChild(t4);
+   const t5 = document.createElement("div");
+   t5.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Sector &amp; Subsector Relative Strength Screener ' + PRO_BADGE + '</div>' +
+    proTeaser("Sector & Subsector Relative Strength Screener, Pro", "Top 10 leaders and bottom 10 laggards for every GICS sector and sub-industry, ranked on a weighted 12-month relative strength model with 1-99 RS ratings across the full S&P 500.") + "</div>";
+   app.appendChild(t5);
   }
  });
 
@@ -13239,6 +13368,7 @@ function volSurfaceHtml() {
    '<li>✓ Quantitative Factor Screener, full S&P 500 on ROIC, PEG, FCF yield, Piotroski, and more, with CSV export</li>' +
    '<li>✓ Technical Factor Screener, Minervini Stage-2 trend template across the S&P 500</li>' +
    '<li>✓ Trend & Reversal Screener, per-ticker trend conviction and exhaustion gauges</li>' +
+   '<li>✓ Sector &amp; Subsector Relative Strength Screener, GICS leaders and laggards with 1-99 RS ratings across the S&amp;P 500</li>' +
    '<li>✓ Sector-relative Comps Matrix, OLS valuation vs growth with anomaly detection</li>' +
    '<li>✓ Earnings Dashboard, 8 quarters of surprises and 1-day reactions for every ticker</li>' +
    '<li>✓ Unusual options flow tracker (10 trading days per ticker)</li>' +
