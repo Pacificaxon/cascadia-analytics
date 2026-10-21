@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cascadia-pwa-cache-v3';
+const CACHE_NAME = 'cascadia-pwa-cache-v4';
 // Precache only the PWA manifest. The HTML shell and app code are deliberately
 // NOT precached: v2 precached '/' and '/index.html' and served them cache-first
 // under a cache name that never changed, so returning visitors (notably the
@@ -21,6 +21,22 @@ self.addEventListener('install', event => {
 // Serve cached content when offline, but always try network first for data files
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
+  // Documents republished at stable URLs (research note PDFs under /notes/)
+  // must never be served cache-first: the v3 static branch cached the first
+  // fetched copy of a note and served it indefinitely, so updated reports
+  // never reached returning visitors. Network-first, like data.
+  if (url.pathname.startsWith('/notes/') || url.pathname.endsWith('.pdf')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
   // For data.js and API calls, use network-first (always get fresh data)
   if (url.pathname.endsWith('data.js') || url.pathname.startsWith('/api/')) {
     event.respondWith(
@@ -64,8 +80,9 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// Clean up old caches (activating v3 purges the v2 shell cache) and take
-// control of open pages immediately so the fix applies without a restart.
+// Clean up old caches (activating a new version purges every older cache,
+// including any stale note PDFs cached by v3) and take control of open
+// pages immediately so the fix applies without a restart.
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
