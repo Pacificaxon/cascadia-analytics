@@ -7388,6 +7388,12 @@ route("alerts", function () {
   if (tkTocResize) { try { window.removeEventListener("resize", tkTocResize); } catch (e) {} tkTocResize = null; }
   if (tkTocScroll) { try { window.removeEventListener("scroll", tkTocScroll); } catch (e) {} tkTocScroll = null; }
   if (tkTocBarCleanup) { try { tkTocBarCleanup(); } catch (e) {} tkTocBarCleanup = null; }
+  ["tk-toc-spacer", "tk-top-btn"].forEach((id) => {
+   const n = document.getElementById(id);
+   if (n && n.parentNode) n.parentNode.removeChild(n);
+  });
+  const tocEl = document.getElementById("tk-toc");
+  if (tocEl) { tocEl.classList.remove("is-fixed"); tocEl.style.left = ""; tocEl.style.width = ""; }
  }
  function initTickerToc() {
   cleanupTickerToc();
@@ -7399,15 +7405,53 @@ route("alerts", function () {
    '<button type="button" class="tk-toc-chip" data-toc-idx="' + i + '">' + esc(s.getAttribute("data-toc") || "") + "</button>"
   ).join("");
   const chips = Array.prototype.slice.call(bar.querySelectorAll(".tk-toc-chip"));
-  // Sticky geometry: the site topbar is sticky at top:0; the TOC bar sticks
-  // directly beneath it, and jump targets clear both bars via
-  // scroll-margin-top. Measured live so topbar height changes (mobile nav
-  // wrapping, resize) stay correct.
+  // Pinning: the bar is position:fixed beneath the site topbar, with an
+  // in-flow spacer holding its layout slot. position:sticky was spec-clean
+  // here (the bar's parent .tk-page spans the full page; no ancestor has
+  // overflow, transform, or filter) and pinned correctly in Chromium, but
+  // the bar is also its own horizontal scroll container (overflow-x:auto
+  // for the chip strip), and WebKit does not reliably pin a sticky box
+  // that is itself a scroll container, so on the user's iPhone the bar
+  // scrolled away with the page. Fixed positioning removes the sticky
+  // dependency entirely; the spacer keeps the layout identical to the
+  // in-flow bar, and geometry is measured from the spacer at runtime.
+  const barCS = getComputedStyle(bar);
+  const spacer = document.createElement("div");
+  spacer.id = "tk-toc-spacer";
+  spacer.setAttribute("aria-hidden", "true");
+  spacer.style.height = (bar.offsetHeight || 0) + "px";
+  spacer.style.marginTop = barCS.marginTop;
+  spacer.style.marginBottom = barCS.marginBottom;
+  bar.parentNode.insertBefore(spacer, bar);
+  bar.classList.add("is-fixed");
+  // Floating return shortcut: appears once the reader has scrolled well
+  // past the hero (the bar's natural slot is above the viewport), and
+  // smooth-scrolls back to the top of the page where the TOC sits.
+  const topBtn = document.createElement("button");
+  topBtn.type = "button";
+  topBtn.id = "tk-top-btn";
+  topBtn.className = "tk-top-btn";
+  topBtn.textContent = "↑ Sections";
+  topBtn.setAttribute("aria-label", "Back to the sections menu at the top of this page");
+  bar.parentNode.appendChild(topBtn);
+  const onTopBtn = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
+  topBtn.addEventListener("click", onTopBtn);
+  const updateTopBtn = () => {
+   const past = window.scrollY > 400 && spacer.getBoundingClientRect().top < 0;
+   topBtn.classList.toggle("show", past);
+  };
+  // Fixed geometry: the bar pins directly beneath the site topbar, and
+  // jump targets clear both bars via scroll-margin-top. Measure live so
+  // topbar height changes (mobile nav wrapping, resize) stay correct.
   const applyOffsets = () => {
    const topbar = document.querySelector(".topbar");
    const topH = topbar ? topbar.offsetHeight : 0;
    bar.style.top = topH + "px";
    const barH = bar.offsetHeight || 0;
+   const sr = spacer.getBoundingClientRect();
+   bar.style.left = sr.left + "px";
+   bar.style.width = sr.width + "px";
+   spacer.style.height = barH + "px";
    secs.forEach((s) => { s.style.scrollMarginTop = (topH + barH + 14) + "px"; });
    return topH + barH;
   };
@@ -7441,6 +7485,7 @@ route("alerts", function () {
    bar.removeEventListener("touchstart", noteUserBar);
    bar.removeEventListener("wheel", noteUserBar);
    bar.removeEventListener("scroll", onBarScroll);
+   topBtn.removeEventListener("click", onTopBtn);
   };
   // Scrollspy: the active chip is the last section whose top has scrolled
   // up to the sticky stack (topbar + TOC bar) line; before the first
@@ -7484,7 +7529,7 @@ route("alerts", function () {
   tkTocScroll = () => {
    if (spyTicking) return;
    spyTicking = true;
-   requestAnimationFrame(() => { spyTicking = false; spy(); });
+   requestAnimationFrame(() => { spyTicking = false; spy(); updateTopBtn(); });
   };
   window.addEventListener("scroll", tkTocScroll, { passive: true });
   if (typeof IntersectionObserver !== "undefined") {
@@ -7493,6 +7538,8 @@ route("alerts", function () {
    secs.forEach((s) => tkTocObserver.observe(s));
   }
   spy();
+  updateTopBtn();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (document.contains(bar)) stackH = applyOffsets(); });
  }
 
  function reverseDcfHtml(t) {

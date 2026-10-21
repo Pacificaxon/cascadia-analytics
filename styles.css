@@ -635,10 +635,13 @@ table.fin-table tr:last-child td { border-bottom: none; }
    Convention: every feature section on the ticker page carries
    data-toc="<Title>" and a stable id on its root element; app.js builds
    this bar at render time by scanning the rendered page for [data-toc],
-   so new sections join the TOC automatically. The bar sticks directly
-   beneath the site topbar; app.js refines the sticky top offset and each
-   section's scroll-margin-top from the measured bar heights at runtime
-   (the values here are pre-JS fallbacks). */
+   so new sections join the TOC automatically. app.js pins the bar with
+   position:fixed beneath the site topbar, with an in-flow spacer holding
+   its layout slot (WebKit does not reliably pin a sticky element that is
+   also a scroll container, and this bar scrolls horizontally); the
+   sticky rule below is only the pre-JS fallback. app.js refines the pin
+   offset and each section's scroll-margin-top from measured heights at
+   runtime. */
 .tk-toc {
   position: sticky; top: 60px; z-index: 40;
   display: flex; align-items: center; gap: 8px;
@@ -661,7 +664,23 @@ table.fin-table tr:last-child td { border-bottom: none; }
 }
 .tk-toc-chip:hover { color: #f0bd56; border-color: var(--gold); }
 .tk-toc-chip.active { color: #0a0e17; background: var(--gold); border-color: var(--gold); }
+.tk-toc.is-fixed { position: fixed; margin: 0; z-index: 45; }
 .tk-page [data-toc] { scroll-margin-top: 150px; }
+/* Floating return shortcut on ticker pages: created by initTickerToc,
+   shown only once the reader has scrolled well past the hero, and it
+   smooth-scrolls back to the top of the page where the TOC bar sits.
+   z-index stays below the modal layer (.modal-back is 100, the PDF
+   modal 1000) so it never overlaps modal UI. */
+.tk-top-btn {
+  position: fixed; right: calc(14px + env(safe-area-inset-right)); bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 60; cursor: pointer; appearance: none;
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--gold); background: #151d29; border: 1px solid var(--gold); border-radius: 999px;
+  padding: 9px 14px; box-shadow: var(--shadow);
+  opacity: 0; visibility: hidden; transform: translateY(8px); pointer-events: none;
+  transition: opacity .2s, transform .2s, visibility .2s;
+}
+.tk-top-btn.show { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
 
 /* ---------- artifact internals panel tone (monitor / analysis / risk) ----------
    The artifact's Market Internals panels sit one step lighter than the page
