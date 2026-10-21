@@ -548,6 +548,7 @@ def main():
         "oas_distress": load(os.path.join(MR, "oas_distress.json")) if os.path.exists(os.path.join(MR, "oas_distress.json")) else {},
         "pead_screener": load(os.path.join(MR, "pead_screener.json")) if os.path.exists(os.path.join(MR, "pead_screener.json")) else {},
         "rs_screener": load(os.path.join(MR, "rs_screener.json")) if os.path.exists(os.path.join(MR, "rs_screener.json")) else {},
+        "inflection_screener": load(os.path.join(MR, "inflection_screener.json")) if os.path.exists(os.path.join(MR, "inflection_screener.json")) else {},
         "treasury_slr": load(os.path.join(MR, "treasury_slr.json")) if os.path.exists(os.path.join(MR, "treasury_slr.json")) else {},
         "squeeze_radar": load(os.path.join(MR, "squeeze_radar.json")) if os.path.exists(os.path.join(MR, "squeeze_radar.json")) else {},
         "gamma_flip": load(os.path.join(MR, "gamma_flip.json")) if os.path.exists(os.path.join(MR, "gamma_flip.json")) else {},

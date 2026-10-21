@@ -241,6 +241,7 @@
    if (sections.oas_distress) flat.oas_distress = sections.oas_distress;
    if (sections.pead_screener) flat.pead_screener = sections.pead_screener;
    if (sections.rs_screener) flat.rs_screener = sections.rs_screener;
+   if (sections.inflection_screener) flat.inflection_screener = sections.inflection_screener;
    if (sections.treasury_slr) flat.treasury_slr = sections.treasury_slr;
    if (sections.squeeze_radar) flat.squeeze_radar = sections.squeeze_radar;
    if (sections.gamma_flip) flat.gamma_flip = sections.gamma_flip;
@@ -1654,7 +1655,7 @@ function bindZoomHandlers() {
    '<div class="modal-back" id="mb"><div class="modal">' +
    '<div class="modal-logo"><img src="logo-icon.png" alt="Cascadia Analytics"></div>' +
    "<h3>Cascadia Analytics Pro</h3>" +
-   "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, seasonality, Cascadia Scores, screener, exports, earnings history, and Cascadia Research Reports. $19/month.</p>" +
+   "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, earnings revisions, seasonality, Cascadia Scores, screeners including the Inflection Growth and Operating Leverage Screener, exports, earnings history, and Cascadia Research Reports. $19/month.</p>" +
    statusLine +
    (isPro()
     ? '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-bottom:8px;text-decoration:none;">Manage subscription</a>' +
@@ -9753,6 +9754,192 @@ route("alerts", function () {
   draw();
  }
 
+ /* Inflection Growth & Operating Leverage screener (Pro): four quarters of sequential (QoQ) revenue growth acceleration with sequential gross margin expansion */
+ function inflFlagHtml(v, label) {
+  if (v == null) return '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#1a2434;color:#8d99aa;border:1px solid #253142;">' + label + ' N/A</span>';
+  return v
+   ? '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#0d2b1d;color:#4dd2aa;border:1px solid #1e5c40;">' + label + ' PASS</span>'
+   : '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#331419;color:#f37d83;border:1px solid #6e2a30;">' + label + ' FAIL</span>';
+ }
+
+ function inflRowHtml(c) {
+  const href = (ORDER.indexOf(c.ticker) >= 0 ? "#/ticker/" : "#/research/") + esc(c.ticker);
+  const pos = (v) => 'text-align:right;color:' + (Number(v) >= 0 ? "#4dd2aa" : "#f37d83") + ";";
+  const pct = (v, d) => (v == null ? "N/A" : (Number(v) >= 0 ? "+" : "") + Number(v).toFixed(d == null ? 1 : d) + "%");
+  const bps = (v) => (v == null ? "N/A" : (Number(v) >= 0 ? "+" : "") + Math.round(Number(v)) + " bps");
+  const badge = c.isStrictQualifier
+   ? '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:800;background:#0d2b1d;color:#4dd2aa;border:1px solid #1e5c40;">4/4</span>'
+   : '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:800;background:#2b210d;color:#d9a441;border:1px solid #5c4a1e;">3/4</span>';
+  const tech = c.passesTechnicals
+   ? '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#0d2b1d;color:#4dd2aa;border:1px solid #1e5c40;">STAGE 2</span>'
+   : '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#1a2434;color:#8d99aa;border:1px solid #253142;">CONSOLIDATING</span>';
+  return "<tr>" +
+   '<td><a href="' + href + '" style="color:#d9a441;font-weight:700;text-decoration:none;">' + esc(c.ticker) + "</a> " + badge +
+   '<div style="color:#8d99aa;font-size:11px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(c.companyName || "") + "</div></td>" +
+   '<td style="text-align:right;">' + fmt$(c.price) + "</td>" +
+   '<td style="text-align:right;color:#8d99aa;">' + esc(c.marketCapFormatted || "N/A") + "</td>" +
+   '<td style="text-align:center;"><span style="font-size:11px;font-weight:700;color:#4dd2aa;background:#0d131d;padding:3px 8px;border-radius:6px;border:1px solid #253142;white-space:nowrap;">' + esc(c.revenueGrowthPathStr || "") + "</span></td>" +
+   '<td style="' + pos(c.accelDeltaPct) + 'font-weight:800;">' + pct(c.accelDeltaPct) + "</td>" +
+   '<td style="text-align:right;font-weight:600;">' + (c.currentGrossMargin == null ? "N/A" : Number(c.currentGrossMargin).toFixed(1) + "%") + "</td>" +
+   '<td style="' + pos(c.grossMarginDeltaBps) + '">' + bps(c.grossMarginDeltaBps) + "</td>" +
+   '<td style="' + pos(c.operatingMarginDeltaBps) + '">' + bps(c.operatingMarginDeltaBps) + "</td>" +
+   '<td style="text-align:right;">' + (c.ttmFcfYield == null ? "N/A" : Number(c.ttmFcfYield).toFixed(1) + "%") + "</td>" +
+   '<td style="text-align:center;white-space:nowrap;">' + inflFlagHtml(c.passesFcf, "FCF") + " " + inflFlagHtml(c.passesDilution, "DIL") + " " + inflFlagHtml(c.passesOpLeverage, "OPL") + "</td>" +
+   '<td style="text-align:center;">' + tech + "</td>" +
+   '<td style="text-align:right;font-weight:700;color:#d9a441;">' + (c.rankScore == null ? "N/A" : Number(c.rankScore).toFixed(2)) + "</td></tr>";
+ }
+
+ function inflectionScreenerHtml() {
+  const inf = D.inflection_screener || {};
+  const meta = inf.metadata || {};
+  let h = '<div class="section" id="infl-section" style="max-width:none;margin-top:32px;"><div class="section-title">Inflection Growth &amp; Operating Leverage Screener ' + PRO_BADGE + "</div>";
+  let asOf = "";
+  if (meta.lastUpdatedUTC) {
+   const dt = new Date(meta.lastUpdatedUTC);
+   if (!isNaN(dt)) asOf = dt.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+  }
+  h += '<div class="section-sub">Companies whose reported revenue growth accelerated in each of the most recent four quarters on a quarter on quarter basis, while gross margins expanded across the same four quarters, with operating leverage, free cash flow, dilution, and Stage 2 trend checks on every row. Daily Snapshot' + (asOf ? " · as of " + esc(asOf) : "") + (meta.stale ? " · stale, showing the last available snapshot" : "") + ".</div>";
+  const hasData = (inf.qualifiers && inf.qualifiers.length) || (inf.nearQualifiers && inf.nearQualifiers.length);
+  if (!hasData) {
+   h += '<div class="card"><p style="color:#8d99aa;">Inflection screener data is not available yet. It populates with the next daily snapshot.</p></div></div>';
+   return h;
+  }
+  const statCard = (label, value, sub, color) =>
+   '<div class="card" style="padding:16px;"><div style="font-size:10px;letter-spacing:1px;color:#8d99aa;">' + label + '</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + (color || "#f5f7fa") + ';margin-top:4px;">' + value + '</div>' +
+   '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + sub + "</div></div>";
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px;">';
+  h += statCard("TOTAL EQUITIES SCANNED", meta.totalScanned || 0, "Most liquid S&amp;P 500 names");
+  h += statCard("STRICT 4Q QUALIFIERS", meta.qualifiersCount || 0, "Full 4/4 acceleration and expansion", "#4dd2aa");
+  h += statCard("NEAR QUALIFIERS", meta.nearQualifiersCount || 0, "Emerging inflections, most steps met", "#d9a441");
+  h += statCard("AVG ACCELERATION DELTA", "+" + (meta.avgAccelerationDeltaPct || 0) + "%", "Four quarter QoQ growth spread");
+  h += "</div>";
+  if ((meta.qualifiersCount || 0) === 0) {
+   h += '<div class="card" style="border:1px solid #5c4a1e;background:#241c0a;margin-bottom:20px;"><b style="color:#d9a441;font-size:12px;letter-spacing:1px;">NO STRICT 4/4 QUALIFIERS IN THE CURRENT SCAN</b>' +
+    '<p style="font-size:13px;line-height:1.6;color:#dbe5f1;margin:8px 0 0;">No company in the scanned universe currently meets every acceleration and margin expansion step. The table defaults to near qualifiers, the companies meeting most of the steps, so the emerging inflections stay visible.</p></div>';
+  }
+  const selStyle = "background:#0d131d;border:1px solid #253142;border-radius:6px;color:#f5f7fa;padding:8px 10px;max-width:300px;";
+  const tabBtn = (id, label, active) =>
+   '<button id="' + id + '" class="btn secondary" style="font-size:12px;' + (active ? "background:#d9a441;color:#0a0e17;border-color:#d9a441;" : "") + '">' + label + "</button>";
+  h += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px;">';
+  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">VIEW</label><br><div style="display:flex;gap:8px;margin-top:4px;">' +
+   tabBtn("infl-tab-strict", "Strict 4Q Qualifiers (" + (meta.qualifiersCount || 0) + ")", (meta.qualifiersCount || 0) > 0) +
+   tabBtn("infl-tab-near", "Near Qualifiers (" + (meta.nearQualifiersCount || 0) + ")", (meta.qualifiersCount || 0) === 0) +
+   tabBtn("infl-tab-all", "Combined (" + ((meta.qualifiersCount || 0) + (meta.nearQualifiersCount || 0)) + ")", false) +
+   "</div></div>";
+  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">SEARCH</label><br>' +
+   '<input id="infl-search" type="text" placeholder="Ticker or company" style="' + selStyle + '"></div>';
+  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">SECTOR</label><br>' +
+   '<select id="infl-sector" style="' + selStyle + '"><option value="">All sectors</option></select></div>';
+  h += '<div style="margin-left:auto;"><button class="btn secondary" id="infl-export" style="font-size:12px;">Export CSV</button></div>';
+  h += "</div>";
+  const th = (key, label, align) =>
+   '<th data-sort="' + key + '" style="text-align:' + (align || "left") + ';cursor:pointer;white-space:nowrap;">' + label + ' <span data-arrow="' + key + '" style="color:#d9a441;"></span></th>';
+  h += '<div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table class="coverage"><thead><tr>' +
+   th("ticker", "Ticker") + th("price", "Price", "right") + th("marketCap", "Market Cap", "right") +
+   '<th style="text-align:center;min-width:250px;">4-Quarter Revenue Growth Path (QoQ)</th>' +
+   th("accelDeltaPct", "Accel Delta", "right") + th("currentGrossMargin", "Gross Margin", "right") +
+   th("grossMarginDeltaBps", "GM Delta", "right") + th("operatingMarginDeltaBps", "OPM Delta", "right") +
+   th("ttmFcfYield", "FCF Yield", "right") + '<th style="text-align:center;">Checks</th>' +
+   '<th style="text-align:center;">Technicals</th>' + th("rankScore", "Composite Rank", "right") +
+   '</tr></thead><tbody id="infl-body"></tbody></table></div></div>';
+  h += '<div style="font-size:12px;color:#8d99aa;margin-top:10px;">SHOWING: <b id="infl-count" style="color:#f5f7fa;"></b></div>';
+  h += '<div class="card" style="margin-top:20px;"><div style="font-size:12px;color:#8d99aa;letter-spacing:1px;margin-bottom:8px;">WHAT THIS SCREENER SHOWS</div>' +
+   '<p style="font-size:13px;line-height:1.6;color:#dbe5f1;margin:0;">Every growth figure on this page is quarter on quarter. The growth path prints the sequential revenue growth rate for each of the last four reported quarters, and the acceleration delta is the spread between the latest quarter and the first quarter of that path. Strict qualifiers raised their quarter on quarter growth rate on all three steps while gross margin widened on all three steps. Near qualifiers met most of those steps. The checks column reports whether trailing twelve month free cash flow is positive (FCF), whether the share count grew by no more than 3 percent over the past year (DIL), and whether operating margin expanded across the four quarters (OPL). A Stage 2 badge means the share price sits above its 50 day average, which sits above its 200 day average. Rows are ordered by a composite rank that summarizes the combined strength of the acceleration and margin expansion.</p></div>';
+  h += "</div>";
+  return h;
+ }
+
+ function initInflectionScreener() {
+  const inf = D.inflection_screener || {};
+  const body = document.getElementById("infl-body");
+  if (!body) return;
+  const strict = inf.qualifiers || [];
+  const near = inf.nearQualifiers || [];
+  let tab = (strict.length === 0 && near.length > 0) ? "near" : "strict";
+  let sortCol = "accelDeltaPct";
+  let sortAsc = false;
+  const searchEl = document.getElementById("infl-search");
+  const sectorEl = document.getElementById("infl-sector");
+  const sectors = Array.from(new Set(strict.concat(near).map((c) => c.sector).filter(Boolean))).sort();
+  sectorEl.innerHTML = '<option value="">All sectors</option>' + sectors.map((s) => '<option value="' + esc(s) + '">' + esc(s) + "</option>").join("");
+  function pool() {
+   if (tab === "strict") return strict.slice();
+   if (tab === "near") return near.slice();
+   return strict.concat(near);
+  }
+  function rows() {
+   const q = (searchEl.value || "").toLowerCase();
+   const sec = sectorEl.value || "";
+   let res = pool().filter((c) => {
+    if (sec && c.sector !== sec) return false;
+    if (q && c.ticker.toLowerCase().indexOf(q) < 0 && (c.companyName || "").toLowerCase().indexOf(q) < 0) return false;
+    return true;
+   });
+   res.sort((a, b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    if (typeof av === "string") return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+    return sortAsc ? av - bv : bv - av;
+   });
+   return res;
+  }
+  function draw() {
+   const r = rows();
+   body.innerHTML = r.map(inflRowHtml).join("") ||
+    '<tr><td colspan="12" style="text-align:center;color:#8d99aa;padding:20px;">No companies match the selected filters.</td></tr>';
+   document.getElementById("infl-count").textContent = r.length + (tab === "all" ? " combined qualifiers" : tab === "strict" ? " strict qualifiers" : " near qualifiers");
+   ["strict", "near", "all"].forEach((t) => {
+    const b = document.getElementById("infl-tab-" + t);
+    if (b) b.style.cssText = "font-size:12px;" + (t === tab ? "background:#d9a441;color:#0a0e17;border-color:#d9a441;" : "");
+   });
+   document.querySelectorAll("#infl-section th[data-sort]").forEach((el) => {
+    const arrow = el.querySelector("[data-arrow]");
+    if (arrow) arrow.textContent = el.getAttribute("data-sort") === sortCol ? (sortAsc ? "▲" : "▼") : "";
+   });
+  }
+  ["strict", "near", "all"].forEach((t) => {
+   const b = document.getElementById("infl-tab-" + t);
+   if (b) b.addEventListener("click", () => { tab = t; draw(); });
+  });
+  searchEl.addEventListener("input", draw);
+  sectorEl.addEventListener("change", draw);
+  document.querySelectorAll("#infl-section th[data-sort]").forEach((el) => {
+   el.addEventListener("click", () => {
+    const key = el.getAttribute("data-sort");
+    if (sortCol === key) sortAsc = !sortAsc;
+    else { sortCol = key; sortAsc = false; }
+    draw();
+   });
+  });
+  document.getElementById("infl-export").addEventListener("click", () => {
+   const head = "ticker,company,sector,industry,price,market_cap,rev_growth_path_qoq,latest_growth_qoq_pct,accel_delta_pct,gross_margin_pct,gm_delta_bps,opm_delta_bps,ttm_fcf_yield_pct,dilution_yoy_pct,stage2,strict_qualifier,composite_rank\n";
+   const csv = head + rows().map((c) => [
+    c.ticker,
+    '"' + (c.companyName || "").replace(/"/g, "") + '"',
+    '"' + (c.sector || "").replace(/"/g, "") + '"',
+    '"' + (c.industry || "").replace(/"/g, "") + '"',
+    c.price == null ? "" : c.price,
+    c.marketCap == null ? "" : c.marketCap,
+    '"' + (c.revenueGrowthPathStr || "") + '"',
+    c.latestGrowthQoQ == null ? "" : c.latestGrowthQoQ,
+    c.accelDeltaPct == null ? "" : c.accelDeltaPct,
+    c.currentGrossMargin == null ? "" : c.currentGrossMargin,
+    c.grossMarginDeltaBps == null ? "" : c.grossMarginDeltaBps,
+    c.operatingMarginDeltaBps == null ? "" : c.operatingMarginDeltaBps,
+    c.ttmFcfYield == null ? "" : c.ttmFcfYield,
+    c.dilutionPct == null ? "" : c.dilutionPct,
+    c.passesTechnicals ? "YES" : "NO",
+    c.isStrictQualifier ? "STRICT" : "NEAR",
+    c.rankScore == null ? "" : c.rankScore
+   ].join(",")).join("\n");
+   dl("inflection_screener.csv", csv, "text/csv");
+  });
+  draw();
+ }
+
  route("screener", function () {
   const pro = isPro();
   // Coverage screener is FREE; factor screeners below are Pro
@@ -9829,6 +10016,11 @@ route("alerts", function () {
    rsDiv.innerHTML = rsScreenerHtml();
    app.appendChild(rsDiv);
    initRsScreener();
+   // Inflection Growth & Operating Leverage screener (Pro), below the RS screener
+   const inflDiv = document.createElement("div");
+   inflDiv.innerHTML = inflectionScreenerHtml();
+   app.appendChild(inflDiv);
+   initInflectionScreener();
   } else {
    const t1 = document.createElement("div");
    t1.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener ' + PRO_BADGE + '</div>' +
@@ -9850,6 +10042,10 @@ route("alerts", function () {
    t5.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Sector &amp; Subsector Relative Strength Screener ' + PRO_BADGE + '</div>' +
     proTeaser("Sector & Subsector Relative Strength Screener, Pro", "Top 10 leaders and bottom 10 laggards for every GICS sector and sub-industry, ranked on a weighted 12-month relative strength model with 1-99 RS ratings across the full S&P 500.") + "</div>";
    app.appendChild(t5);
+   const t6 = document.createElement("div");
+   t6.innerHTML = '<div class="section" style="max-width:none;margin-top:32px;"><div class="section-title">Inflection Growth &amp; Operating Leverage Screener ' + PRO_BADGE + '</div>' +
+    proTeaser("Inflection Growth & Operating Leverage Screener, Pro", "Companies whose quarter on quarter revenue growth accelerated across each of the last four quarters while gross margins expanded, with operating leverage, free cash flow, dilution, and Stage 2 trend checks on every row. Strict and near qualifiers, sortable, with CSV export.") + "</div>";
+   app.appendChild(t6);
   }
  });
 
