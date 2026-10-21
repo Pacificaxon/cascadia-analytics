@@ -7073,15 +7073,27 @@ route("alerts", function () {
     '<div class="card"><div class="zoomable-chart" data-chart="fvpath" data-ticker="' + esc(tk) + '" style="position:relative;cursor:zoom-in;" title="Click to zoom"><div class="chart-box"><canvas id="price-chart"></canvas></div></div></div>';
   }
 
-  // FCF chart (free, interactive tooltips)
+  // FCF projection (Pro-gated): the modeled series ship only in the Pro
+  // bundle (_fcf_projections, merged into t.fcf when /api/pro-data lands),
+  // so gating the shell itself on hasFcf made the section, and its TOC
+  // chip, appear only at the Pro unlock re-render, seconds after first
+  // paint. Render the shell for every tier like the other Pro sections
+  // (GEX, skew): the free render shows the standard Pro teaser inside it,
+  // the Pro render swaps in the chart in place, and the chip list is
+  // identical from first paint. The teaser carries no FCF numbers; the
+  // chart markup itself is number-free (values enter only when
+  // drawFcfChart reads the Pro-merged ticker after render).
   const fcf = t.fcf || {};
   const hasFcf = fcf.base && fcf.base.fcf_m && fcf.base.fcf_m.length;
-  if (hasFcf) {
-   h += '<div class="card" id="tk-sec-fcf" data-toc="Unlevered Free Cash Flow Projection"><h3>Unlevered Free Cash Flow Projection</h3>' +
-    '<div class="section-sub">Modeled unlevered FCF by scenario. Hover or tap a bar for values.</div>' +
-    '<div class="zoomable-chart" data-chart="fcf" data-ticker="' + esc(tk) + '" style="position:relative;cursor:zoom-in;" title="Click to zoom"><div class="chart-box"><canvas id="fcf-chart"></canvas></div>' +
-    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div></div>';
-  }
+  h += '<div class="card" id="tk-sec-fcf" data-toc="Unlevered Free Cash Flow Projection"><h3>Unlevered Free Cash Flow Projection</h3>' +
+   gated("Unlevered Free Cash Flow Projection, Pro",
+    "Modeled unlevered free cash flow by scenario for " + tk + ", Bear, Base, and Bull across the DCF forecast horizon.",
+    hasFcf
+     ? '<div class="section-sub">Modeled unlevered FCF by scenario. Hover or tap a bar for values.</div>' +
+      '<div class="zoomable-chart" data-chart="fcf" data-ticker="' + esc(tk) + '" style="position:relative;cursor:zoom-in;" title="Click to zoom"><div class="chart-box"><canvas id="fcf-chart"></canvas></div>' +
+      '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>'
+     : '<p style="color:var(--muted)">No FCF projection data available for this ticker.</p>') +
+   "</div>";
 
   // Reverse DCF note (free)
   h += '<div class="card" id="tk-sec-rdcf" data-toc="Reverse DCF"><h3>Reverse DCF</h3><div class="section-sub">What the market is pricing in at the current quote.</div>' +
