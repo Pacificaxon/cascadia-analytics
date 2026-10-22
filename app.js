@@ -471,7 +471,7 @@
  // raw notes/ URL cache-first from the first copy ever fetched, so an
  // unversioned republication never reaches them; the versioned URL is a
  // fresh cache key that bypasses the stale copy everywhere.
- const NOTES_PDF_V = "20261022-59";
+ const NOTES_PDF_V = "20261022-60";
  function openPdfModal(pdfUrl, title) {
   const root = document.getElementById("modal-root");
   // #view=FitH asks the embedded viewer to fit the page to the viewer
