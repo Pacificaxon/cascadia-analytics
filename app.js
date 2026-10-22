@@ -262,6 +262,7 @@
    if (sections.advanced_macro) flat.advanced_macro = sections.advanced_macro;
    if (sections.leadership_canary) flat.leadership_canary = sections.leadership_canary;
    if (sections.axon_altdata) flat.axon_altdata = sections.axon_altdata;
+   if (sections.detailed_breakdowns) flat.detailed_breakdowns = sections.detailed_breakdowns;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -7318,6 +7319,11 @@ route("alerts", function () {
   h += gated("Earnings History, Pro", "Earnings reviews for every covered quarter, with verdict, bull and bear cases, KPIs, and guidance.", earningsHtml(tk));
   h += "</div>";
 
+  // Detailed Breakdown (Pro) - institutional Key Read-Throughs per call
+  h += '<div class="section" id="tk-sec-breakdown" data-toc="Detailed Breakdown"><div class="section-title">Detailed Breakdown ' + PRO_BADGE + '</div>';
+  h += gated("Detailed Breakdown, Pro", "Institutional Key Read-Throughs from each earnings call: the second-order implications for suppliers, competitors, and customers, with supporting evidence, transmission mechanisms, timing, and attribution boundaries.", breakdownHtml(tk));
+  h += "</div>";
+
   // Earnings Call Tone (Pro) - AI NLP analysis of executive tone
   const toneData = (D.transcript_tone || {})[tk];
   if (toneData) {
@@ -7365,6 +7371,7 @@ route("alerts", function () {
   drawFcfChart(t);
   if (isPro()) { initSandbox(tk, t); loadAgencyRisk(tk); if (tk === "AXON") wireAxonAltSim(); }
   wireEarningsTabs(tk);
+  wireBreakdownTabs(tk);
   wireFinTabs(tk);
   wireIncomeChart(tk);
   wireBalanceChart(tk);
@@ -8696,6 +8703,47 @@ route("alerts", function () {
     q.key_questions.map((x) => "<li>" + esc(typeof x === "string" ? x : (x.q || x.question || "")) + "</li>").join("") + "</ul></div>";
   }
   return h;
+ }
+ function breakdownHtml(tk) {
+  const store = (D.detailed_breakdowns || {})[tk] || {};
+  const qs = store.quarters || [];
+  if (!qs.length) return '<div class="card"><p style="color:var(--muted)">No detailed breakdowns yet for this ticker. Breakdowns are added as earnings calls are processed.</p></div>';
+  let h = '<div style="margin-bottom:12px;"><label for="db-select" style="font-size:12px;color:var(--muted);letter-spacing:0.5px;">QUARTER</label><br>' +
+   '<select id="db-select" style="margin-top:6px;background:#0d131d;color:#f5f7fa;border:1px solid #253142;border-radius:6px;padding:8px 10px;font-size:14px;">' +
+   qs.map((q, i) => '<option value="' + i + '"' + (i === 0 ? " selected" : "") + ">" + esc(q.quarter) + "</option>").join("") + "</select></div>";
+  h += '<div id="db-body">' + qs.map((q, i) => '<div class="db-pane" data-qi="' + i + '" style="' + (i === 0 ? "" : "display:none") + '">' +
+   dbPane(q) + "</div>").join("") + "</div>";
+  return h;
+ }
+ function dbPane(q) {
+  const escP = (s) => esc(s || "").replace(/\n\n/g, "<br><br>").replace(/\n/g, "<br>");
+  let h = '<div class="card"><h3>' + esc(q.title || "") + '</h3>' +
+   '<div class="panel-summary">' + escP(q.executive_summary) + "</div></div>";
+  (q.themes || []).forEach((t) => {
+   h += '<div class="card"><h3 style="letter-spacing:0.4px;">' + esc(t.name || "") + "</h3>" +
+    (t.read_throughs || []).map((r) => dbRt(r)).join("") + "</div>";
+  });
+  return h;
+ }
+ function dbRt(r) {
+  const escP = (s) => esc(s || "").replace(/\n\n/g, "<br><br>").replace(/\n/g, "<br>");
+  const row = (label, val) => val ? '<div style="margin-top:8px;font-size:13.5px;"><b>' + label + ':</b> <span style="color:var(--muted)">' + escP(val) + "</span></div>" : "";
+  return '<div style="border-top:1px solid var(--border);padding:12px 0 4px;">' +
+   '<div style="font-size:14px;"><b>' + esc(r.headline || "") + "</b></div>" +
+   row("Affected companies", r.affected) +
+   row("Directional impact and magnitude", r.impact) +
+   row("Supporting evidence", r.evidence) +
+   row("Transmission mechanism", r.mechanism) +
+   row("Timing and catalyst", r.timing) +
+   row(r.boundary_label || "Attribution boundary", r.boundary) +
+   "</div>";
+ }
+ function wireBreakdownTabs() {
+  const sel = document.getElementById("db-select");
+  if (!sel) return;
+  sel.addEventListener("change", () => {
+   document.querySelectorAll(".db-pane").forEach((p) => p.style.display = p.dataset.qi === sel.value ? "" : "none");
+  });
  }
  function wireEarningsTabs() {
   const sel = document.getElementById("eq-select");
@@ -14162,6 +14210,7 @@ function volSurfaceHtml() {
    '<li>✓ Interactive FCF simulation sandbox</li>' +
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ Earnings call transcript tone analysis, executive confidence scoring via AI</li>' +
+   '<li>✓ Detailed Breakdown, institutional Key Read-Throughs of every earnings call for all ' + ORDER.length + ' coverage names</li>' +
    '<li>✓ Cascadia Alternative Data Translation Model for Axon, a net new ARR forecasting bridge with a verified contract pipeline and interactive scenario simulator</li>' +
    '<li>✓ Sum-of-the-Parts valuations, segment-level scenario builds for Axon, Sea Limited, and MercadoLibre</li>' +
    '<li>✓ Catalyst Compass, probabilistic Bull/Base/Bear scenario matrix on options-implied bounds for any ticker</li>' +

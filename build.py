@@ -570,6 +570,18 @@ def main():
         except Exception:
             pass
     pro_sections["transcript_tone_detail"] = transcript_detail
+    # Per-ticker Detailed Breakdown files (earnings call Key Read-Throughs,
+    # append-only store written by generate_earnings_breakdown.py)
+    breakdown_detail = {}
+    for f in glob.glob(os.path.join(MR, "detailed_breakdown_*.json")):
+        tk = os.path.basename(f).replace("detailed_breakdown_", "").replace(".json", "")
+        if tk in ("ledger", "runs"):
+            continue
+        try:
+            breakdown_detail[tk] = load(f)
+        except Exception:
+            pass
+    pro_sections["detailed_breakdowns"] = breakdown_detail
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}
     fcf_projections = {}
