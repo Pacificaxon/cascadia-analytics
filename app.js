@@ -10480,21 +10480,29 @@ route("alerts", function () {
  });
 
  /* ================= RISK MODELS (PRO) ================= */
+ // Snapshot card values (risk orientation) from the merged Pro headline
+ // payload. Detail-section headlines align to these values, so a section
+ // never shows a different total than its Daily Snapshot card.
+ function riskCardVal(key) {
+  return ((D.risk_headlines || {}).values || {})[key] || {};
+ }
+
  function liquidityDrainHtml() {
   const L = D.liquidity_drain || {};
   if (L.totalScore == null) {
    return '<div class="section"><div class="section-title">Liquidity Drain Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Liquidity data unavailable. Check back after the next refresh.</p></div></div>';
   }
+  const hv = riskCardVal("liquidity_drain");
   const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
-  const c = colorMap[L.color] || "#dbe5f1";
+  const c = colorMap[hv.color || L.color] || "#dbe5f1";
   const m = L.currentMetrics || {};
   let h = '<div class="section"><div class="section-title">Liquidity Drain Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Net US liquidity, USD strength, and yield curve dynamics. Markets rarely crash when liquidity expands; they become vulnerable when it drains.</div>';
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + L.totalScore + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
-   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(L.regime || "") + "</div>" +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score != null ? hv.score : L.totalScore) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(hv.regime || L.regime || "") + "</div>" +
    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Net liquidity $' + (m.netLiquidityB != null ? m.netLiquidityB.toLocaleString() : "-") + "B" +
    (m.dxy != null ? " · DXY " + m.dxy : "") +
    (m.t10y2y != null ? " · 10Y-2Y " + m.t10y2y + "%" : "") + "</div></div></div>";
@@ -10731,8 +10739,9 @@ route("alerts", function () {
    return '<div class="section"><div class="section-title">Offense vs Defense ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Sector rotation data unavailable. Check back after the next refresh.</p></div></div>';
   }
+  const hv = riskCardVal("sector_rotation");
   const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
-  const c = colorMap[S.color] || "#dbe5f1";
+  const c = colorMap[hv.color || S.color] || "#dbe5f1";
   const m = S.metrics || {};
   const r = S.ratios || {};
   const stale = S.metadata && S.metadata.stale;
@@ -10743,8 +10752,8 @@ route("alerts", function () {
   // Score banner
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + S.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
-   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(S.regime || "") + "</div>" +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score != null ? hv.score : S.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(hv.regime || S.regime || "") + "</div>" +
    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">RSPD/RSPS ' + (m.rspdRsps != null ? m.rspdRsps : "-") +
    " · XLY/XLP " + (m.xlyXlp != null ? m.xlyXlp : "-") + "</div>";
   if (S.dualBreakdown) {
@@ -10778,7 +10787,7 @@ route("alerts", function () {
    '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
    '<b style="color:#dbe5f1;">The simple version:</b> This compares stocks people buy when they feel rich (restaurants, travel, cars) against stocks people buy no matter what (groceries, toothpaste). When money rotates into the boring stuff, big investors are bracing for trouble, even if the headline index still looks fine.<br><br>' +
    '<b style="color:#dbe5f1;">For long-term investors:</b> The equal-weighted line is the honest one. The cap-weighted version is dominated by Amazon and Tesla, so two stocks can mask what the other 98 are doing. When both lines break to 52-week lows together, the entire consumer sector is weakening, not just a mega-cap wobble. That has historically lined up with late-cycle caution, not a buying opportunity.<br><br>' +
-   '<b style="color:#dbe5f1;">For active traders:</b> A low oscillator reading while the S&P makes new highs is the classic hollow rally: the index is carried by a narrowing set of winners while institutions de-risk underneath. Use it as a regime filter. When this gauge reads extreme defensive, tighten stops and reduce cyclical exposure rather than chasing breakouts.' +
+   '<b style="color:#dbe5f1;">For active traders:</b> A high risk reading on this gauge while the S&P makes new highs is the classic hollow rally: the index is carried by a narrowing set of winners while institutions de-risk underneath. Use it as a regime filter. When this gauge reads extreme defensive, tighten stops and reduce cyclical exposure rather than chasing breakouts.' +
    "</div></div>";
 
   h += "</div>";
@@ -10805,12 +10814,16 @@ route("alerts", function () {
    '<b style="color:#dbe5f1;">For active traders:</b> The oscillator crossing +2.0 is the highest-conviction short-term risk signal on this page. Treat it like a storm warning: reduce leverage, tighten stops, and do not chase breakouts.' +
    '</div></div>';
 
-  // Status banner
+  // Status banner. The headline score is the bounded risk score from the
+  // snapshot card; the raw oscillator stays visible as a labeled input.
+  const hv = riskCardVal("flow_divergence");
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">FLOW REGIME</div>' +
    '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(cur.status) + "</div>" +
    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:560px;">' + esc(cur.description || "") + "</div></div>" +
-   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8d99aa;">OSCILLATOR</div>' +
+   (hv.score != null ? '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8d99aa;">RISK SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' : "") +
+   '<div style="' + (hv.score != null ? "" : "margin-left:auto;") + 'text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8d99aa;">OSCILLATOR (RAW INPUT)</div>' +
    '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + (cur.oscillator > 0 ? "+" : "") + cur.oscillator + '<span style="font-size:16px;color:#8d99aa;">σ</span></div></div></div>';
 
   // Component cards
@@ -11546,11 +11559,12 @@ function eurodollarStressHtml() {
 function economicNowcastHtml() {
  const M = gmModels().economic_nowcast || {};
  if (M.score == null) return gmMissing("Economic Nowcast Momentum");
+ const hv = riskCardVal("economic_nowcast");
  const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
  const dp = M.claims_drift_pct;
  let h = '<div class="section"><div class="section-title">Economic Nowcast Momentum ' + PRO_BADGE + "</div>" +
-  '<div class="section-sub">A momentum composite of the fastest reliable activity data. High readings mean a strong economy rather than high risk, and this gauge feeds the composite risk index inverted.</div>';
- h += gmBanner("NOWCAST MOMENTUM", M.score, "/100", M.regime, M.color,
+  '<div class="section-sub">A momentum composite of the fastest reliable activity data, shown on this page\u2019s risk orientation: the headline score rises as economic momentum weakens, so low readings mean a strong economy and high readings mean momentum is rolling over.</div>';
+ h += gmBanner("NOWCAST RISK SCORE", fmtScore(hv.score != null ? hv.score : Math.max(1, Math.min(100, 100 - M.score))), "/100", M.regime, M.color,
   "Weekly Economic Index at " + (M.wei != null ? f2(M.wei) + "%" : "N/A") +
   (M.sahm_triggered ? ", and the Sahm Rule is triggered" : ", with the Sahm Rule untriggered"));
  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
@@ -11560,29 +11574,34 @@ function economicNowcastHtml() {
   gmCard("INITIAL CLAIMS 4WK", M.claims_4wk != null ? Math.round(M.claims_4wk).toLocaleString() : "N/A", "52-week mean " + (M.claims_52wk != null ? Math.round(M.claims_52wk).toLocaleString() : "N/A")) +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Momentum score over the last 52 weeks. The recessionary zone sits at 35 and below, and strong momentum at 65 and above.</div>';
+  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Risk score over the last 52 weeks, the mirror of the underlying momentum gauge. The recessionary zone sits at 65 and above on this scale, and strong momentum at 35 and below.</div>';
   h += gmChart("nowcast-momentum-chart", "nowcast-momentum");
  }
  h += gmAsof(M);
  h += gmExplainer(
   "This gauge is named carefully. Markets reprice on the gap between data and expectations, and a true surprise index needs analyst consensus for every release, which only paid feeds carry. What free data supports is a momentum composite of the fastest reliable activity measures, and that is what this model is. It tracks how quickly the economy is actually moving right now, which is the run-rate surprises get measured against.<br><br>" +
   "The Weekly Economic Index from the New York Fed scales a basket of high-frequency series to annual GDP growth, so it catches turning points weeks before the quarterly accounts. The Sahm Rule watches the unemployment rate against its own recent lows and has flagged every recession since 1970 shortly after it began, with a trigger at half a percentage point. Claims drift compares the four-week average of initial jobless claims with its 52-week mean, because labor softening shows up in claims before it shows in payrolls.<br><br>" +
-  "The composite reads high when the economy is running hot and low when momentum is rolling over, and that direction matters for how it is used. A high score is a strong economy and therefore low risk, so the gauge feeds the composite risk index inverted, turning recessionary drift into a rising risk contribution. Read it as a run-rate rather than a verdict. Momentum near the middle of the range means the economy is moving at roughly the pace expectations already assume, and the extremes on either side are where positioning gets dangerous.");
+  "The underlying momentum composite reads high when the economy is running hot and low when momentum is rolling over. The headline score on this page runs in the risk direction, the mirror image: it climbs as momentum fades, so recessionary drift becomes a rising risk reading here and inside the composite risk index. Read it as a run-rate rather than a verdict. Momentum near the middle of the range means the economy is moving at roughly the pace expectations already assume, and the extremes on either side are where positioning gets dangerous.");
  return h;
 }
 
 function taylorGapHtml() {
  const M = gmModels().taylor_gap || {};
  if (M.gap_bps == null) return gmMissing("Taylor Rule Policy Gap");
+ const hv = riskCardVal("taylor_gap");
  const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
  const gap = M.gap_bps;
  const gapTxt = (gap > 0 ? "+" : "") + Math.round(gap);
+ // Headline is the level score from the snapshot card; the raw signed
+ // gap stays visible below as a labeled component input.
+ const lvl = hv.score != null ? hv.score : Math.max(1, Math.min(100, 50 + gap / 4));
  let h = '<div class="section"><div class="section-title">Taylor Rule Policy Gap ' + PRO_BADGE + "</div>" +
   '<div class="section-sub">The effective fed funds rate against the rate the Taylor Rule prescribes. The gap is the cleanest single measure of how restrictive policy really is.</div>';
- h += gmBanner("POLICY GAP", gapTxt, " bps", M.regime, M.color,
+ h += gmBanner("POLICY GAP RISK", fmtScore(lvl), "/100", M.regime, M.color,
   "Effective fed funds " + (M.effr != null ? f2(M.effr) + "%" : "N/A") +
   " against a Taylor prescription of " + (M.taylor_rate != null ? f2(M.taylor_rate) + "%" : "N/A"));
  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
+  gmCard("POLICY GAP (RAW)", gapTxt + " bps", "effective funds minus the Taylor prescription; negative means policy is looser than the rule") +
   gmCard("EFFECTIVE FED FUNDS", M.effr != null ? f2(M.effr) + "%" : "N/A", (M.effr_basis === "daily" ? "daily print" : "monthly average") + (M.effr_as_of ? ", " + esc(String(M.effr_as_of).slice(0, 10)) : "")) +
   gmCard("TAYLOR PRESCRIPTION", M.taylor_rate != null ? f2(M.taylor_rate) + "%" : "N/A", "rule-implied policy rate") +
   gmCard("CORE PCE INFLATION", M.core_pce_yoy != null ? f2(M.core_pce_yoy) + "%" : "N/A", "12-month change, target 2.00%") +
@@ -11701,9 +11720,12 @@ function gmSeriesFor(kind) {
  if (kind === "nowcast-momentum") {
   const nc = models.economic_nowcast || {};
   if (!(nc.history || []).length) return null;
+  // Plotted in the risk orientation, matching the section headline and
+  // the snapshot card: each point is the mirror of the native momentum
+  // score, so the line rises as momentum weakens.
   return { labels: nc.history.map((r) => r.date),
-   datasets: [ds("Momentum score", nc.history.map((r) => r.score), "#58a6ff")],
-   yTitle: "score" };
+   datasets: [ds("Risk score", nc.history.map((r) => r.score != null ? Math.round((100 - r.score) * 10) / 10 : r.score), "#58a6ff")],
+   yTitle: "risk score" };
  }
  if (kind === "taylor-gap") {
   const tg = models.taylor_gap || {};
@@ -11773,7 +11795,8 @@ function realYieldShockHtml() {
   if (isProUser) {
    h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
     '<div style="font-size:13px;font-weight:800;padding:6px 14px;border-radius:20px;background:' + c + '22;color:' + c + ';border:1px solid ' + c + ';">' + esc(R.regime || "N/A") + "</div>" +
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex:1;min-width:260px;">' +
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:1;min-width:260px;">' +
+    '<div><div style="font-size:11px;color:#8d99aa;">SHOCK SCORE</div><div style="font-size:26px;font-weight:800;color:' + c + ';">' + (riskCardVal("real_yield_shock").score != null ? fmtScore(riskCardVal("real_yield_shock").score) + '<span style="font-size:13px;color:#8d99aa;">/100</span>' : "N/A") + "</div></div>" +
     '<div><div style="font-size:11px;color:#8d99aa;">10Y REAL YIELD</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.tips_10y != null ? f2(R.tips_10y) + "%" : "N/A") + "</div></div>" +
     '<div><div style="font-size:11px;color:#8d99aa;">FAIR P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.fair_pe != null ? f1(R.fair_pe) + "x" : "N/A") + "</div></div>" +
     '<div><div style="font-size:11px;color:#8d99aa;">BENCHMARK P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.benchmark_pe != null ? f1(R.benchmark_pe) + "x" : "N/A") + "</div></div>" +
@@ -11836,6 +11859,17 @@ function peadScreenerHtml() {
  if (!cands.length) {
   h += '<div class="card"><p style="color:var(--muted)">No recent earnings surprises with drift data.</p></div></div>';
   return h;
+ }
+
+ // Headline score banner, aligned to the Daily Snapshot card.
+ const hv = riskCardVal("pead_screener");
+ if (hv.score != null) {
+  const hc = colorMap[hv.color] || "#8d99aa";
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + hc + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + hc + ';">' + esc(hv.regime || "") + "</div>" +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Share of this earnings season\u2019s reporters whose post-earnings drift has already faded, matching the Daily Snapshot card.</div></div></div>';
  }
 
  // Summary line: count of candidates in active accumulation drift
@@ -11902,6 +11936,17 @@ function squeezeRadarHtml() {
   return h;
  }
 
+ // Headline score banner, aligned to the Daily Snapshot card.
+ const hv = riskCardVal("squeeze_radar");
+ if (hv.score != null) {
+  const hc = colorMap[hv.color] || "#8d99aa";
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + hc + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + hc + ';">' + esc(hv.regime || "") + "</div>" +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Share of tracked names in an elevated or alert squeeze state, matching the Daily Snapshot card.</div></div></div>';
+ }
+
  h += '<div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table class="coverage">' +
   "<thead><tr><th>Ticker</th><th>Short % Float</th><th>Days to Cover</th><th>SI Velocity %</th><th>Squeeze Score</th><th>Classification</th></tr></thead><tbody>";
  recs.forEach((r, i) => {
@@ -11953,19 +11998,21 @@ function treasurySlrHtml() {
   return '<div class="section"><div class="section-title">Treasury Absorption &amp; SLR Gauge ' + PRO_BADGE + "</div>" +
    '<div class="card"><p style="color:var(--muted)">Treasury absorption data unavailable. Check back after the next refresh.</p></div></div>';
  }
+ const hv = riskCardVal("treasury_slr");
  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
- const c = colorMap[S.color] || "#dbe5f1";
+ const c = colorMap[hv.color || S.color] || "#dbe5f1";
  const fmtB = (v) => (v == null ? "N/A" : "$" + Number(v).toLocaleString() + "B");
 
  let h = '<div class="section"><div class="section-title">Treasury Absorption &amp; SLR Gauge ' + PRO_BADGE + "</div>" +
   '<div class="section-sub">How much room dealers have on their balance sheets to absorb Treasury supply, and whether the leverage ratio is the binding constraint.</div>';
 
- // Capacity score banner (score/100 + status)
+ // Risk score banner (score/100 + status), aligned to the snapshot card:
+ // higher scores mean the constraint binds harder.
  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + S.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
-  '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(S.status || "") + "</div>" +
-  '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:620px;">Higher scores mean ample balance-sheet room for dealers to intermediate Treasury auctions. Low scores mean the system is running close to the constraint.</div></div></div>';
+  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score != null ? hv.score : S.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+  '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(hv.regime || S.status || "") + "</div>" +
+  '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:620px;">Higher scores mean dealer balance-sheet room is scarce and the leverage constraint binds harder, so auctions need more concession to clear. Low scores mean dealers have ample room to intermediate Treasury supply.</div></div></div>';
 
  // 4 metric cards: reserves, TGA, RRP, reserve buffer
  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
@@ -12050,9 +12097,19 @@ function gammaFlipHtml() {
   return '<div class="card" style="flex:1;min-width:280px;"><h3>' + esc(name) + "</h3>" + body + "</div>";
  };
 
+ const hv = riskCardVal("gamma_flip");
+ const hvC = colorMap[hv.color] || "#dbe5f1";
+ const hBanner = hv.score != null ?
+  '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
+  '<div style="font-size:36px;font-weight:800;color:' + hvC + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+  '<div><div style="font-size:14px;font-weight:700;color:' + hvC + ';">' + esc(hv.regime || "") + "</div>" +
+  '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Market-wide dealer gamma regime across SPY and QQQ, matching the Daily Snapshot card. Higher scores mean dealer hedging amplifies moves rather than absorbing them.</div></div></div>' : "";
+
  const h =
   '<div class="section"><div class="section-title">Dealer Gamma Flip Barometer ' + PRO_BADGE + "</div>" +
   '<div class="section-sub">Where dealer hedging flips from stabilizing to amplifying, for SPY and QQQ.</div>' +
+  hBanner +
   '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;">' +
   legPanel("SPY", G.spy) + legPanel("QQQ", G.qqq) +
   "</div>" +
