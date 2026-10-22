@@ -10529,8 +10529,9 @@ route("alerts", function () {
     '<div class="card"><p style="color:var(--muted)">Realized Vol Shock data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const cd = R.countdown, rv = R.rvCurrent || {};
+  const hv = riskCardVal("rv_shock");
   const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
-  const c = colorMap[cd.statusColor] || "#dbe5f1";
+  const c = colorMap[hv.color || cd.statusColor] || "#dbe5f1";
   const vcf = rv.vcfExposurePercentile || 0;
   const vcfColor = vcf >= 80 ? "#f37d83" : vcf >= 50 ? "#e0aa46" : "#4dd2aa";
 
@@ -10545,10 +10546,15 @@ route("alerts", function () {
    '<b style="color:#dbe5f1;">For active traders:</b> An OVERDUE reading with VCF exposure above 80% has historically preceded pullbacks. The forward price action tables below show exactly what happened in the 15 trading days after each past signal: the hit rate, average decline, and worst case. Use these as a statistical roadmap, not a prediction.' +
    '</div></div>';
 
-  // Status banner
+  // Status banner. The headline score and regime come from the snapshot
+  // card payload (riskCardVal), matching the Daily Snapshot card; the
+  // native countdown status is only the fallback. Components below
+  // (countdown stats, VCF exposure, forward tables) are unchanged.
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   (hv.score != null ? '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' : "") +
    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">STATUS</div>' +
-   '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(cd.statusLabel) + "</div>" +
+   '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(hv.regime || cd.statusLabel) + "</div>" +
    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:600px;">' + esc(cd.statusDesc) + "</div></div></div>";
 
   // Countdown stats
@@ -12515,22 +12521,26 @@ function volSurfaceHtml() {
 
  function correctionRiskHtml() {
   const cr = D.correction_risk || {};
-  if (!cr.totalRiskScore && cr.totalRiskScore !== 0) {
+  const hv = riskCardVal("correction_risk");
+  if (cr.totalRiskScore == null && hv.score == null) {
    return '<div class="section"><div class="section-title">Correction Risk Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">The Correction Risk Model has not been computed yet. Check back after the next refresh.</p></div></div>';
   }
-  const score = cr.totalRiskScore;
-  const regime = cr.regime || "";
+  // Headline score, regime and color come from the snapshot card payload
+  // (riskCardVal), the single source the alignment pass established, so
+  // the section banner can never diverge from the Daily Snapshot card.
+  const score = hv.score != null ? hv.score : cr.totalRiskScore;
+  const regime = hv.regime || cr.regime || "";
   const colorMap = {emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f43f5e", slate: "#8d99aa"};
-  const rc = colorMap[cr.color] || "#8d99aa";
+  const rc = colorMap[hv.color || cr.color] || "#8d99aa";
   let h = '<div class="section" style="max-width:none;"><div class="section-title">Correction Risk Model ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Multi-factor risk score combining price extension, volatility trend, credit stress, and market breadth. Signals when a market top is forming. Updated ' + esc((cr.as_of || "").slice(0, 10)) + '.</div>';
   // Regime banner
   h += '<div class="card" style="border:1px solid ' + rc + '55;padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">';
   h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:1.5px;">CURRENT REGIME</div>' +
    '<div style="font-size:28px;font-weight:800;color:' + rc + ';">' + esc(regime) + '</div></div>';
-  h += '<div style="text-align:right;"><div style="font-size:48px;font-weight:800;color:' + rc + ';line-height:1;">' + score + '<span style="font-size:20px;color:#8d99aa;">/100</span></div>' +
-   '<div style="font-size:11px;color:#8d99aa;">LEVEL ' + (cr.riskLevel || 1) + '</div></div></div>';
+  h += '<div style="text-align:right;"><div style="font-size:48px;font-weight:800;color:' + rc + ';line-height:1;">' + fmtScore(score) + '<span style="font-size:20px;color:#8d99aa;">/100</span></div>' +
+   '<div style="font-size:11px;color:#8d99aa;">' + esc(regime) + '</div></div></div>';
   // Breakdown cards
   const bd = cr.scoreBreakdown || [];
   if (bd.length) {
