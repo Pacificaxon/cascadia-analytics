@@ -298,10 +298,10 @@
  const D = new Proxy(_D_raw, {
   get(target, prop) {
    if (prop === "_dcf_targets" || prop === "_fcf_projections") return undefined;
-   // risk_headlines: the free bundle carries every model headline plus a
-   // stripped composite (score + regime only). The Pro bundle carries the
-   // full composite with attribution. Merge so Pro users get the full
-   // composite while the per-model headlines still come from the free bundle.
+   // risk_headlines: the free bundle carries snapshot metadata only (model
+   // names, card slugs, as-of date). The Pro bundle carries the readings
+   // (per-model score/regime/color plus the full composite with attribution).
+   // Merge so Pro users get the readings while free users keep the structure.
    if (prop === "risk_headlines" && PRO_DATA && PRO_DATA.risk_headlines) {
     return Object.assign({}, target.risk_headlines, PRO_DATA.risk_headlines);
    }
@@ -11758,11 +11758,9 @@ function realYieldShockHtml() {
   const isProUser = typeof isPro === "function" ? isPro() : false;
   let R = D.real_yield_shock || {};
   if (!isProUser) {
-   // Free bundle: the full section is Pro data, so free users read the
-   // headline values from risk_headlines, the same source as the #/risk
-   // Daily Snapshot card (score, regime, real yield, as-of date).
-   const H = (D.risk_headlines || {}).real_yield_shock || {};
-   R = { regime: H.regime, color: H.color, tips_10y: H.tips_10y, score: H.score, as_of: H.as_of };
+   // Snapshot readings are Pro: free users see the gauge structure with
+   // the readings blurred (same contract as the #/risk Daily Snapshot).
+   R = { blurred: true };
   }
   const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
   const c = colorMap[R.color] || "#dbe5f1";
@@ -11772,17 +11770,24 @@ function realYieldShockHtml() {
    '<div class="section-sub">The 10-year TIPS yield is the market\u2019s real cost of capital. When real yields rise, equity multiples tend to compress, and this gauge tracks that pressure.</div>';
   // Gauge banner: regime badge plus headline values. Pro users also see
   // fair P/E vs benchmark P/E; free users see the shock score instead.
-  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
-   '<div style="font-size:13px;font-weight:800;padding:6px 14px;border-radius:20px;background:' + c + '22;color:' + c + ';border:1px solid ' + c + ';">' + esc(R.regime || "N/A") + "</div>" +
-   '<div style="display:grid;grid-template-columns:repeat(' + (isProUser ? 3 : 2) + ',1fr);gap:8px;flex:1;min-width:260px;">' +
-   '<div><div style="font-size:11px;color:#8d99aa;">10Y REAL YIELD</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.tips_10y != null ? f2(R.tips_10y) + "%" : "N/A") + "</div></div>";
   if (isProUser) {
-   h += '<div><div style="font-size:11px;color:#8d99aa;">FAIR P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.fair_pe != null ? f1(R.fair_pe) + "x" : "N/A") + "</div></div>" +
-   '<div><div style="font-size:11px;color:#8d99aa;">BENCHMARK P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.benchmark_pe != null ? f1(R.benchmark_pe) + "x" : "N/A") + "</div></div>";
+   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
+    '<div style="font-size:13px;font-weight:800;padding:6px 14px;border-radius:20px;background:' + c + '22;color:' + c + ';border:1px solid ' + c + ';">' + esc(R.regime || "N/A") + "</div>" +
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex:1;min-width:260px;">' +
+    '<div><div style="font-size:11px;color:#8d99aa;">10Y REAL YIELD</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.tips_10y != null ? f2(R.tips_10y) + "%" : "N/A") + "</div></div>" +
+    '<div><div style="font-size:11px;color:#8d99aa;">FAIR P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.fair_pe != null ? f1(R.fair_pe) + "x" : "N/A") + "</div></div>" +
+    '<div><div style="font-size:11px;color:#8d99aa;">BENCHMARK P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.benchmark_pe != null ? f1(R.benchmark_pe) + "x" : "N/A") + "</div></div>" +
+    "</div></div>";
   } else {
-   h += '<div><div style="font-size:11px;color:#8d99aa;">SHOCK SCORE</div><div style="font-size:26px;font-weight:800;color:' + c + ';">' + (R.score != null ? fmtScore(R.score) : "N/A") + '<span style="font-size:14px;color:#8d99aa;">/100</span></div></div>';
+   // Blurred gauge for free users: structure only, readings withheld.
+   h += "<style>" + RISK_BLUR_CSS + "</style>" +
+    '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
+    '<div class="snap-blur" style="width:140px;height:32px;border-radius:16px;"></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-width:260px;">' +
+    '<div><div style="font-size:11px;color:#8d99aa;">10Y REAL YIELD</div><div class="snap-blur" style="width:110px;height:32px;margin-top:4px;"></div></div>' +
+    '<div><div style="font-size:11px;color:#8d99aa;">SHOCK SCORE</div><div class="snap-blur" style="width:110px;height:32px;margin-top:4px;"></div></div>' +
+    "</div></div>";
   }
-  h += "</div></div>";
   if (isProUser) {
    // Pro details: implied compression + real yield z-score
    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
@@ -12482,17 +12487,31 @@ function volSurfaceHtml() {
    h += '</div>';
   }
   // History chart
-  h += '<div class="section-title" style="margin-top:16px;">Risk Score History (90 days)</div>';
+  h += '<div class="section-title" style="margin-top:16px;">Risk Score History (' + ((cr.history || []).length || 90) + ' sessions)</div>';
   h += '<div class="zoomable-chart" data-chart="correction-risk" style="position:relative;height:320px;cursor:zoom-in;" title="Click to zoom"><canvas id="correction-risk-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
   h += '</div>';
   return h;
  }
 
- // Composite risk banner for the free daily snapshot: overall assessment
+ // Blurred composite banner shell for free users: the structure renders,
+ // the readings stay withheld. Neutral tones only, no band color leaks.
+ function compositeBlurBanner(modelCount) {
+  const n = modelCount || 22;
+  return '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
+   '<div class="snap-blur" style="width:110px;height:52px;margin:8px auto 6px;"></div>' +
+   '<div class="snap-blur" style="width:84px;height:16px;margin:0 auto;"></div>' +
+   '<div style="font-size:11px;color:#8d99aa;margin-top:6px;font-style:italic;">Algorithmic synthesis across ' + n + ' independent quantitative models.</div></div>' +
+   '<div style="flex:1;"><div style="font-size:13px;color:#8d99aa;margin-bottom:10px;">What is driving this reading? The four-pillar attribution, primary driver, and top risk contributors are Pro.</div>' +
+   '<button class="btn" id="teaser-pricing" style="font-size:13px;">See Pro Plans</button></div></div>';
+ }
+ // Composite risk banner for the daily snapshot: overall assessment
  // across all risk models. Computed in build.py; auto-picks up new models.
  function compositeBanner() {
   const rh = D.risk_headlines || {};
+  const pro = typeof isPro === "function" && isPro();
+  if (!pro) return compositeBlurBanner((rh.models || []).length || 22);
   const comp = rh.composite || {};
   if (comp.score == null) return "";
   const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
@@ -12542,6 +12561,60 @@ function volSurfaceHtml() {
   }
   h += "</div>";
   return h;
+ }
+
+ // Daily Snapshot cards. Free users get blurred placeholder blocks built from
+ // the free metadata (names + card slugs only, no readings). Pro users get the
+ // real values from the merged Pro payload, rendered in the same positions.
+ function riskBlurCard(name, anchorId) {
+  const aid = anchorId || ("risk-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
+  return '<div id="' + aid + '" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
+   '<div class="snap-blur" style="width:96px;height:34px;margin:8px 0;"></div>' +
+   '<div class="snap-blur" style="width:70%;height:15px;"></div></div>';
+ }
+ function riskValueCard(name, score, regime, color, anchorId, note) {
+  if (score == null) return "";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const c = colorMap[color] || "#dbe5f1";
+  const aid = anchorId || ("risk-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
+  return '<div id="' + aid + '" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
+   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(score) + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
+   '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div>" +
+   (note ? '<div style="font-size:10px;color:#8d99aa;margin-top:4px;">' + esc(note) + "</div>" : "") + "</div>";
+ }
+ function snapshotCardsHtml(blurred) {
+  const rh = D.risk_headlines || {};
+  const models = rh.models || [];
+  const vals = blurred ? null : (rh.values || {});
+  let h = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">';
+  models.forEach((m) => {
+   if (blurred) {
+    h += riskBlurCard(m.name, m.slug);
+   } else {
+    const v = (vals || {})[m.key] || {};
+    h += riskValueCard(m.name, v.score, v.regime, v.color, m.slug, v.note);
+   }
+  });
+  h += "</div>";
+  return h;
+ }
+ function snapshotSectionHtml(blurred) {
+  const rh = D.risk_headlines || {};
+  const n = (rh.models || []).length || 22;
+  const h = '<div class="section"><div class="section-title">Daily Snapshot' + (blurred ? " " + PRO_BADGE : "") +
+   ' <span style="font-size:11px;color:#8d99aa;font-weight:400;">as of ' + esc((rh.as_of || (D.generated_at || "").slice(0, 10))) + '</span></div>' +
+   '<div class="section-sub">' + (blurred
+     ? "The full dashboard is visible to everyone. The readings &mdash; every score, every regime, and the composite &mdash; are Pro."
+     : "Current readings across " + n + " independent quantitative models.") + "</div>" +
+   compositeBanner() + riskTocHtml() + snapshotCardsHtml(blurred) + "</div>";
+  return h;
+ }
+ function riskModelCount() {
+  const rh = D.risk_headlines || {};
+  if (rh.models && rh.models.length) return rh.models.length;
+  return ((rh.composite || {}).model_count || 15);
  }
 
  // Authorization header for the server-gated on-demand Pro endpoints
@@ -13683,6 +13756,8 @@ function volSurfaceHtml() {
      { id: "risk-systemic-leverage", name: "Systemic Leverage", fn: () => marginLeverageHtml() },
      { id: "risk-credit-stress", name: "Credit Stress", fn: () => oasDistressHtml() },
      { id: "risk-liquidity-stress", name: "Liquidity Stress", fn: () => liquidityStressHtml() },
+     { id: "risk-treasury-capacity", name: "Treasury Capacity", headlineOnly: true },
+     { id: "risk-real-yield-shock", name: "Real Yield Shock", headlineOnly: true },
     ] },
   { key: "quantitative", num: "02", name: "Quantitative",
     sub: "Statistical composites built from volatility, flows, positioning, and cross-asset signals.",
@@ -13692,12 +13767,15 @@ function volSurfaceHtml() {
      { id: "risk-contagion", name: "Contagion", fn: () => contagionHtml() },
      { id: "risk-flow-divergence", name: "Institutional Flow Divergence", fn: () => flowDivergenceHtml() },
      { id: "risk-offense-defense", name: "Offense vs Defense", fn: () => sectorRotationHtml() },
+     { id: "risk-gamma-regime", name: "Gamma Regime", headlineOnly: true },
+     { id: "risk-earnings-drift", name: "Earnings Drift", headlineOnly: true },
     ] },
   { key: "technical", num: "03", name: "Technical",
     sub: "Price structure, breadth, and concentration. What the tape itself is pricing.",
     models: [
      { id: "risk-correction-risk", name: "Correction Risk", fn: () => correctionRiskHtml() },
      { id: "risk-concentration", name: "Concentration", fn: () => concentrationHtml() },
+     { id: "risk-squeeze-fragility", name: "Squeeze Fragility", headlineOnly: true },
     ] },
  ];
  const RISK_TOC_CSS =
@@ -13733,9 +13811,13 @@ function volSurfaceHtml() {
   ".risk-cat-sub{font-size:12.5px;color:#8d99aa;margin-top:3px;line-height:1.45;}" +
   ".risk-cat-count{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#d9a441;white-space:nowrap;}" +
   "@media (max-width:640px){.risk-toc-btns{flex-direction:column;}.risk-toc-cat{flex:1 1 auto;width:100%;min-width:0;}.risk-cat-band{flex-wrap:wrap;}.risk-cat-count{margin-left:0;}}";
+ // Blurred placeholder blocks for withheld snapshot readings: neutral tones
+ // only, sized like the real content. No score, label or band color may leak.
+ const RISK_BLUR_CSS =
+  ".snap-blur{background:linear-gradient(135deg,#243047,#1a2233);border-radius:6px;filter:blur(1.2px);opacity:0.95;}";
  function riskTocHtml() {
   const total = RISK_CATEGORIES.reduce((n, c) => n + c.models.length, 0);
-  let h = "<style>" + RISK_TOC_CSS + "</style>" +
+  let h = "<style>" + RISK_TOC_CSS + RISK_BLUR_CSS + "</style>" +
    '<div class="risk-toc" id="risk-toc">' +
    '<div class="risk-toc-head"><span class="risk-toc-title">Risk Model Index</span>' +
    '<span class="risk-toc-meta">' + total + " models across " + RISK_CATEGORIES.length + " categories. Pick a category, then a model, to jump straight to it.</span></div>" +
@@ -13846,73 +13928,13 @@ function volSurfaceHtml() {
   await ensureProData();
   if (mySeq !== (window._renderSeq || 0)) return; // superseded render, abort
   if (!isPro()) {
-   // Free users see headline scores as a teaser (score + regime only, no analysis)
-   // Data comes from the free risk_headlines bundle, not Pro data
-   const rh = D.risk_headlines || {};
-   const cr = rh.correction_risk || {};
-   const ld = rh.liquidity_drain || {};
-   const rv = rh.rv_shock || {};
-   const cg = rh.contagion || {};
-   const fd = rh.flow_divergence || {};
-   const dc = rh.concentration || {};
-   const ml = rh.margin_leverage || {};
-   const sr = rh.sector_rotation || {};
-   const fi = rh.fear_index || {};
-   const fiColor = fi.score >= 75 ? "rose" : fi.score >= 55 ? "amber" : fi.score >= 45 ? "slate" : "emerald";
-   const tslr = rh.treasury_slr || {};
-   const rys = rh.real_yield_shock || {};
-   const pead = rh.pead_screener || {};
-   const sqz = rh.squeeze_radar || {};
-   const gfl = rh.gamma_flip || {};
-   const mr = rh.macro_regime || {};
-   const fisc = rh.fiscal_dominance || {};
-   const euro = rh.eurodollar_stress || {};
-   const nowc = rh.economic_nowcast || {};
-   const frag = rh.sovereign_fragmentation || {};
-   const ls = rh.liquidity_stress || {};
-   const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
-   const card = (name, score, regime, color, anchorId) => {
-    if (score == null) return "";
-    const c = colorMap[color] || "#dbe5f1";
-    const aid = anchorId || ("risk-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
-    return '<div id="' + aid + '" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
-     '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
-     '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(score) + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
-     '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div></div>";
-   };
-   let freeH = '<div class="crumb">RISK MODELS</div>' +
+   // Free users see the dashboard structure with the readings withheld:
+   // scores, regime labels and band colors ship only in the Pro payload.
+   const freeH = '<div class="crumb">RISK MODELS</div>' +
     '<div class="hero"><div><h1 class="hero-h">Risk Models</h1>' +
     "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>" +
-    '<div class="section"><div class="section-title">Daily Snapshot ' + PRO_BADGE + '' +
-    ' <span style="font-size:11px;color:#8d99aa;font-weight:400;">as of ' + esc((D.generated_at || "").slice(0, 10)) + '</span></div>' +
-    '<div class="section-sub">Current scores, free. The full breakdown, charts, history, and in-depth analysis are Pro.</div>' +
-    compositeBanner() +
-    riskTocHtml() +
-    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">' +
-    card("Correction Risk", cr.score, cr.regime, cr.color, "risk-correction-risk") +
-    card("Liquidity Drain", ld.score, ld.regime, ld.color, "risk-liquidity-drain") +
-    card("Realized Vol Shock", rv.score, rv.regime, rv.color, "risk-realized-vol-shock") +
-    card("Contagion", cg.score, cg.regime, cg.color, "risk-contagion") +
-    card("Flow Divergence", fd.score, fd.regime, fd.color, "risk-flow-divergence") +
-    card("Concentration", dc.score, dc.regime, dc.color, "risk-concentration") +
-    card("Margin Leverage", ml.score, ml.regime, ml.color, "risk-systemic-leverage") +
-    card("Sector Rotation", sr.score, sr.regime, sr.color, "risk-offense-defense") +
-    card("Fear Index", fi.score, fi.regime, fiColor, "risk-fear-index") +
-    oasDistressFreeCard() +
-    card("Liquidity Stress", ls.score, ls.regime, ls.color, "risk-liquidity-stress") +
-    card("Treasury Capacity", tslr.score, tslr.regime, tslr.color) +
-    card("Real Yield Shock", rys.score, rys.regime, rys.color) +
-    card("Gamma Regime", gfl.score, gfl.regime, gfl.color) +
-    card("Earnings Drift", pead.score, pead.regime, pead.color) +
-    card("Squeeze Fragility", sqz.score, sqz.regime, sqz.color) +
-    card("Macro Regime", mr.score, mr.regime, mr.color, "risk-macro-regime") +
-    card("Fiscal Dominance", fisc.score, fisc.regime, fisc.color, "risk-fiscal-dominance") +
-    card("Eurodollar Stress", euro.score, euro.regime, euro.color, "risk-eurodollar-stress") +
-    card("Nowcast Momentum", nowc.score, nowc.regime, nowc.color, "risk-economic-nowcast") +
-    taylorGapFreeCard() +
-    card("Sovereign Fragmentation", frag.score, frag.regime, frag.color, "risk-sovereign-fragmentation") +
-    "</div>" +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Liquidity Stress Index, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Macro Regime Model, Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, Sovereign Credit Fragmentation, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    snapshotSectionHtml(true) +
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Liquidity Stress Index, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Macro Regime Model, Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, Sovereign Credit Fragmentation, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.");
    app.innerHTML = freeH;
    bindRiskToc();
    bindRiskSnapshotCards();
@@ -13921,11 +13943,10 @@ function volSurfaceHtml() {
   let h = '<div class="crumb">RISK MODELS</div>' +
    '<div class="hero"><div><h1 class="hero-h">Risk Models</h1>' +
    "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>";
-  h += compositeBanner();
-  h += riskTocHtml();
+  h += snapshotSectionHtml(false);
   RISK_CATEGORIES.forEach((cat) => {
    h += riskCatBandHtml(cat);
-   cat.models.forEach((m) => { h += riskAnchorWrap(m.id, m.fn()); });
+   cat.models.forEach((m) => { if (!m.headlineOnly && typeof m.fn === "function") h += riskAnchorWrap(m.id, m.fn()); });
   });
   app.innerHTML = h;
   bindRiskToc();
@@ -14168,7 +14189,7 @@ function volSurfaceHtml() {
    '<li>✓ Valuation multiples, market cap, EV, TTM and forward multiples</li>' +
    '<li>✓ Interactive price charts with moving averages (10/20/50/100/200-day)</li>' +
    '<li>✓ 5 years of financial statements, income, balance sheet, cash flow</li>' +
-   '<li>✓ Daily Snapshot risk scores, all ' + (((D.risk_headlines || {}).composite || {}).model_count || 15) + ' models, score plus regime</li>' +
+   '<li>✓ Daily Snapshot risk dashboard, all ' + riskModelCount() + ' models (readings are Pro)</li>' +
    '<li>✓ AAII Investor Sentiment tracker (weekly)</li>' +
    '<li>✓ COT Positioning tracker, commercial, large spec, small spec (weekly)</li>' +
    '<li>✓ Fed funds futures tracker with meeting probabilities</li>' +
@@ -14193,7 +14214,7 @@ function volSurfaceHtml() {
    '<div style="font-size:13px;color:#dbe5f1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#dbe5f1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
-   '<li>✓ All ' + (((D.risk_headlines || {}).composite || {}).model_count || 15) + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Liquidity Stress, Macro Regime, with charts, history, and plain-English explainers</li>' +
+   '<li>✓ All ' + riskModelCount() + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Liquidity Stress, Macro Regime, with readings, charts, history, and plain-English explainers</li>' +
    '<li>✓ Global Macro suite: Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, and Sovereign Credit Fragmentation (BTP/Bund and OAT/Bund)</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +

@@ -601,58 +601,103 @@ def main():
     pro_sections["dcf_targets"] = dcf_targets
     pro_sections["fcf_projections"] = fcf_projections
 
-    # Real yield shock 0-100 risk score from 10Y TIPS (higher = more duration risk)
+    # Real yield shock 0-100 risk score from 10Y TIPS (higher = more duration risk).
+    # Continuous linear rescale; hard floor 1 (no 0 or negative scores).
     _ry_tips = pro_sections.get("real_yield_shock", {}).get("tips_10y")
     try:
-        _ry_score = round(max(0.0, min(100.0, (float(_ry_tips) - 1.0) * 40.0)), 1) if _ry_tips is not None else None
+        _ry_score = round(max(1.0, min(100.0, (float(_ry_tips) - 1.0) * 40.0)), 1) if _ry_tips is not None else None
     except (TypeError, ValueError):
         _ry_score = None
 
-    # PEAD market-wide risk: % of candidates with negative post-earnings drift (distribution signal)
+    # PEAD market-wide risk: % of the collector's own FADED candidates among
+    # those whose drift window has actually run (same-week reporters sit at a
+    # drift of 0.0 by construction and are excluded from the denominator).
     _pead_cands = pro_sections.get("pead_screener", {}).get("candidates", []) or []
     try:
-        _pead_neg = sum(1 for c in _pead_cands if isinstance(c, dict) and (c.get("drift_pct") or 0) < -2)
-        _pead_score = round(100.0 * _pead_neg / len(_pead_cands), 1) if _pead_cands else None
-    except (TypeError, ValueError):
-        _pead_score = None
+        from datetime import date as _pdate
+        _pead_ref_s = (pro_sections.get("pead_screener", {}) or {}).get("as_of")
+        _pead_ref = _pdate.fromisoformat(_pead_ref_s) if _pead_ref_s else _pdate.today()
 
-    # Squeeze radar market-wide risk: % of universe on squeeze alert (fragility signal)
+        def _pead_eligible(c):
+            if not isinstance(c, dict) or c.get("drift_pct") is None:
+                return False
+            try:
+                _rd = c.get("report_date")
+                _days = (_pead_ref - _pdate.fromisoformat(_rd)).days if _rd else 999
+            except Exception:
+                _days = 999
+            if c.get("drift_pct") == 0.0 and _days < 7:
+                return False
+            return True
+
+        _pead_elig = [c for c in _pead_cands if _pead_eligible(c)]
+        _pead_faded = [c for c in _pead_elig if c.get("status") == "FADED SURPRISE"]
+        _pead_n, _pead_f = len(_pead_elig), len(_pead_faded)
+        _pead_score = round(100.0 * _pead_f / _pead_n, 1) if _pead_n else None
+        _pead_regime = f"{_pead_f}/{_pead_n} faded" if _pead_score is not None else None
+    except (TypeError, ValueError):
+        _pead_score, _pead_regime = None, None
+
+    # Squeeze radar market-wide risk: % of valid records in a non-orderly
+    # state per the collector's own taxonomy, excluding all-zero placeholder
+    # records from the denominator.
     _sq_recs = pro_sections.get("squeeze_radar", {}).get("records", []) or []
     try:
-        _sq_alert = sum(1 for r in _sq_recs if isinstance(r, dict) and (r.get("squeeze_score") or 0) >= 60)
-        _sq_score = round(100.0 * _sq_alert / len(_sq_recs), 1) if _sq_recs else None
+        _sq_valid = [r for r in _sq_recs if isinstance(r, dict)
+                     and not (r.get("si_pct") == 0 and r.get("dtc") == 0
+                              and (r.get("squeeze_score") or 0) == 0)]
+        _sq_non = [r for r in _sq_valid if r.get("classification") != "ORDERLY REBALANCING"]
+        _sq_n, _sq_a = len(_sq_valid), len(_sq_non)
+        _sq_score = round(100.0 * _sq_a / _sq_n, 1) if _sq_n else None
+        _sq_regime = f"{_sq_a}/{_sq_n} elevated or alert" if _sq_score is not None else None
     except (TypeError, ValueError):
-        _sq_score = None
+        _sq_score, _sq_regime = None, None
 
-    # Gamma flip market-wide risk: average of SPY/QQQ dealer regime
-    # Short gamma (below flip) = high risk, long gamma (above flip) = low risk
+    # Gamma flip market-wide risk: continuous per-underlying dealer regime
+    # score. Long gamma ramps down with flip distance (40 -> 15), short gamma
+    # ramps up (60 -> 90); a null flip (strike out of range) means spot sits
+    # deep in the regime, scored near the extreme and flagged.
     def _gamma_risk(g):
         if not isinstance(g, dict):
-            return None
+            return None, False
         regime = (g.get("regime") or "").upper()
-        # When flip is None (no zero crossing), use regime only, no distance boost
         try:
             _dist = g.get("distance_pct")
-            dist = abs(float(_dist)) if _dist is not None else 0
+            dist = abs(float(_dist)) if _dist is not None else None
         except (TypeError, ValueError):
-            dist = 0
+            dist = None
+        if g.get("flip_strike") is None or dist is None:
+            return (85.0 if "SHORT" in regime else 15.0), True
         if "SHORT" in regime:
-            return max(0.0, min(100.0, 60.0 + dist * 5.0))
-        return max(0.0, min(100.0, 40.0 - dist * 3.0))
+            return max(1.0, min(100.0, 60.0 + 30.0 * min(dist / 3.0, 1.0))), False
+        return max(1.0, min(100.0, 40.0 - 25.0 * min(dist / 3.0, 1.0))), False
     _gf = pro_sections.get("gamma_flip", {}) or {}
-    _gf_risks = [r for r in (_gamma_risk(_gf.get("spy")), _gamma_risk(_gf.get("qqq"))) if r is not None]
+    _gf_parts = [_gamma_risk(_gf.get("spy")), _gamma_risk(_gf.get("qqq"))]
+    _gf_risks = [r for r, _ in _gf_parts if r is not None]
+    _gf_flip_null = any(f for _, f in _gf_parts if f) if _gf_risks else False
     _gf_score = round(sum(_gf_risks) / len(_gf_risks), 1) if _gf_risks else None
+    _gf_regimes = [((_gf.get("spy") or {}).get("regime") or "").upper(),
+                   ((_gf.get("qqq") or {}).get("regime") or "").upper()]
+    if _gf_score is not None:
+        if all("SHORT" in r for r in _gf_regimes):
+            _gf_regime = "Short gamma across SPY and QQQ"
+        elif all("LONG" in r for r in _gf_regimes):
+            _gf_regime = "Long gamma across SPY and QQQ"
+        else:
+            _gf_regime = "Split dealer regime (SPY/QQQ)"
+    else:
+        _gf_regime = None
 
     # Global Macro group: five structural models inside advanced_macro.json.
-    # Headline conventions differ per model and are documented here because
-    # the composite loop below depends on them:
-    #   fiscal_dominance / eurodollar_stress / sovereign_fragmentation:
-    #     score is a plain 0-100 risk score (higher = more risk).
-    #   economic_nowcast: score is a 0-100 MOMENTUM score (higher = stronger
-    #     economy = LOWER risk); the composite consumes it inverted.
-    #   taylor_gap: the headline "score" slot carries the raw policy gap in
-    #     basis points (can be negative); the composite maps it with
-    #     risk = clamp(50 + gap_bps / 4, 0, 100).
+    # Display conventions (2026-10-22 redesign): every snapshot card shows a
+    # risk-oriented level score on 1-100 (higher = more risk; never 0 or
+    # negative). Inverted-polarity models (liquidity_drain, sector_rotation,
+    # treasury_slr, economic_nowcast) are displayed as 100 minus their native
+    # score; the native scales stay in the Pro detail. flow_divergence shows
+    # a bounded level score (|oscillator| * 12, 1-100); taylor_gap shows a
+    # level score (50 + gap_bps / 4, 1-100) while the raw signed gap in basis
+    # points stays in the Pro detail. The composite consumes the native
+    # orientations through the direction registry, as before.
     _am_models = (pro_sections.get("advanced_macro", {}) or {}).get("models", {}) or {}
     _am_fd = _am_models.get("fiscal_dominance", {}) or {}
     _am_eu = _am_models.get("eurodollar_stress", {}) or {}
@@ -660,88 +705,8 @@ def main():
     _am_tg = _am_models.get("taylor_gap", {}) or {}
     _am_sf = _am_models.get("sovereign_fragmentation", {}) or {}
 
-    # Free risk headlines (score + regime only, no analysis) for the #/risk teaser
-    site["risk_headlines"] = {
-        "correction_risk": {"score": pro_sections.get("correction_risk", {}).get("totalRiskScore"),
-                            "regime": pro_sections.get("correction_risk", {}).get("regime"),
-                            "color": pro_sections.get("correction_risk", {}).get("color")},
-        "liquidity_drain": {"score": pro_sections.get("liquidity_drain", {}).get("totalScore"),
-                            "regime": pro_sections.get("liquidity_drain", {}).get("regime"),
-                            "color": pro_sections.get("liquidity_drain", {}).get("color")},
-        "rv_shock": {"score": (pro_sections.get("rv_shock", {}).get("rvCurrent") or {}).get("vcfExposurePercentile"),
-                     "regime": (pro_sections.get("rv_shock", {}).get("countdown") or {}).get("statusLabel"),
-                     "color": (pro_sections.get("rv_shock", {}).get("countdown") or {}).get("statusColor")},
-        "contagion": {"score": (pro_sections.get("contagion", {}).get("composite") or {}).get("score"),
-                       "regime": (pro_sections.get("contagion", {}).get("composite") or {}).get("threatLevel"),
-                       "color": (pro_sections.get("contagion", {}).get("composite") or {}).get("threatColor")},
-        "flow_divergence": {"score": (pro_sections.get("flow_divergence", {}).get("current") or {}).get("oscillator"),
-                            "regime": (pro_sections.get("flow_divergence", {}).get("current") or {}).get("status"),
-                            "color": (pro_sections.get("flow_divergence", {}).get("current") or {}).get("color")},
-        "concentration": {"score": pro_sections.get("dynamic_concentration", {}).get("score"),
-                          "regime": pro_sections.get("dynamic_concentration", {}).get("regime"),
-                          "color": pro_sections.get("dynamic_concentration", {}).get("color")},
-        "margin_leverage": {"score": pro_sections.get("margin_leverage", {}).get("score"),
-                          "regime": pro_sections.get("margin_leverage", {}).get("regime"),
-                          "color": pro_sections.get("margin_leverage", {}).get("color")},
-        "sector_rotation": {"score": pro_sections.get("sector_rotation", {}).get("score"),
-                          "regime": pro_sections.get("sector_rotation", {}).get("regime"),
-                          "color": pro_sections.get("sector_rotation", {}).get("color")},
-        "fear_index": {"score": pro_sections.get("fear_index", {}).get("fear_index"),
-                       "regime": pro_sections.get("fear_index", {}).get("sentiment")},
-        "oas_distress": {"score": pro_sections.get("oas_distress", {}).get("score"),
-                         "regime": pro_sections.get("oas_distress", {}).get("regime"),
-                         "color": pro_sections.get("oas_distress", {}).get("color")},
-        "liquidity_stress": {"score": pro_sections.get("liquidity_stress", {}).get("score"),
-                             "regime": pro_sections.get("liquidity_stress", {}).get("regime"),
-                             "color": pro_sections.get("liquidity_stress", {}).get("color")},
-        "treasury_slr": {"score": pro_sections.get("treasury_slr", {}).get("score"),
-                         "regime": pro_sections.get("treasury_slr", {}).get("status"),
-                         "color": pro_sections.get("treasury_slr", {}).get("color")},
-        "real_yield_shock": {"score": _ry_score,
-                             "regime": pro_sections.get("real_yield_shock", {}).get("regime"),
-                             "color": pro_sections.get("real_yield_shock", {}).get("color"),
-                             "tips_10y": pro_sections.get("real_yield_shock", {}).get("tips_10y"),
-                             "as_of": pro_sections.get("real_yield_shock", {}).get("as_of")},
-        "pead_screener": {"score": _pead_score,
-                         "regime": f"{_pead_neg}/{len(_pead_cands)} fading" if _pead_score is not None else None,
-                         "color": "rose" if (_pead_score or 0) >= 50 else "amber" if (_pead_score or 0) >= 25 else "emerald"},
-        "squeeze_radar": {"score": _sq_score,
-                         "regime": f"{_sq_alert}/{len(_sq_recs)} on alert" if _sq_score is not None else None,
-                         "color": "rose" if (_sq_score or 0) >= 20 else "amber" if (_sq_score or 0) >= 10 else "emerald"},
-        "gamma_flip": {"score": _gf_score,
-                      "regime": "Dealer regime blend (SPY/QQQ)",
-                      "color": "rose" if (_gf_score or 0) >= 60 else "amber" if (_gf_score or 0) >= 45 else "emerald"},
-        "macro_regime": {"score": pro_sections.get("macro_regime", {}).get("score"),
-                         "regime": pro_sections.get("macro_regime", {}).get("regime"),
-                         "color": pro_sections.get("macro_regime", {}).get("color")},
-        "fiscal_dominance": {"score": _am_fd.get("score"),
-                             "regime": _am_fd.get("regime"),
-                             "color": _am_fd.get("color")},
-        "eurodollar_stress": {"score": _am_eu.get("score"),
-                              "regime": _am_eu.get("regime"),
-                              "color": _am_eu.get("color")},
-        "economic_nowcast": {"score": _am_nc.get("score"),
-                             "regime": _am_nc.get("regime"),
-                             "color": _am_nc.get("color")},
-        "taylor_gap": {"score": _am_tg.get("gap_bps"),
-                       "regime": _am_tg.get("regime"),
-                       "color": _am_tg.get("color")},
-        "sovereign_fragmentation": {"score": _am_sf.get("score"),
-                                    "regime": _am_sf.get("regime"),
-                                    "color": _am_sf.get("color")},
-    }
-
-    # Cascadia Composite Risk Index (CCRI): overall assessment across all risk models.
-    # Normalizes each model to 0-100 where HIGHER = MORE RISK, then averages.
-    # direction +1: higher headline score = higher risk (default for new models)
-    # direction -1: higher headline score = LOWER risk (inverted)
-    # To add a future model: add one line below with (direction, pillar, display name).
-    # Pillars group models for attribution (Pro display shows where risk concentrates).
-    # CCRI weighting: two-level hierarchy. Pillar targets reflect drawdown attribution
-    # (liquidity dominates every major drawdown). Within each pillar, models split by
-    # signal tier: T1 primary factors 3x, T2 regime gauges 2x, T3 supplementary 1x.
-    # To add a future model: append one line with (direction, pillar, display name, tier).
-    # Weights renormalize automatically; pillar targets stay fixed.
+    # CCRI model registry. Order defines the free snapshot card order; adding
+    # a future model here automatically gives it a snapshot card (standing rule).
     _pillar_targets = {
         "Macro & Liquidity": 0.35,
         "Systematic & Volatility": 0.25,
@@ -767,8 +732,8 @@ def main():
         "macro_regime": (+1, "Macro & Liquidity", "Macro Regime", 2),
         # Global Macro group (advanced_macro.json). The nowcast headline is a
         # momentum score where higher means a stronger economy, so direction
-        # -1 inverts it into a risk contribution. The Taylor headline carries
-        # the raw policy gap in bps; its risk mapping lives in the raw loop.
+        # -1 inverts it into a risk contribution. The Taylor headline is the
+        # raw policy gap in bps; its risk mapping lives in the raw loop.
         "fiscal_dominance": (+1, "Macro & Liquidity", "Fiscal Dominance", 2),
         "eurodollar_stress": (+1, "Macro & Liquidity", "Eurodollar Stress", 2),
         "sovereign_fragmentation": (+1, "Macro & Liquidity", "Sovereign Fragmentation", 2),
@@ -778,10 +743,157 @@ def main():
         "squeeze_radar": (+1, "Flow & Leverage", "Squeeze Fragility", 3),
         "flow_divergence": (+1, "Flow & Leverage", "Flow Divergence", 2),
     }
+    # --- Risk headline data contract (2026-10-22 redesign) ---
+    # _native: registry inputs in each model's native orientation (drives CCRI).
+    # _hl: display values for the snapshot cards, always risk-oriented 1-100.
+    # Free bundle (site["risk_headlines"]): metadata ONLY (name, slug, as_of).
+    # Pro bundle (pro_sections["risk_headlines"]): {"values": _hl,
+    # "composite": {...full attribution...}}. Scores, regime labels and band
+    # colors never enter the free bundle.
+    def _clamp1(v):
+        try:
+            return round(max(1.0, min(100.0, float(v))), 1)
+        except (TypeError, ValueError):
+            return None
+
+    def _inv(v):
+        # Inverted-polarity models: the native scale runs the other way, so
+        # the card shows the risk-direction value (native stays in Pro detail).
+        return _clamp1(100.0 - v) if v is not None else None
+
+    _cr = pro_sections.get("correction_risk", {}) or {}
+    _ld = pro_sections.get("liquidity_drain", {}) or {}
+    _rvc = (pro_sections.get("rv_shock", {}) or {}).get("rvCurrent") or {}
+    _rvcd = (pro_sections.get("rv_shock", {}) or {}).get("countdown") or {}
+    _cg = (pro_sections.get("contagion", {}) or {}).get("composite") or {}
+    _fd = (pro_sections.get("flow_divergence", {}) or {}).get("current") or {}
+    _dc = pro_sections.get("dynamic_concentration", {}) or {}
+    _ml = pro_sections.get("margin_leverage", {}) or {}
+    _sr = pro_sections.get("sector_rotation", {}) or {}
+    _fi = pro_sections.get("fear_index", {}) or {}
+    _oas = pro_sections.get("oas_distress", {}) or {}
+    _lss = pro_sections.get("liquidity_stress", {}) or {}
+    _ts = pro_sections.get("treasury_slr", {}) or {}
+    _rys = pro_sections.get("real_yield_shock", {}) or {}
+    _mr = pro_sections.get("macro_regime", {}) or {}
+    _tg_gap = _am_tg.get("gap_bps")
+    _fd_osc = _fd.get("oscillator")
+
+    _fi_score = _fi.get("fear_index")
+    _fi_color = ("rose" if (_fi_score or 0) >= 75 else "amber" if (_fi_score or 0) >= 55
+                 else "slate" if (_fi_score or 0) >= 45 else "emerald")
+
+    _ls_active = _lss.get("components_active") or []
+    _ls_note = ("Partial components: %d of 4 active" % len(_ls_active)
+                if 0 < len(_ls_active) < 4 else None)
+
+    _gf_color = ("rose" if (_gf_score or 0) >= 60 else "amber" if (_gf_score or 0) >= 45 else "emerald")
+    _pead_color = ("rose" if (_pead_score or 0) >= 50 else "amber" if (_pead_score or 0) >= 25 else "emerald")
+    _sq_color = ("rose" if (_sq_score or 0) >= 20 else "amber" if (_sq_score or 0) >= 10 else "emerald")
+
+    _native = {
+        "correction_risk": _cr.get("totalRiskScore"),
+        "liquidity_drain": _ld.get("totalScore"),
+        "rv_shock": _rvc.get("vcfExposurePercentile"),
+        "contagion": _cg.get("score"),
+        "flow_divergence": _fd_osc,
+        "concentration": _dc.get("score"),
+        "margin_leverage": _ml.get("score"),
+        "sector_rotation": _sr.get("score"),
+        "fear_index": _fi_score,
+        "oas_distress": _oas.get("score"),
+        "liquidity_stress": _lss.get("score"),
+        "treasury_slr": _ts.get("score"),
+        "real_yield_shock": _ry_score,
+        "pead_screener": _pead_score,
+        "squeeze_radar": _sq_score,
+        "gamma_flip": _gf_score,
+        "macro_regime": _mr.get("score"),
+        "fiscal_dominance": _am_fd.get("score"),
+        "eurodollar_stress": _am_eu.get("score"),
+        "economic_nowcast": _am_nc.get("score"),
+        "taylor_gap": _tg_gap,
+        "sovereign_fragmentation": _am_sf.get("score"),
+    }
+
+    _hl = {}
+
+    def _put(key, score, regime, color, **extra):
+        _hl[key] = {"score": _clamp1(score), "regime": regime, "color": color}
+        if extra:
+            _hl[key].update(extra)
+
+    _put("correction_risk", _native["correction_risk"], _cr.get("regime"), _cr.get("color"))
+    _put("liquidity_drain", _inv(_native["liquidity_drain"]), _ld.get("regime"), _ld.get("color"))
+    _put("rv_shock", _native["rv_shock"], _rvcd.get("statusLabel"), _rvcd.get("statusColor"))
+    _put("contagion", _native["contagion"], _cg.get("threatLevel"), _cg.get("threatColor"))
+    _put("flow_divergence", _clamp1(abs(_fd_osc) * 12.0) if _fd_osc is not None else None,
+         _fd.get("status"), _fd.get("color"))
+    _put("concentration", _native["concentration"], _dc.get("regime"), _dc.get("color"))
+    _put("margin_leverage", _native["margin_leverage"], _ml.get("regime"), _ml.get("color"))
+    _put("sector_rotation", _inv(_native["sector_rotation"]), _sr.get("regime"), _sr.get("color"))
+    _put("fear_index", _fi_score, _fi.get("sentiment"), _fi_color)
+    _put("oas_distress", _native["oas_distress"], _oas.get("regime"), _oas.get("color"))
+    _put("liquidity_stress", _native["liquidity_stress"], _lss.get("regime"), _lss.get("color"),
+         **({"note": _ls_note} if _ls_note else {}))
+    _put("treasury_slr", _inv(_native["treasury_slr"]), _ts.get("status"), _ts.get("color"))
+    _put("real_yield_shock", _native["real_yield_shock"], _rys.get("regime"), _rys.get("color"),
+         tips_10y=_rys.get("tips_10y"), as_of=_rys.get("as_of"))
+    _put("pead_screener", _native["pead_screener"], _pead_regime, _pead_color)
+    _put("squeeze_radar", _native["squeeze_radar"], _sq_regime, _sq_color)
+    _put("gamma_flip", _native["gamma_flip"], _gf_regime, _gf_color,
+         **({"flip_out_of_range": True} if _gf_flip_null else {}))
+    _put("macro_regime", _native["macro_regime"], _mr.get("regime"), _mr.get("color"))
+    _put("fiscal_dominance", _native["fiscal_dominance"], _am_fd.get("regime"), _am_fd.get("color"))
+    _put("eurodollar_stress", _native["eurodollar_stress"], _am_eu.get("regime"), _am_eu.get("color"))
+    _put("economic_nowcast", _inv(_native["economic_nowcast"]), _am_nc.get("regime"), _am_nc.get("color"))
+    _put("taylor_gap", _clamp1(50.0 + _tg_gap / 4.0) if _tg_gap is not None else None,
+         _am_tg.get("regime"), _am_tg.get("color"))
+    _put("sovereign_fragmentation", _native["sovereign_fragmentation"],
+         _am_sf.get("regime"), _am_sf.get("color"))
+
+    _NAMES = {
+        "correction_risk": "Correction Risk", "liquidity_drain": "Liquidity Drain",
+        "rv_shock": "Realized Vol Shock", "contagion": "Contagion",
+        "flow_divergence": "Flow Divergence", "concentration": "Concentration",
+        "margin_leverage": "Margin Leverage", "sector_rotation": "Sector Rotation",
+        "fear_index": "Fear Index", "oas_distress": "Credit Stress",
+        "liquidity_stress": "Liquidity Stress", "treasury_slr": "Treasury Capacity",
+        "real_yield_shock": "Real Yield Shock", "pead_screener": "Earnings Drift",
+        "squeeze_radar": "Squeeze Fragility", "gamma_flip": "Gamma Regime",
+        "macro_regime": "Macro Regime", "fiscal_dominance": "Fiscal Dominance",
+        "eurodollar_stress": "Eurodollar Stress", "economic_nowcast": "Nowcast Momentum",
+        "taylor_gap": "Taylor Gap", "sovereign_fragmentation": "Sovereign Fragmentation",
+    }
+    _SLUGS = {
+        "correction_risk": "risk-correction-risk", "liquidity_drain": "risk-liquidity-drain",
+        "rv_shock": "risk-realized-vol-shock", "contagion": "risk-contagion",
+        "flow_divergence": "risk-flow-divergence", "concentration": "risk-concentration",
+        "margin_leverage": "risk-systemic-leverage", "sector_rotation": "risk-offense-defense",
+        "fear_index": "risk-fear-index", "oas_distress": "risk-credit-stress",
+        "liquidity_stress": "risk-liquidity-stress", "treasury_slr": "risk-treasury-capacity",
+        "real_yield_shock": "risk-real-yield-shock", "pead_screener": "risk-earnings-drift",
+        "squeeze_radar": "risk-squeeze-fragility", "gamma_flip": "risk-gamma-regime",
+        "macro_regime": "risk-macro-regime", "fiscal_dominance": "risk-fiscal-dominance",
+        "eurodollar_stress": "risk-eurodollar-stress", "economic_nowcast": "risk-economic-nowcast",
+        "taylor_gap": "risk-taylor-gap",
+        "sovereign_fragmentation": "risk-sovereign-fragmentation",
+    }
+    # Free bundle: snapshot metadata only. No scores, regime labels or colors.
+    site["risk_headlines"] = {
+        "as_of": (site.get("generated_at") or "")[:10],
+        "models": [{"key": k, "name": _NAMES[k], "slug": _SLUGS[k]} for k in _composite_cfg],
+    }
+
+    # Cascadia Composite Risk Index (CCRI): overall assessment across all risk models.
+    # Consumes _native (registry inputs in each model's native orientation;
+    # flow_divergence is the raw oscillator, taylor_gap the raw gap in bps).
+    # Direction-normalizes to 0-100 where HIGHER = MORE RISK, then averages
+    # with the pillar/tier hierarchy. Registry lives above the headline block.
     # Raw risk values first (direction-normalized to 0-100, higher = more risk)
     _raw = {}  # key -> (risk, pillar, display name, tier)
     for _key, (_direction, _pillar, _dname, _tier) in _composite_cfg.items():
-        _s = (site["risk_headlines"].get(_key) or {}).get("score")
+        _s = _native.get(_key)
         if _s is None:
             continue
         try:
@@ -833,17 +945,13 @@ def main():
                            sorted(_items, key=lambda x: x[1], reverse=True)],
             })
         _pillar_list.sort(key=lambda x: x["score"], reverse=True)
-        # Free bundle: composite score + regime only (user decision
-        # 2026-10-19). The full attribution (components, pillars, primary
-        # driver) is Pro-only and ships in the Pro bundle below; app.js
-        # merges it over this stripped object for verified Pro users.
-        site["risk_headlines"]["composite"] = {
-            "score": round(_avg, 1),
-            "regime": _regime,
-            "color": _color,
-            "model_count": len(_components),
-        }
+        # Free bundle: NO composite values (Justin decision 2026-10-22,
+        # superseding 2026-10-19): the snapshot is blurred in full for
+        # free users, so the composite score, regime and color ship only
+        # in the Pro bundle below. The free bundle carries names, slugs
+        # and the as-of date, nothing else.
         pro_sections["risk_headlines"] = {
+            "values": _hl,
             "composite": {
                 "score": round(_avg, 1),
                 "regime": _regime,
