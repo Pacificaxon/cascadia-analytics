@@ -5,59 +5,109 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VIAV Investment Scorecard</title>
 <style>
-:root { --accent: #2471a3; --ink: #1a1a1a; --muted: #666; --line: #ddd; --bg: #fff; --card: #f8f9fa; }
-:root[data-theme="dark"] { --ink: #e8e8e8; --muted: #aaa; --line: #444; --bg: #1a1a1a; --card: #2a2a2a; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink: #e8e8e8; --muted: #aaa; --line: #444; --bg: #1a1a1a; --card: #2a2a2a; } }
+@font-face { font-family: 'Playfair Display'; src: url('file:///home/hatch/workspace/assets/fonts/PlayfairDisplay-600.ttf'); font-weight: 600; }
+@font-face { font-family: 'Playfair Display'; src: url('file:///home/hatch/workspace/assets/fonts/PlayfairDisplay-700.ttf'); font-weight: 700; }
+@font-face { font-family: 'Inter'; src: url('file:///home/hatch/workspace/assets/fonts/Inter-400.ttf'); font-weight: 400; }
+@font-face { font-family: 'Inter'; src: url('file:///home/hatch/workspace/assets/fonts/Inter-600.ttf'); font-weight: 600; }
+@font-face { font-family: 'Inter'; src: url('file:///home/hatch/workspace/assets/fonts/Inter-700.ttf'); font-weight: 700; }
+
+:root { --slate: #232d3f; --green: #3a6b4b; --gold: #c5a87c; --ink: #1a1a1a;
+        --muted: #555555; --line: #e2e8f0; --card: #f8f9fa; }
 * { box-sizing: border-box; }
-body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); max-width: 900px; margin: 0 auto; padding: 24px; font-size: 14px; line-height: 1.5; }
-h1 { font-size: 28px; margin: 0; } h2 { font-size: 18px; margin: 24px 0 8px; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
-.header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 16px; }
-.ticker { font-size: 32px; font-weight: 800; color: var(--accent); }
-.price { font-size: 24px; font-weight: 700; text-align: right; }
-.sub { color: var(--muted); font-size: 13px; }
-.tag { display: inline-block; font-size: 10px; background: #e8f0fe; color: #1a56db; border-radius: 3px; padding: 1px 5px; margin-left: 4px; vertical-align: middle; white-space: nowrap; }
-:root[data-theme="dark"] .tag { background: #1a3a5c; }
-.page1-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; margin: 16px 0; }
-.score-card { border: 1px solid var(--line); border-radius: 8px; padding: 16px; text-align: center; }
+body { font-family: 'Inter', 'Liberation Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--ink); background: #fff; max-width: 900px;
+       margin: 0 auto; padding: 24px; font-size: 10.5pt; line-height: 1.5; }
+h1, h2, h3 { font-family: 'Playfair Display', 'Liberation Serif', Garamond, 'Times New Roman', serif; font-weight: 600; color: var(--slate); }
+h2 { font-size: 14.5pt; margin: 14px 0 8px; border-bottom: 1.5pt solid var(--gold);
+     padding-bottom: 4px; }
+/* Banner: brand strip + dark slate header block read as one cover banner */
+.banner-top { background: var(--slate); display: flex; align-items: center; gap: 12px;
+              padding: 10px 20px 0; }
+.banner-mark { height: 38px; width: 38px; border-radius: 6px; }
+.banner-brand { font-family: 'Playfair Display', 'Liberation Serif', Garamond, 'Times New Roman', serif; font-weight: 700; font-size: 16pt; color: #fff;
+                letter-spacing: 2.5px; }
+.banner-brand span { color: var(--gold); }
+.banner-doc { margin-left: auto; font-size: 8.5pt; font-weight: 600;
+              letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+.header { background: var(--slate); color: #fff; display: flex;
+          justify-content: space-between; align-items: flex-start;
+          border-bottom: 3px solid var(--gold); padding: 4px 20px 12px;
+          margin-bottom: 12px; }
+.ticker { font-family: 'Playfair Display', 'Liberation Serif', Garamond, 'Times New Roman', serif; font-size: 26pt; font-weight: 700; color: #fff;
+          line-height: 1.1; }
+.price { font-family: 'Playfair Display', 'Liberation Serif', Garamond, 'Times New Roman', serif; font-size: 20pt; font-weight: 700; text-align: right;
+         color: #fff; }
+.header .sub { color: #cfd6df; }
+.sub { color: var(--muted); font-size: 9.5pt; }
+.tag { display: inline-block; font-size: 7.5pt; font-weight: 600; background: #eef1f4;
+       color: var(--slate); border: 1px solid #d8dee6; border-radius: 3px;
+       padding: 1px 5px; margin-left: 4px; vertical-align: middle; white-space: nowrap; }
+.header .tag { background: #39445c; color: #e8dcc3; border-color: #39445c; }
+.page1-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; margin: 12px 0; }
+.score-card { border: 1px solid var(--line); border-top: 3px solid var(--slate);
+              border-radius: 8px; padding: 16px; text-align: center; }
 .gauge { width: 100%; max-width: 240px; }
-.gauge-num { font-size: 42px; font-weight: 800; fill: var(--ink); }
-.gauge-band { font-size: 13px; font-weight: 700; fill: var(--muted); letter-spacing: 1px; }
-.conf { color: var(--muted); font-size: 13px; margin-top: 8px; }
-.pillar { margin: 12px 0; }
+.gauge-num { font-size: 42px; font-weight: 800; fill: var(--slate);
+             font-family: 'Inter', 'Liberation Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+.gauge-band { font-size: 13px; font-weight: 700; fill: var(--muted);
+              letter-spacing: 1px; font-family: 'Inter', 'Liberation Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+.conf { color: var(--muted); font-size: 9.5pt; margin-top: 8px; }
+.pillar { margin: 10px 0; }
 .pillar-head { display: flex; align-items: center; gap: 10px; }
-.pillar-name { font-weight: 700; min-width: 150px; }
-.bar { flex: 1; height: 12px; background: #e0e0e0; border-radius: 6px; overflow: hidden; }
-.fill { height: 100%; border-radius: 6px; }
-.pillar-score { font-weight: 800; font-size: 16px; min-width: 30px; text-align: right; font-variant-numeric: tabular-nums; }
-.pillar-why { color: var(--muted); font-size: 13px; margin: 4px 0 0 160px; }
-.thesis { border: 1px solid var(--line); border-radius: 8px; padding: 16px 20px; margin: 16px 0; }
-.thesis li { margin: 8px 0; }
-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-variant-numeric: tabular-nums; }
-th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; }
-th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+.pillar-name { font-weight: 700; min-width: 150px; color: var(--slate); }
+.bar { flex: 1; height: 12px; background: #e8eaed; border-radius: 6px; overflow: hidden; }
+.fill { height: 100%; border-radius: 6px; background: var(--green) !important; }
+.pillar-score { font-weight: 800; font-size: 16px; min-width: 30px; text-align: right;
+                font-variant-numeric: tabular-nums; color: var(--slate); }
+.pillar-why { color: var(--muted); font-size: 9.5pt; margin: 4px 0 0 160px; }
+/* Thesis renders as the theme's green callout box */
+.thesis { background: #f4f7f5; border-left: 4px solid var(--green);
+          border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 12px 0; }
+.thesis ul { list-style-type: none; padding-left: 0; margin: 0; }
+.thesis li { position: relative; padding-left: 1.5em; margin: 8px 0; }
+.thesis li::before { content: "\25A0"; color: var(--gold); position: absolute;
+                     left: 0; font-size: 0.8em; top: 0.2em; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0;
+        font-variant-numeric: tabular-nums; font-size: 9.5pt; }
+th { background: var(--slate); color: #fff; font-family: 'Playfair Display', 'Liberation Serif', Garamond, 'Times New Roman', serif; font-weight: 600;
+     text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--gold); }
+td { padding: 6px 10px; border-bottom: 1px solid var(--line); }
+tr:nth-child(even) td { background: var(--card); }
 td.num, th.num { text-align: right; }
 .val-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.val-box { background: var(--card); border-radius: 8px; padding: 12px; }
-.val-box h3 { margin: 0 0 8px; font-size: 14px; color: var(--accent); }
+.val-box { background: var(--card); border: 1px solid var(--line);
+           border-top: 3px solid var(--green); border-radius: 8px; padding: 12px; }
+.val-box h3 { margin: 0 0 8px; font-size: 11pt; color: var(--slate); }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.catalyst { border-left: 3px solid var(--accent); padding: 6px 0 6px 12px; margin: 10px 0; }
-.cat-date { font-weight: 700; color: var(--accent); }
-.risk-head { color: #c0392b; }
+.catalyst { border-left: 3px solid var(--green); padding: 6px 0 6px 12px; margin: 10px 0; }
+.cat-date { font-weight: 700; color: var(--slate); }
+.risk-head { color: var(--slate); }
+/* Slim dark strip opening page two (the theme's running page header) */
+.slim-strip { background: var(--slate); display: flex; align-items: center; gap: 8px;
+              padding: 5px 10px; margin-bottom: 10px; }
+.strip-mark { height: 18px; width: 18px; border-radius: 4px; }
+.strip-title { font-family: 'Playfair Display', 'Liberation Serif', Garamond, 'Times New Roman', serif; font-size: 11pt; font-weight: 600; color: #fff; }
+.strip-asof { margin-left: auto; font-size: 8.5pt; color: #cfd6df; }
 .scrollx { overflow-x: auto; }
-.disclaimer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); margin-top: 24px; padding-top: 12px; }
-.disclaimer-strong { font-weight: 700; text-align: center; margin-top: 8px; }
-.missing { font-size: 12px; color: var(--muted); }
+.disclaimer { font-size: 8pt; color: var(--muted); border-top: 1.5px solid var(--green);
+              margin-top: 16px; padding-top: 10px; line-height: 1.45; }
+.disclaimer-strong { font-weight: 700; text-align: center; margin-top: 6px;
+                     color: var(--slate); }
+.missing { font-size: 9pt; color: var(--muted); }
 @media print {
-  @page { margin: 0.6in; }
+  @page { size: letter; margin: 0.55in 0.55in 0.45in; }
   body { padding: 0; }
   .page-break { page-break-before: always; }
-  .disclaimer { page-break-inside: avoid; }
 }
 </style>
 </head>
 <body>
 
 <!-- PAGE ONE -->
+<div class="banner-top">
+  <img class="banner-mark" src="../logo-icon.png" alt="">
+  <div class="banner-brand">CASCADIA <span>ANALYTICS</span></div>
+  <div class="banner-doc">Investment Scorecard</div>
+</div>
 <div class="header">
   <div><div class="ticker">VIAV</div><div class="sub">Viavi Solutions Inc. (NASDAQ)</div>
   <div class="sub">As-of: 17-Oct-2026 | Latest Filing: Q4 FY26 (10-K) | Currency: USD</div></div>
@@ -125,6 +175,12 @@ td.num, th.num { text-align: right; }
 
 <!-- PAGE TWO -->
 <div class="page-break"></div>
+<div class="slim-strip">
+  <img class="strip-mark" src="../logo-icon.png" alt="">
+  <span class="strip-title">VIAV &mdash; Investment Scorecard</span>
+  <span class="strip-asof">As-of: 17-Oct-2026</span>
+</div>
+
 
 <h2>Historical Financial Trend</h2>
 <div class="scrollx"><table>
