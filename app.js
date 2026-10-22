@@ -249,6 +249,7 @@
    if (sections.trend_signals) flat.trend_signals = sections.trend_signals;
    if (sections.flow_divergence) flat.flow_divergence = sections.flow_divergence;
    if (sections.oas_distress) flat.oas_distress = sections.oas_distress;
+   if (sections.liquidity_stress) flat.liquidity_stress = sections.liquidity_stress;
    if (sections.pead_screener) flat.pead_screener = sections.pead_screener;
    if (sections.rs_screener) flat.rs_screener = sections.rs_screener;
    if (sections.inflection_screener) flat.inflection_screener = sections.inflection_screener;
@@ -734,6 +735,8 @@ function bindZoomHandlers() {
        cashflow: "Cash Flow, " + (el.dataset.ticker || ""),
        comps: "Relative Valuation, Growth vs Multiple",
        "oas-distress": "OAS Distress, HY OAS vs Quality Spread",
+       "liquidity-stress-corr": "Liquidity Stress, USD/JPY vs Nasdaq Correlation",
+       "liquidity-stress-pos": "Liquidity Stress, CFTC Yen Positioning",
        "macro-regime": "Macro Regime, Probability History",
        "fiscal-dominance": "Fiscal Dominance, Interest Burden",
        "eurodollar-stress": "Eurodollar Stress",
@@ -1541,6 +1544,12 @@ function bindZoomHandlers() {
         if (cfg) new Chart(zc, cfg);
        } else if (kind === "oas-distress") {
         const cfg = oasDistressChartConfig();
+        if (cfg) new Chart(zc, cfg);
+       } else if (kind === "liquidity-stress-corr") {
+        const cfg = liquidityStressCorrChartConfig();
+        if (cfg) new Chart(zc, cfg);
+       } else if (kind === "liquidity-stress-pos") {
+        const cfg = liquidityStressPosChartConfig();
         if (cfg) new Chart(zc, cfg);
        } else if (kind === "macro-regime") {
         const cfg = macroRegimeChartConfig();
@@ -4979,6 +4988,7 @@ function bindZoomHandlers() {
   { key: "economic_nowcast", name: "Economic Nowcast Momentum", desc: "WEI, Sahm Rule, and claims momentum, notified on recessionary drift or a Sahm Rule trigger." },
   { key: "taylor_gap", name: "Taylor Rule Policy Gap", desc: "Fed restrictiveness against the Taylor prescription, notified when the gap moves beyond plus or minus 100 bps." },
   { key: "sovereign_fragmentation", name: "Sovereign Fragmentation (BTP/Bund)", desc: "Eurozone peripheral spreads, notified when the BTP/Bund spread widens through 180 bps." },
+  { key: "liquidity_stress", name: "Liquidity Stress Index", desc: "Yen carry unwind monitor, notified when liquidity stress reaches cascade territory." },
  ];
 
  function premarketHtml() {
@@ -10877,6 +10887,208 @@ function oasDistressHtml() {
   new Chart(cv, cfg);
  }
 
+// === liquidity_stress.js ===
+// Liquidity Stress Index (PRO): cross-asset deleveraging and carry
+// unwind monitor. Data: D.liquidity_stress (collector liquidity_stress.py).
+function liqColor(color) {
+ return { emerald: "#3fb27f", amber: "#e8a33d", rose: "#e5534b" }[color] || "#8d99aa";
+}
+
+function liquidityStressHtml() {
+ const L = D.liquidity_stress || {};
+ if (L.score == null) {
+  return '<div class="section"><div class="section-title">Liquidity Stress Index ' + PRO_BADGE + '</div>' +
+   '<div class="card"><p style="color:var(--muted)">Liquidity Stress data unavailable. Check back after the next refresh.</p></div></div>';
+ }
+ const c = liqColor(L.color);
+ const lead = L.leading || {};
+ const sp = lead.yield_spread || null;
+ const iv = lead.implied_vol || null;
+ const rr = lead.risk_reversal || null;
+ const fmtSignedInt = (v) => (v > 0 ? "+" : "") + Number(v).toLocaleString("en-US");
+ const prevTxt = (txt) => txt != null ? '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">Prev ' + txt + '</div>' : "";
+ const leadCard = (label, big, sub, prev) =>
+  '<div style="background:#101620;border:1px solid ' + c + '33;border-radius:10px;padding:14px;min-width:170px;flex:1;">' +
+  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + '</div>' +
+  '<div style="font-size:30px;font-weight:800;color:#f5f7fa;font-family:monospace;">' + big + '</div>' +
+  '<div style="font-size:12px;color:#dbe5f1;">' + sub + '</div>' + prev + '</div>';
+ let h = '<div class="section"><div class="section-title">Liquidity Stress Index ' + PRO_BADGE + '</div>' +
+  '<div class="card">';
+ // Regime banner
+ h += '<div style="background:#101620;border-left:4px solid ' + c + ';border-radius:8px;padding:16px;margin-bottom:14px;">' +
+  '<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;">' +
+  '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">LIQUIDITY STRESS SCORE</div>' +
+  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(L.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+  '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">REGIME</div>' +
+  '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(L.regime || "") + '</div></div>' +
+  '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">COINCIDENT EXTREMES</div>' +
+  '<div style="font-size:20px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + (L.extreme_count != null ? L.extreme_count : "N/A") + ' of 4</div></div>' +
+  '<div style="font-size:11px;color:#8d99aa;">As of ' + esc(L.as_of || "") + '</div></div></div>';
+ // Leading indicator cards
+ h += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">';
+ h += leadCard("2Y UST VS 2Y JGB SPREAD",
+  sp && sp.value != null ? sp.value.toFixed(2) + "%" : "N/A",
+  sp ? ("UST 2Y " + (sp.ust_2y != null ? sp.ust_2y.toFixed(2) + "%" : "N/A") + " &middot; JGB 2Y " + (sp.jgb_2y != null ? sp.jgb_2y.toFixed(2) + "%" : "N/A")) : "Spread unavailable",
+  prevTxt(sp && sp.prev != null ? sp.prev.toFixed(2) + "%" : null));
+ h += leadCard("USD/JPY IMPLIED VOL (PROXY)",
+  iv && iv.value != null ? iv.value.toFixed(1) : "N/A",
+  "ATM IV, listed yen ETF options" + (iv && iv.percentile != null ? " &middot; " + Math.round(iv.percentile) + "th pct of trailing range" : ""),
+  prevTxt(iv && iv.prev != null ? iv.prev.toFixed(1) : null));
+ h += leadCard("25-DELTA RISK REVERSAL (PROXY)",
+  rr && rr.value != null ? (rr.value > 0 ? "+" : "") + rr.value.toFixed(2) : "N/A",
+  rr && rr.value != null ? "Put IV minus call IV, vol pts" : "Listed wings too illiquid to read today",
+  prevTxt(rr && rr.prev != null ? (rr.prev > 0 ? "+" : "") + rr.prev.toFixed(2) : null));
+ h += '</div>';
+ // Plumbing charts (visuals before the explanation card)
+ const plumb = L.plumbing || {};
+ const corr = plumb.correlation || {};
+ h += '<div style="font-size:12px;color:#8d99aa;margin:6px 0 2px;">USD/JPY vs Nasdaq correlation, current <b style="color:#f5f7fa;">' + (corr.current != null ? corr.current.toFixed(2) : "N/A") + '</b></div>';
+ h += '<div class="zoomable-chart" data-chart="liquidity-stress-corr" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="liquidity-stress-corr-chart"></canvas>' +
+  '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#9974; click to zoom</div></div>';
+ const pos = plumb.positioning || null;
+ if (pos) {
+  h += '<div class="zoomable-chart" data-chart="liquidity-stress-pos" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="liquidity-stress-pos-chart"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#9974; click to zoom</div></div>';
+  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0 10px;">Speculative net in CME yen futures ' + fmtSignedInt(pos.current_net) + ' contracts as of ' + esc(pos.as_of || "") + ', CFTC weekly. This positioning series stands in for the cross-currency basis, which has no public feed.</div>';
+ }
+ // Coincident z-score board
+ h += liqZBoardHtml(L.coincident || []);
+ // Explanation card, after the visuals
+ h += liqExplainHtml();
+ h += '</div></div>';
+ return h;
+}
+
+function liqZBoardHtml(rows) {
+ if (!rows.length) return "";
+ const W = 680, rowH = 46, top = 36, H = top + rows.length * rowH + 8;
+ const cx = W / 2, scale = (W / 2 - 96) / 4.2;
+ const X = (z) => cx + Math.max(-4.2, Math.min(4.2, z)) * scale;
+ const barColor = (z) => z <= -2 ? "#e5534b" : z < 0 ? "#e8a33d" : z >= 2 ? "#3fb27f" : "#4dd2aa";
+ let s = '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:14px;margin-top:12px;">' +
+  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;margin-bottom:6px;">COINCIDENT TRIGGERS, 20-DAY MOVE VS ITS OWN TRAILING 252-DAY DISTRIBUTION</div>' +
+  '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block;" role="img">';
+ // reference lines at -3, -2, +2, +3 SD
+ [-3, -2, 2, 3].forEach((lv) => {
+  const col = Math.abs(lv) === 3 ? "#e5534b" : "#e8a33d";
+  s += '<line x1="' + X(lv) + '" y1="18" x2="' + X(lv) + '" y2="' + (H - 6) + '" stroke="' + col + '" stroke-width="1" stroke-dasharray="4 4" opacity="0.65"/>' +
+   '<text x="' + X(lv) + '" y="12" fill="' + col + '" font-size="10" text-anchor="middle">' + (lv > 0 ? "+" : "") + lv + '&sigma;</text>';
+ });
+ s += '<line x1="' + X(0) + '" y1="18" x2="' + X(0) + '" y2="' + (H - 6) + '" stroke="#3a4356" stroke-width="1.5"/>';
+ rows.forEach((r, i) => {
+  const y = top + i * rowH;
+  const z = r.z != null ? r.z : 0;
+  const x0 = X(0), x1 = X(z);
+  const valTxt = (r.z != null ? (r.z > 0 ? "+" : "") + r.z.toFixed(2) : "N/A") + ' SD &middot; ' + (r.change_pct > 0 ? "+" : "") + Number(r.change_pct).toFixed(1) + '% in 20d';
+  s += '<g><title>' + esc(r.asset) + ': 20-day change ' + r.change_pct + '%, z-score ' + (r.z != null ? r.z : "N/A") + '</title>' +
+   '<text x="10" y="' + (y + 17) + '" fill="#dbe5f1" font-size="13" font-weight="600">' + esc(r.asset) + '</text>' +
+   '<rect x="' + Math.min(x0, x1) + '" y="' + (y + 4) + '" width="' + Math.max(Math.abs(x1 - x0), 2) + '" height="18" rx="3" fill="' + barColor(z) + '"/>' +
+   '<text x="' + (z >= 0 ? x1 + 8 : x1 - 8) + '" y="' + (y + 18) + '" fill="#dbe5f1" font-size="12" text-anchor="' + (z >= 0 ? "start" : "end") + '">' + valTxt + '</text></g>';
+ });
+ s += '</svg></div>';
+ return s;
+}
+
+function liqExplainHtml() {
+ const entry = (title, body) =>
+  '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin:12px 0 8px;">' + title + '</div>' +
+  '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' + body + '</div>';
+ let h = '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;margin-top:12px;">' +
+  '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:8px;">What this model tells you</div>' +
+  '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' +
+  'The Liquidity Stress Index watches the yen funding trade, the borrowing of cheap yen to buy higher yielding assets elsewhere. ' +
+  'That trade sits underneath positioning across equities, credit, and emerging markets, and it unwinds fast when the yen strengthens or Japanese yields rise. ' +
+  'The August 2024 episode is the template. The Nikkei fell 12.4 percent in one session on August 5, 2024, and the dollar fell from about 162 yen to about 142 yen in three weeks as carry positions were closed under margin pressure. ' +
+  'The index combines the gauges that moved in that episode into one score from 0 to 100, with a regime reading of Normal, Elevated Risk, or Cascade Liquidation.</div>';
+ h += entry("The 2Y UST vs 2Y JGB spread",
+  'The spread between the two year Treasury yield and the two year Japanese government bond yield is the core funding incentive for the carry trade. A wide spread pays traders to borrow yen and hold dollar assets. ' +
+  'Compression is the warning. When the spread narrows toward the bottom of its recent range, the trade earns less while the risk stays the same, and positions start to close. ' +
+  'A stress reading is a spread compressed near its trailing lows alongside a rising JGB yield, the pattern that built through July 2024 before the unwind.');
+ h += entry("The implied vol proxy",
+  'The over the counter USD/JPY implied volatility quote has no public feed, so the site reads the nearest expiry at the money implied volatility from the listed yen ETF options chain and labels it a proxy. ' +
+  'It measures what traders pay for protection against a sharp yen move over the coming month. Quiet markets keep it low and stable. ' +
+  'A stress reading is the proxy rising into the top quarter of its trailing range, which means protection is being bid aggressively and dealers are marking yen risk higher.');
+ h += entry("The 25 delta risk reversal proxy",
+  'The risk reversal comes from the same listed options chain, also as a labeled proxy. It compares the implied volatility of the 25 delta put with the 25 delta call, with deltas computed from spot, each contract volatility reading, and time to expiry. ' +
+  'It shows which direction of yen move traders are paying more to insure. A stress reading is the skew shifting hard toward protection against yen strength, the side that forces carry positions to cover. ' +
+  'The listed wings are thin, so on days when the quotes are too wide to read, the gauge shows N/A rather than a number built from stale prices.');
+ h += entry("The USD/JPY and Nasdaq correlation",
+  'The 20 day rolling correlation between daily moves in USD/JPY and the Nasdaq measures whether the yen and US equities are being driven by the same positioning. In calm markets the two drift independently and the correlation sits near zero. ' +
+  'A stress reading is a correlation at or above 0.5, which means yen moves and equity moves have locked together. ' +
+  'That lockstep is the mechanical signature of deleveraging, where a stronger yen forces equity selling and equity selling feeds back into the currency.');
+ h += entry("CFTC yen futures positioning",
+  'The cross currency basis, the cleanest funding gauge, has no public feed, so positioning stands in for it and is labeled a substitute. The CFTC publishes the net position of speculative traders in CME yen futures every week, with Tuesday data released on Friday. ' +
+  'A crowded net short yen position is the fuel for an unwind, because every one of those shorts must buy yen back to exit. ' +
+  'A stress reading is an extreme net short alongside the other gauges turning, the setup that preceded the August 2024 squeeze.');
+ h += entry("The coincident z-score board",
+  'The board tracks 20 trading day moves in USD/JPY, copper, the Nasdaq, and the dollar index, each measured against its own trailing 252 day distribution of 20 day moves. ' +
+  'A reading beyond 2.5 standard deviations in either direction marks a statistical extreme, the kind of move that comes from forced flows rather than discretionary trading. One extreme asset is noise. Several at once, in the directions a carry unwind produces, is the cascade signature. ' +
+  'Copper belongs on the board because it falls early when leveraged growth exposure is cut, and the dollar index confirms whether the move is a broad funding event or a yen only event.');
+ h += entry("Reading the score and the regimes",
+  'The score blends the component readings into a single 0 to 100 gauge, and the regime states what the components say together. ' +
+  'Normal means no coincident extremes and no locked correlation, so the carry trade is background noise. ' +
+  'Elevated Risk means at least one trigger is active, an extreme move, a correlation at or above 0.5, or the vol proxy in its top quarter, and leveraged positioning deserves a haircut. ' +
+  'Cascade Liquidation means three or more assets are at statistical extremes, or two extremes are running with the correlation locked and vol elevated, the combination seen in the August 2024 unwind. ' +
+  'The index is a backdrop gauge, not a timing signal. It grades how much damage a yen shock would do today, given the positioning and correlations in place.');
+ h += '<div style="font-size:11px;color:#8d99aa;margin-top:10px;">Data: FRED (DGS2), Japan Ministry of Finance, CFTC weekly positioning, listed yen ETF options, daily market closes. Updated every trading morning.</div>';
+ h += '</div>';
+ return h;
+}
+
+function liquidityStressCorrChartConfig() {
+ const L = D.liquidity_stress || {};
+ const hist = (((L.plumbing || {}).correlation) || {}).history || [];
+ if (!hist.length) return null;
+ return {
+  type: "line",
+  data: { labels: hist.map((p) => p.date), datasets: [
+   { label: "20D correlation, USD/JPY vs Nasdaq", data: hist.map((p) => p.corr), borderColor: "#58a6ff", backgroundColor: "rgba(88,166,255,0.08)", fill: true, tension: 0.25, pointRadius: 0, pointHitRadius: 8, borderWidth: 2 },
+   { label: "Lockstep threshold (0.5)", data: hist.map(() => 0.5), borderColor: "#e5534b", borderDash: [6, 4], fill: false, pointRadius: 0, pointHitRadius: 0, borderWidth: 1 },
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+   plugins: { legend: { labels: { color: "#8d99aa" } }, title: { display: true, text: "USD/JPY vs Nasdaq, 20-day rolling correlation of daily returns", color: "#dbe5f1", font: { size: 13 } } },
+   scales: {
+    x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
+    y: { min: -1, max: 1, ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
+   }},
+ };
+}
+
+function liquidityStressPosChartConfig() {
+ const L = D.liquidity_stress || {};
+ const pos = ((L.plumbing || {}).positioning) || null;
+ const hist = (pos && pos.history) || [];
+ if (!hist.length) return null;
+ return {
+  type: "bar",
+  data: { labels: hist.map((p) => p.date), datasets: [
+   { label: "Speculative net, CME yen futures (contracts)", data: hist.map((p) => p.net),
+     backgroundColor: hist.map((p) => p.net >= 0 ? "rgba(63,178,127,0.75)" : "rgba(229,83,75,0.75)"), borderWidth: 0 },
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+   plugins: { legend: { labels: { color: "#8d99aa" } }, title: { display: true, text: "CFTC speculative net positioning, CME Japanese yen futures (weekly)", color: "#dbe5f1", font: { size: 13 } } },
+   scales: {
+    x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
+    y: { ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
+   }},
+ };
+}
+
+// Draw the Liquidity Stress plumbing charts. Call after bindZoomHandlers()
+// in the Pro #/risk route.
+function drawLiquidityStressCharts() {
+ [["liquidity-stress-corr-chart", liquidityStressCorrChartConfig],
+  ["liquidity-stress-pos-chart", liquidityStressPosChartConfig]].forEach(([id, cfgFn]) => {
+  const cv = document.getElementById(id);
+  if (!cv || !window.Chart) return;
+  const cfg = cfgFn();
+  if (!cfg) return;
+  const old = Chart.getChart(cv);
+  if (old) old.destroy();
+  new Chart(cv, cfg);
+ });
+}
+
 // === macro_regime quadrant layer ===
 // Growth vs Inflation 4-Quadrant Engine: SVG quadrant map with the real
 // 90-day trajectory, quadrant probability cards, the probability-blended
@@ -12248,7 +12460,7 @@ function volSurfaceHtml() {
    gamma_flip: "Gamma", pead_screener: "Earn Drift", squeeze_radar: "Squeeze",
    macro_regime: "Macro Regime", fiscal_dominance: "Fiscal Dom.",
    eurodollar_stress: "Eurodollar", economic_nowcast: "Nowcast",
-   taylor_gap: "Taylor Gap", sovereign_fragmentation: "Fragment." };
+   taylor_gap: "Taylor Gap", sovereign_fragmentation: "Fragment.", liquidity_stress: "Liq. Stress" };
   let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
    '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
    '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8d99aa;">/100</span></div>' +
@@ -13422,6 +13634,7 @@ function volSurfaceHtml() {
      { id: "risk-liquidity-drain", name: "Liquidity Drain", fn: () => liquidityDrainHtml() },
      { id: "risk-systemic-leverage", name: "Systemic Leverage", fn: () => marginLeverageHtml() },
      { id: "risk-credit-stress", name: "Credit Stress", fn: () => oasDistressHtml() },
+     { id: "risk-liquidity-stress", name: "Liquidity Stress", fn: () => liquidityStressHtml() },
     ] },
   { key: "quantitative", num: "02", name: "Quantitative",
     sub: "Statistical composites built from volatility, flows, positioning, and cross-asset signals.",
@@ -13589,6 +13802,7 @@ function volSurfaceHtml() {
    const euro = rh.eurodollar_stress || {};
    const nowc = rh.economic_nowcast || {};
    const frag = rh.sovereign_fragmentation || {};
+   const ls = rh.liquidity_stress || {};
    const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
    const card = (name, score, regime, color, anchorId) => {
     if (score == null) return "";
@@ -13617,6 +13831,7 @@ function volSurfaceHtml() {
     card("Sector Rotation", sr.score, sr.regime, sr.color, "risk-offense-defense") +
     card("Fear Index", fi.score, fi.regime, fiColor, "risk-fear-index") +
     oasDistressFreeCard() +
+    card("Liquidity Stress", ls.score, ls.regime, ls.color, "risk-liquidity-stress") +
     card("Treasury Capacity", tslr.score, tslr.regime, tslr.color) +
     card("Real Yield Shock", rys.score, rys.regime, rys.color) +
     card("Gamma Regime", gfl.score, gfl.regime, gfl.color) +
@@ -13629,7 +13844,7 @@ function volSurfaceHtml() {
     taylorGapFreeCard() +
     card("Sovereign Fragmentation", frag.score, frag.regime, frag.color, "risk-sovereign-fragmentation") +
     "</div>" +
-    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Macro Regime Model, Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, Sovereign Credit Fragmentation, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
+    proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Liquidity Stress Index, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Macro Regime Model, Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, Sovereign Credit Fragmentation, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;
    bindRiskToc();
    return;
@@ -13719,6 +13934,7 @@ function volSurfaceHtml() {
    });
   }
   drawOasDistressChart();
+  drawLiquidityStressCharts();
   drawMacroRegimeChart();
   drawAdvancedMacroCharts();
   // Draw contagion chart inline
@@ -13908,7 +14124,7 @@ function volSurfaceHtml() {
    '<div style="font-size:13px;color:#dbe5f1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#dbe5f1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
-   '<li>✓ All ' + (((D.risk_headlines || {}).composite || {}).model_count || 15) + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Macro Regime, with charts, history, and plain-English explainers</li>' +
+   '<li>✓ All ' + (((D.risk_headlines || {}).composite || {}).model_count || 15) + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Liquidity Stress, Macro Regime, with charts, history, and plain-English explainers</li>' +
    '<li>✓ Global Macro suite: Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, and Sovereign Credit Fragmentation (BTP/Bund and OAT/Bund)</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
