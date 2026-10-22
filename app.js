@@ -12568,7 +12568,7 @@ function volSurfaceHtml() {
  // real values from the merged Pro payload, rendered in the same positions.
  function riskBlurCard(name, anchorId) {
   const aid = anchorId || ("risk-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
-  return '<div id="' + aid + '" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+  return '<div id="' + aid + '-snap" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
    '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
    '<div class="snap-blur" style="width:96px;height:34px;margin:8px 0;"></div>' +
    '<div class="snap-blur" style="width:70%;height:15px;"></div></div>';
@@ -12578,7 +12578,7 @@ function volSurfaceHtml() {
   const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
   const c = colorMap[color] || "#dbe5f1";
   const aid = anchorId || ("risk-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
-  return '<div id="' + aid + '" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+  return '<div id="' + aid + '-snap" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
    '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
    '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(score) + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
    '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div>" +
@@ -13850,7 +13850,11 @@ function volSurfaceHtml() {
  // Shared jump used by the Risk Model Index links and the Daily Snapshot
  // cards alike: smooth-scroll to the model anchor and flash it gold.
  function jumpToRiskAnchor(id) {
-  const target = id ? document.getElementById(id) : null;
+  // Section anchors carry the model id; snapshot cards carry it in
+  // data-risk-card (their own ids are suffixed to stay unique). Sections
+  // win when both exist (Pro page); the card itself is the fallback
+  // (free page, and headline-only models with no section).
+  const target = id ? (document.getElementById(id) || document.querySelector('[data-risk-card="' + id + '"]')) : null;
   if (!target) return;
   target.scrollIntoView({ behavior: "smooth", block: "start" });
   target.classList.remove("risk-flash");
@@ -13950,6 +13954,7 @@ function volSurfaceHtml() {
   });
   app.innerHTML = h;
   bindRiskToc();
+  bindRiskSnapshotCards();
   bindZoomHandlers();
   // Draw Fear Index 30-day history chart (data stashed by fearIndexHtml)
   const fh = window.__fearHistChart;
