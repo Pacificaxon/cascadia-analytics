@@ -10843,7 +10843,7 @@ function oasDistressHtml() {
   if (O.score == null) return "";
   const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
   const c = colorMap[O.color] || "#dbe5f1";
-  return '<div id="risk-credit-stress" class="risk-anchor" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+  return '<div id="risk-credit-stress" class="risk-anchor risk-snap-card" data-risk-card="risk-credit-stress" role="button" tabindex="0" title="Jump to Credit Stress" aria-label="Jump to Credit Stress" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
    '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">CREDIT STRESS</div>' +
    '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(O.score) + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
    '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(O.regime || "") + "</div></div>";
@@ -11616,7 +11616,7 @@ function taylorGapFreeCard() {
  if (T.score == null) return "";
  const c = GM_COLORS[T.color] || "#dbe5f1";
  const g = Math.round(T.score);
- return '<div id="risk-taylor-gap" class="risk-anchor" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+ return '<div id="risk-taylor-gap" class="risk-anchor risk-snap-card" data-risk-card="risk-taylor-gap" role="button" tabindex="0" title="Jump to Taylor Gap" aria-label="Jump to Taylor Gap" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">TAYLOR GAP</div>' +
   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + (g > 0 ? "+" : "") + g + '<span style="font-size:14px;color:#8d99aa;"> bps</span></div>' +
   '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(T.regime || "") + "</div></div>";
@@ -13656,6 +13656,9 @@ function volSurfaceHtml() {
   ".risk-anchor{scroll-margin-top:88px;}" +
   ".risk-flash{animation:riskFlash 1.8s ease-out;}" +
   "@keyframes riskFlash{0%{box-shadow:0 0 0 2px #d9a441,0 0 24px rgba(217,164,65,0.5);}100%{box-shadow:0 0 0 0 rgba(217,164,65,0);}}" +
+  ".risk-snap-card{cursor:pointer;transition:box-shadow .2s ease;}" +
+  ".risk-snap-card:hover{box-shadow:0 0 0 1px #d9a441;}" +
+  ".risk-snap-card:focus-visible{outline:2px solid #d9a441;outline-offset:2px;}" +
   ".risk-toc{background:#0a0e17;border:1px solid #253142;border-radius:12px;padding:18px;margin:14px 0 6px;}" +
   ".risk-toc-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}" +
   ".risk-toc-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#d9a441;}" +
@@ -13714,6 +13717,29 @@ function volSurfaceHtml() {
  function riskAnchorWrap(id, html) {
   return '<div class="risk-anchor" id="' + id + '">' + html + "</div>";
  }
+ // Shared jump used by the Risk Model Index links and the Daily Snapshot
+ // cards alike: smooth-scroll to the model anchor and flash it gold.
+ function jumpToRiskAnchor(id) {
+  const target = id ? document.getElementById(id) : null;
+  if (!target) return;
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  target.classList.remove("risk-flash");
+  void target.offsetWidth;
+  target.classList.add("risk-flash");
+  setTimeout(() => target.classList.remove("risk-flash"), 1900);
+ }
+ // Daily Snapshot cards carry data-risk-card="<anchor id>" and behave like
+ // the index entry for the same model: click, Enter, or Space jumps to the
+ // anchor through jumpToRiskAnchor.
+ function bindRiskSnapshotCards() {
+  document.querySelectorAll("[data-risk-card]").forEach((el) => {
+   const jump = () => jumpToRiskAnchor(el.getAttribute("data-risk-card"));
+   el.addEventListener("click", jump);
+   el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); jump(); }
+   });
+  });
+ }
  function bindRiskToc() {
   const toc = document.getElementById("risk-toc");
   if (!toc) return;
@@ -13738,16 +13764,9 @@ function volSurfaceHtml() {
   });
   toc.querySelectorAll(".risk-toc-link").forEach((link) => {
    link.addEventListener("click", () => {
-    const target = document.getElementById(link.getAttribute("data-risk-target"));
     closeAll(null);
     toc.querySelectorAll(".risk-toc-btn").forEach((b) => b.setAttribute("aria-expanded", "false"));
-    if (target) {
-     target.scrollIntoView({ behavior: "smooth", block: "start" });
-     target.classList.remove("risk-flash");
-     void target.offsetWidth;
-     target.classList.add("risk-flash");
-     setTimeout(() => target.classList.remove("risk-flash"), 1900);
-    }
+    jumpToRiskAnchor(link.getAttribute("data-risk-target"));
    });
   });
   // Document-level closers, replaced on every bind so they never stack up
@@ -13807,7 +13826,8 @@ function volSurfaceHtml() {
    const card = (name, score, regime, color, anchorId) => {
     if (score == null) return "";
     const c = colorMap[color] || "#dbe5f1";
-    return '<div' + (anchorId ? ' id="' + anchorId + '" class="risk-anchor"' : "") + ' style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
+    const aid = anchorId || ("risk-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
+    return '<div id="' + aid + '" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
      '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
      '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(score) + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
      '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div></div>";
@@ -13847,6 +13867,7 @@ function volSurfaceHtml() {
     proTeaser("Risk Models, Pro", "Correction Risk Model, Liquidity Drain Model, Realized Vol Shock Model, Credit Stress Model, Liquidity Stress Index, Treasury Capacity Gauge, Real Yield Shock Gauge, Gamma Regime Barometer, Earnings Drift Monitor, Squeeze Fragility Radar, Macro Regime Model, Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, Sovereign Credit Fragmentation, Cross-Asset Contagion Tracker, Institutional Flow Divergence, Dynamic Concentration Risk Gauge, Systemic Leverage Model, Offense vs Defense Rotation, Quantitative Fear Index, Volatility Divergence, and Credit Spreads vs VIX. Know when risk is building before the pullback.") + "</div>";
    app.innerHTML = freeH;
    bindRiskToc();
+   bindRiskSnapshotCards();
    return;
   }
   let h = '<div class="crumb">RISK MODELS</div>' +
