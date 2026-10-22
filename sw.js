@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cascadia-pwa-cache-v4';
+const CACHE_NAME = 'cascadia-pwa-cache-v5';
 // Precache only the PWA manifest. The HTML shell and app code are deliberately
 // NOT precached: v2 precached '/' and '/index.html' and served them cache-first
 // under a cache name that never changed, so returning visitors (notably the
@@ -21,11 +21,12 @@ self.addEventListener('install', event => {
 // Serve cached content when offline, but always try network first for data files
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-  // Documents republished at stable URLs (research note PDFs under /notes/)
-  // must never be served cache-first: the v3 static branch cached the first
-  // fetched copy of a note and served it indefinitely, so updated reports
-  // never reached returning visitors. Network-first, like data.
-  if (url.pathname.startsWith('/notes/') || url.pathname.endsWith('.pdf')) {
+  // Documents republished at stable URLs (research note PDFs under /notes/,
+  // memo visuals under /memo-images/) must never be served cache-first: the
+  // v3 static branch cached the first fetched copy of a note and served it
+  // indefinitely, so updated reports never reached returning visitors.
+  // Network-first, like data.
+  if (url.pathname.startsWith('/notes/') || url.pathname.startsWith('/memo-images/') || url.pathname.endsWith('.pdf')) {
     event.respondWith(
       fetch(event.request)
         .then(response => {

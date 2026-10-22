@@ -13341,6 +13341,13 @@ function volSurfaceHtml() {
      h += '</div></div>';
      return;
     }
+    if (s.image) {
+     h += '<figure style="margin:24px 0;">';
+     h += '<img src="' + esc(s.image) + '" alt="' + esc(s.alt || s.caption || "") + '" loading="lazy" style="width:100%;height:auto;display:block;border:1px solid #253142;border-radius:12px;">';
+     if (s.caption) h += '<figcaption style="font-size:12px;color:#8d99aa;margin-top:8px;text-align:center;">' + esc(s.caption) + '</figcaption>';
+     h += '</figure>';
+     return;
+    }
     if (s.heading) h += '<h2 style="font-size:20px;font-weight:700;color:#f5f7fa;margin:24px 0 12px;">' + esc(s.heading) + '</h2>';
     if (s.body) h += '<div style="font-size:15px;color:#dbe5f1;line-height:1.8;white-space:pre-line;">' + esc(s.body) + '</div>';
     if (s.table && s.table.headers && s.table.rows) {
