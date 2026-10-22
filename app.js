@@ -11357,6 +11357,16 @@ function sovereignFragmentationHtml() {
   gmCard("OAT/BUND SPREAD", M.oat_bund_bps != null ? f1(M.oat_bund_bps) + " bps" : "N/A", "core political and budget friction") +
   gmCard("GERMAN BUND 10Y", M.germany_10y_latest != null ? f2(M.germany_10y_latest) + "%" : "N/A", "latest print, " + gmMonthLabel(M.germany_latest_as_of)) +
   "</div>";
+ if (M.spot_oat_bund_bps != null) {
+  const sp = M.spot_as_of ? String(M.spot_as_of).slice(0, 10).split("-") : null;
+  const spotLabel = sp ? (GM_MONTHS[Number(sp[1]) - 1] || "") + " " + Number(sp[2]) + ", " + sp[0] : "";
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
+   gmCard("OAT/BUND SPOT", f1(M.spot_oat_bund_bps) + " bps", "daily spot marker, " + spotLabel) +
+   gmCard("FRANCE 10Y SPOT", M.spot_france_10y != null ? f2(M.spot_france_10y) + "%" : "N/A", "spot yield on " + spotLabel) +
+   gmCard("GERMANY 10Y SPOT", M.spot_germany_10y != null ? f2(M.spot_germany_10y) + "%" : "N/A", "spot yield on " + spotLabel) +
+   "</div>" +
+   '<div style="font-size:11px;color:#8d99aa;margin:-4px 0 12px;">The cards above are the latest monthly OECD prints. The spot marker is the live market spread on the date shown and refreshes daily, so stress building in French paper shows on this panel weeks before the monthly print can confirm it.</div>';
+ }
  h += '<div class="card" style="padding:0;overflow:hidden;margin:12px 0;"><div class="table-wrap"><table class="coverage">' +
   "<thead><tr><th>Sovereign 10Y Benchmark</th><th>Yield</th><th>Basis</th></tr></thead><tbody>" +
   yrow("Italy BTP 10Y", M.italy_10y, "monthly, " + gmMonthLabel(M.as_of)) +
@@ -11371,7 +11381,7 @@ function sovereignFragmentationHtml() {
  h += gmExplainer(
   "A currency union shares one central bank across many sovereign balance sheets, and that asymmetry is where European stress begins. When global rates rise, capital leaves the fiscally weaker sovereigns and concentrates in the German Bund, the bloc\u2019s risk-free anchor. The spread between Italian and German 10-year yields is therefore the market\u2019s running vote on whether the union holds together under pressure.<br><br>" +
   "Below 120 basis points the vote is calm and funding conditions across the bloc are broadly uniform. Between 150 and 200 the tension is real, because Italian banks hold large portfolios of their own government\u2019s debt and widening spreads transmit straight into domestic credit. Above 220 the desk treats the situation as a crisis in formation, with banking contagion across European lenders a live possibility and an ECB intervention, most likely through its Transmission Protection Instrument, becoming the base case.<br><br>" +
-  "The French OAT spread rides alongside because France sits in the core, and stress there signals something different from peripheral weakness. A widening OAT/Bund spread reflects political and budgetary deadlock inside the bloc\u2019s second economy, and it removes the assumption that core paper beyond Germany is unconditionally safe. These are monthly OECD observations, so the gauge moves at the speed of official statistics rather than market prices. That lag is acceptable for a structural gauge, and the direction across several months matters more than any single print.");
+  "The French OAT spread rides alongside because France sits in the core, and stress there signals something different from peripheral weakness. A widening OAT/Bund spread reflects political and budgetary deadlock inside the bloc\u2019s second economy, and it removes the assumption that core paper beyond Germany is unconditionally safe. The score and the chart run on monthly OECD observations, so they move at the speed of official statistics rather than market prices. The daily spot marker above the table closes that gap for the French leg. It will not move the structural score on its own, and a spot spread that stays wide into the next monthly print is the confirmation that matters.");
  return h;
 }
 
