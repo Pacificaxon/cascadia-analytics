@@ -223,6 +223,7 @@
    }
    if (sections.unusual_options_flow) flat.ticker_options = sections.unusual_options_flow;
    if (sections.flow_scoreboard) flat.flow_scoreboard = sections.flow_scoreboard;
+   if (sections.axon_digest_flow) flat.axon_digest_flow = sections.axon_digest_flow;
    if (sections.market_leadership) flat.leadership = sections.market_leadership;
    if (sections.macro_analysis) flat.market_analysis_report = sections.macro_analysis;
    if (sections.rsi_cyclical_defensive) flat.rsi_cd_history = sections.rsi_cyclical_defensive;
@@ -7209,7 +7210,7 @@ route("alerts", function () {
 
   // Options flow (Pro)
   h += '<div class="section" id="tk-sec-options" data-toc="Unusual Options Flow"><div class="section-title">Unusual Options Flow ' + PRO_BADGE + '</div>';
-  h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk) + scoreboardHtml(tk));
+  h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk) + scoreboardHtml(tk) + axonDigestHtml(tk));
   h += "</div>";
 
   // Catalyst Compass (Pro) - click to generate, AI quota friendly
@@ -8364,6 +8365,53 @@ route("alerts", function () {
     outcome(d.bullish, move, true) + outcome(d.bearish, move, false) + "</tr>";
   }).join("");
   return h + "</tbody></table></div></div>" + caveat + "</div>";
+ }
+
+ function axonDigestHtml(tk) {
+  // AXON-only mirror of the Discord options-flow digest. The digest posts
+  // to Discord on the day; the prints reach this page in the next morning
+  // refresh, stamped with the flagged date/time. No data -> no block.
+  if (tk !== "AXON") return "";
+  const days = ((D.axon_digest_flow || {}).days || []).slice()
+   .sort((a, b) => String(b.date || "").localeCompare(String(a.date || ""))).slice(0, 5);
+  if (!days.length) return "";
+  const fmtPrem = (prem) => {
+   if (prem == null || isNaN(prem)) return " - ";
+   if (prem >= 1e6) return "$" + (prem / 1e6).toFixed(1) + "M";
+   if (prem >= 1e3) return "$" + Math.round(prem / 1e3) + "K";
+   return "$" + Math.round(prem);
+  };
+  const fmtNum = (v) => (v == null || isNaN(v)) ? " - " : String(Number(v));
+  const dayHeader = (d) => {
+   const when = d.flagged_at ? new Date(d.flagged_at) : null;
+   if (when && !isNaN(when)) {
+    const dpart = when.toLocaleDateString("en-US", { timeZone: "America/Los_Angeles", weekday: "short", month: "short", day: "numeric", year: "numeric" });
+    const tpart = when.toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour: "numeric", minute: "2-digit" });
+    return "Flagged " + dpart + " · " + tpart + " PT";
+   }
+   const dt = new Date(String(d.date || "") + "T12:00:00");
+   if (!isNaN(dt)) return "Flagged " + dt.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+   return "Flagged " + esc(d.date || "");
+  };
+  let h = '<div style="margin-top:18px;"><div style="font-weight:700;font-size:16px;margin-bottom:6px;">AXON Flow Digest</div>' +
+   '<p style="color:var(--muted);font-size:13px;margin-bottom:10px;">Posted to Discord on the day; shown here in the next morning refresh.</p>';
+  h += days.map((d) => {
+   let b = '<div style="font-weight:600;font-size:14px;margin:14px 0 6px;">' + dayHeader(d) + "</div>";
+   b += '<div class="card"><div class="table-wrap"><table class="coverage"><thead><tr>' +
+    "<th>Side</th><th>Type</th><th>Strike</th><th>Exp</th><th>Price</th><th>Premium</th><th>Vol</th><th>OI</th><th>Direction</th></tr></thead><tbody>";
+   b += (d.prints || []).map((p) => {
+    const bull = String(p.direction || "").toLowerCase() === "bullish";
+    const label = p.direction ? (bull ? "Bullish" : "Bearish") : " - ";
+    const typ = p.type === "C" ? "Call" : (p.type === "P" ? "Put" : esc(p.type || ""));
+    const side = p.side ? (String(p.side).charAt(0).toUpperCase() + String(p.side).slice(1)) : " - ";
+    const oi = (p.open_interest == null || isNaN(p.open_interest)) ? " - " : (Number(p.open_interest) === 0 ? "new" : fmtNum(p.open_interest));
+    return "<tr><td>" + esc(side) + "</td><td>" + typ + "</td><td>" + fmtNum(p.strike) + "</td><td>" +
+     esc(p.expiry || "") + "</td><td>" + (p.price == null || isNaN(p.price) ? " - " : "$" + Number(p.price)) + "</td><td>" +
+     fmtPrem(p.premium) + "</td><td>" + fmtNum(p.volume) + "</td><td>" + oi + '</td><td class="' + (bull ? "pos" : "neg") + '">' + label + "</td></tr>";
+   }).join("");
+   return b + "</tbody></table></div></div>";
+  }).join("");
+  return h + "</div>";
  }
 
  function earningsDateHtml(tk) {

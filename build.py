@@ -247,6 +247,10 @@ def main():
         flow_scoreboard = load(os.path.join(MR, "flow_scoreboard.json"))
     except FileNotFoundError:
         flow_scoreboard = {}
+    try:
+        axon_digest_flow = load(os.path.join(MR, "axon_digest_flow.json"))
+    except FileNotFoundError:
+        axon_digest_flow = {}
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
         earnings_history = load(os.path.join(MR, "earnings_history.json"))
@@ -510,6 +514,7 @@ def main():
         "cot_data": cot_data,
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
         "flow_scoreboard": flow_scoreboard,
+        "axon_digest_flow": axon_digest_flow,
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
         "earnings_revisions": earnings_revisions,
@@ -525,6 +530,7 @@ def main():
         "volatility_skew": {"skew_data": site.pop("skew_data", {}), "ticker_skew": site.pop("ticker_skew", {})},
         "unusual_options_flow": site.pop("ticker_options", {}),
         "flow_scoreboard": site.pop("flow_scoreboard", {}),
+        "axon_digest_flow": site.pop("axon_digest_flow", {}),
         "market_leadership": site.pop("leadership", {}),
         "macro_analysis": site.pop("market_analysis_report", {}),
         "rsi_cyclical_defensive": site.pop("rsi_cd_history", {}),
