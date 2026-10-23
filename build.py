@@ -78,6 +78,60 @@ AXON_SOTP = {
 }
 
 
+def _cascadia_score(tk, upside_base, ticker_ma, earnings_history, ticker_options):
+    """Cascadia Score, computed at build time (replication-risk remediation
+    2026-10-23, finding C1). This is an exact replica of the client-side
+    computation it replaces, so the published score for every ticker is
+    unchanged; the shipped bundle now carries only the resulting score.
+    JS Math.round rounds halves toward +infinity, hence floor(x + 0.5)."""
+    import math as _math
+    total = 0.0
+    weight = 0.0
+    if upside_base is not None:
+        v = max(0.0, min(100.0, 50.0 + float(upside_base) * 0.8))
+        total += v * 0.40
+        weight += 0.40
+    ma = (ticker_ma or {}).get(tk) or {}
+    sig = ((ma.get("daily") or {}).get("signal") or "")
+    if sig:
+        s = str(sig).lower()
+        if "strong buy" in s:
+            m = 90
+        elif "strong sell" in s:
+            m = 10
+        elif "buy" in s:
+            m = 70
+        elif "sell" in s:
+            m = 30
+        else:
+            m = 50
+        total += m * 0.30
+        weight += 0.30
+    eh = (earnings_history or {}).get(tk) or []
+    if eh and isinstance(eh[0], dict) and eh[0].get("verdict"):
+        lab = str((eh[0].get("verdict") or {}).get("label") or "").lower()
+        e = 80 if "bullish" in lab else 20 if "bearish" in lab else 50
+        total += e * 0.20
+        weight += 0.20
+    opt = (ticker_options or {}).get(tk) or []
+    if isinstance(opt, list) and opt:
+        bull = bear = 0
+        for o in opt:
+            if not isinstance(o, dict):
+                continue
+            d = str(o.get("sentiment") or o.get("direction") or "").lower()
+            if "bull" in d:
+                bull += 1
+            elif "bear" in d:
+                bear += 1
+        if bull + bear > 0:
+            total += (50.0 + (bull - bear) / (bull + bear) * 50.0) * 0.10
+            weight += 0.10
+    if not weight:
+        return None
+    return max(1, min(100, int(_math.floor(total / weight + 0.5))))
+
+
 def main():
     # --- Load sources ---
     data_json = load(os.path.join(FG, "data.json"))
@@ -137,6 +191,11 @@ def main():
         implied_erp = load(os.path.join(MR, "implied_erp.json"))
     except FileNotFoundError:
         implied_erp = {}
+    # Replication-risk remediation (2026-10-23, finding H3): the ERP value is
+    # a published output; how it is produced is not. Ship an outputs-level
+    # source label only.
+    if isinstance(implied_erp, dict) and implied_erp:
+        implied_erp["source"] = "Cascadia Analytics market-implied estimate, updated daily"
     try:
         ceo_compensation = load(os.path.join(MR, "ceo_compensation.json"))
     except FileNotFoundError:
@@ -293,6 +352,11 @@ def main():
 
     # --- Merge tickers: manifest is authoritative for targets (31), data.json for detail (11) ---
     tickers = {}
+    sotp_map = {}
+    # The score's flow factor reads the same options list the client used:
+    # the bundle's per-ticker list, truncated to the latest 10 prints.
+    _score_options = {k: (v[:10] if isinstance(v, list) else v)
+                      for k, v in (ticker_options or {}).items()}
     detail = data_json.get("tickers", {})
     for tk in sorted(manifest.keys()):
         m = manifest[tk]
@@ -368,18 +432,28 @@ def main():
         # Reverse DCF from the DCF sheet (free) — the sheet is the source of truth
         # for market-implied CAGR, not the JS recomputation
         if d.get("reverse_dcf"):
-            t["reverse_dcf"] = d["reverse_dcf"]
+            # Replication-risk remediation (2026-10-23, finding H2): ship the
+            # implied CAGR and the verdict only. The margin input, the market
+            # EV input, and the CAGR-to-price table stay in the source model.
+            _rd = d["reverse_dcf"] or {}
+            t["reverse_dcf"] = {k: _rd[k] for k in ("implied_cagr", "verdict") if k in _rd}
         # Scenario sum-of-the-parts (SE, MELI) — extracted from each workbook's
         # SOTP tab by refresh_data.py into data.json (last-good values kept on
-        # a failed read). Pro-gated on the ticker page, same as AXON below.
+        # a failed read). Replication-risk remediation (2026-10-23, finding
+        # C3): the segment builds ship ONLY in the Pro payload; the free
+        # bundle carries none of it.
         if d.get("sotp"):
-            t["sotp"] = d["sotp"]
-        # AXON sum-of-the-parts (Pro-gated on the ticker page) — full detailed model
+            sotp_map[tk] = d["sotp"]
+        # AXON sum-of-the-parts — full detailed model, Pro payload only.
         if tk == "AXON":
             try:
-                t["sotp"] = load(os.path.join(HERE, "axon_sotp_detail.json"))
+                sotp_map[tk] = load(os.path.join(HERE, "axon_sotp_detail.json"))
             except FileNotFoundError:
-                t["sotp"] = AXON_SOTP
+                sotp_map[tk] = AXON_SOTP
+        # Cascadia Score (finding C1): computed here from the full factor
+        # set; the bundle ships the score, never the computation.
+        t["cascadia_score"] = _cascadia_score(
+            tk, t.get("upside_base"), ticker_ma, earnings_history, _score_options)
         # Rails three-way comparison (free on UNP/CSX/NSC pages)
         if tk in ("UNP", "CSX", "NSC"):
             try:
@@ -603,7 +677,10 @@ def main():
         # Reverse DCF section; full detail also goes to Pro for gated features.
         # Use copy (not pop) for the free-visible fields.
         dcf_targets[tk] = {}
-        for k in ["bear", "base", "bull", "blended", "rating", "wacc", "upside_base", "shares_m"]:
+        # Replication-risk remediation (2026-10-23, finding C8): targets and
+        # ratings ship; the model WACC and share count do not ship alongside
+        # the FCF paths, so the payload no longer carries a rebuild kit.
+        for k in ["bear", "base", "bull", "blended", "rating", "upside_base"]:
             dcf_targets[tk][k] = t.get(k)
         # Ratings and blended targets are FREE (user decision 2026-10-18).
         # Only pop the Pro-only fields from free data.
@@ -613,6 +690,8 @@ def main():
             fcf_projections[tk] = t.pop("fcf")
     pro_sections["dcf_targets"] = dcf_targets
     pro_sections["fcf_projections"] = fcf_projections
+    # Sum-of-the-parts segment builds (finding C3): Pro payload only.
+    pro_sections["sotp"] = sotp_map
 
     # Real yield shock 0-100 risk score from 10Y TIPS (higher = more duration risk).
     # Continuous linear rescale; hard floor 1 (no 0 or negative scores).
@@ -977,6 +1056,190 @@ def main():
                 "weighted": True,
             }
         }
+
+    # === Replication-risk remediation (2026-10-23): publication boundary ===
+    # Collectors keep full construction detail in their source JSONs; this
+    # block is where construction stops and outputs continue. Formulas,
+    # weights, point allocations, solver parameters, threshold strings, and
+    # input arrays are stripped or replaced here, so every daily rebuild
+    # ships the remediated payloads. Scores, readings, targets,
+    # probabilities, and histories pass through unchanged.
+    def _tone(points, kind):
+        try:
+            p = float(points)
+        except (TypeError, ValueError):
+            return "good"
+        if kind == "risk_high_bad":
+            return "bad" if p > 0 else "good"
+        if kind == "drain":
+            return "good" if p >= 30 else "warn" if p > 0 else "bad"
+        if kind == "conc":
+            return "bad" if p >= 30 else "warn" if p >= 15 else "good"
+        if kind == "lev":
+            return "bad" if p >= 30 else "warn" if p > 0 else "good"
+        return "good" if p > 0 else "bad"
+
+    def _strip_points(section, key, kind):
+        sec = pro_sections.get(section)
+        if not isinstance(sec, dict):
+            return
+        rows = sec.get(key)
+        if isinstance(rows, list):
+            for r in rows:
+                if isinstance(r, dict) and "points" in r:
+                    r["tone"] = _tone(r.pop("points"), kind)
+
+    # H9: point allocations become a qualitative tone per breakdown entry.
+    _strip_points("liquidity", "score_breakdown", "liq")
+    _strip_points("liquidity_drain", "scoreBreakdown", "drain")
+    _strip_points("dynamic_concentration", "scoreBreakdown", "conc")
+    _strip_points("margin_leverage", "scoreBreakdown", "lev")
+    _strip_points("sector_rotation", "scoreBreakdown", "drain")
+    _strip_points("correction_risk", "scoreBreakdown", "risk_high_bad")
+
+    # C4: Correction Risk formula note and the unclamped raw score.
+    _cr = pro_sections.get("correction_risk")
+    if isinstance(_cr, dict):
+        _cr.pop("rawScore", None)
+        if _cr.get("methodology_note"):
+            _cr["methodology_note"] = (
+                "Four gauges are tracked: price extension versus trend, the "
+                "volatility trend, credit stress, and market breadth. The "
+                "score runs from 1 to 100; higher means more correction risk.")
+
+    # C5: Credit Stress weights, component sub-scores, percentile detail,
+    # the observation window, and the backfill distribution block.
+    _oas = pro_sections.get("oas_distress")
+    if isinstance(_oas, dict):
+        for _k in ("weights", "backfill", "model_version"):
+            _oas.pop(_k, None)
+        _comps = _oas.get("components")
+        if isinstance(_comps, dict):
+            for _cp in _comps.values():
+                if isinstance(_cp, dict):
+                    for _k in ("weight", "score", "percentile_3y"):
+                        _cp.pop(_k, None)
+        _inp = _oas.get("inputs")
+        if isinstance(_inp, dict):
+            _inp.pop("window_obs", None)
+
+    # C7: CCRI per-model and pillar weights.
+    _comp = (pro_sections.get("risk_headlines") or {}).get("composite") or {}
+    for _c in _comp.get("components") or []:
+        if isinstance(_c, dict):
+            _c.pop("weight", None)
+    for _p in _comp.get("pillars") or []:
+        if isinstance(_p, dict):
+            _p.pop("weight", None)
+            for _m in _p.get("models") or []:
+                if isinstance(_m, dict):
+                    _m.pop("weight", None)
+    _comp.pop("weighted", None)
+
+    # H7: Contagion pillar weights.
+    _cg2 = pro_sections.get("contagion")
+    if isinstance(_cg2, dict):
+        for _p in (_cg2.get("pillars") or {}).values():
+            if isinstance(_p, dict):
+                _p.pop("weight", None)
+
+    # H5: Macro Regime priors, scenario means, threshold-bearing signal
+    # strings, quadrant axis weights, and the neutral-rate band.
+    def _mr_signal_label(s):
+        t = str(s)
+        low = t.lower()
+        if "term premium" in low and "above" in low:
+            return "Term premium elevated, duration compensation rebuilding"
+        if "positive term premium" in low:
+            return "Positive term premium supports the plateau case"
+        if "threshold" in low and "10y" in low:
+            return "10Y yield at an elevated level"
+        if "overlaps the plateau top" in low:
+            return "10Y yield still overlaps the plateau range"
+        if "real yield" in low and "gravity" in low:
+            return "Real yields exerting severe duration gravity"
+        if "real yields above" in low:
+            return "Real yields anchoring the plateau case"
+        if any(ch.isdigit() for ch in t):
+            return None
+        return t
+
+    _mr = pro_sections.get("macro_regime")
+    if isinstance(_mr, dict):
+        _mr.pop("priors", None)
+        for _sc in _mr.get("scenarios") or []:
+            if isinstance(_sc, dict):
+                for _k in ("us10y_mean", "bund_mean", "gilt_mean", "jgb_mean"):
+                    _sc.pop(_k, None)
+        _labels = []
+        for _s in _mr.get("signals") or []:
+            _lab = _mr_signal_label(_s)
+            if _lab and _lab not in _labels:
+                _labels.append(_lab)
+        _mr["signals"] = _labels
+        _q = _mr.get("quadrant")
+        if isinstance(_q, dict):
+            _q.pop("growth_weights_used", None)
+            _q.pop("inflation_weights_used", None)
+            _rp = ((_q.get("plumbing") or {}).get("real_policy") or {})
+            if isinstance(_rp, dict):
+                _rp.pop("r_star_low", None)
+                _rp.pop("r_star_high", None)
+
+    # H10: Taylor Rule assumed parameters and Fiscal Dominance band anchors.
+    _am = pro_sections.get("advanced_macro")
+    if isinstance(_am, dict):
+        _models = _am.get("models") or {}
+        _tg = _models.get("taylor_gap")
+        if isinstance(_tg, dict):
+            _tg.pop("r_star", None)
+            _tg.pop("nairu", None)
+        _fd = _models.get("fiscal_dominance")
+        if isinstance(_fd, dict):
+            _fd.pop("burden_anchor_lo", None)
+            _fd.pop("burden_anchor_hi", None)
+
+    # H6: Liquidity Stress proxy-construction notes become generic labels.
+    _ls = pro_sections.get("liquidity_stress")
+    if isinstance(_ls, dict):
+        _lead = _ls.get("leading") or {}
+        _iv = _lead.get("implied_vol")
+        if isinstance(_iv, dict):
+            _iv["note"] = "Listed-options implied volatility proxy"
+            _iv.pop("percentile", None)
+        _rr = _lead.get("risk_reversal")
+        if isinstance(_rr, dict):
+            _rr["note"] = "Listed-options skew proxy"
+
+    # H4: Comps regression coefficients; the method label drops to
+    # outputs level.
+    _cm = pro_sections.get("comps_matrix")
+    if isinstance(_cm, dict):
+        _md = _cm.get("metadata")
+        if isinstance(_md, dict):
+            _md.pop("regressions", None)
+            _md.pop("sectorRegressions", None)
+            if _md.get("method"):
+                _md["method"] = "sector-relative regression"
+
+    # C6: AXON alt-data bridge formula, input array, and range bases.
+    _aa = pro_sections.get("axon_altdata")
+    if isinstance(_aa, dict):
+        _br = _aa.get("bridge")
+        if isinstance(_br, dict):
+            _br.pop("formula", None)
+            _br.pop("inputs", None)
+            _rng = _br.get("range")
+            if isinstance(_rng, dict):
+                _rng.pop("low_basis", None)
+                _rng.pop("high_basis", None)
+        _md2 = _aa.get("metadata")
+        if isinstance(_md2, dict) and _md2.get("method_note"):
+            _md2["method_note"] = (
+                "Observed figures come from Axon earnings releases and cited "
+                "public records. Modeled figures are Cascadia estimates "
+                "computed from those observations. Anything this stack cannot "
+                "source is marked unavailable with the reason")
 
     pro_out = {"generated_at": site.get("generated_at"), "sections": pro_sections}
     with open(os.path.join(HERE, "functions", "pro-data.json"), "w") as pf:

@@ -278,6 +278,7 @@ function proDataStale() {
    if (sections.leadership_canary) flat.leadership_canary = sections.leadership_canary;
    if (sections.axon_altdata) flat.axon_altdata = sections.axon_altdata;
    if (sections.detailed_breakdowns) flat.detailed_breakdowns = sections.detailed_breakdowns;
+   if (sections.sotp) flat._sotp = sections.sotp;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -315,7 +316,7 @@ function proDataStale() {
  const _D_raw = window.SITE_DATA || {};
  const D = new Proxy(_D_raw, {
   get(target, prop) {
-   if (prop === "_dcf_targets" || prop === "_fcf_projections") return undefined;
+   if (prop === "_dcf_targets" || prop === "_fcf_projections" || prop === "_sotp") return undefined;
    // risk_headlines: the free bundle carries snapshot metadata only (model
    // names, card slugs, as-of date). The Pro bundle carries the readings
    // (per-model score/regime/color plus the full composite with attribution).
@@ -331,6 +332,8 @@ function proDataStale() {
     for (const tk in target.tickers) {
      merged[tk] = { ...target.tickers[tk], ...(PRO_DATA._dcf_targets[tk] || {}) };
      if (PRO_DATA._fcf_projections[tk]) merged[tk].fcf = PRO_DATA._fcf_projections[tk];
+     // SOTP segment builds ship only in the Pro payload (finding C3).
+     if (PRO_DATA._sotp && PRO_DATA._sotp[tk]) merged[tk].sotp = PRO_DATA._sotp[tk];
     }
     return merged;
    }
@@ -496,7 +499,7 @@ function proDataStale() {
  // raw notes/ URL cache-first from the first copy ever fetched, so an
  // unversioned republication never reaches them; the versioned URL is a
  // fresh cache key that bypasses the stale copy everywhere.
- const NOTES_PDF_V = "20261023-74";
+ const NOTES_PDF_V = "20261023-75";
  function openPdfModal(pdfUrl, title) {
   const root = document.getElementById("modal-root");
   // #view=FitH asks the embedded viewer to fit the page to the viewer
@@ -571,55 +574,14 @@ function proDataStale() {
   document.getElementById("auth-pass").addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
  }
 
- /* ---------- Cascadia Score (v1: DCF upside based) ---------- */
+ /* ---------- Cascadia Score ---------- */
+ // The score is computed at build time (build.py) from the model's factor
+ // inputs and ships as a per-ticker output. The client renders the value
+ // and names the components in the tooltip; the computation itself is not
+ // shipped (replication-risk remediation, 2026-10-23).
  function cascadiaScore(t) {
-  // Multi-factor score: valuation 40%, price momentum 30%, earnings momentum 20%, options flow 10%
-  let total = 0, weight = 0;
-
-  // 1. Valuation (40%): base-case upside mapped to 0-100
-  if (t.upside_base != null) {
-   const vScore = Math.max(0, Math.min(100, 50 + t.upside_base * 0.8));
-   total += vScore * 0.40; weight += 0.40;
-  }
-
-  // 2. Price momentum (30%): from MA signals
-  const tk = t.ticker;
-  const ma = (D.ticker_ma || {})[tk];
-  if (ma && ma.daily && ma.daily.signal) {
-   const sig = ma.daily.signal.toLowerCase();
-   const mScore = sig.includes("strong buy") ? 90 : sig.includes("strong sell") ? 10 :
-    sig.includes("buy") ? 70 : sig.includes("sell") ? 30 : 50;
-   total += mScore * 0.30; weight += 0.30;
-  }
-
-  // 3. Earnings momentum (20%): from most recent quarter verdict
-  const eh = (D.earnings_history || {})[tk];
-  if (eh && eh.length && eh[0].verdict) {
-   const v = (eh[0].verdict.label || "").toLowerCase();
-   const eScore = v.includes("bullish") ? 80 : v.includes("bearish") ? 20 : 50;
-   total += eScore * 0.20; weight += 0.20;
-  }
-
-  // 4. Options flow (10%): bullish vs bearish prints
-  const opt = (D.ticker_options || {})[tk];
-  if (opt && Array.isArray(opt) && opt.length) {
-   let bull = 0, bear = 0;
-   opt.forEach((o) => {
-    // The options collector records the directional read in `sentiment`
-    // ("bullish"/"bearish", derived from contract type + bought/sold);
-    // `direction` holds only "bought"/"sold" and never matched the bull/bear
-    // test, which silently dropped this factor for every ticker.
-    const d = (o.sentiment || o.direction || "").toLowerCase();
-    if (d.includes("bull")) bull++; else if (d.includes("bear")) bear++;
-   });
-   if (bull + bear > 0) {
-    const oScore = 50 + (bull - bear) / (bull + bear) * 50;
-    total += oScore * 0.10; weight += 0.10;
-   }
-  }
-
-  if (!weight) return null;
-  return Math.max(1, Math.min(100, Math.round(total / weight)));
+  if (!t) return null;
+  return t.cascadia_score != null ? t.cascadia_score : null;
  }
  function scoreClass(s) { return s >= 65 ? "score-hi" : s >= 40 ? "score-mid" : "score-lo"; }
  function scoreTooltip(t) {
@@ -3187,10 +3149,10 @@ function bindZoomHandlers() {
    // 4-factor breakdown
    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
    (L.score_breakdown || []).forEach((b) => {
-    const bc = b.points > 0 ? "#4dd2aa" : "#f37d83";
+    const bc = b.tone === "bad" ? "#f37d83" : b.tone === "warn" ? "#e0aa46" : "#4dd2aa";
     h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
      '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.metric) + "</div>" +
-     '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + " (" + b.points + " pts)</div>" +
+     '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + "</div>" +
      '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.value) + "</div>" +
      (b.detail ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;font-style:italic;">' + esc(b.detail) + "</div>" : "") +
      "</div>";
@@ -3672,14 +3634,14 @@ function bindZoomHandlers() {
     '<div style="font-size:20px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + (tenY * 100).toFixed(2) + '%</div></div>' +
     '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">READING</div>' +
     '<div style="font-size:20px;font-weight:700;color:' + readCls + ';">' + read + '</div></div>' +
-    '<div style="font-size:11px;color:#8d99aa;">As of ' + esc(d.as_of || "") + ' · Live from DCF model</div></div>' +
+    '<div style="font-size:11px;color:#8d99aa;">As of ' + esc(d.as_of || "") + ' · Updated daily</div></div>' +
     '<div class="zoomable-chart" data-chart="erp" style="position:relative;height:300px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + cid + '"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
    if (isPro) {
     h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;margin-top:12px;">' +
      '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:8px;">What this tells you</div>' +
      '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' +
-     'The <b>implied equity risk premium</b> is the extra return investors demand for holding stocks over risk-free Treasuries, solved live from market prices via a Damodaran-style dividend discount model. ' +
+     'The <b>implied equity risk premium</b> is the extra return investors demand for holding stocks over risk-free Treasuries, estimated from current market prices. ' +
      'It is the single most important input to every DCF on this site: a higher ERP means a higher discount rate and lower valuations across the board.</div>' +
      '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin:12px 0 8px;">How to read it</div>' +
      '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' +
@@ -3687,7 +3649,7 @@ function bindZoomHandlers() {
      'A <b>compressed ERP (below 3.0%)</b> means investors are accepting thin compensation for equity risk, often late in a bull market when complacency runs high. ' +
      'Watch the ERP against the 10Y: when the 10Y rises faster than the ERP, the equity discount rate climbs and growth multiples compress. ' +
      'The current 10Y at ' + (tenY * 100).toFixed(2) + '% is doing most of the work in today\'s discount rates.</div>' +
-     '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Source: Live DCF model ERP tab (GOOGLEFINANCE + Damodaran DDM solver), updated daily.</div></div>';
+     '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Source: Cascadia Analytics market-implied estimate, updated daily.</div></div>';
    } else {
     h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;margin-top:12px;text-align:center;">' +
      '<div style="font-size:13px;color:#dbe5f1;margin-bottom:8px;">The full analysis of what this ERP reading means for positioning is a Pro feature.</div>' +
@@ -7124,7 +7086,7 @@ route("alerts", function () {
   h += '<div class="tkx-herocards" id="tk-sec-valuation" data-toc="Valuation">' +
    '<div class="tkx-hcard tkx-gold"><div class="tkx-k">BLENDED TARGET</div>' +
    '<div class="tkx-v gold">' + fmt$(t.blended, 2) + '</div>' +
-   '<div class="tkx-sub">25% Bear · 50% Base · 25% Bull</div></div>' +
+   '<div class="tkx-sub">Weighted across the three scenarios</div></div>' +
    '<div class="tkx-hcard"><div class="tkx-k">BLENDED UPSIDE / DOWNSIDE</div>' +
    '<div class="tkx-v ' + cls(blendUp) + '">' + fmtPct(blendUp) + '</div>' +
    '<div class="tkx-sub">Versus current price</div></div>' +
@@ -7132,19 +7094,17 @@ route("alerts", function () {
    '<div class="tkx-v">' + fmt$(t.price) + '</div>' +
    '<div class="tkx-sub">As of ' + esc(priceDateFmt) + '</div></div>' +
    "</div>";
-  // Scenario cards: Bear / Base / Bull with model WACC and forecast horizon
+  // Scenario cards: Bear / Base / Bull with forecast horizon
   h += '<div class="tkx-scenarios">' +
    [["Bear", t.bear, "bear", t.bear != null && t.price ? (t.bear / t.price - 1) * 100 : null],
     ["Base", t.base, "base", t.upside_base],
     ["Bull", t.bull, "bull", t.bear != null && t.price ? (t.bull / t.price - 1) * 100 : null]
    ].map((c) =>
-    '<div class="tkx-scard ' + c[2] + '"><div class="tkx-scard-top"><span class="tkx-sname"><span class="tkx-dot"></span>' + c[0] + '</span>' +
-    (t.wacc ? '<span class="tkx-wacc">WACC ' + (t.wacc * 100).toFixed(2) + "%</span>" : "") + '</div>' +
+    '<div class="tkx-scard ' + c[2] + '"><div class="tkx-scard-top"><span class="tkx-sname"><span class="tkx-dot"></span>' + c[0] + '</span></div>' +
     '<div class="tkx-sval">' + fmt$(c[1]) + '</div>' +
     '<div class="tkx-srow"><span class="' + cls(c[3]) + '">' + fmtPct(c[3]) + " vs current</span>" +
     (endYear ? '<span class="tkx-ends">Ends ' + endYear + "</span>" : "") + "</div></div>"
    ).join("") + "</div>";
-  if (t.shares_m) h += '<div class="tkx-meta">' + t.shares_m.toFixed(1) + "M DILUTED SHARES</div>";
   // Table of contents bar: populated by initTickerToc() after render by
   // scanning the page for [data-toc] sections (see the TOC convention note
   // above initTickerToc). Empty until then; hidden if no sections qualify.
@@ -7687,9 +7647,8 @@ route("alerts", function () {
     "</div></div>";
   }
 
-  // Reverse DCF from the DCF sheet (source of truth for market-implied CAGR).
-  // The sheet's Reverse DCF tab computes this properly with the full model;
-  // the old JS recomputation used a flawed single-point growth approximation.
+  // Reverse DCF: the market-implied CAGR and verdict ship as outputs from
+  // the model; the inputs behind them do not (finding H2).
   const rdcf = t.reverse_dcf;
   if (rdcf && rdcf.implied_cagr != null) {
    const cagrPct = (rdcf.implied_cagr * 100).toFixed(1);
@@ -7698,43 +7657,7 @@ route("alerts", function () {
     '<div style="font-size:28px;font-weight:800;color:#d9a441;">' + cagrPct + '%</div>';
    if (rdcf.verdict && typeof rdcf.verdict === "string" && rdcf.verdict.length > 2)
     h += '<div style="font-size:13px;color:#8d99aa;margin-top:6px;">' + esc(rdcf.verdict) + "</div>";
-   if (rdcf.fcf_margin != null)
-    h += '<div style="font-size:12px;color:#647184;margin-top:6px;">Base-case FCF margin: ' + (rdcf.fcf_margin * 100).toFixed(1) + '% (held flat)</div>';
    h += "</div>";
-   const tbl = rdcf.table || [];
-   if (tbl.length) {
-    // Pick rows at 10% CAGR increments (e.g., -10%, 0%, 10%, 20%...)
-    // plus the market-implied row, sorted by CAGR
-    const picked = [];
-    const seen = new Set();
-    for (const r of tbl) {
-     const gPct = Math.round(r[0] * 100);
-     if (gPct % 10 === 0 && !seen.has(gPct)) {
-      seen.add(gPct);
-      picked.push(r);
-     }
-    }
-    // Always include the market-implied row
-    let implRow = null;
-    let bestDiff = 0.005;
-    for (const r of tbl) {
-     const d = Math.abs(r[0] - rdcf.implied_cagr);
-     if (d < bestDiff) { bestDiff = d; implRow = r; }
-    }
-    if (implRow && !picked.includes(implRow)) picked.push(implRow);
-    picked.sort((a, b) => a[0] - b[0]);
-    const rows = picked.slice(0, 14);
-    h += '<div style="margin-top:16px;"><div style="font-size:13px;color:#dbe5f1;margin-bottom:10px;font-weight:600;">Implied price by revenue CAGR (from DCF model)</div>' +
-     '<div class="table-wrap"><table class="coverage ma-table" style="color:#dbe5f1;"><thead><tr><th style="color:#8d99aa;">CAGR</th><th style="color:#8d99aa;">Implied price</th><th style="color:#8d99aa;">vs current</th></tr></thead><tbody>' +
-     rows.map((r) => {
-      const g = r[0] * 100, p = r[2];
-      if (p == null) return "";
-      const isImpl = Math.abs(r[0] - rdcf.implied_cagr) < 0.015;
-      const chg = t.price ? (p / t.price - 1) * 100 : null;
-      return "<tr" + (isImpl ? ' style="background:rgba(217,164,65,0.15);"' : "") + '><td style="color:#dbe5f1;">' + g.toFixed(1) + "%" + (isImpl ? " \u2190 market" : "") + '</td><td style="color:#dbe5f1;">' + fmt$(p) +
-       '</td><td class="' + (chg == null ? "" : cls(chg)) + '">' + (chg == null ? "N/A" : fmtPct(chg)) + "</td></tr>";
-     }).join("") + "</tbody></table></div></div>";
-   }
   } else {
    h += '<p style="color:var(--muted);margin-top:12px;">Reverse DCF details unavailable for this ticker.</p>';
   }
@@ -8007,9 +7930,8 @@ route("alerts", function () {
  }
 
  // Scenario SOTP (SE, MELI): per-segment operating bases and Bear/Base/Bull
- // multiples from the workbook SOTP tab, bridged through net cash/debt to
- // equity value per share. Data arrives via build.py from data.json, which
- // refresh_data.py extracts from the workbook tab each morning.
+ // multiples, bridged through net cash/debt to equity value per share.
+ // Data arrives via the Pro payload only (finding C3).
  function sotpScenarioHtml(t) {
   const s = t.sotp;
   const sc = ["bear", "base", "bull"];
@@ -8136,7 +8058,7 @@ route("alerts", function () {
    'mass-surveillance pipeline; the SOTP prices in a permanent haircut to RTCC/ALPR adoption.</div>' +
    '</div>';
 
-  h += '<div class="panel-asof">Source: AXON DCF workbook, Segment Build tab. All $ in millions.</div></div>';
+  h += '<div class="panel-asof">Source: Cascadia Analytics segment model. All $ in millions.</div></div>';
   return h;
  }
 
@@ -8639,10 +8561,10 @@ route("alerts", function () {
   let h = '<div class="card" style="padding:18px;">';
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;">' +
    kpi("LATEST REPORTED ARR", fmtAltM(b.base_arr_m), esc(b.base_arr_label) + ", observed from the earnings release", false) +
-   kpi("MODEL NET NEW ARR", "+" + fmtAltM(b.model_net_new_arr_m), "Trailing four-quarter average, modeled", false) +
+   kpi("MODEL NET NEW ARR", "+" + fmtAltM(b.model_net_new_arr_m), "Modeled from reported ARR history", false) +
    kpi("PROJECTED ARR, " + esc(b.target_quarter.toUpperCase()), fmtAltM(b.projected_arr_m), "Earnings " + esc(b.earnings_date || "TBD"), true) +
    kpi("PROJECTED GROWTH YOY", "+" + b.projected_yoy_pct + "%", "Against " + fmtAltM(b.prior_year_arr_m) + " in " + esc(b.target_quarter.replace("FY2026", "FY2025")), false) +
-   kpi("SENSITIVITY RANGE", fmtAltM(b.range.low_arr_m) + " to " + fmtAltM(b.range.high_arr_m), "Seasonal low to recent run-rate high", false) +
+   kpi("SENSITIVITY RANGE", fmtAltM(b.range.low_arr_m) + " to " + fmtAltM(b.range.high_arr_m), "Sensitivity range around the model estimate", false) +
    "</div>";
   // Net new ARR history bars, visuals before explanation
   const rows = (d.arr_series || []).filter((r) => r.net_new_m != null);
@@ -8656,7 +8578,7 @@ route("alerts", function () {
   h += '<div style="display:flex;align-items:center;gap:10px;margin:4px 0;"><span style="width:86px;font-size:12px;color:#e0aa46;">' + esc(b.target_quarter.replace(" FY", " ")) + ' model</span>' +
    '<div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;"><div style="height:14px;width:' + Math.round(b.model_net_new_arr_m / maxV * 100) + '%;background:#e0aa46;border-radius:3px;"></div></div>' +
    '<span style="width:64px;text-align:right;font-size:12px;color:#e0aa46;">+' + fmtAltM(b.model_net_new_arr_m) + "</span></div></div>";
-  h += '<p style="margin-top:14px;">The bridge is computed from reported figures only. ' + esc(b.formula) + ". " + esc(b.contract_overlay_note) + ".</p>";
+  h += '<p style="margin-top:14px;">The bridge is computed from reported figures only. ' + esc(b.contract_overlay_note) + ".</p>";
   if (st.revenue_consensus_m != null) {
    h += '<p style="color:var(--muted);">Street context for the same quarter, from the estimates this site already collects. Revenue consensus sits at ' + fmtAltM(st.revenue_consensus_m) + " across " + st.revenue_analysts + " analysts and EPS consensus at $" + st.eps_consensus + " across " + st.eps_analysts + " analysts. " + esc(st.net_new_arr_note) + ".</p>";
   }
@@ -8702,7 +8624,7 @@ route("alerts", function () {
   (((d.telemetry || {}).panels) || []).forEach((p) => {
    h += '<div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:12px 14px;"><div style="font-size:12px;color:var(--muted);">' + esc(p.label) + '</div><div style="font-size:20px;font-weight:700;margin-top:3px;">N/A</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">' + esc(p.reason) + "</div></div>";
   });
-  h += '</div><div class="panel-asof" style="margin-top:12px;">Model output as of ' + esc((d.metadata || {}).generated_at || "") + ". Observed figures carry their sources inline. Modeled figures follow the formula above. Unavailable panels state the reason rather than carrying an estimate.</div></div>";
+  h += '</div><div class="panel-asof" style="margin-top:12px;">Model output as of ' + esc((d.metadata || {}).generated_at || "") + ". Observed figures carry their sources inline. Modeled figures are Cascadia estimates. Unavailable panels state the reason rather than carrying an estimate.</div></div>";
   return h;
  }
  function wireAxonAltSim() {
@@ -9329,43 +9251,17 @@ route("alerts", function () {
  function initSandbox(tk, t) {
   const card = document.getElementById("sandbox-card");
   if (!card) return;
-  // baseline: base-case FCF path if available, else user-editable starting point
-  const fcf = t.fcf || {};
-  let base0 = 100, gBear = 10, gBase = 20, gBull = 35, horizon = 5;
-  if (fcf.base && fcf.base.fcf_m && fcf.base.fcf_m.length >= 2) {
-   const arr = fcf.base.fcf_m.filter((v) => v > 0);
-   if (arr.length) base0 = Math.round(arr[0]);
-   const n = fcf.base.fcf_m.length;
-   const cagr = (a) => {
-    const x = a.filter((v) => v > 0);
-    if (x.length < 2) return null;
-    return (Math.pow(x[x.length - 1] / x[0], 1 / (x.length - 1)) - 1) * 100;
-   };
-   const gb = cagr(fcf.base.fcf_m); if (gb != null) gBase = Math.round(Math.max(-20, Math.min(80, gb)));
-   if (fcf.bear) { const g = cagr(fcf.bear.fcf_m || []); if (g != null) gBear = Math.round(Math.max(-20, Math.min(80, g))); }
-   if (fcf.bull) { const g = cagr(fcf.bull.fcf_m || []); if (g != null) gBull = Math.round(Math.max(-20, Math.min(80, g))); }
-   // enforce ordering: bear <= base <= bull (bull must always have highest target)
-   gBear = Math.min(gBear, gBase, gBull);
-   gBull = Math.max(gBear, gBase, gBull);
-   gBase = Math.max(gBear, Math.min(gBase, gBull));
-   horizon = Math.max(5, Math.min(10, n));
-  }
-  const wacc = t.wacc || 0.10;
-  // shares_m must come from market data, never default to a hardcoded value
-  const shares = t.shares_m;
-  if (!shares) return '<div class="card"><p style="color:var(--muted)">Share count unavailable, simulator cannot compute implied prices.</p></div>';
-  // pick display unit from company scale: billions for large FCF, millions for small
-  const useB = Math.abs(base0) >= 500;
-  const uDiv = useB ? 1000 : 1, uSuf = useB ? "B" : "M";
+  // Generic calculator (replication-risk remediation, finding C8): every
+  // input is visitor-entered or a neutral default. No model inputs are
+  // seeded, shipped, or referenced.
+  let base0 = 100, gBear = 5, gBase = 10, gBull = 15, horizon = 5;
+  let waccPct = 10, tgPct = 3, sharesM = 100;
+  const uDiv = 1, uSuf = "M";
   const uFmt = (vM) => {
    const v = vM / uDiv;
-   // for very large values, use compact formatting to avoid "$95,000M"
-   if (Math.abs(v) >= 1000 && !useB) return "$" + (v / 1000).toFixed(1) + "B";
+   if (Math.abs(v) >= 1000) return "$" + (v / 1000).toFixed(1) + "B";
    return "$" + v.toFixed(1) + uSuf;
   };
-  const f0disp = (base0 / uDiv).toFixed(1);
-  // minimum is the TTM FCF (can be negative), user can slide up to positive as the company grows
-  const f0min = f0disp, f0max = useB ? 50 : 5000, f0step = useB ? 0.1 : 1;
 
   card.innerHTML =
    '<h3>Interactive Free Cash Flow Simulation</h3>' +
@@ -9380,22 +9276,24 @@ route("alerts", function () {
    '<span style="font-size:13px;color:var(--muted)"><span style="color:var(--bull)">&#9632;</span> Bull</span>' +
    '<span style="font-size:13px;color:var(--muted)"><span style="color:var(--base)">&#9632;</span> Base</span>' +
    '<span style="font-size:13px;color:var(--muted)"><span style="color:var(--bear)">&#9632;</span> Bear</span></div>' +
-   '<h3 style="margin-top:18px;">Adjust DCF Model Growth &amp; Margin Assumptions</h3>' +
+   '<h3 style="margin-top:18px;">Adjust the Assumptions</h3>' +
    '<div class="collapsible-head" id="sb-coll">Parameters <span>&#9650;</span></div>' +
    '<div class="param-grid" id="sb-params">' +
-   sbParam("sb-fcf0", "Base UFCF ($" + uSuf + ")", f0disp, f0min, f0max, f0step, uFmt(base0)) +
+   sbParam("sb-fcf0", "Base UFCF ($" + uSuf + ")", base0, 1, 5000, 1, uFmt(base0)) +
    sbParam("sb-gbear", "Bear UFCF Growth (%)", gBear, -20, 80, 1, gBear + "%") +
    sbParam("sb-gbase", "Base UFCF Growth (%)", gBase, -20, 80, 1, gBase + "%") +
    sbParam("sb-gbull", "Bull UFCF Growth (%)", gBull, -20, 80, 1, gBull + "%") +
    sbParam("sb-horiz", "DCF Horizon (Years)", horizon, 5, 10, 1, horizon + " years") +
+   sbParam("sb-wacc", "Discount Rate (%)", waccPct, 4, 20, 0.5, waccPct + "%") +
+   sbParam("sb-tg", "Terminal Growth (%)", tgPct, 0, 5, 0.25, tgPct + "%") +
+   sbParam("sb-shares", "Diluted Shares (M)", sharesM, 1, 10000, 1, sharesM + "M") +
    "</div>" +
-   '<div class="sandbox-note">Simplified sensitivity model: constant growth, WACC ' + (wacc * 100).toFixed(1) +
-   '%, terminal growth 3%. Illustrative only, not the full DCF.</div>' +
+   '<div class="sandbox-note">Simplified sensitivity calculator running only on the numbers you enter above. Illustrative only; it is not the Cascadia DCF model and none of its inputs come from one.</div>' +
    '<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">' +
    '<button class="btn secondary" id="sb-csv">Export CSV</button></div>';
 
   const $ = (id) => document.getElementById(id);
-  const els = { fcf0: $("sb-fcf0"), gbear: $("sb-gbear"), gbase: $("sb-gbase"), gbull: $("sb-gbull"), horiz: $("sb-horiz") };
+  const els = { fcf0: $("sb-fcf0"), gbear: $("sb-gbear"), gbase: $("sb-gbase"), gbull: $("sb-gbull"), horiz: $("sb-horiz"), wacc: $("sb-wacc"), tg: $("sb-tg"), shares: $("sb-shares") };
   const ctx = $("sandbox-chart").getContext("2d");
   sandboxChart = new Chart(ctx, {
    type: "line",
@@ -9427,6 +9325,9 @@ route("alerts", function () {
    document.querySelector('#sb-gbase').closest(".param").querySelector(".pval").textContent = els.gbase.value + "%";
    document.querySelector('#sb-gbull').closest(".param").querySelector(".pval").textContent = els.gbull.value + "%";
    document.querySelector('#sb-horiz').closest(".param").querySelector(".pval").textContent = hz + " years";
+   document.querySelector('#sb-wacc').closest(".param").querySelector(".pval").textContent = els.wacc.value + "%";
+   document.querySelector('#sb-tg').closest(".param").querySelector(".pval").textContent = els.tg.value + "%";
+   document.querySelector('#sb-shares').closest(".param").querySelector(".pval").textContent = els.shares.value + "M";
    const labels = [], bull = [], base = [], bear = [];
    for (let y = 0; y <= hz; y++) {
     labels.push(y);
@@ -9444,11 +9345,13 @@ route("alerts", function () {
    $("sb-bull-t").textContent = uFmt(bull[hz] * uDiv);
    $("sb-base-l").textContent = "Base Yr-" + hz + " UFCF";
    $("sb-bull-l").textContent = "Bull Yr-" + hz + " UFCF";
-   // implied price targets for all three scenarios
+   // implied price targets for all three scenarios, from the visitor's
+   // own discount rate, terminal growth, and share count
+   const wacc = +els.wacc.value / 100, tg = +els.tg.value / 100, shares = +els.shares.value;
    const implPrice = (arr) => {
     let p = 0;
     for (let y = 1; y <= hz; y++) p += (arr[y] * uDiv) / Math.pow(1 + wacc, y);
-    const tval = ((arr[hz] * uDiv) * 1.03) / (wacc - 0.03) / Math.pow(1 + wacc, hz);
+    const tval = wacc > tg ? ((arr[hz] * uDiv) * (1 + tg)) / (wacc - tg) / Math.pow(1 + wacc, hz) : 0;
     return (p + tval) / shares;
    };
    const pBear = implPrice(bear), pBase = implPrice(base), pBull = implPrice(bull);
@@ -10539,13 +10442,22 @@ route("alerts", function () {
    },
    hoverRadius: 3,
   }));
-  // Sector-relative trendlines: each visible sector gets its own OLS line
-  const secRegs = (meta.sectorRegressions || {});
+  // Sector-relative trendlines: each visible sector gets its own fair-value
+  // line, drawn through the per-record expected multiples the payload ships.
+  // The fitted values are published outputs; the regression coefficients
+  // behind them are not shipped (replication-risk remediation, finding H4).
   Object.keys(bySec).forEach((sec) => {
-   const sr = secRegs[sec];
-   const rr = sr && (usePE ? sr.forwardPe : sr.evRevenue);
-   if (!rr) return;
-   datasets.unshift({type: "line", label: sec + " fair value", data: [{x: xMin, y: rr.slope * xMin + rr.intercept}, {x: xCap, y: rr.slope * xCap + rr.intercept}],
+   const ek = usePE ? "expectedPe" : "expectedEvRev";
+   const pts = bySec[sec].filter((r) => r.ntmRevGrowth != null && isFinite(r.ntmRevGrowth) && r[ek] != null && isFinite(r[ek]));
+   if (pts.length < 2) return;
+   const n = pts.length;
+   const mx = pts.reduce((a, r) => a + r.ntmRevGrowth, 0) / n;
+   const my = pts.reduce((a, r) => a + r[ek], 0) / n;
+   let sxy = 0, sxx = 0;
+   pts.forEach((r) => { sxy += (r.ntmRevGrowth - mx) * (r[ek] - my); sxx += (r.ntmRevGrowth - mx) * (r.ntmRevGrowth - mx); });
+   if (!sxx) return;
+   const slope = sxy / sxx, icept = my - slope * mx;
+   datasets.unshift({type: "line", label: sec + " fair value", data: [{x: xMin, y: slope * xMin + icept}, {x: xCap, y: slope * xCap + icept}],
     borderColor: COMPS_COLORS[sec] || "#c99a6b", borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, fill: false});
   });
   // Inline view: the in-canvas Chart.js legend (38+ entries at 10px) ate a
@@ -10805,7 +10717,7 @@ route("alerts", function () {
     '<div class="hero"><div><h1 class="hero-h">Relative Valuation</h1>' +
     "<p class='hero-sub'>Cross-reference DCF values with regression-modeled peer multiples.</p></div></div>" +
     '<div class="section"><div class="section-title">Comps Matrix ' + PRO_BADGE + '</div>' +
-    proTeaser("Comps Matrix, Pro", "OLS regression of EV/Revenue and P/E against NTM growth across " + compsUniverseLabel() + ". Find discounted growth and stretched multiples.") + "</div>" + realYieldShockHtml();
+    proTeaser("Comps Matrix, Pro", "Regression of EV/Revenue and P/E against NTM growth across " + compsUniverseLabel() + ". Find discounted growth and stretched multiples.") + "</div>" + realYieldShockHtml();
    return;
   }
   const cm = D.comps_matrix || {};
@@ -10819,7 +10731,7 @@ route("alerts", function () {
   const premiums = [...recs].sort((a, b) => b.evRevDiscountPct - a.evRevDiscountPct).slice(0, 3);
   let h = '<div class="crumb">COMPS MATRIX</div>' +
    '<div class="hero"><div><h1 class="hero-h">Relative Valuation</h1>' +
-   "<p class='hero-sub'>NTM growth vs trading multiples with OLS peer regression. Updated " + esc((meta.lastUpdated || "").slice(0, 10)) + ".</p></div></div>";
+   "<p class='hero-sub'>NTM growth vs trading multiples with peer regression. Updated " + esc((meta.lastUpdated || "").slice(0, 10)) + ".</p></div></div>";
   // Anomaly cards
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:16px;">';
   h += '<div class="card" style="border:1px solid rgba(63,185,80,0.3);"><div style="font-size:12px;font-weight:700;color:#4dd2aa;margin-bottom:8px;">DISCOUNTED GROWTH</div>';
@@ -10849,7 +10761,7 @@ route("alerts", function () {
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;pointer-events:none;">Tap a bubble for details</div></div>';
   h += '<div id="comps-detail" class="comps-detail" style="display:none;"></div>';
   h += '<div id="comps-legend" class="comps-legend"></div>';
-  h += '<div id="comps-cap-note" style="font-size:12px;color:#8d99aa;margin-top:8px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axis caps are set from the names plotted on each view (98th percentile, rounded up) so the bulk of the universe stays legible; names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.</div></div>';
+  h += '<div id="comps-cap-note" style="font-size:12px;color:#8d99aa;margin-top:8px;">Sector-relative regression: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axis caps are set from the names plotted on each view (98th percentile, rounded up) so the bulk of the universe stays legible; names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.</div></div>';
   // Table. Every header is a sort control keyed to the raw record
   // values, never the formatted strings; missing values (no positive
   // forward P/E, absent fields) pin to the bottom in both directions.
@@ -10947,7 +10859,7 @@ route("alerts", function () {
   h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead id="comps-thead"><tr style="border-bottom:1px solid #253142;color:#8d99aa;text-align:right;">' +
    COMPS_COLS.map((c) => '<th class="comps-th" data-sort="' + c.key + '" tabindex="0" role="button" aria-sort="none" title="Sort by ' + c.label + '" style="' + (c.left ? "text-align:left;" : "") + 'padding:8px;cursor:pointer;user-select:none;white-space:nowrap;">' + c.label + ' <span class="comps-arrow" style="font-size:9px;color:#f0bd56;"></span></th>').join("") +
    '</tr></thead><tbody id="comps-tbody"></tbody></table></div>';
-  h += '<div class="panel-asof">Source: yfinance consensus estimates · OLS regression across coverage universe · Click a column header to sort · Export follows the current sort</div></div>';
+  h += '<div class="panel-asof">Source: yfinance consensus estimates · Regression across coverage universe · Click a column header to sort · Export follows the current sort</div></div>';
   h += realYieldShockHtml();
   app.innerHTML = h;
   bindZoomHandlers();
@@ -11072,7 +10984,7 @@ route("alerts", function () {
    });
    const note = document.getElementById("comps-cap-note");
    if (note && cfg._caps) {
-    note.textContent = "Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axis caps are set from the names plotted on each view (98th percentile, rounded up): this view runs from " + cfg._caps.xMin + "% to +" + cfg._caps.xCap + "% growth and up to " + cfg._caps.yCap + "x. Names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.";
+    note.textContent = "Sector-relative regression: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axis caps are set from the names plotted on each view (98th percentile, rounded up): this view runs from " + cfg._caps.xMin + "% to +" + cfg._caps.xCap + "% growth and up to " + cfg._caps.yCap + "x. Names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.";
    }
   }
  });
@@ -11106,10 +11018,10 @@ route("alerts", function () {
    (m.t10y2y != null ? " · 10Y-2Y " + m.t10y2y + "%" : "") + "</div></div></div>";
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
   (L.scoreBreakdown || []).forEach((b) => {
-   const bc = b.points >= 30 ? "#4dd2aa" : b.points > 0 ? "#e0aa46" : "#f37d83";
+   const bc = b.tone === "bad" ? "#f37d83" : b.tone === "warn" ? "#e0aa46" : "#4dd2aa";
    h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
     '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.metric) + "</div>" +
-    '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + " (" + b.points + " pts)</div>" +
+    '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + "</div>" +
     '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
   });
   h += "</div>";
@@ -11262,11 +11174,10 @@ route("alerts", function () {
   h += "</div>";
 
   (K.scoreBreakdown || []).forEach((b) => {
-   const bc = b.points >= 30 ? "#f37d83" : b.points >= 15 ? "#e0aa46" : "#4dd2aa";
+   const bc = b.tone === "bad" ? "#f37d83" : b.tone === "warn" ? "#e0aa46" : "#4dd2aa";
    h += '<div style="background:#101620;border-radius:10px;padding:12px;margin:8px 0;border-left:3px solid ' + bc + ';">' +
     '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-    '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">' + esc(b.metric) + '</div>' +
-    '<div style="font-size:11px;font-weight:700;color:' + bc + ';">' + b.points + ' PTS</div></div>' +
+    '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">' + esc(b.metric) + '</div></div>' +
     '<div style="font-size:13px;color:' + bc + ';font-weight:600;margin-top:2px;">' + esc(b.status) + '</div>' +
     '<div style="font-size:12px;color:#8d99aa;margin-top:2px;">' + esc(b.value || "") + "</div>" +
     '<div style="font-size:11px;color:#647184;margin-top:4px;">' + esc(b.detail || "") + "</div></div>";
@@ -11312,10 +11223,10 @@ route("alerts", function () {
   // Score breakdown
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
   (M.scoreBreakdown || []).forEach((b) => {
-   const bc = b.points >= 30 ? "#f37d83" : b.points > 0 ? "#e0aa46" : "#4dd2aa";
+   const bc = b.tone === "bad" ? "#f37d83" : b.tone === "warn" ? "#e0aa46" : "#4dd2aa";
    h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
     '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.metric) + "</div>" +
-    '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + " (" + b.points + " pts)</div>" +
+    '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + "</div>" +
     '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
   });
   h += "</div>";
@@ -11472,7 +11383,7 @@ function oasDistressHtml() {
   const barColor = (s) => s >= 85 ? "#e5484d" : s >= 70 ? "#f37d83" : s >= 55 ? "#e07f3e" : s >= 40 ? "#e0aa46" : s >= 25 ? "#d3c34c" : "#4dd2aa";
   const IN = O.inputs || {};
   let h = '<div class="section"><div class="section-title">Credit Stress Model ' + PRO_BADGE + '</div>' +
-   '<div class="section-sub">Option-adjusted spreads across high-yield, investment-grade and CCC bonds, plus the speed spreads are moving. Every reading is ranked against its own three-year history, so the score measures how unusual credit conditions are, not just how wide spreads are.</div>';
+   '<div class="section-sub">Option-adjusted spreads across high-yield, investment-grade and CCC bonds, plus the speed spreads are moving. The score measures how unusual credit conditions are, not just how wide spreads are.</div>';
   // Score banner
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
@@ -11496,21 +11407,20 @@ function oasDistressHtml() {
   h += mc("WIDENING SPEED", sbp(IN.velocity_bp));
   h += mc("IMPLIED 5Y DEFAULT", O.implied_default_5y != null ? O.implied_default_5y + "%" : "N/A");
   h += "</div>";
-  // Component breakdown: five sub-scores with input values and 3y percentiles
+  // Component readings: the five inputs at their current values. The
+  // composite is the published output; component scoring is not shipped
+  // (replication-risk remediation, finding C5).
   const comps = O.components || {};
   const compKeys = Object.keys(comps);
   if (compKeys.length) {
    h += '<div style="margin:12px 0;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-    '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;margin-bottom:10px;">COMPONENT BREAKDOWN <span style="letter-spacing:0;">each reading ranked against its own three-year history</span></div>';
+    '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;margin-bottom:10px;">COMPONENT READINGS</div>';
    compKeys.forEach((k) => {
     const cp = comps[k];
     const val = cp.unit === "bp" ? sbp(cp.value) : pct(cp.value);
     h += '<div style="display:flex;align-items:center;gap:8px;margin:7px 0;">' +
-     '<div style="width:100px;font-size:12px;color:#dbe5f1;">' + esc(cp.label || k) + '</div>' +
-     '<div style="width:70px;text-align:right;font-size:12px;color:#8d99aa;">' + val + '</div>' +
-     '<div style="flex:1;min-width:48px;height:8px;background:#101620;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, Math.max(1, cp.score || 1)) + '%;background:' + barColor(cp.score || 1) + ';border-radius:4px;"></div></div>' +
-     '<div style="width:56px;text-align:right;font-size:12px;color:#8d99aa;">' + (cp.percentile_3y != null ? cp.percentile_3y + " pct" : "") + '</div>' +
-     '<div style="width:38px;text-align:right;font-size:14px;font-weight:800;color:' + barColor(cp.score || 1) + ';">' + fmtScore(cp.score) + '</div></div>';
+     '<div style="width:140px;font-size:12px;color:#dbe5f1;">' + esc(cp.label || k) + '</div>' +
+     '<div style="text-align:right;font-size:12px;color:#dbe5f1;font-weight:600;">' + val + '</div></div>';
    });
    if (IN.velocity_bp != null) {
     h += '<div style="font-size:12px;color:#8d99aa;margin-top:10px;">Widening speed: HY spreads moved ' + sbp(IN.change_20d_bp) + " over 20 trading days and " + sbp(IN.change_60d_bp) + " over 60, a blended " + sbp(IN.velocity_bp) + ".</div>";
@@ -11535,7 +11445,7 @@ function oasDistressHtml() {
    '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
    "An option-adjusted spread measures the extra yield investors demand to hold a corporate bond instead of a Treasury of the same maturity, after stripping out the value of embedded options such as call features. When spreads rise, investors are demanding more compensation for credit risk. When spreads fall, confidence is returning.<br><br>" +
    "High-yield spreads move with broad risk appetite and liquidity conditions. Investment-grade spreads move with those same forces but carry far less default risk. The gap between them, the quality spread, strips out what hits all bonds equally and leaves the part driven by fear of actual defaults. A widening quality spread means investors are repricing default risk in the weakest balance sheets, and that repricing has historically shown up in equities soon after.<br><br>" +
-   "The score runs from 1 to 100 and blends five readings: the level of high-yield spreads, the speed they are widening or tightening, the quality spread, CCC spreads at the weakest end of the market, and the level of investment-grade spreads. Each reading is ranked against its own three-year history before blending, so a fast widening from tight levels registers even when the level still looks ordinary, and stress building in CCC names shows up even when headline high-yield spreads stay contained. Low readings mean credit conditions are unusually calm for the last three years. High readings mean several parts of the credit market are stressed at the same time by that window's standards. The model reads US corporate cash spreads only. It does not see European sovereign spreads, private credit, or equity volatility; those have their own gauges on this page. Credit markets turn before headlines do, so the gauge works best as a slow-moving backdrop rather than a timing signal." +
+   "The score runs from 1 to 100 and blends five readings: the level of high-yield spreads, the speed they are widening or tightening, the quality spread, CCC spreads at the weakest end of the market, and the level of investment-grade spreads. The blend weighs the level of spreads alongside the speed they are moving, so a fast widening from tight levels registers even when the level still looks ordinary, and stress building in CCC names shows up even when headline high-yield spreads stay contained. Low readings mean credit conditions are calm. High readings mean several parts of the credit market are stressed at the same time. The model reads US corporate cash spreads only. It does not see European sovereign spreads, private credit, or equity volatility; those have their own gauges on this page. Credit markets turn before headlines do, so the gauge works best as a slow-moving backdrop rather than a timing signal." +
    "</div></div>";
   return h;
  }
@@ -11671,11 +11581,11 @@ function liquidityStressHtml() {
   prevTxt(sp && sp.prev != null ? sp.prev.toFixed(2) + "%" : null));
  h += leadCard("USD/JPY IMPLIED VOL (PROXY)",
   iv && iv.value != null ? iv.value.toFixed(1) : "N/A",
-  "ATM IV, listed yen ETF options" + (iv && iv.percentile != null ? " &middot; " + Math.round(iv.percentile) + "th pct of trailing range" : ""),
+  "Implied volatility proxy",
   prevTxt(iv && iv.prev != null ? iv.prev.toFixed(1) : null));
- h += leadCard("25-DELTA RISK REVERSAL (PROXY)",
+ h += leadCard("RISK REVERSAL (PROXY)",
   rr && rr.value != null ? (rr.value > 0 ? "+" : "") + rr.value.toFixed(2) : "N/A",
-  rr && rr.value != null ? "Put IV minus call IV, vol pts" : "Listed wings too illiquid to read today",
+  rr && rr.value != null ? "Options skew proxy, vol pts" : "Market quotes too thin to read today",
   prevTxt(rr && rr.prev != null ? (rr.prev > 0 ? "+" : "") + rr.prev.toFixed(2) : null));
  h += '</div>';
  // Plumbing charts (visuals before the explanation card)
@@ -11688,7 +11598,7 @@ function liquidityStressHtml() {
  if (pos) {
   h += '<div class="zoomable-chart" data-chart="liquidity-stress-pos" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="liquidity-stress-pos-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#9974; click to zoom</div></div>';
-  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0 10px;">Speculative net in CME yen futures ' + fmtSignedInt(pos.current_net) + ' contracts as of ' + esc(pos.as_of || "") + ', CFTC weekly. This positioning series stands in for the cross-currency basis, which has no public feed.</div>';
+  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0 10px;">Speculative net in CME yen futures ' + fmtSignedInt(pos.current_net) + ' contracts as of ' + esc(pos.as_of || "") + ', CFTC weekly.</div>';
  }
  // Coincident z-score board
  h += liqZBoardHtml(L.coincident || []);
@@ -11705,7 +11615,7 @@ function liqZBoardHtml(rows) {
  const X = (z) => cx + Math.max(-4.2, Math.min(4.2, z)) * scale;
  const barColor = (z) => z <= -2 ? "#e5534b" : z < 0 ? "#e8a33d" : z >= 2 ? "#3fb27f" : "#4dd2aa";
  let s = '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:14px;margin-top:12px;">' +
-  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;margin-bottom:6px;">COINCIDENT TRIGGERS, 20-DAY MOVE VS ITS OWN TRAILING 252-DAY DISTRIBUTION</div>' +
+  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;margin-bottom:6px;">COINCIDENT TRIGGERS, STANDARDIZED 20-DAY MOVES</div>' +
   '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block;" role="img">';
  // reference lines at -3, -2, +2, +3 SD
  [-3, -2, 2, 3].forEach((lv) => {
@@ -11744,32 +11654,30 @@ function liqExplainHtml() {
   'Compression is the warning. When the spread narrows toward the bottom of its recent range, the trade earns less while the risk stays the same, and positions start to close. ' +
   'A stress reading is a spread compressed near its trailing lows alongside a rising JGB yield, the pattern that built through July 2024 before the unwind.');
  h += entry("The implied vol proxy",
-  'The over the counter USD/JPY implied volatility quote has no public feed, so the site reads the nearest expiry at the money implied volatility from the listed yen ETF options chain and labels it a proxy. ' +
-  'It measures what traders pay for protection against a sharp yen move over the coming month. Quiet markets keep it low and stable. ' +
-  'A stress reading is the proxy rising into the top quarter of its trailing range, which means protection is being bid aggressively and dealers are marking yen risk higher.');
- h += entry("The 25 delta risk reversal proxy",
-  'The risk reversal comes from the same listed options chain, also as a labeled proxy. It compares the implied volatility of the 25 delta put with the 25 delta call, with deltas computed from spot, each contract volatility reading, and time to expiry. ' +
-  'It shows which direction of yen move traders are paying more to insure. A stress reading is the skew shifting hard toward protection against yen strength, the side that forces carry positions to cover. ' +
-  'The listed wings are thin, so on days when the quotes are too wide to read, the gauge shows N/A rather than a number built from stale prices.');
+  'The implied vol proxy measures what traders pay for protection against a sharp yen move over the coming month. Quiet markets keep it low and stable. ' +
+  'A stress reading is the proxy rising sharply, which means protection is being bid aggressively and dealers are marking yen risk higher.');
+ h += entry("The risk reversal proxy",
+  'The risk reversal proxy shows which direction of yen move traders are paying more to insure. A stress reading is the skew shifting hard toward protection against yen strength, the side that forces carry positions to cover. ' +
+  'On days when market quotes are too thin to read, the gauge shows N/A rather than a number built from stale prices.');
  h += entry("The USD/JPY and Nasdaq correlation",
-  'The 20 day rolling correlation between daily moves in USD/JPY and the Nasdaq measures whether the yen and US equities are being driven by the same positioning. In calm markets the two drift independently and the correlation sits near zero. ' +
-  'A stress reading is a correlation at or above 0.5, which means yen moves and equity moves have locked together. ' +
+  'The correlation between daily moves in USD/JPY and the Nasdaq measures whether the yen and US equities are being driven by the same positioning. In calm markets the two drift independently and the correlation sits near zero. ' +
+  'A stress reading is a strongly positive correlation, which means yen moves and equity moves have locked together. ' +
   'That lockstep is the mechanical signature of deleveraging, where a stronger yen forces equity selling and equity selling feeds back into the currency.');
  h += entry("CFTC yen futures positioning",
-  'The cross currency basis, the cleanest funding gauge, has no public feed, so positioning stands in for it and is labeled a substitute. The CFTC publishes the net position of speculative traders in CME yen futures every week, with Tuesday data released on Friday. ' +
+  'The CFTC publishes the net position of speculative traders in CME yen futures every week. ' +
   'A crowded net short yen position is the fuel for an unwind, because every one of those shorts must buy yen back to exit. ' +
   'A stress reading is an extreme net short alongside the other gauges turning, the setup that preceded the August 2024 squeeze.');
  h += entry("The coincident z-score board",
-  'The board tracks 20 trading day moves in USD/JPY, copper, the Nasdaq, and the dollar index, each measured against its own trailing 252 day distribution of 20 day moves. ' +
-  'A reading beyond 2.5 standard deviations in either direction marks a statistical extreme, the kind of move that comes from forced flows rather than discretionary trading. One extreme asset is noise. Several at once, in the directions a carry unwind produces, is the cascade signature. ' +
+  'The board tracks 20 trading day moves in USD/JPY, copper, the Nasdaq, and the dollar index, each measured against its own history. ' +
+  'A reading far outside its historical range marks a statistical extreme, the kind of move that comes from forced flows rather than discretionary trading. One extreme asset is noise. Several at once, in the directions a carry unwind produces, is the cascade signature. ' +
   'Copper belongs on the board because it falls early when leveraged growth exposure is cut, and the dollar index confirms whether the move is a broad funding event or a yen only event.');
  h += entry("Reading the score and the regimes",
   'The score blends the component readings into a single 0 to 100 gauge, and the regime states what the components say together. ' +
   'Normal means no coincident extremes and no locked correlation, so the carry trade is background noise. ' +
-  'Elevated Risk means at least one trigger is active, an extreme move, a correlation at or above 0.5, or the vol proxy in its top quarter, and leveraged positioning deserves a haircut. ' +
-  'Cascade Liquidation means three or more assets are at statistical extremes, or two extremes are running with the correlation locked and vol elevated, the combination seen in the August 2024 unwind. ' +
+  'Elevated Risk means at least one trigger is active, an extreme move, a locked correlation, or elevated vol, and leveraged positioning deserves a haircut. ' +
+  'Cascade Liquidation means several assets are at statistical extremes at once, or extremes are running with the correlation locked and vol elevated, the combination seen in the August 2024 unwind. ' +
   'The index is a backdrop gauge, not a timing signal. It grades how much damage a yen shock would do today, given the positioning and correlations in place.');
- h += '<div style="font-size:11px;color:#8d99aa;margin-top:10px;">Data: FRED (DGS2), Japan Ministry of Finance, CFTC weekly positioning, listed yen ETF options, daily market closes. Updated every trading morning.</div>';
+ h += '<div style="font-size:11px;color:#8d99aa;margin-top:10px;">Data: FRED (DGS2), Japan Ministry of Finance, CFTC weekly positioning, listed options markets, daily market closes. Updated every trading morning.</div>';
  h += '</div>';
  return h;
 }
@@ -11781,11 +11689,11 @@ function liquidityStressCorrChartConfig() {
  return {
   type: "line",
   data: { labels: hist.map((p) => p.date), datasets: [
-   { label: "20D correlation, USD/JPY vs Nasdaq", data: hist.map((p) => p.corr), borderColor: "#58a6ff", backgroundColor: "rgba(88,166,255,0.08)", fill: true, tension: 0.25, pointRadius: 0, pointHitRadius: 8, borderWidth: 2 },
-   { label: "Lockstep threshold (0.5)", data: hist.map(() => 0.5), borderColor: "#e5534b", borderDash: [6, 4], fill: false, pointRadius: 0, pointHitRadius: 0, borderWidth: 1 },
+   { label: "Correlation, USD/JPY vs Nasdaq", data: hist.map((p) => p.corr), borderColor: "#58a6ff", backgroundColor: "rgba(88,166,255,0.08)", fill: true, tension: 0.25, pointRadius: 0, pointHitRadius: 8, borderWidth: 2 },
+   { label: "Stress reference line", data: hist.map(() => 0.5), borderColor: "#e5534b", borderDash: [6, 4], fill: false, pointRadius: 0, pointHitRadius: 0, borderWidth: 1 },
   ]},
   options: { responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
-   plugins: { legend: { labels: { color: "#8d99aa" } }, title: { display: true, text: "USD/JPY vs Nasdaq, 20-day rolling correlation of daily returns", color: "#dbe5f1", font: { size: 13 } } },
+   plugins: { legend: { labels: { color: "#8d99aa" } }, title: { display: true, text: "USD/JPY vs Nasdaq, correlation of daily returns", color: "#dbe5f1", font: { size: 13 } } },
    scales: {
     x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
     y: { min: -1, max: 1, ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
@@ -11855,7 +11763,7 @@ function quadrantSectionHtml(M) {
    '<div style="text-align:center;min-width:120px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">GROWTH Z / INFLATION Z</div>' +
    '<div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + signed(Q.z_growth) + ' <span style="color:#8d99aa;">/</span> ' + signed(Q.z_inflation) + '</div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + dc + ';">' + esc(Q.quadrant_label || "") + ' \u00B7 ' + esc(Q.dominant_name || "") + '</div>' +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">The dominant quadrant carries a ' + f1(P[Q.dominant]) + '% probability weight from the distance softmax. The dashed path on the map traces the weekly position over the past 90 days, with each point computed only from data available on that date.</div></div></div>';
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">The dominant quadrant carries a ' + f1(P[Q.dominant]) + '% probability weight. The dashed path on the map traces the weekly position over the past 90 days, with each point computed only from data available on that date.</div></div></div>';
   // (1) 2D quadrant plot in SVG
   const W = 660, H = 436, x0 = 62, x1 = 618, y0 = 24, y1 = 376;
   const clamp = (z) => Math.max(-3, Math.min(3, z));
@@ -11907,20 +11815,20 @@ function quadrantSectionHtml(M) {
     '<div style="font-size:11px;color:#8d99aa;">' + quadDesc[k] + (dom ? ' \u00B7 <span style="color:' + qc + ';font-weight:700;">DOMINANT</span>' : "") + '</div></div>';
   });
   h += "</div>";
-  // Axis component transparency
+  // Axis components: named gauges with their current readings. The
+  // blend itself is not shipped (finding H5).
   const gc = Q.growth_components || {}, ic = Q.inflation_components || {};
-  const gw = Q.growth_weights_used || {}, iw = Q.inflation_weights_used || {};
   const compNames = { copper_gold: "Copper/gold ratio", indpro_momentum: "Industrial production", curve: "Curve level", breakeven: "Breakeven inflation", cpi_momentum: "CPI momentum", oil: "Crude oil" };
-  const compCell = (k, comps, weights) =>
-   '<div style="flex:1;min-width:130px;"><div style="font-size:11px;color:#8d99aa;">' + compNames[k] + (weights[k] != null ? ' \u00B7 weight ' + Math.round(weights[k] * 100) + '%' : '') + '</div>' +
+  const compCell = (k, comps) =>
+   '<div style="flex:1;min-width:130px;"><div style="font-size:11px;color:#8d99aa;">' + compNames[k] + '</div>' +
    '<div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + signed(comps[k]) + '</div></div>';
   const missing = Object.keys(compNames).filter((k) => (k in gc ? gc[k] : ic[k]) == null);
   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What is driving the two axes</div>' +
    '<div style="font-size:11px;color:#8d99aa;margin-bottom:6px;">GROWTH AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
-   ["copper_gold", "indpro_momentum", "curve"].map((k) => compCell(k, gc, gw)).join("") + '</div>' +
+   ["copper_gold", "indpro_momentum", "curve"].map((k) => compCell(k, gc)).join("") + '</div>' +
    '<div style="font-size:11px;color:#8d99aa;margin:10px 0 6px;">INFLATION AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
-   ["breakeven", "cpi_momentum", "oil"].map((k) => compCell(k, ic, iw)).join("") + '</div>' +
-   (missing.length ? '<div style="font-size:11px;color:#e0aa46;margin-top:8px;">Reduced coverage in this snapshot. ' + missing.map((k) => compNames[k]).join(", ") + ' could not be computed, so the remaining weights were renormalized to sum to one.</div>' : "") +
+   ["breakeven", "cpi_momentum", "oil"].map((k) => compCell(k, ic)).join("") + '</div>' +
+   (missing.length ? '<div style="font-size:11px;color:#e0aa46;margin-top:8px;">Reduced coverage in this snapshot. ' + missing.map((k) => compNames[k]).join(", ") + ' could not be computed in this snapshot.</div>' : "") +
    '</div>';
   // (3) Tactical allocation, blended by the live probabilities
   const A = Q.allocation;
@@ -11959,7 +11867,7 @@ function quadrantSectionHtml(M) {
    pc("CURVE SLOPE (10Y - 2Y)", cs.bps != null ? Math.round(cs.bps) + " bps" : "N/A",
      "FRED T10Y2Y" + (cs.as_of ? " \u00B7 as of " + esc(cs.as_of) : "")) +
    pc("REAL POLICY RATE", rp.real_rate != null ? f2(rp.real_rate) + "%" : "N/A",
-     "Effective fed funds minus core PCE year over year, against an assumed neutral band of " + f2(rp.r_star_low) + "% to " + f2(rp.r_star_high) + "%" + (stanceTxt ? " \u00B7 stance " + stanceTxt : "")) +
+     "Effective fed funds minus core PCE year over year" + (stanceTxt ? " \u00B7 stance " + stanceTxt : "")) +
    pc("TERM PREMIUM (KIM-WRIGHT 10Y)", tp.level != null ? f2(tp.level) + "%" : "N/A",
      "Shared with the sovereign layer below" + (tp.as_of ? " \u00B7 as of " + esc(String(tp.as_of).slice(0, 10)) : "")) +
    "</div>";
@@ -12010,8 +11918,7 @@ function macroRegimeHtml() {
     '<div style="font-size:13px;font-weight:700;color:#dbe5f1;">' + esc(sc.name) + (dom ? ' <span style="font-size:10px;font-weight:800;color:' + rc + ';letter-spacing:0.5px;">DOMINANT</span>' : "") + '</div>' +
     '<div style="font-size:18px;font-weight:800;color:' + rc + ';">' + pct(sc.prob) + '</div></div>' +
     '<div style="height:6px;background:#101620;border-radius:3px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + Math.min(100, sc.prob || 0) + '%;background:' + rc + ';border-radius:3px;"></div></div>' +
-    '<div style="font-size:11px;color:#8d99aa;">US 10Y mean ' + f2(sc.us10y_mean) + "% across a " + f2(sc.range_low) + "% to " + f2(sc.range_high) + "% range" +
-    " \u00B7 Bund " + f2(sc.bund_mean) + "% \u00B7 Gilt " + f2(sc.gilt_mean) + "% \u00B7 JGB " + f2(sc.jgb_mean) + "%</div></div>";
+    '<div style="font-size:11px;color:#8d99aa;">US 10Y scenario range ' + f2(sc.range_low) + "% to " + f2(sc.range_high) + "%</div></div>";
   });
   h += "</div>";
   // (2) Expected value and tails
@@ -12040,7 +11947,7 @@ function macroRegimeHtml() {
    row("UK Gilt 10Y", (F.gilt || {}).current, monthLabel((F.gilt || {}).as_of), (F.gilt || {}).weighted) +
    row("Japan JGB 10Y", (F.jgb || {}).current, monthLabel((F.jgb || {}).as_of), (F.jgb || {}).weighted) +
    "</tbody></table></div></div>" +
-   '<div style="font-size:11px;color:#8d99aa;margin:-4px 0 12px;">Foreign yields are monthly OECD observations and lag the daily US data. The probability-weighted column blends the four regime scenario means by their current probabilities.</div>';
+   '<div style="font-size:11px;color:#8d99aa;margin:-4px 0 12px;">Foreign yields are monthly OECD observations and lag the daily US data. The probability-weighted column blends the four regimes by their current probabilities.</div>';
   // (4) Term premium and curve readouts
   const TP = M.term_premium || {};
   const rc2 = (label, val, sub) =>
@@ -12078,9 +11985,9 @@ function macroRegimeHtml() {
   // (6) Explainer AFTER the visuals
   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
    '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
-   "The first layer reads the economy itself rather than bond prices. Every asset class ultimately prices two forces, growth and inflation, so the model standardizes each into a momentum score. The growth score blends the copper to gold ratio, industrial production momentum, and the level of the curve, while the inflation score blends breakeven inflation, consumer price momentum, and crude oil. The position on the map selects one of four quadrants, and a distance-weighted softmax converts that position into probabilities instead of a single asserted regime. The allocation panel blends the four desk playbooks by those probabilities, so positioning migrates gradually as the economy moves rather than flipping on one data print.<br><br>" +
+   "The first layer reads the economy itself rather than bond prices. Every asset class ultimately prices two forces, growth and inflation, so the model standardizes each into a momentum score built from market and activity gauges, including the copper to gold ratio, industrial production, the curve, breakeven inflation, consumer prices, and crude oil. The position on the map selects one of four quadrants, and the model converts that position into probabilities instead of a single asserted regime. The allocation panel blends the four desk playbooks by those probabilities, so positioning migrates gradually as the economy moves rather than flipping on one data print.<br><br>" +
    "The plumbing strip tracks how tightly money is moving while that migration unfolds. The Chicago Fed conditions index summarizes credit availability across debt, equity, and shadow banking channels. The real policy rate strips core inflation out of the effective fed funds rate and compares the result with an assumed neutral band, which shows whether policy is adding restraint or quietly easing. Loose plumbing alongside building inflation momentum is the combination that tends to feed the blowout odds in the sovereign layer, because ample credit lets heavy Treasury supply clear at rising yields until demand finally balks.<br><br>" +
-   "The sovereign layer frames the next 6 to 12 months for the US 10-year yield as a contest between four regimes. A fiscal blowout, where heavy Treasury supply and fading foreign demand push long yields toward 5.60%. A higher-for-longer plateau around 4.85%, where sticky inflation and a heavy issuance calendar keep yields elevated without disorder. A growth deceleration toward 4.05%, where a credit or labor slowdown restores the traditional duration bid. And a liquidity shock toward 3.30%, where a funding fracture forces emergency easing. Probabilities start from the framework priors and shift every day with observable signals, so the mix reflects where the evidence is building rather than a fixed view.<br><br>" +
+   "The sovereign layer frames the next 6 to 12 months for the US 10-year yield as a contest between four regimes. A fiscal blowout, where heavy Treasury supply and fading foreign demand push long yields materially higher. A higher-for-longer plateau, where sticky inflation and a heavy issuance calendar keep yields elevated without disorder. A growth deceleration, where a credit or labor slowdown restores the traditional duration bid. And a liquidity shock, where a funding fracture forces emergency easing. Probabilities shift every day with observable signals, so the mix reflects where the evidence is building rather than a fixed view.<br><br>" +
    "The mechanism that matters most is the term premium, the extra compensation investors demand for holding duration instead of rolling Treasury bills. A nominal yield is the expected path of short-term policy rates plus that premium. For a decade after the financial crisis, quantitative easing pinned term premiums below zero. Quantitative tightening and multi-trillion-dollar coupon supply are now normalizing the premium back toward its historical range, and that normalization lifts long yields even while inflation expectations stay anchored. A term-premium-driven rise tightens financial conditions without any change in the expected policy path, which is why it catches equity valuations off guard.<br><br>" +
    "The spillovers travel through the probability-weighted foreign yields in the table above. Bunds, gilts, and JGBs share the global duration bid, so a US-led repricing rarely stays contained. Domestically, real yields above 2.00% act as a gravity well for equity multiples because every future earnings stream is discounted harder, and mortgage rates follow the 10-year closely enough that yields near 5.00% freeze housing turnover.<br><br>" +
    "Circuit breakers cap the tail. Pension funds and life insurers run automatic liability-matching programs when funded status crosses full funding at higher yields, creating a non-discretionary bid. The Treasury can shift issuance toward bills and lean on its buyback program if the long end breaks. The Federal Reserve can slow or halt quantitative tightening if repo stress threatens dealer financing. And with global debt above 330% of GDP, the economy is far more rate-sensitive than in past cycles, so sustained yields above 5.50% tend to break something and force the flight-to-quality bid. The distribution is skewed toward higher yields, but it is not unbounded." +
@@ -12196,13 +12103,13 @@ function fiscalDominanceHtml() {
   gmCard("DEBT TO GDP", M.debt_gdp_pct != null ? f1(M.debt_gdp_pct) + "%" : "N/A", "total public debt" + (M.debt_gdp_as_of ? ", " + gmQuarterLabel(M.debt_gdp_as_of) : "")) +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Interest burden over the last 16 quarters. The desk bands sit at 15 percent for structural constraint and 22 percent for binding fiscal dominance.</div>';
+  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Interest burden over the last 16 quarters.</div>';
   h += gmChart("fiscal-dominance-chart", "fiscal-dominance");
  }
  h += gmAsof(M, gmQuarterLabel(M.as_of));
  h += gmExplainer(
   "Debt sustainability is the structural cause sitting underneath the yield models. When a government borrows heavily during an expansion, interest expense compounds against the tax base, and past a certain burden the central bank loses room to maneuver. Tightening policy to fight inflation raises the Treasury\u2019s own borrowing cost, widens the deficit it is trying to cool, and forces still more issuance into the market. That feedback loop is fiscal dominance, and this gauge measures how close the United States is to the zone where it binds.<br><br>" +
-  "The burden divides federal interest payments by federal tax receipts, both as published in the national accounts. Receipts here cover tax receipts only, so the measure is tighter than ratios built on total federal revenue. Below 12 percent the burden is benign and debt service sits comfortably inside the tax base. Between 15 and 20 percent interest expense passes national defense spending and auctions begin to need concession yields to clear. Above 22 percent the desk treats the constraint as binding, because at that point capping the government\u2019s borrowing cost starts to compete directly with the inflation mandate.<br><br>" +
+  "The burden divides federal interest payments by federal tax receipts, both as published in the national accounts. Receipts here cover tax receipts only, so the measure is tighter than ratios built on total federal revenue. At low burden levels debt service sits comfortably inside the tax base. As the burden climbs, interest expense passes national defense spending and auctions begin to need concession yields to clear. At heavy burdens the desk treats the constraint as binding, because at that point capping the government\u2019s borrowing cost starts to compete directly with the inflation mandate.<br><br>" +
   "The maturity profile of the debt matters alongside the level, since a shorter average maturity rolls the stock into new coupons faster when rates rise. That rollover wall is tracked qualitatively in our desk work rather than inside this gauge, because the free structured feeds do not publish a clean maturity distribution. What this gauge gives you is the trajectory of the burden itself, quarter by quarter, and it moves slowly by design. Fiscal dominance is a regime variable rather than a trading signal, and it conditions how violent any term premium repricing can become.");
  return h;
 }
@@ -12220,16 +12127,16 @@ function eurodollarStressHtml() {
  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
   gmCard("SWAP LINE DRAWS", swaps, "Fed liquidity swaps outstanding" + (M.swap_as_of ? ", " + esc(String(M.swap_as_of).slice(0, 10)) : "")) +
   gmCard("BROAD DOLLAR INDEX", M.broad_dollar != null ? f2(M.broad_dollar) : "N/A", "trade-weighted, goods and services") +
-  gmCard("DOLLAR VELOCITY 20D", sz(M.velocity_z), "20-day change in its own recent distribution") +
+  gmCard("DOLLAR VELOCITY", sz(M.velocity_z), "recent change against its own distribution") +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Stress score over the last 120 trading days. Sustained readings above 45 have accompanied offshore funding strains, and spikes toward 70 mark an active squeeze.</div>';
+  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Stress score over the last 120 trading days. Sustained elevated readings have accompanied offshore funding strains, and the highest readings mark an active squeeze.</div>';
   h += gmChart("eurodollar-stress-chart", "eurodollar-stress");
  }
  h += gmAsof(M);
  h += gmExplainer(
   "Most dollars never touch the United States. Offshore banks and corporations carry trillions in dollar liabilities outside the Federal Reserve\u2019s direct oversight, and that Eurodollar system has to roll its funding continuously. When offshore institutions cannot source dollars, they sell their most liquid dollar assets first, which means Treasuries and mega-cap equities, and a funding problem abroad becomes a margin cascade at home. Crises in this system rarely start with a headline. They start with plumbing.<br><br>" +
-  "The cleanest tell is the Federal Reserve\u2019s central bank liquidity swaps. Foreign central banks draw dollars through these lines only when their domestic banks cannot fund themselves in the market, so the balance sits near zero in calm times and spikes violently in a squeeze. Draws above five billion dollars mean someone offshore is running short. The second input is the velocity of the broad trade-weighted dollar, measured as the 20-day change standardized against its own recent history. A dollar rising too fast tightens conditions for every offshore borrower at once, and a move beyond two standard deviations acts as a wrecking ball for dollar debtors.<br><br>" +
+  "The cleanest tell is the Federal Reserve\u2019s central bank liquidity swaps. Foreign central banks draw dollars through these lines only when their domestic banks cannot fund themselves in the market, so the balance sits near zero in calm times and spikes violently in a squeeze. Large draws mean someone offshore is running short. The second input is the velocity of the broad trade-weighted dollar, how fast it is moving against its own recent history. A dollar rising too fast tightens conditions for every offshore borrower at once, and an extreme move acts as a wrecking ball for dollar debtors.<br><br>" +
   "The cross-currency basis, the premium foreign borrowers pay to swap their own currency into dollars, prices this same shortage in the market. It is tracked qualitatively in our desk work because no free structured feed publishes it reliably, and the swap lines plus dollar velocity capture the same stress with a lag of days rather than minutes. When this gauge rises, the correct instinct is to respect it. Offshore dollar shortages have preceded or amplified nearly every major dislocation of the modern era.");
  return h;
 }
@@ -12283,7 +12190,7 @@ function taylorGapHtml() {
   gmCard("EFFECTIVE FED FUNDS", M.effr != null ? f2(M.effr) + "%" : "N/A", (M.effr_basis === "daily" ? "daily print" : "monthly average") + (M.effr_as_of ? ", " + esc(String(M.effr_as_of).slice(0, 10)) : "")) +
   gmCard("TAYLOR PRESCRIPTION", M.taylor_rate != null ? f2(M.taylor_rate) + "%" : "N/A", "rule-implied policy rate") +
   gmCard("CORE PCE INFLATION", M.core_pce_yoy != null ? f2(M.core_pce_yoy) + "%" : "N/A", "12-month change, target 2.00%") +
-  gmCard("OUTPUT GAP", M.output_gap != null ? (M.output_gap > 0 ? "+" : "") + f2(M.output_gap) + "%" : "N/A", "Okun mapping from unemployment at " + (M.unrate != null ? f2(M.unrate) + "%" : "N/A")) +
+  gmCard("OUTPUT GAP", M.output_gap != null ? (M.output_gap > 0 ? "+" : "") + f2(M.output_gap) + "%" : "N/A", "from unemployment at " + (M.unrate != null ? f2(M.unrate) + "%" : "N/A")) +
   "</div>";
  if ((M.history || []).length) {
   h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Effective fed funds against the Taylor prescription over the last 24 months. Where the gold line runs above the purple line, policy is tighter than the rule prescribes.</div>';
@@ -12292,7 +12199,7 @@ function taylorGapHtml() {
  h += gmAsof(M, gmMonthLabel(M.as_of));
  h += gmExplainer(
   "The Taylor Rule converts the Federal Reserve\u2019s reaction function into arithmetic. It prescribes a policy rate from four ingredients, a real neutral rate, current inflation, half the distance between inflation and target, and half the output gap. Comparing the actual effective fed funds rate with that prescription produces the policy gap, and the gap measures whether policy is restrictive, neutral, or stimulative relative to the economy in front of it.<br><br>" +
-  "Two ingredients are parameters rather than observations, and they are disclosed rather than hidden. The real neutral rate is set at 1.25 percent, inside the range most estimates cluster around, and the natural unemployment rate is set at 4.20 percent, the Congressional Budget Office long-run estimate. The output gap comes from Okun\u2019s law, which maps each point of unemployment above the natural rate to roughly two points of lost output. Core PCE inflation is used because it is the measure the Fed targets and the least distorted by food and energy swings.<br><br>" +
+  "Two ingredients are parameters rather than observations. The real neutral rate and the natural unemployment rate are set from standard public estimates, inside the ranges most estimates cluster around. The output gap is mapped from the unemployment rate relative to that natural rate. Core PCE inflation is used because it is the measure the Fed targets and the least distorted by food and energy swings.<br><br>" +
   "A gap beyond plus 100 basis points means the Fed is holding policy well above its own historical reaction pattern, and that degree of restraint has usually ended in credit stress. A gap beyond minus 100 means policy is looser than the rule prescribes, the configuration that has historically fueled speculative excess. The middle ground is where multiples can breathe. Watch the direction of travel as much as the level, because a gap closing from deeply restrictive toward neutral has marked some strong equity entry points, while the same narrowing late in an easing cycle has meant the opposite.");
  return h;
 }
@@ -12310,7 +12217,7 @@ function sovereignFragmentationHtml() {
   "BTP/Bund spread " + (M.btp_bund_bps != null ? f1(M.btp_bund_bps) + " bps" : "N/A") +
   " in " + gmMonthLabel(M.as_of));
  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
-  gmCard("BTP/BUND SPREAD", M.btp_bund_bps != null ? f1(M.btp_bund_bps) + " bps" : "N/A", "crisis threshold sits at 220 bps") +
+  gmCard("BTP/BUND SPREAD", M.btp_bund_bps != null ? f1(M.btp_bund_bps) + " bps" : "N/A", "wider means more fragmentation stress") +
   gmCard("OAT/BUND SPREAD", M.oat_bund_bps != null ? f1(M.oat_bund_bps) + " bps" : "N/A", "core political and budget friction") +
   gmCard("GERMAN BUND 10Y", M.germany_10y_latest != null ? f2(M.germany_10y_latest) + "%" : "N/A", "latest print, " + gmMonthLabel(M.germany_latest_as_of)) +
   "</div>";
@@ -12337,7 +12244,7 @@ function sovereignFragmentationHtml() {
  h += gmAsof(M, gmMonthLabel(M.as_of));
  h += gmExplainer(
   "A currency union shares one central bank across many sovereign balance sheets, and that asymmetry is where European stress begins. When global rates rise, capital leaves the fiscally weaker sovereigns and concentrates in the German Bund, the bloc\u2019s risk-free anchor. The spread between Italian and German 10-year yields is therefore the market\u2019s running vote on whether the union holds together under pressure.<br><br>" +
-  "Below 120 basis points the vote is calm and funding conditions across the bloc are broadly uniform. Between 150 and 200 the tension is real, because Italian banks hold large portfolios of their own government\u2019s debt and widening spreads transmit straight into domestic credit. Above 220 the desk treats the situation as a crisis in formation, with banking contagion across European lenders a live possibility and an ECB intervention, most likely through its Transmission Protection Instrument, becoming the base case.<br><br>" +
+  "At narrow spreads the vote is calm and funding conditions across the bloc are broadly uniform. As the spread widens the tension becomes real, because Italian banks hold large portfolios of their own government\u2019s debt and widening spreads transmit straight into domestic credit. At crisis-level spreads the desk treats the situation as a crisis in formation, with banking contagion across European lenders a live possibility and an ECB intervention, most likely through its Transmission Protection Instrument, becoming the base case.<br><br>" +
   "The French OAT spread rides alongside because France sits in the core, and stress there signals something different from peripheral weakness. A widening OAT/Bund spread reflects political and budgetary deadlock inside the bloc\u2019s second economy, and it removes the assumption that core paper beyond Germany is unconditionally safe. The score and the chart run on monthly OECD observations, so they move at the speed of official statistics rather than market prices. The daily spot marker above the table closes that gap for the French leg. It will not move the structural score on its own, and a spot spread that stays wide into the next monthly print is the confirmation that matters.");
  return h;
 }
@@ -13172,7 +13079,7 @@ function volSurfaceHtml() {
    const pc = (p.score || 0) >= 50 ? "#f37d83" : (p.score || 0) >= 30 ? "#e0aa46" : "#4dd2aa";
    h += '<div style="background:#101620;border-radius:10px;padding:12px;border-top:3px solid ' + pc + ';">' +
     '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">' + esc(p.title || key) + '</div>' +
-    '<div style="font-size:11px;color:#8d99aa;margin:2px 0;">Weight ' + esc(p.weight || "") + " · " + esc(p.status || "") + "</div>" +
+    '<div style="font-size:11px;color:#8d99aa;margin:2px 0;">' + esc(p.status || "") + "</div>" +
     '<div style="font-size:20px;font-weight:800;color:' + pc + ';">' + (p.score != null ? p.score : "-") + '<span style="font-size:12px;color:#8d99aa;">/100</span></div>';
    (p.metrics || []).forEach((m) => {
     h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #101620;">' +
@@ -13219,9 +13126,9 @@ function volSurfaceHtml() {
   if (bd.length) {
    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-top:12px;">';
    bd.forEach((b) => {
-    const bc = b.points > 0 ? "#f43f5e" : "#4dd2aa";
+    const bc = b.tone === "bad" ? "#f43f5e" : "#4dd2aa";
     h += '<div class="card" style="padding:14px;"><div style="font-size:11px;color:#c99a6b;font-weight:700;letter-spacing:0.5px;">' + esc(b.metric).toUpperCase() + '</div>' +
-     '<div style="font-size:14px;font-weight:700;color:' + bc + ';margin:4px 0;">' + esc(b.status) + ' (' + b.points + ' pts)</div>' +
+     '<div style="font-size:14px;font-weight:700;color:' + bc + ';margin:4px 0;">' + esc(b.status) + '</div>' +
      '<div style="font-size:12px;color:#8d99aa;">' + esc(b.value) + '</div></div>';
    });
    h += '</div>';
@@ -13274,7 +13181,7 @@ function volSurfaceHtml() {
    '<div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(comp.regime || "") + "</div>" +
    '<div style="font-size:11px;color:#8d99aa;margin-top:6px;font-style:italic;">Algorithmic synthesis across ' + (comp.model_count || comps.length) + ' independent quantitative models.</div></div>';
   if (typeof isPro === "function" && isPro()) {
-   h += '<div style="flex:1;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models' + (comp.weighted ? ' (hierarchical weighting)' : ' (equal-weighted)') +
+   h += '<div style="flex:1;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models' +
     (comp.primary_driver ? ' · Primary driver: <span style="color:#dbe5f1;font-weight:600;">' + esc(comp.primary_driver) + "</span>" : "") + "</div>";
    // Pillar bars
    if (pillars.length) {
@@ -13282,7 +13189,7 @@ function volSurfaceHtml() {
     pillars.forEach((p) => {
      const pc = p.score >= 65 ? "#f37d83" : p.score >= 45 ? "#e0aa46" : p.score >= 25 ? "#8d99aa" : "#4dd2aa";
      h += '<div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;">' +
-      '<span style="color:#8d99aa;">' + esc(p.pillar) + (p.weight != null ? ' <span style="opacity:0.6;">' + p.weight + '%</span>' : '') + '</span><span style="color:' + pc + ';font-weight:700;">' + p.score + "</span></div>" +
+      '<span style="color:#8d99aa;">' + esc(p.pillar) + '</span><span style="color:' + pc + ';font-weight:700;">' + p.score + "</span></div>" +
       '<div style="height:4px;background:#101620;border-radius:2px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, p.score) + '%;background:' + pc + ';border-radius:2px;"></div></div></div>';
     });
     h += "</div>";
@@ -13291,8 +13198,7 @@ function volSurfaceHtml() {
    top.forEach((t) => {
     const tc = t.risk >= 70 ? "#f37d83" : t.risk >= 50 ? "#e0aa46" : "#8d99aa";
     h += '<div style="font-size:12px;"><span style="color:#8d99aa;">' + esc(nameMap[t.model] || t.model) + '</span> ' +
-     '<span style="color:' + tc + ';font-weight:700;">' + t.risk + "</span>" +
-     (t.weight != null ? ' <span style="color:#8d99aa;opacity:0.6;font-size:11px;">' + t.weight + '%</span>' : '') + "</div>";
+     '<span style="color:' + tc + ';font-weight:700;">' + t.risk + "</span></div>";
    });
    h += '</div><div style="font-size:11px;color:#8d99aa;margin-top:8px;">Highest risk contributors right now</div></div>';
   } else {
@@ -14970,7 +14876,7 @@ function volSurfaceHtml() {
    '<li>✓ Technical Factor Screener, Minervini Stage-2 trend template across the S&P 500</li>' +
    '<li>✓ Trend & Reversal Screener, per-ticker trend conviction and exhaustion gauges</li>' +
    '<li>✓ Sector &amp; Subsector Relative Strength Screener, GICS leaders and laggards with 1-99 RS ratings across the S&amp;P 500</li>' +
-   '<li>✓ Sector-relative Comps Matrix, interactive OLS valuation vs growth with tap-to-inspect detail cards and anomaly detection</li>' +
+   '<li>✓ Sector-relative Comps Matrix, interactive regression valuation vs growth with tap-to-inspect detail cards and anomaly detection</li>' +
    '<li>✓ Earnings Dashboard, 8 quarters of surprises and 1-day reactions for every ticker</li>' +
    '<li>✓ Unusual options flow tracker (10 trading days per ticker)</li>' +
    '<li>✓ Interactive FCF simulation sandbox</li>' +

@@ -403,7 +403,8 @@ table.fin-table tr:last-child td { border-bottom: none; }
 
 /* sandbox */
 .sandbox-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; margin: 20px 0; }
-.sandbox-stats .stat-v { font-size: 30px; font-weight: 700; color: var(--text); letter-spacing: -0.03em; font-family: var(--mono); }
+.sandbox-stats > div { min-width: 0; }
+.sandbox-stats .stat-v { font-size: clamp(19px, 6.2vw, 30px); font-weight: 700; color: var(--text); letter-spacing: -0.03em; font-family: var(--mono); }
 .sandbox-stats .stat-l { font-family: var(--mono); font-size: 10px; letter-spacing: 1.2px; color: var(--faint); margin-top: 6px; text-transform: uppercase; }
 .sandbox-stats > div + div { border-left: 1px solid var(--border); }
 .param-grid { display: grid; grid-template-columns: 1fr; gap: 18px 32px; margin-top: 16px; }
