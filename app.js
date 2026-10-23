@@ -5216,7 +5216,7 @@ function bindZoomHandlers() {
    if (r.previous && r.previous.length) {
     const briefingOpts = '<option value="0">Current (' + esc((r.as_of || "").slice(0, 10)) + ')</option>' +
      r.previous.map((p, i) =>
-      '<option value="' + (i + 1) + '">' + esc(p.date) + ' - ' + esc((p.headline || "").slice(0, 40)) + '</option>'
+      '<option value="' + (i + 1) + '">' + esc((p.date || p.as_of || "").slice(0, 10)) + ' — ' + esc((p.headline || "").slice(0, 40)) + '</option>'
      ).join("");
     h += '<div class="section"><div class="section-title">Previous Briefings</div>' +
      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
@@ -5243,7 +5243,10 @@ function bindZoomHandlers() {
     if (!b) return;
     const content = document.getElementById("briefing-content");
     if (content && b.html) {
-     content.innerHTML = b.html;
+     const bDate = (b.date || b.as_of || "").slice(0, 10);
+     content.innerHTML = (idx > 0 && bDate
+      ? '<div style="font-size:12px;color:#dbe5f1;opacity:0.7;margin-bottom:10px;">Published ' + esc(bDate) + "</div>"
+      : "") + b.html;
      embedAnalysisVisuals();
      // Scroll to top of briefing
      const body = document.getElementById("briefing-body");
@@ -5255,7 +5258,7 @@ function bindZoomHandlers() {
   document.querySelectorAll("[data-report]").forEach((a) => {
    a.addEventListener("click", () => {
     const date = a.dataset.report;
-    const prev = (D.market_analysis_report.previous || []).find((p) => p.date === date);
+    const prev = (D.market_analysis_report.previous || []).find((p) => (p.date || p.as_of || "").slice(0, 10) === date);
     if (prev && prev.html) {
      document.querySelector(".card").innerHTML = prev.html +
       '<div style="margin-top:20px;"><a href="javascript:void(0)" id="back-current" style="color:#58a6ff;">← Back to current report</a></div>';
