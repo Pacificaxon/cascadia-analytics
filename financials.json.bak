@@ -778,7 +778,7 @@
     "year": 2025,
     "revenue": 20074000000.0,
     "gross_profit": 13853000000.0,
-    "operating_income": 3971000000.0,
+    "operating_income": 3613000000.0,
     "net_income": 2898000000.0,
     "diluted_eps": 1.94,
     "ebitda": 5102000000.0
@@ -787,7 +787,7 @@
     "year": 2024,
     "revenue": 16747000000.0,
     "gross_profit": 11490000000.0,
-    "operating_income": 3002000000.0,
+    "operating_income": 2603000000.0,
     "net_income": 1854000000.0,
     "diluted_eps": 1.25,
     "ebitda": 3856000000.0
@@ -796,7 +796,7 @@
     "year": 2023,
     "revenue": 14240000000.0,
     "gross_profit": 9895000000.0,
-    "operating_income": 2417000000.0,
+    "operating_income": 2343000000.0,
     "net_income": 1593000000.0,
     "diluted_eps": 1.07,
     "ebitda": 3446000000.0
@@ -805,7 +805,7 @@
     "year": 2022,
     "revenue": 12682000000.0,
     "gross_profit": 8727000000.0,
-    "operating_income": 2034000000.0,
+    "operating_income": 1649000000.0,
     "net_income": 698000000.0,
     "diluted_eps": 0.45,
     "ebitda": 2747000000.0
@@ -993,8 +993,8 @@
    {
     "year": 2025,
     "revenue": 14092000000.0,
-    "gross_profit": 4685000000.0,
-    "operating_income": 4718000000.0,
+    "gross_profit": null,
+    "operating_income": 4521000000.0,
     "net_income": 2889000000.0,
     "diluted_eps": 1.54,
     "ebitda": 6293000000.0
@@ -1002,8 +1002,8 @@
    {
     "year": 2024,
     "revenue": 14540000000.0,
-    "gross_profit": 5353000000.0,
-    "operating_income": 5403000000.0,
+    "gross_profit": null,
+    "operating_income": 5245000000.0,
     "net_income": 3470000000.0,
     "diluted_eps": 1.79,
     "ebitda": 7045000000.0
@@ -1011,8 +1011,8 @@
    {
     "year": 2023,
     "revenue": 14657000000.0,
-    "gross_profit": 5499000000.0,
-    "operating_income": 5528000000.0,
+    "gross_profit": null,
+    "operating_income": 5499000000.0,
     "net_income": 3668000000.0,
     "diluted_eps": 1.85,
     "ebitda": 7245000000.0
@@ -1020,8 +1020,8 @@
    {
     "year": 2022,
     "revenue": 14853000000.0,
-    "gross_profit": 5716000000.0,
-    "operating_income": 5795000000.0,
+    "gross_profit": null,
+    "operating_income": 5954000000.0,
     "net_income": 4114000000.0,
     "diluted_eps": 1.95,
     "ebitda": 7589000000.0
@@ -4691,7 +4691,7 @@
     "year": 2025,
     "revenue": 3617579000.0,
     "gross_profit": 1092404000.0,
-    "operating_income": 483748000.0,
+    "operating_income": 464686000.0,
     "net_income": 363735000.0,
     "diluted_eps": 8.99,
     "ebitda": 558569000.0
@@ -4700,7 +4700,7 @@
     "year": 2024,
     "revenue": 3581871000.0,
     "gross_profit": 982891000.0,
-    "operating_income": 393292000.0,
+    "operating_income": 351570000.0,
     "net_income": 269096000.0,
     "diluted_eps": 6.5,
     "ebitda": 434160000.0
@@ -4709,7 +4709,7 @@
     "year": 2023,
     "revenue": 3708579000.0,
     "gross_profit": 840138000.0,
-    "operating_income": 295280000.0,
+    "operating_income": 278361000.0,
     "net_income": 175810000.0,
     "diluted_eps": 4.25,
     "ebitda": 361321000.0
