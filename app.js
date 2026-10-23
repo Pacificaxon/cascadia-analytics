@@ -8837,6 +8837,7 @@ route("alerts", function () {
   const escP = (s) => esc(s || "").replace(/\n\n/g, "<br><br>").replace(/\n/g, "<br>");
   let h = '<div class="card"><h3>' + esc(q.title || "") + '</h3>' +
    '<div class="panel-summary">' + escP(q.executive_summary) + "</div></div>";
+  if (q.correction) h += '<div class="card" style="border-left:3px solid #d9a441;"><div style="font-size:13.5px;"><span style="color:var(--muted)">' + escP(q.correction) + "</span></div></div>";
   (q.themes || []).forEach((t) => {
    h += '<div class="card"><h3 style="letter-spacing:0.4px;">' + esc(t.name || "") + "</h3>" +
     (t.read_throughs || []).map((r) => dbRt(r)).join("") + "</div>";
