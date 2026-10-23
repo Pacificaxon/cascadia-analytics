@@ -521,6 +521,7 @@ def main():
         "earnings_estimates": earnings_estimates,
         "earnings_calendar": earnings_calendar,
         "stripe_payment_link": "https://buy.stripe.com/28E00j5w3e4lb5c2pObbG01",
+        "stripe_payment_link_annual": "https://buy.stripe.com/5kQcN54rZ0dveho9SgbbG02",
     }
 
     # --- Split Pro data to functions/pro-data.json (server-gated) ---

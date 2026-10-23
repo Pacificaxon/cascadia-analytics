@@ -636,6 +636,7 @@ function proDataStale() {
 
  /* ---------- paywall ---------- */
  const UPGRADE_URL = D.stripe_payment_link || "#";
+ const UPGRADE_URL_ANNUAL = D.stripe_payment_link_annual || "#";
  function proTeaser(title, desc) {
   return '<div class="locked-teaser">' +
    '<div class="lock-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>' +
@@ -1739,7 +1740,7 @@ function bindZoomHandlers() {
      '<div id="nl-toggle-wrap" style="margin:12px 0;padding:12px;border:1px solid var(--border);border-radius:8px;"></div>' +
      '<button class="btn secondary" id="pro-logout" style="width:100%">Log out</button>'
     : (authUser
-     ? '<a class="cta-btn" style="display:block;text-align:center;margin:14px 0;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Start 7-day free trial</a><p style="text-align:center;font-size:13px;color:var(--muted);margin:0 0 6px;">$0 due today. Your card is charged $19/mo starting day 8 unless you cancel before the trial ends.</p>'
+     ? '<a class="cta-btn" style="display:block;text-align:center;margin:14px 0;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Start 7-day free trial</a><p style="text-align:center;font-size:13px;color:var(--muted);margin:0 0 6px;">$0 due today. Your card is charged $19/mo starting day 8 unless you cancel before the trial ends.</p><p style="text-align:center;font-size:13px;margin:0 0 4px;"><a href="' + esc(UPGRADE_URL_ANNUAL) + '" target="_blank" rel="noopener" style="color:#d9a441;">or go annual, $190/yr, two months free</a></p>'
      : '<button class="btn" id="pro-login" style="width:100%">Log in / Sign up</button>')) +
    '<button class="btn secondary" id="pro-x" style="width:100%;margin-top:8px;">Close</button>' +
    "</div></div>";
@@ -14952,7 +14953,7 @@ function volSurfaceHtml() {
    '<div style="position:absolute;top:-14px;right:20px;background:#d9a441;color:#0a0f0a;font-size:11px;font-weight:800;padding:4px 12px;border-radius:12px;letter-spacing:1px;">MOST POPULAR</div>' +
    '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#d9a441;margin-bottom:8px;">PRO</div>' +
    '<div style="font-size:36px;font-weight:800;color:#f5f7fa;margin-bottom:4px;">$19<span style="font-size:16px;font-weight:400;color:#dbe5f1;">/month</span></div>' +
-   '<div style="font-size:13px;color:#dbe5f1;opacity:0.7;margin-bottom:20px;">7-day free trial, then billed monthly · cancel anytime</div>' +
+   '<div style="font-size:13px;color:#dbe5f1;opacity:0.7;margin-bottom:20px;">7-day free trial · $19/mo billed monthly, or $190/yr billed annually (two months free) · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#dbe5f1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
    '<li>✓ All ' + riskModelCount() + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Liquidity Stress, Macro Regime, with readings, charts, history, and plain-English explainers</li>' +
@@ -15002,6 +15003,8 @@ function volSurfaceHtml() {
   } else if (authUser) {
    h += '<a class="cta-btn" style="display:block;text-align:center;margin-top:20px;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Start 7-day free trial</a>';
    h += '<p style="text-align:center;font-size:13px;color:#dbe5f1;opacity:0.7;margin-top:10px;">$0 due today. Your card is charged $19/mo starting day 8 unless you cancel before the trial ends.</p>';
+   h += '<a class="btn" style="display:block;text-align:center;margin-top:14px;text-decoration:none;" href="' + esc(UPGRADE_URL_ANNUAL) + '" target="_blank" rel="noopener">Start 7-day free trial, annual $190/yr</a>';
+   h += '<p style="text-align:center;font-size:13px;color:#dbe5f1;opacity:0.7;margin-top:10px;">Annual is two months free against the monthly rate: $190 a year instead of $228. $0 due today; your card is charged $190/yr starting day 8 unless you cancel before the trial ends.</p>';
   } else {
    h += '<button class="btn" id="pricing-login" style="width:100%;margin-top:20px;">Log in / Sign up to subscribe</button>';
   }
@@ -15012,6 +15015,7 @@ function volSurfaceHtml() {
    '<div style="font-size:15px;font-weight:700;color:#f5f7fa;margin-bottom:12px;">Legacy Price Lock, Terms</div>' +
    '<ul style="font-size:13px;color:#dbe5f1;display:flex;flex-direction:column;gap:8px;padding-left:20px;margin:0;">' +
    "<li>Your subscription rate of <b>$19/month</b> is locked in for as long as your Pro membership remains continuously active.</li>" +
+   "<li>Annual members lock in <b>$190/year</b> on the same terms, grandfathered for as long as the annual membership remains continuously active.</li>" +
    "<li>If Cascadia Analytics raises prices in the future, <b>you will not pay the higher price</b>, your legacy rate is grandfathered.</li>" +
    "<li>All new Pro features released during your membership are <b>included at no extra cost</b>.</li>" +
    "<li>If you <b>cancel</b> your membership, you forfeit the legacy price lock.</li>" +
