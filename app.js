@@ -10814,16 +10814,46 @@ route("alerts", function () {
   h += '<div id="comps-detail" class="comps-detail" style="display:none;"></div>';
   h += '<div id="comps-legend" class="comps-legend"></div>';
   h += '<div id="comps-cap-note" style="font-size:12px;color:#8d99aa;margin-top:8px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axis caps are set from the names plotted on each view (98th percentile, rounded up) so the bulk of the universe stays legible; names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.</div></div>';
-  // Table
-  h += '<div class="section"><div class="section-title">Comps Table ' + PRO_BADGE + '</div><div class="card" style="overflow-x:auto;">';
-  h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid #253142;color:#8d99aa;text-align:right;">' +
-   '<th style="text-align:left;padding:8px;">Ticker</th><th style="text-align:left;padding:8px;">Sector</th>' +
-   '<th style="padding:8px;">NTM Growth</th><th style="padding:8px;">EV/Rev</th><th style="padding:8px;">vs Peer</th>' +
-   '<th style="padding:8px;">Fwd P/E</th><th style="padding:8px;">Status</th></tr></thead><tbody id="comps-tbody">';
-  [...recs].sort((a, b) => a.evRevDiscountPct - b.evRevDiscountPct).forEach((r) => {
+  // Table. Every header is a sort control keyed to the raw record
+  // values, never the formatted strings; missing values (no positive
+  // forward P/E, absent fields) pin to the bottom in both directions.
+  // The default order stays the historical one, vs Peer ascending, so
+  // the deepest discounts lead. The CSV export walks the same sorted
+  // row list the table renders, so the file always matches the page.
+  const COMPS_STATUS_RANK = {"Discounted Growth": 0, "Fairly Valued": 1, "Premium Multiple": 2};
+  const compsNum = (v) => (v == null || !isFinite(v) ? null : v);
+  const COMPS_COLS = [
+   {key: "ticker", label: "Ticker", left: true, defDir: 1, val: (r) => r.ticker, missing: (r) => !r.ticker},
+   {key: "sector", label: "Sector", left: true, defDir: 1, val: (r) => r.sector, missing: (r) => !r.sector},
+   {key: "ntmRevGrowth", label: "NTM Growth", defDir: -1, val: (r) => compsNum(r.ntmRevGrowth), missing: (r) => compsNum(r.ntmRevGrowth) == null},
+   {key: "ntmEvRevenue", label: "EV/Rev", defDir: -1, val: (r) => compsNum(r.ntmEvRevenue), missing: (r) => compsNum(r.ntmEvRevenue) == null},
+   {key: "evRevDiscountPct", label: "vs Peer", defDir: 1, val: (r) => compsNum(r.evRevDiscountPct), missing: (r) => compsNum(r.evRevDiscountPct) == null},
+   {key: "forwardPe", label: "Fwd P/E", defDir: -1, val: (r) => (r.forwardPe > 0 ? r.forwardPe : null), missing: (r) => !(r.forwardPe > 0)},
+   {key: "status", label: "Status", defDir: 1, val: (r) => (COMPS_STATUS_RANK[r.status] != null ? COMPS_STATUS_RANK[r.status] : null), missing: (r) => COMPS_STATUS_RANK[r.status] == null},
+  ];
+  function compsSortRows(list, key, dir) {
+   const col = COMPS_COLS.find((c) => c.key === key) || COMPS_COLS[4];
+   return [...list].sort((a, b) => {
+    const am = col.missing(a), bm = col.missing(b);
+    if (am !== bm) return am ? 1 : -1; // missing pins last, either direction
+    if (!am) {
+     const av = col.val(a), bv = col.val(b);
+     const c = typeof av === "string" ? (av < bv ? -1 : av > bv ? 1 : 0) : av - bv;
+     if (c !== 0) return c * dir;
+    }
+    const ad = compsNum(a.evRevDiscountPct), bd = compsNum(b.evRevDiscountPct);
+    if (ad == null && bd != null) return 1;
+    if (ad != null && bd == null) return -1;
+    if (ad != null && bd != null && ad !== bd) return ad - bd;
+    return a.ticker < b.ticker ? -1 : a.ticker > b.ticker ? 1 : 0;
+   });
+  }
+  let compsSortState = {key: "evRevDiscountPct", dir: 1};
+  let compsRowsCurrent = compsSortRows(recs, compsSortState.key, compsSortState.dir);
+  function compsRowHtml(r) {
    const dc = r.evRevDiscountPct < 0 ? "#4dd2aa" : r.evRevDiscountPct > 0 ? "#f37d83" : "#8d99aa";
    const sc = r.status === "Discounted Growth" ? "#4dd2aa" : r.status === "Premium Multiple" ? "#f37d83" : "#8d99aa";
-   h += '<tr class="comps-row" id="comps-row-' + esc(r.ticker) + '" data-ticker="' + esc(r.ticker) + '" style="border-bottom:1px solid #101620;">' +
+   return '<tr class="comps-row" id="comps-row-' + esc(r.ticker) + '" data-ticker="' + esc(r.ticker) + '" style="border-bottom:1px solid #101620;">' +
     '<td style="padding:8px;"><a href="' + (ORDER.indexOf(r.ticker) >= 0 ? "#/ticker/" : "#/research/") + esc(r.ticker) + '" style="color:#58a6ff;font-weight:700;">' + esc(r.ticker) + '</a></td>' +
     '<td style="padding:8px;color:#8d99aa;">' + esc(r.sector) + '</td>' +
     '<td style="padding:8px;text-align:right;">' + r.ntmRevGrowth + '%</td>' +
@@ -10831,9 +10861,57 @@ route("alerts", function () {
     '<td style="padding:8px;text-align:right;color:' + dc + ';font-weight:700;">' + (r.evRevDiscountPct > 0 ? "+" : "") + r.evRevDiscountPct + '%</td>' +
     '<td style="padding:8px;text-align:right;">' + (r.forwardPe > 0 ? r.forwardPe + "x" : "—") + '</td>' +
     '<td style="padding:8px;text-align:right;color:' + sc + ';">' + esc(r.status) + '</td></tr>';
-  });
-  h += '</tbody></table></div>';
-  h += '<div class="panel-asof">Source: yfinance consensus estimates · OLS regression across coverage universe</div></div>';
+  }
+  function compsRenderTable() {
+   const tb = document.getElementById("comps-tbody");
+   if (!tb) return;
+   tb.innerHTML = compsRowsCurrent.map(compsRowHtml).join("");
+   document.querySelectorAll("#comps-thead th[data-sort]").forEach((th) => {
+    const active = th.dataset.sort === compsSortState.key;
+    th.classList.toggle("comps-th-active", active);
+    th.setAttribute("aria-sort", active ? (compsSortState.dir === 1 ? "ascending" : "descending") : "none");
+    const arrow = th.querySelector(".comps-arrow");
+    if (arrow) arrow.textContent = active ? (compsSortState.dir === 1 ? "▲" : "▼") : "";
+   });
+   compsSyncRowSelection();
+  }
+  function compsApplySort(key) {
+   const col = COMPS_COLS.find((c) => c.key === key);
+   if (!col) return;
+   compsSortState = compsSortState.key === key ? {key: key, dir: -compsSortState.dir} : {key: key, dir: col.defDir};
+   compsRowsCurrent = compsSortRows(recs, compsSortState.key, compsSortState.dir);
+   compsRenderTable();
+  }
+  function compsCsvCell(v) {
+   const s = v == null ? "" : String(v);
+   return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  function compsExportCsv() {
+   const head = ["Ticker", "Company", "Sector", "Price", "Market Cap", "NTM Revenue Growth %", "EV/Revenue", "EV/Revenue Fair Value", "EV/Revenue vs Peer %", "Forward P/E", "Forward P/E Fair Value", "Forward P/E vs Peer %", "Status"];
+   const lines = [head.map(compsCsvCell).join(",")];
+   compsRowsCurrent.forEach((r) => {
+    lines.push([r.ticker, r.name || "", r.sector || "", r.price, r.marketCap, r.ntmRevGrowth, r.ntmEvRevenue, r.expectedEvRev, r.evRevDiscountPct, r.forwardPe, r.expectedPe, r.peDiscountPct, r.status || ""].map(compsCsvCell).join(","));
+   });
+   const now = new Date();
+   const pad = (n) => String(n).padStart(2, "0");
+   const fname = "comps-matrix-" + now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate()) + ".csv";
+   const blob = new Blob(["\ufeff" + lines.join("\r\n")], {type: "text/csv;charset=utf-8"});
+   const url = URL.createObjectURL(blob);
+   const a = document.createElement("a");
+   a.href = url;
+   a.download = fname;
+   document.body.appendChild(a);
+   a.click();
+   a.remove();
+   setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+  h += '<div class="section"><div class="section-title">Comps Table ' + PRO_BADGE + '</div>' +
+   '<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="btn" id="comps-export" style="font-size:12px;">⬇ Export CSV</button></div>' +
+   '<div class="card" style="overflow-x:auto;">';
+  h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead id="comps-thead"><tr style="border-bottom:1px solid #253142;color:#8d99aa;text-align:right;">' +
+   COMPS_COLS.map((c) => '<th class="comps-th" data-sort="' + c.key + '" tabindex="0" role="button" aria-sort="none" title="Sort by ' + c.label + '" style="' + (c.left ? "text-align:left;" : "") + 'padding:8px;cursor:pointer;user-select:none;white-space:nowrap;">' + c.label + ' <span class="comps-arrow" style="font-size:9px;color:#f0bd56;"></span></th>').join("") +
+   '</tr></thead><tbody id="comps-tbody"></tbody></table></div>';
+  h += '<div class="panel-asof">Source: yfinance consensus estimates · OLS regression across coverage universe · Click a column header to sort · Export follows the current sort</div></div>';
   h += realYieldShockHtml();
   app.innerHTML = h;
   bindZoomHandlers();
@@ -10900,6 +10978,25 @@ route("alerts", function () {
     if (wrap) wrap.scrollIntoView({behavior: "smooth", block: "center"});
    });
   }
+  // Sortable headers and CSV export. Rows are re-rendered from
+  // compsRowsCurrent on every sort; the delegated tbody listener above
+  // keeps working because it never binds to individual rows, and
+  // compsRenderTable re-syncs the selection marker onto the new DOM.
+  const thead = document.getElementById("comps-thead");
+  if (thead) {
+   thead.addEventListener("click", (e) => {
+    const th = e.target && e.target.closest ? e.target.closest("th[data-sort]") : null;
+    if (th) compsApplySort(th.dataset.sort);
+   });
+   thead.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const th = e.target && e.target.closest ? e.target.closest("th[data-sort]") : null;
+    if (th) { e.preventDefault(); compsApplySort(th.dataset.sort); }
+   });
+  }
+  const expBtn = document.getElementById("comps-export");
+  if (expBtn) expBtn.addEventListener("click", compsExportCsv);
+  compsRenderTable();
   function drawCompsChart(mode) {
    const cv = document.getElementById("comps-chart");
    if (!cv || !window.Chart) return;

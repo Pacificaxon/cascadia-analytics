@@ -734,6 +734,10 @@ body[data-route="monitor"] .card .card, body[data-route="analysis"] .card .card,
 .comps-detail-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .comps-detail-btn { font-size: 12.5px; min-height: 36px; display: inline-flex; align-items: center; }
 .comps-row { cursor: pointer; }
+#comps-thead th.comps-th { transition: color .12s; }
+#comps-thead th.comps-th:hover { color: #dbe5f1; }
+#comps-thead th.comps-th:focus-visible { outline: 2px solid var(--gold, #d9a441); outline-offset: -2px; }
+#comps-thead th.comps-th-active { color: #f0bd56; }
 #comps-tbody tr.comps-row-selected td { background: var(--gold-dim, rgba(217, 164, 65, .12)); }
 #comps-tbody tr.comps-row-flash td { animation: compsRowFlash 1.9s ease-out; }
 @keyframes compsRowFlash { 0%, 55% { background: rgba(217, 164, 65, .38); } 100% { background: transparent; } }
