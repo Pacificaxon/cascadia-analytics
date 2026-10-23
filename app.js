@@ -3054,11 +3054,13 @@ function bindZoomHandlers() {
   if (D.breakeven_inflation && D.breakeven_inflation.latest != null) {
    SEC.breakeven = breakevenHtml(D.breakeven_inflation);
   }
-  // Treasury Absorption & SLR Gauge, FREE headline card. It renders at the
-  // top of the Pro section bucket below (the card returns empty for Pro
-  // users, who see the full section in the same anchored block).
-  if (D.treasury_slr && D.treasury_slr.score != null) {
-   SEC.treasuryCard = treasurySlrFreeCard(D.treasury_slr);
+  // Treasury Absorption & SLR Gauge headline card. It renders at the top
+  // of the Pro section bucket below. The reading is Pro (2026-10-22
+  // snapshot decision): non-Pro sessions get a blurred placeholder built
+  // from free metadata, and Pro users see the full section in the same
+  // anchored block.
+  if (!isPro()) {
+   SEC.treasuryCard = treasurySlrBlurCard();
   }
   // Implied ERP, FREE data + chart, PRO analysis
   if (D.implied_erp && D.implied_erp.erp != null) {
@@ -12652,20 +12654,21 @@ function squeezeRadarHtml() {
 }
 
 // === treasury_slr.js ===
-function treasurySlrFreeCard(d) {
- const S = d || {};
- if (S.score == null) return "";
- if (typeof isPro === "function" && isPro()) return ""; // Pro users see the full section
- const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
- const c = colorMap[S.color] || "#dbe5f1";
+function treasurySlrBlurCard() {
+ // Free users get the Daily Snapshot treatment from the 2026-10-22
+ // decision: the card structure and the gauge name are visible, but the
+ // reading is Pro and is never rendered for a non-Pro session. Built only
+ // from free metadata (the risk_headlines as-of date). It never reads the
+ // Pro treasury_slr payload, which a lapsed or logged-out session can
+ // still hold in memory from an earlier Pro fetch.
+ const asOf = ((D.risk_headlines || {}).as_of || (D.generated_at || "")).slice(0, 10);
  return '<div class="card" style="margin-bottom:16px;"><h3>Treasury Absorption &amp; SLR Gauge ' +
-  '' + FREE_BADGE + '</h3>' +
+  '' + PRO_BADGE + '</h3>' +
   '<div style="display:flex;align-items:center;gap:16px;margin:8px 0;">' +
-  '<div style="font-size:32px;font-weight:800;color:' + c + ';">' + S.score +
-  '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
-  '<div><div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(S.status || "") + "</div>" +
-  '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">Dealer balance-sheet capacity. Full breakdown is Pro.</div></div></div>' +
-  '<div class="panel-asof">As of ' + esc((S.as_of || "").slice(0, 10)) + "</div></div>";
+  '<div class="snap-blur" style="width:110px;height:40px;border-radius:8px;"></div>' +
+  '<div><div class="snap-blur" style="width:170px;height:16px;border-radius:6px;"></div>' +
+  '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">Dealer balance-sheet capacity. The reading is Pro.</div></div></div>' +
+  '<div class="panel-asof">As of ' + esc(asOf) + "</div></div>";
 }
 
 function treasurySlrHtml() {
