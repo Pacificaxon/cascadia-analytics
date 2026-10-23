@@ -11063,12 +11063,12 @@ function oasDistressHtml() {
    compKeys.forEach((k) => {
     const cp = comps[k];
     const val = cp.unit === "bp" ? sbp(cp.value) : pct(cp.value);
-    h += '<div style="display:flex;align-items:center;gap:10px;margin:7px 0;">' +
-     '<div style="width:118px;font-size:12px;color:#dbe5f1;">' + esc(cp.label || k) + '</div>' +
-     '<div style="width:80px;text-align:right;font-size:12px;color:#8d99aa;">' + val + '</div>' +
-     '<div style="flex:1;height:8px;background:#101620;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, Math.max(1, cp.score || 1)) + '%;background:' + barColor(cp.score || 1) + ';border-radius:4px;"></div></div>' +
-     '<div style="width:64px;text-align:right;font-size:12px;color:#8d99aa;">' + (cp.percentile_3y != null ? cp.percentile_3y + " pct" : "") + '</div>' +
-     '<div style="width:40px;text-align:right;font-size:14px;font-weight:800;color:' + barColor(cp.score || 1) + ';">' + fmtScore(cp.score) + '</div></div>';
+    h += '<div style="display:flex;align-items:center;gap:8px;margin:7px 0;">' +
+     '<div style="width:100px;font-size:12px;color:#dbe5f1;">' + esc(cp.label || k) + '</div>' +
+     '<div style="width:70px;text-align:right;font-size:12px;color:#8d99aa;">' + val + '</div>' +
+     '<div style="flex:1;min-width:48px;height:8px;background:#101620;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, Math.max(1, cp.score || 1)) + '%;background:' + barColor(cp.score || 1) + ';border-radius:4px;"></div></div>' +
+     '<div style="width:56px;text-align:right;font-size:12px;color:#8d99aa;">' + (cp.percentile_3y != null ? cp.percentile_3y + " pct" : "") + '</div>' +
+     '<div style="width:38px;text-align:right;font-size:14px;font-weight:800;color:' + barColor(cp.score || 1) + ';">' + fmtScore(cp.score) + '</div></div>';
    });
    if (IN.velocity_bp != null) {
     h += '<div style="font-size:12px;color:#8d99aa;margin-top:10px;">Widening speed: HY spreads moved ' + sbp(IN.change_20d_bp) + " over 20 trading days and " + sbp(IN.change_60d_bp) + " over 60, a blended " + sbp(IN.velocity_bp) + ".</div>";
