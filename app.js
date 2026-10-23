@@ -171,6 +171,8 @@
  let authUser = null;
  let proVerified = null; // null = not yet checked this load; true/false after server verification
  let isAdmin = false;
+let subStatus = null; // last known Stripe subscription status from profiles (trialing, active, ...)
+let trialEndsAt = null; // ISO timestamp when the current free trial ends, or null
  let PRO_DATA = null; // Pro-only data fetched from /api/pro-data (never in public bundle)
 let PRO_DATA_FETCHED_AT = 0; // When PRO_DATA was fetched (ms epoch)
 // The payload is a daily snapshot rebuilt at 12:00 UTC. A long-lived tab or
@@ -366,10 +368,12 @@ function proDataStale() {
    authUser = session ? session.user : null;
    if (authUser) {
     const { data, error } = await supa.from("profiles")
-     .select("is_pro, is_admin").eq("user_id", authUser.id).single();
+     .select("is_pro, is_admin, subscription_status, trial_ends_at").eq("user_id", authUser.id).single();
     if (!error && data) {
      isAdmin = !!data.is_admin;
      proVerified = !!(data.is_pro || data.is_admin);
+     subStatus = data.subscription_status || null;
+     trialEndsAt = data.trial_ends_at || null;
     } else if (error) {
      // Query failed (network/RLS) - keep previous Pro status, don't fail closed
      // on transient errors. Only reset if we get a definitive non-Pro response.
@@ -478,7 +482,7 @@ function proDataStale() {
     if (k.startsWith("sb-") && k.includes("auth-token")) sessionStorage.removeItem(k);
    });
   } catch (e) {}
-  authUser = null; proVerified = false; isAdmin = false;
+  authUser = null; proVerified = false; isAdmin = false; subStatus = null; trialEndsAt = null;
   PRO_DATA = null; // Clear Pro data on explicit logout
   PRO_DATA_FETCHED_AT = 0;
   setPro(false);
@@ -1707,9 +1711,18 @@ function bindZoomHandlers() {
   const root = document.getElementById("modal-root");
   let statusLine;
   if (isPro()) {
+   let proState;
+   if (isAdmin) proState = "Admin access is active.";
+   else if (subStatus === "trialing" && trialEndsAt) {
+    const endD = new Date(trialEndsAt);
+    const endStr = endD.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+    const daysLeft = Math.max(0, Math.ceil((endD - new Date()) / 86400000));
+    proState = "Your 7-day free trial is active, " + daysLeft + (daysLeft === 1 ? " day" : " days") + " left. It ends " + endStr + ", when your card is charged $19/mo unless you cancel first.";
+   }
+   else proState = "Your Pro subscription is active.";
    statusLine = "<p style='color:var(--muted);font-size:14px'>" +
     (authUser ? "Signed in as <b>" + esc(authUser.email) + "</b>. " : "") +
-    (isAdmin ? "Admin access is active." : "Your Pro subscription is active.") + "</p>";
+    proState + "</p>";
   } else if (authUser) {
    statusLine = "<p style='color:var(--muted);font-size:14px'>Signed in as <b>" + esc(authUser.email) + "</b>. Start your 7-day free trial below, your account upgrades automatically after checkout.</p>";
   } else {
