@@ -10468,18 +10468,37 @@ route("alerts", function () {
   const xCap = Math.max(60, compsCeilTo(compsPct(xsPlotted, 98), 10));
   const yCap = Math.max(usePE ? 40 : 15, compsCeilTo(compsPct(ysPlotted, 98), 5));
   const xMin = Math.max(-40, Math.min(-10, Math.floor(compsPct(xsPlotted, 2) / 5) * 5));
+  // Forgiving taps: points get a generous hit radius, wider on touch
+  // (coarse-pointer) devices where a fingertip covers several bubbles.
+  const coarsePointer = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
   const datasets = Object.keys(bySec).map((sec) => ({
    type: "bubble",
    label: sec,
    data: bySec[sec].map((r) => {
     const gx = r.ntmRevGrowth, gy = r[yKey];
-    return {x: Math.max(xMin, Math.min(xCap, gx)), y: Math.max(0, Math.min(yCap, gy)), ox: gx, oy: gy, ticker: r.ticker, name: r.name, mcapFmt: r.marketCapFormatted || "", r: compsBubbleRadius(r.marketCap, zoom)};
+    const baseR = compsBubbleRadius(r.marketCap, zoom);
+    return {x: Math.max(xMin, Math.min(xCap, gx)), y: Math.max(0, Math.min(yCap, gy)), ox: gx, oy: gy, ticker: r.ticker, name: r.name, mcapFmt: r.marketCapFormatted || "", _baseR: baseR, r: r.ticker === (window._compsSel || null) ? baseR * 1.45 : baseR};
    }),
-   backgroundColor: (COMPS_COLORS[sec] || "#38bdf8") + "99",
-   borderColor: COMPS_COLORS[sec] || "#38bdf8",
-   borderWidth: 1,
+   hitRadius: coarsePointer ? 24 : 12,
+   // Selection styling is scriptable and reads window._compsSel live, so
+   // a tap can restyle every point via chart.update() without a rebuild:
+   // the selected bubble goes near-opaque with a gold outline, the rest
+   // mute to about 30 percent alpha.
+   backgroundColor: (c) => {
+    const base = COMPS_COLORS[c.dataset.label] || "#38bdf8";
+    const sel = window._compsSel || null;
+    if (!sel) return base + "99";
+    return c.raw && c.raw.ticker === sel ? base + "e6" : base + "4d";
+   },
+   borderColor: (c) => {
+    const sel = window._compsSel || null;
+    return sel && c.raw && c.raw.ticker === sel ? "#f0bd56" : (COMPS_COLORS[c.dataset.label] || "#38bdf8");
+   },
+   borderWidth: (c) => {
+    const sel = window._compsSel || null;
+    return sel && c.raw && c.raw.ticker === sel ? 3 : 1;
+   },
    hoverRadius: 3,
-   hoverBorderWidth: 1.5,
   }));
   // Sector-relative trendlines: each visible sector gets its own OLS line
   const secRegs = (meta.sectorRegressions || {});
@@ -10502,13 +10521,239 @@ route("alerts", function () {
   // chart on the site passes a top-level type; this config must too, and
   // the scales declare linear so the axes do not depend on that fallback.
   const cfg = {type: "bubble", data: {datasets}, options: {animation: false, responsive: true, maintainAspectRatio: false,
-   plugins: {legend: zoom ? {position: "bottom", labels: {color: "#aeb9c9", boxWidth: 12, boxHeight: 12, padding: 10, font: {size: 12}}} : {display: false},
-    tooltip: {padding: 10, titleFont: {size: 13}, bodyFont: {size: 12}, callbacks: {title: (it) => it[0].raw.ticker || it[0].dataset.label || "Fair value",
+   // Selection runs on nearest-point matching without an exact hit, so a
+   // tap anywhere near a bubble selects it; compsChartTap applies the
+   // distance threshold that still lets a tap on genuinely empty plot
+   // area clear the selection.
+   interaction: {mode: "nearest", intersect: false, axis: "xy"},
+   onHover: (e, els, chart) => { chart.$compsPointer = {x: e.x, y: e.y}; },
+   onClick: (e, els, chart) => compsChartTap(chart, e),
+   plugins: {legend: zoom ? {position: "bottom", labels: {color: "#aeb9c9", boxWidth: 12, boxHeight: 12, padding: 10, font: {size: 12}},
+     onClick: (e, item, legend) => {
+      const ch = legend.chart;
+      ch.setDatasetVisibility(item.datasetIndex, !ch.isDatasetVisible(item.datasetIndex));
+      ch.update();
+      compsAfterDatasetToggle(ch, item.datasetIndex);
+     }} : {display: false},
+    tooltip: {padding: 10, titleFont: {size: 13}, bodyFont: {size: 12},
+     // Chart-level interaction is nearest/no-intersect (forgiving taps),
+     // but the hover tooltip stays a desktop complement that only shows
+     // when the pointer is actually on a bubble, not tracking the nearest
+     // point across empty plot. Line-dataset items keep the old behavior.
+     filter: (item) => {
+      if (!item.raw || !item.raw.ticker) return true;
+      const p = item.chart.$compsPointer;
+      if (!p) return true;
+      const meta = item.chart.getDatasetMeta(item.datasetIndex);
+      const el = meta && meta.data && meta.data[item.dataIndex];
+      if (!el || typeof el.x !== "number") return true;
+      const rr = (el.options && el.options.radius) || item.raw.r || 6;
+      return Math.hypot(p.x - el.x, p.y - el.y) <= rr + 8;
+     },
+     callbacks: {title: (it) => it[0].raw.ticker || it[0].dataset.label || "Fair value",
      label: (c) => c.raw.ticker ? [c.raw.ticker + (c.raw.name ? " · " + c.raw.name : ""), "Growth: " + c.raw.ox.toFixed(1) + "%", "Multiple: " + c.raw.oy.toFixed(1) + "x", "Market cap: " + (c.raw.mcapFmt || "N/A")] : "Sector fair: " + c.parsed.y.toFixed(1) + "x"}}},
    scales: {x: {type: "linear", min: xMin, max: xCap, title: {display: true, text: "NTM Revenue Growth (%)", color: "#aeb9c9", font: {size: 13, weight: "600"}}, ticks: {color: "#aeb9c9", font: {size: 12}, callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
     y: {type: "linear", min: 0, max: yCap, title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#aeb9c9", font: {size: 13, weight: "600"}}, ticks: {color: "#aeb9c9", font: {size: 12}, callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}};
   cfg._caps = {xMin, xCap, yCap};
+  window._compsCaps = cfg._caps; // the detail card reads the live view's caps
   return cfg;
+ }
+
+ /* ============ COMPS SCATTER SELECTION (shared inline + zoom) ============ */
+ // One selection state (window._compsSel, a ticker) drives both charts,
+ // the detail card, the search box, and the table. Both chart instances
+ // are built by buildCompsChartConfig, whose onClick routes here, so the
+ // inline chart and the zoom modal share this exact code path.
+ function compsSelRec() {
+  const tk = window._compsSel || null;
+  if (!tk) return null;
+  const recs = (D.comps_matrix || {}).records || [];
+  for (let i = 0; i < recs.length; i++) if (recs[i].ticker === tk) return recs[i];
+  return null;
+ }
+ function compsLiveCharts() {
+  const out = [];
+  if (typeof Chart === "undefined" || !Chart.getChart) return out;
+  ["comps-chart", "zoom-chart"].forEach((id) => {
+   const cv = document.getElementById(id);
+   if (!cv) return;
+   try { const ch = Chart.getChart(cv); if (ch) out.push(ch); } catch (e) {}
+  });
+  return out;
+ }
+ // Restyle every live comps chart for the current selection: restore each
+ // point's base radius, enlarge the selected point; the scriptable colors
+ // and borders re-evaluate on update() from window._compsSel.
+ function compsApplySelection() {
+  const sel = window._compsSel || null;
+  compsLiveCharts().forEach((ch) => {
+   ch.data.datasets.forEach((ds) => {
+    if (ds.type !== "bubble") return;
+    (ds.data || []).forEach((pt) => {
+     if (pt && pt._baseR) pt.r = pt.ticker === sel ? pt._baseR * 1.45 : pt._baseR;
+    });
+   });
+   ch.update();
+  });
+ }
+ function compsNearestBubble(chart, x, y) {
+  let best = null;
+  chart.data.datasets.forEach((ds, di) => {
+   if (ds.type !== "bubble" || !chart.isDatasetVisible(di)) return;
+   const meta = chart.getDatasetMeta(di);
+   (meta.data || []).forEach((el, pi) => {
+    const raw = ds.data[pi];
+    if (!raw || !raw.ticker || typeof el.x !== "number") return;
+    const d = Math.hypot(x - el.x, y - el.y);
+    if (!best || d < best.dist) best = {ticker: raw.ticker, dist: d, radius: raw.r || 5};
+   });
+  });
+  return best;
+ }
+ // Chart tap handler (both charts): select the nearest bubble when the
+ // tap lands within a forgiving radius of it; a tap clearly out in empty
+ // plot clears the selection instead of grabbing a distant bubble.
+ function compsChartTap(chart, e) {
+  compsEnsureModalDetail(chart);
+  const hit = compsNearestBubble(chart, e.x, e.y);
+  const coarse = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  const thr = hit ? Math.max(38, hit.radius + (coarse ? 24 : 12) + 10) : 0;
+  if (hit && hit.dist <= thr) compsSelect(hit.ticker);
+  else compsClearSelection();
+ }
+ // The zoom modal is built by the generic zoom code, which has no comps
+ // detail slot; create one inside the modal panel on first tap there so
+ // the modal gets the same pinned card as the inline view.
+ function compsEnsureModalDetail(chart) {
+  const cv = chart.canvas;
+  if (!cv || !cv.closest || !cv.closest("#chart-zoom-modal")) return;
+  if (document.getElementById("comps-detail-modal")) return;
+  const wrapDiv = cv.parentElement;
+  const panel = wrapDiv ? wrapDiv.parentElement : null;
+  if (!panel) return;
+  const div = document.createElement("div");
+  div.id = "comps-detail-modal";
+  div.className = "comps-detail";
+  div.style.cssText = "display:none;margin-top:12px;max-height:36vh;overflow-y:auto;";
+  panel.appendChild(div);
+ }
+ // When a sector dataset is hidden (legend chip inline, native legend in
+ // the modal), a selection inside that sector clears cleanly.
+ function compsAfterDatasetToggle(chart, datasetIndex) {
+  const rec = compsSelRec();
+  if (!rec) return;
+  const ds = chart.data.datasets[datasetIndex];
+  if (ds && ds.type === "bubble" && ds.label === rec.sector && !chart.isDatasetVisible(datasetIndex)) compsClearSelection();
+ }
+ function compsSelect(ticker) {
+  window._compsSel = ticker;
+  compsApplySelection();
+  compsSyncRowSelection();
+  compsRenderDetail();
+ }
+ function compsClearSelection() {
+  if (!window._compsSel) { compsRenderDetail(); return; }
+  window._compsSel = null;
+  compsApplySelection();
+  compsSyncRowSelection();
+  compsRenderDetail();
+ }
+ function compsSyncRowSelection() {
+  const sel = window._compsSel || null;
+  document.querySelectorAll("#comps-tbody tr.comps-row-selected").forEach((tr) => tr.classList.remove("comps-row-selected"));
+  if (sel) {
+   const row = document.getElementById("comps-row-" + sel);
+   if (row) row.classList.add("comps-row-selected");
+  }
+ }
+ function compsShowInTable() {
+  const tk = window._compsSel || null;
+  if (!tk) return;
+  const modal = document.getElementById("chart-zoom-modal");
+  if (modal) modal.remove();
+  const go = () => {
+   const row = document.getElementById("comps-row-" + tk);
+   if (!row) return;
+   row.scrollIntoView({behavior: "smooth", block: "center"});
+   row.classList.add("comps-row-flash");
+   setTimeout(() => row.classList.remove("comps-row-flash"), 1900);
+  };
+  if (modal) setTimeout(go, 60); else go();
+ }
+ function compsFmtMult(v) { return v == null || !isFinite(v) ? "—" : (Math.round(v * 100) / 100) + "x"; }
+ function compsVsFair(pct) {
+  if (pct == null || !isFinite(pct)) return {text: "—", color: "#8d99aa"};
+  const word = pct < 0 ? "discount" : pct > 0 ? "premium" : "in line";
+  return {text: (pct > 0 ? "+" : "") + pct + "% " + word + " vs sector fair value", color: pct < 0 ? "#4dd2aa" : pct > 0 ? "#f37d83" : "#8d99aa"};
+ }
+ function compsDetailHtml(rec) {
+  const usePE = window._compsUsePE === true;
+  const caps = window._compsCaps || null;
+  const sc = rec.status === "Discounted Growth" ? "#4dd2aa" : rec.status === "Premium Multiple" ? "#f37d83" : "#8d99aa";
+  let h = '<div class="comps-detail-head">' +
+   '<div class="comps-detail-id"><span class="comps-detail-tk">' + esc(rec.ticker) + '</span>' +
+   '<span class="comps-detail-name">' + esc(rec.name || "") + "</span></div>" +
+   '<span class="comps-detail-status" style="color:' + sc + ';border-color:' + sc + ';">' + esc(rec.status || "") + "</span>" +
+   '<button type="button" class="comps-detail-close" aria-label="Clear selection">✕</button></div>';
+  h += '<div class="comps-detail-meta">' + esc(rec.sector || "") + " · Market cap " + esc(rec.marketCapFormatted || "N/A") +
+   (rec.price ? " · $" + rec.price : "") + " · NTM revenue growth " + (rec.ntmRevGrowth != null ? rec.ntmRevGrowth + "%" : "N/A") + "</div>";
+  const evVs = compsVsFair(rec.evRevDiscountPct), peVs = compsVsFair(rec.peDiscountPct);
+  const peMissing = !(rec.forwardPe > 0);
+  const row = (label, actual, fair, vs, active) =>
+   '<div class="comps-detail-metric' + (active ? " comps-detail-active" : "") + '">' +
+   '<span class="comps-detail-mlabel">' + label + '</span>' +
+   '<span class="comps-detail-mval">' + actual + '</span>' +
+   '<span class="comps-detail-mfair">fair ' + fair + '</span>' +
+   '<span class="comps-detail-mvs" style="color:' + vs.color + ';">' + vs.text + "</span></div>";
+  h += row("EV / Revenue", compsFmtMult(rec.ntmEvRevenue), compsFmtMult(rec.expectedEvRev), evVs, !usePE);
+  h += row("Forward P/E", peMissing ? "—" : compsFmtMult(rec.forwardPe), compsFmtMult(rec.expectedPe), peMissing ? {text: "no positive forward P/E", color: "#8d99aa"} : peVs, usePE);
+  // Position honesty: a name pinned at an axis cap, or filtered out of
+  // the P/E view entirely, must say so, or the plot position misleads.
+  let note = "";
+  if (usePE && !(rec.forwardPe > 0 && rec.forwardPe < 150)) {
+   note = "Not plotted in the Forward P/E view (no positive forward P/E in range). Switch to EV/Revenue to see it on the chart.";
+  } else if (caps) {
+   const gy = usePE ? rec.forwardPe : rec.ntmEvRevenue;
+   if (rec.ntmRevGrowth < caps.xMin || rec.ntmRevGrowth > caps.xCap || gy > caps.yCap || gy < 0) {
+    note = "Plotted at the axis edge in this view (position capped); the values above are the true figures.";
+   }
+  }
+  if (note) h += '<div class="comps-detail-note">' + esc(note) + "</div>";
+  h += '<div class="comps-detail-actions">';
+  if (ORDER.indexOf(rec.ticker) >= 0) h += '<a class="btn comps-detail-btn" href="#/ticker/' + esc(rec.ticker) + '">Open ticker page</a>';
+  h += '<button type="button" class="btn comps-detail-btn comps-detail-showtable">Show in table</button></div>';
+  return h;
+ }
+ function compsRenderDetail() {
+  const rec = compsSelRec();
+  ["comps-detail", "comps-detail-modal"].forEach((id) => {
+   const el = document.getElementById(id);
+   if (!el) return;
+   if (!rec) { el.style.display = "none"; el.innerHTML = ""; return; }
+   el.innerHTML = compsDetailHtml(rec);
+   el.style.display = "";
+   const close = el.querySelector(".comps-detail-close");
+   if (close) close.addEventListener("click", () => compsClearSelection());
+   const show = el.querySelector(".comps-detail-showtable");
+   if (show) show.addEventListener("click", () => compsShowInTable());
+  });
+ }
+ function compsSearchMatches(q) {
+  const recs = (D.comps_matrix || {}).records || [];
+  const s = String(q || "").toLowerCase();
+  if (!s) return [];
+  const scored = [];
+  recs.forEach((r) => {
+   const t = r.ticker.toLowerCase(), n = (r.name || "").toLowerCase();
+   let rank = -1;
+   if (t === s) rank = 0;
+   else if (t.indexOf(s) === 0) rank = 1;
+   else if (t.indexOf(s) >= 0) rank = 2;
+   else if (n.indexOf(s) >= 0) rank = 3;
+   if (rank >= 0) scored.push({r: r, rank: rank});
+  });
+  scored.sort((a, b) => a.rank - b.rank || (b.r.marketCap || 0) - (a.r.marketCap || 0));
+  return scored.slice(0, 8).map((x) => x.r);
  }
 
  /* ================= COMPS MATRIX (PRO) ================= */
@@ -10552,11 +10797,18 @@ route("alerts", function () {
     '<span style="color:#f37d83;font-weight:700;">+' + p.evRevDiscountPct + '%</span></div>';
   });
   h += '</div></div>';
-  // Scatter chart
+  // Scatter chart. Taps now select a bubble (nearest-match, forgiving
+  // radius) and pin the detail card below; zoom moved to an explicit
+  // Expand button that rides the existing zoom-modal binding, since a
+  // click anywhere on the plot can no longer mean two things.
   h += '<div class="section"><div class="section-title">Growth vs Multiple ' + PRO_BADGE + ' <span style="font-size:11px;color:#8d99aa;">(bubble size = market cap)</span></div>';
-  h += '<div style="margin-bottom:8px;"><button class="btn" id="comps-toggle" style="font-size:12px;">Switch to Forward P/E</button></div>';
-  h += '<div class="zoomable-chart comps-chart-wrap" data-chart="comps" title="Click to zoom"><canvas id="comps-chart"></canvas>' +
-   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
+  h += '<div class="comps-controls"><button class="btn" id="comps-toggle" style="font-size:12px;">Switch to Forward P/E</button>' +
+   '<button class="btn zoomable-chart" data-chart="comps" id="comps-expand" style="font-size:12px;">⛶ Expand</button>' +
+   '<span class="comps-search-wrap"><input type="text" id="comps-search" class="comps-search" placeholder="Search ticker or company…" autocomplete="off" spellcheck="false">' +
+   '<span id="comps-search-list" class="comps-search-list" style="display:none;"></span></span></div>';
+  h += '<div class="comps-chart-wrap"><canvas id="comps-chart"></canvas>' +
+   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;pointer-events:none;">Tap a bubble for details</div></div>';
+  h += '<div id="comps-detail" class="comps-detail" style="display:none;"></div>';
   h += '<div id="comps-legend" class="comps-legend"></div>';
   h += '<div id="comps-cap-note" style="font-size:12px;color:#8d99aa;margin-top:8px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axis caps are set from the names plotted on each view (98th percentile, rounded up) so the bulk of the universe stays legible; names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.</div></div>';
   // Table
@@ -10564,11 +10816,11 @@ route("alerts", function () {
   h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid #253142;color:#8d99aa;text-align:right;">' +
    '<th style="text-align:left;padding:8px;">Ticker</th><th style="text-align:left;padding:8px;">Sector</th>' +
    '<th style="padding:8px;">NTM Growth</th><th style="padding:8px;">EV/Rev</th><th style="padding:8px;">vs Peer</th>' +
-   '<th style="padding:8px;">Fwd P/E</th><th style="padding:8px;">Status</th></tr></thead><tbody>';
+   '<th style="padding:8px;">Fwd P/E</th><th style="padding:8px;">Status</th></tr></thead><tbody id="comps-tbody">';
   [...recs].sort((a, b) => a.evRevDiscountPct - b.evRevDiscountPct).forEach((r) => {
    const dc = r.evRevDiscountPct < 0 ? "#4dd2aa" : r.evRevDiscountPct > 0 ? "#f37d83" : "#8d99aa";
    const sc = r.status === "Discounted Growth" ? "#4dd2aa" : r.status === "Premium Multiple" ? "#f37d83" : "#8d99aa";
-   h += '<tr style="border-bottom:1px solid #101620;">' +
+   h += '<tr class="comps-row" id="comps-row-' + esc(r.ticker) + '" data-ticker="' + esc(r.ticker) + '" style="border-bottom:1px solid #101620;">' +
     '<td style="padding:8px;"><a href="' + (ORDER.indexOf(r.ticker) >= 0 ? "#/ticker/" : "#/research/") + esc(r.ticker) + '" style="color:#58a6ff;font-weight:700;">' + esc(r.ticker) + '</a></td>' +
     '<td style="padding:8px;color:#8d99aa;">' + esc(r.sector) + '</td>' +
     '<td style="padding:8px;text-align:right;">' + r.ntmRevGrowth + '%</td>' +
@@ -10593,6 +10845,58 @@ route("alerts", function () {
    drawCompsChart(usePE);
   });
   drawCompsChart(false);
+  compsSyncRowSelection();
+  // Ticker search: typeahead over the plotted universe; choosing a match
+  // selects its bubble and pins the detail card in the current view.
+  const sIn = document.getElementById("comps-search");
+  const sList = document.getElementById("comps-search-list");
+  if (sIn && sList) {
+   const renderList = () => {
+    const q = sIn.value.trim();
+    if (!q) { sList.style.display = "none"; sList.innerHTML = ""; return; }
+    const ms = compsSearchMatches(q);
+    if (!ms.length) {
+     sList.innerHTML = '<span class="comps-search-empty">No matches for "' + esc(q) + '"</span>';
+     sList.style.display = "";
+     return;
+    }
+    sList.innerHTML = ms.map((r) => '<button type="button" class="comps-search-item" data-tk="' + esc(r.ticker) + '"><b>' + esc(r.ticker) + '</b><span class="comps-search-name">' + esc(r.name || "") + '</span><span class="comps-search-sec">' + esc(r.sector || "") + "</span></button>").join("");
+    sList.style.display = "";
+    sList.querySelectorAll(".comps-search-item").forEach((b) => {
+     b.addEventListener("mousedown", (ev) => {
+      ev.preventDefault();
+      compsSelect(b.dataset.tk);
+      sIn.value = b.dataset.tk;
+      sList.style.display = "none";
+      const det = document.getElementById("comps-detail");
+      if (det) det.scrollIntoView({behavior: "smooth", block: "nearest"});
+     });
+    });
+   };
+   sIn.addEventListener("input", renderList);
+   sIn.addEventListener("focus", renderList);
+   sIn.addEventListener("blur", () => setTimeout(() => { sList.style.display = "none"; }, 150));
+   sIn.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+     const f = sList.querySelector(".comps-search-item");
+     if (f) { e.preventDefault(); f.dispatchEvent(new MouseEvent("mousedown")); }
+    } else if (e.key === "Escape") { sList.style.display = "none"; sIn.blur(); }
+   });
+  }
+  // Table cross-highlight: tapping a row selects the same name on the
+  // chart and scrolls the chart into view. The ticker link keeps its own
+  // navigation; clicks elsewhere on the row select.
+  const tbody = document.getElementById("comps-tbody");
+  if (tbody) {
+   tbody.addEventListener("click", (e) => {
+    const tr = e.target && e.target.closest ? e.target.closest("tr[data-ticker]") : null;
+    if (!tr) return;
+    if (e.target.closest && e.target.closest("a")) return;
+    compsSelect(tr.dataset.ticker);
+    const wrap = document.querySelector(".comps-chart-wrap");
+    if (wrap) wrap.scrollIntoView({behavior: "smooth", block: "center"});
+   });
+  }
   function drawCompsChart(mode) {
    const cv = document.getElementById("comps-chart");
    if (!cv || !window.Chart) return;
@@ -10600,6 +10904,7 @@ route("alerts", function () {
    if (old) old.destroy();
    const cfg = buildCompsChartConfig(mode, false);
    if (cfg) { new Chart(cv, cfg); renderCompsLegend(cfg); }
+   compsRenderDetail(); // selection survives the toggle; card follows the view
   }
   // Custom legend for the inline scatter: sector chips and fair-value line
   // chips at phone-legible size with real tap targets, rebuilt per view so
@@ -10626,6 +10931,7 @@ route("alerts", function () {
      ch.setDatasetVisibility(idx, !ch.isDatasetVisible(idx));
      chip.classList.toggle("comps-chip-off", !ch.isDatasetVisible(idx));
      ch.update();
+     compsAfterDatasetToggle(ch, idx);
     });
    });
    const note = document.getElementById("comps-cap-note");
@@ -14527,7 +14833,7 @@ function volSurfaceHtml() {
    '<li>✓ Technical Factor Screener, Minervini Stage-2 trend template across the S&P 500</li>' +
    '<li>✓ Trend & Reversal Screener, per-ticker trend conviction and exhaustion gauges</li>' +
    '<li>✓ Sector &amp; Subsector Relative Strength Screener, GICS leaders and laggards with 1-99 RS ratings across the S&amp;P 500</li>' +
-   '<li>✓ Sector-relative Comps Matrix, OLS valuation vs growth with anomaly detection</li>' +
+   '<li>✓ Sector-relative Comps Matrix, interactive OLS valuation vs growth with tap-to-inspect detail cards and anomaly detection</li>' +
    '<li>✓ Earnings Dashboard, 8 quarters of surprises and 1-day reactions for every ticker</li>' +
    '<li>✓ Unusual options flow tracker (10 trading days per ticker)</li>' +
    '<li>✓ Interactive FCF simulation sandbox</li>' +

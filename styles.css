@@ -691,7 +691,7 @@ body[data-route="monitor"] .card .card, body[data-route="analysis"] .card .card,
 /* ---------- comps scatter: tall plot + chip legend (2026-10-23) ----------
    The scatter's whole box is plot area now; the legend lives under the
    chart as HTML chips instead of inside the canvas. */
-.comps-chart-wrap { position: relative; height: 620px; cursor: zoom-in; }
+.comps-chart-wrap { position: relative; height: 620px; }
 @media (max-width: 700px) { .comps-chart-wrap { height: 580px; } }
 .comps-legend { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
 .comps-legend-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -700,3 +700,40 @@ body[data-route="monitor"] .card .card, body[data-route="analysis"] .card .card,
 .comps-chip-off { opacity: .35; }
 .comps-swatch { width: 12px; height: 12px; border-radius: 50%; flex: none; }
 .comps-swatch-line { width: 16px; border-top: 2px dashed transparent; flex: none; }
+
+/* ---------- comps scatter: selection, search, detail card (2026-10-23) ----------
+   Taps select the nearest bubble (Chart.js nearest/no-intersect with a
+   distance threshold in app.js); the pinned detail card lives directly
+   under the chart so it never covers the plot. */
+.comps-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+.comps-search-wrap { position: relative; flex: 1 1 220px; max-width: 340px; }
+.comps-search { width: 100%; box-sizing: border-box; min-height: 34px; padding: 6px 11px; font-size: 13px; font-family: var(--sans); color: var(--text); background: var(--card2, #131a28); border: 1px solid var(--border); border-radius: 8px; }
+.comps-search::placeholder { color: var(--muted); }
+.comps-search-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 60; background: #0d131d; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 12px 32px rgba(0, 0, 0, .5); }
+.comps-search-item { display: flex; align-items: baseline; gap: 8px; width: 100%; min-height: 40px; padding: 8px 11px; font-size: 13px; font-family: var(--sans); color: var(--text); background: none; border: 0; border-bottom: 1px solid #101620; cursor: pointer; text-align: left; }
+.comps-search-item:last-child { border-bottom: 0; }
+.comps-search-item:hover { background: rgba(217, 164, 65, .1); }
+.comps-search-name { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.comps-search-sec { margin-left: auto; font-size: 11px; color: var(--muted); white-space: nowrap; }
+.comps-search-empty { display: block; padding: 10px 11px; font-size: 13px; color: var(--muted); }
+.comps-detail { margin-top: 12px; padding: 14px 16px; background: var(--card2, #131a28); border: 1px solid var(--border); border-left: 3px solid var(--gold, #d9a441); border-radius: 12px; }
+.comps-detail-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.comps-detail-id { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.comps-detail-tk { font-size: 19px; font-weight: 800; color: #f5f7fa; }
+.comps-detail-name { font-size: 13px; color: var(--muted); }
+.comps-detail-status { margin-left: auto; font-size: 11px; font-weight: 700; letter-spacing: .04em; padding: 3px 9px; border: 1px solid; border-radius: 999px; white-space: nowrap; }
+.comps-detail-close { background: #253142; border: 0; color: #dbe5f1; font-size: 14px; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; flex: none; }
+.comps-detail-meta { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+.comps-detail-metric { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 10px; padding: 8px 10px; border-radius: 8px; background: rgba(255, 255, 255, .02); border-left: 3px solid transparent; }
+.comps-detail-active { border-left-color: var(--gold, #d9a441); background: var(--gold-dim, rgba(217, 164, 65, .12)); }
+.comps-detail-mlabel { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); min-width: 108px; }
+.comps-detail-mval { font-size: 17px; font-weight: 800; color: #f5f7fa; }
+.comps-detail-mfair { font-size: 12px; color: var(--muted); }
+.comps-detail-mvs { font-size: 12.5px; font-weight: 700; }
+.comps-detail-note { margin-top: 10px; font-size: 12px; color: #e0aa46; }
+.comps-detail-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.comps-detail-btn { font-size: 12.5px; min-height: 36px; display: inline-flex; align-items: center; }
+.comps-row { cursor: pointer; }
+#comps-tbody tr.comps-row-selected td { background: var(--gold-dim, rgba(217, 164, 65, .12)); }
+#comps-tbody tr.comps-row-flash td { animation: compsRowFlash 1.9s ease-out; }
+@keyframes compsRowFlash { 0%, 55% { background: rgba(217, 164, 65, .38); } 100% { background: transparent; } }
