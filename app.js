@@ -11006,18 +11006,26 @@ function oasDistressHtml() {
    return '<div class="section"><div class="section-title">Credit Stress Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Credit Stress data unavailable. Check back after the next refresh.</p></div></div>';
   }
-  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
-  const c = colorMap[O.color] || "#dbe5f1";
-  const bps = (v) => v != null ? Number(v).toLocaleString() + " bps" : "N/A";
+  const hv = riskCardVal("oas_distress");
+  const colorMap = { emerald: "#4dd2aa", yellow: "#d3c34c", amber: "#e0aa46", orange: "#e07f3e", rose: "#f37d83", red: "#e5484d" };
+  const headScore = hv.score != null ? hv.score : O.score;
+  const headRegime = hv.regime || O.regime || "";
+  const c = colorMap[hv.color || O.color] || "#dbe5f1";
+  const pct = (v) => v != null ? Number(v).toFixed(2) + "%" : "N/A";
+  const sbp = (v) => v != null ? (v > 0 ? "+" : "") + Math.round(v) + " bp" : "N/A";
+  const barColor = (s) => s >= 85 ? "#e5484d" : s >= 70 ? "#f37d83" : s >= 55 ? "#e07f3e" : s >= 40 ? "#e0aa46" : s >= 25 ? "#d3c34c" : "#4dd2aa";
+  const IN = O.inputs || {};
   let h = '<div class="section"><div class="section-title">Credit Stress Model ' + PRO_BADGE + '</div>' +
-   '<div class="section-sub">Option-adjusted spreads across high-yield and investment-grade bonds. Widening spreads mean credit markets are pricing distress, and the HY minus IG quality spread isolates true default fear.</div>';
+   '<div class="section-sub">Option-adjusted spreads across high-yield, investment-grade and CCC bonds, plus the speed spreads are moving. Every reading is ranked against its own three-year history, so the score measures how unusual credit conditions are, not just how wide spreads are.</div>';
   // Score banner
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + O.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
-   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(O.regime || "") + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">HY OAS ' + bps(O.hy_oas) +
-   " \u00B7 Quality spread " + bps(O.quality_spread) +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(headScore) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(headRegime) + "</div>" +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">HY OAS ' + pct(O.hy_oas) +
+   " \u00B7 IG OAS " + pct(O.ig_oas) +
+   " \u00B7 CCC OAS " + pct(IN.ccc_oas) +
+   " \u00B7 Quality spread " + pct(O.quality_spread) +
    (O.implied_default_5y != null ? " \u00B7 Implied 5Y default " + O.implied_default_5y + "%" : "") + "</div></div></div>";
   // Metric cards
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
@@ -11025,15 +11033,45 @@ function oasDistressHtml() {
    '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
    '<div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
    '<div style="font-size:22px;font-weight:800;color:#dbe5f1;">' + val + "</div></div>";
-  h += mc("HY OAS", bps(O.hy_oas));
-  h += mc("IG OAS", bps(O.ig_oas));
-  h += mc("QUALITY SPREAD", bps(O.quality_spread));
+  h += mc("HY OAS", pct(O.hy_oas));
+  h += mc("IG OAS", pct(O.ig_oas));
+  h += mc("CCC OAS", pct(IN.ccc_oas));
+  h += mc("QUALITY SPREAD", pct(O.quality_spread));
+  h += mc("WIDENING SPEED", sbp(IN.velocity_bp));
+  h += mc("IMPLIED 5Y DEFAULT", O.implied_default_5y != null ? O.implied_default_5y + "%" : "N/A");
   h += "</div>";
+  // Component breakdown: five sub-scores with input values and 3y percentiles
+  const comps = O.components || {};
+  const compKeys = Object.keys(comps);
+  if (compKeys.length) {
+   h += '<div style="margin:12px 0;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+    '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;margin-bottom:10px;">COMPONENT BREAKDOWN <span style="letter-spacing:0;">each reading ranked against its own three-year history</span></div>';
+   compKeys.forEach((k) => {
+    const cp = comps[k];
+    const val = cp.unit === "bp" ? sbp(cp.value) : pct(cp.value);
+    h += '<div style="display:flex;align-items:center;gap:10px;margin:7px 0;">' +
+     '<div style="width:118px;font-size:12px;color:#dbe5f1;">' + esc(cp.label || k) + '</div>' +
+     '<div style="width:80px;text-align:right;font-size:12px;color:#8d99aa;">' + val + '</div>' +
+     '<div style="flex:1;height:8px;background:#101620;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, Math.max(1, cp.score || 1)) + '%;background:' + barColor(cp.score || 1) + ';border-radius:4px;"></div></div>' +
+     '<div style="width:64px;text-align:right;font-size:12px;color:#8d99aa;">' + (cp.percentile_3y != null ? cp.percentile_3y + " pct" : "") + '</div>' +
+     '<div style="width:40px;text-align:right;font-size:14px;font-weight:800;color:' + barColor(cp.score || 1) + ';">' + fmtScore(cp.score) + '</div></div>';
+   });
+   if (IN.velocity_bp != null) {
+    h += '<div style="font-size:12px;color:#8d99aa;margin-top:10px;">Widening speed: HY spreads moved ' + sbp(IN.change_20d_bp) + " over 20 trading days and " + sbp(IN.change_60d_bp) + " over 60, a blended " + sbp(IN.velocity_bp) + ".</div>";
+   }
+   h += "</div>";
+  }
   // Chart: 60-day HY OAS vs quality spread (drawn by drawOasDistressChart)
   const hist = O.history || [];
   if (hist.length) {
    h += '<div class="zoomable-chart" data-chart="oas-distress" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="oas-distress-chart"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#x26F6; click to zoom</div></div>';
+  }
+  // Chart: composite score, trailing year (drawn by drawOasDistressChart)
+  const sh = O.score_history || [];
+  if (sh.length > 1) {
+   h += '<div style="position:relative;height:200px;margin:12px 0;"><canvas id="oas-score-chart"></canvas></div>' +
+    '<div style="font-size:11px;color:#8d99aa;margin-top:-4px;">Credit Stress score, trailing year.</div>';
   }
   h += '<div class="panel-asof">As of ' + esc((O.as_of || "").slice(0, 10)) + "</div></div>";
   // Explainer AFTER the visuals
@@ -11041,7 +11079,7 @@ function oasDistressHtml() {
    '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
    "An option-adjusted spread measures the extra yield investors demand to hold a corporate bond instead of a Treasury of the same maturity, after stripping out the value of embedded options such as call features. When spreads rise, investors are demanding more compensation for credit risk. When spreads fall, confidence is returning.<br><br>" +
    "High-yield spreads move with broad risk appetite and liquidity conditions. Investment-grade spreads move with those same forces but carry far less default risk. The gap between them, the quality spread, strips out what hits all bonds equally and leaves the part driven by fear of actual defaults. A widening quality spread means investors are repricing default risk in the weakest balance sheets, and that repricing has historically shown up in equities soon after.<br><br>" +
-   "The model compresses this picture into a 0 to 100 score. Low readings mean credit markets are calm and supportive of risk assets. Elevated readings mean spreads are pricing in real stress, and equity drawdowns have historically been more frequent in those stretches. Credit markets turn before headlines do, so the gauge works best as a slow-moving backdrop rather than a timing signal." +
+   "The score runs from 1 to 100 and blends five readings: the level of high-yield spreads, the speed they are widening or tightening, the quality spread, CCC spreads at the weakest end of the market, and the level of investment-grade spreads. Each reading is ranked against its own three-year history before blending, so a fast widening from tight levels registers even when the level still looks ordinary, and stress building in CCC names shows up even when headline high-yield spreads stay contained. Low readings mean credit conditions are unusually calm for the last three years. High readings mean several parts of the credit market are stressed at the same time by that window's standards. The model reads US corporate cash spreads only. It does not see European sovereign spreads, private credit, or equity volatility; those have their own gauges on this page. Credit markets turn before headlines do, so the gauge works best as a slow-moving backdrop rather than a timing signal." +
    "</div></div>";
   return h;
  }
@@ -11050,7 +11088,7 @@ function oasDistressHtml() {
  function oasDistressFreeCard() {
   const O = (D.risk_headlines || {}).oas_distress || {};
   if (O.score == null) return "";
-  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83" };
+  const colorMap = { emerald: "#4dd2aa", yellow: "#d3c34c", amber: "#e0aa46", orange: "#e07f3e", rose: "#f37d83", red: "#e5484d" };
   const c = colorMap[O.color] || "#dbe5f1";
   return '<div id="risk-credit-stress" class="risk-anchor risk-snap-card" data-risk-card="risk-credit-stress" role="button" tabindex="0" title="Jump to Credit Stress" aria-label="Jump to Credit Stress" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
    '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">CREDIT STRESS</div>' +
@@ -11084,16 +11122,52 @@ function oasDistressHtml() {
   };
  }
 
- // Draw the 60-day HY OAS vs quality spread chart. Call after bindZoomHandlers()
- // in the Pro #/risk route (see insertion step 3 above).
+ // Chart config for the composite score history (trailing year).
+ function oasScoreChartConfig() {
+  const O = D.oas_distress || {};
+  const sh = O.score_history || [];
+  if (sh.length < 2) return null;
+  return {
+   data: {
+    labels: sh.map((r) => r.date),
+    datasets: [
+     { type: "line", label: "Credit Stress score", data: sh.map((r) => r.score),
+       borderColor: "#e0aa46", backgroundColor: "rgba(224,170,70,0.08)", fill: true,
+       borderWidth: 2, pointRadius: 0, tension: 0.2 },
+    ]},
+   options: { animation: false, responsive: true, maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+    scales: {
+     x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
+     y: { min: 0, max: 100, title: { display: true, text: "score", color: "#8d99aa" },
+          ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
+    }},
+  };
+ }
+
+ // Draw the 60-day HY OAS vs quality spread chart and the trailing-year
+ // score chart. Call after bindZoomHandlers() in the Pro #/risk route.
  function drawOasDistressChart() {
+  if (!window.Chart) return;
   const cv = document.getElementById("oas-distress-chart");
-  if (!cv || !window.Chart) return;
-  const cfg = oasDistressChartConfig();
-  if (!cfg) return;
-  const old = Chart.getChart(cv);
-  if (old) old.destroy();
-  new Chart(cv, cfg);
+  if (cv) {
+   const cfg = oasDistressChartConfig();
+   if (cfg) {
+    const old = Chart.getChart(cv);
+    if (old) old.destroy();
+    new Chart(cv, cfg);
+   }
+  }
+  const cv2 = document.getElementById("oas-score-chart");
+  if (cv2) {
+   const cfg2 = oasScoreChartConfig();
+   if (cfg2) {
+    const old2 = Chart.getChart(cv2);
+    if (old2) old2.destroy();
+    new Chart(cv2, cfg2);
+   }
+  }
  }
 
 // === liquidity_stress.js ===
@@ -12784,7 +12858,7 @@ function volSurfaceHtml() {
  }
  function riskValueCard(name, score, regime, color, anchorId, note) {
   if (score == null) return "";
-  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const colorMap = { emerald: "#4dd2aa", yellow: "#d3c34c", amber: "#e0aa46", orange: "#e07f3e", rose: "#f37d83", red: "#e5484d", slate: "#8d99aa" };
   const c = colorMap[color] || "#dbe5f1";
   const aid = anchorId || ("risk-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
   return '<div id="' + aid + '-snap" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
