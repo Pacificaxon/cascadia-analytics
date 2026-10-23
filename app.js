@@ -222,6 +222,7 @@
     flat.ticker_skew = sections.volatility_skew.ticker_skew;
    }
    if (sections.unusual_options_flow) flat.ticker_options = sections.unusual_options_flow;
+   if (sections.flow_scoreboard) flat.flow_scoreboard = sections.flow_scoreboard;
    if (sections.market_leadership) flat.leadership = sections.market_leadership;
    if (sections.macro_analysis) flat.market_analysis_report = sections.macro_analysis;
    if (sections.rsi_cyclical_defensive) flat.rsi_cd_history = sections.rsi_cyclical_defensive;
@@ -7208,7 +7209,7 @@ route("alerts", function () {
 
   // Options flow (Pro)
   h += '<div class="section" id="tk-sec-options" data-toc="Unusual Options Flow"><div class="section-title">Unusual Options Flow ' + PRO_BADGE + '</div>';
-  h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk));
+  h += gated("Options Flow, Pro", "Large, unusual prints over the last 10 trading days with directional read.", optionsHtml(tk) + scoreboardHtml(tk));
   h += "</div>";
 
   // Catalyst Compass (Pro) - click to generate, AI quota friendly
@@ -8329,6 +8330,40 @@ route("alerts", function () {
     premTxt + '</td><td class="' + (bull ? "pos" : "neg") + '">' + label + "</td></tr>";
   }).join("");
   return h + "</tbody></table></div></div>";
+ }
+
+ function scoreboardHtml(tk) {
+  const sb = ((D.flow_scoreboard || {}).tickers || {})[tk];
+  let h = '<div style="margin-top:18px;"><div style="font-weight:700;font-size:16px;margin-bottom:6px;">Flow Scoreboard</div>';
+  const caveat = '<p style="color:var(--muted);font-size:12px;margin-top:8px;">Trade sides are inferred from delayed quotes (trade price vs spread), not true time-and-sales. A flagged day is scored once the close five trading days after the prints is known; bullish prints pay on a higher close, bearish prints on a lower one.</p>';
+  if (!sb || !(sb.days || []).length) {
+   return h + '<p style="color:var(--muted)">No flagged flow scored yet for this ticker.</p>' + caveat + "</div>";
+  }
+  const t = sb.tally || {};
+  h += '<p style="color:var(--muted);font-size:13px;margin-bottom:10px;">' +
+   (sb.as_of ? "As of " + esc(sb.as_of) + ": " : "") +
+   (t.scored_days || 0) + " scored days · Bullish paid " + (t.bull_paid || 0) + "/" + (t.bull_total || 0) +
+   " · Bearish paid " + (t.bear_paid || 0) + "/" + (t.bear_total || 0) +
+   " · " + (t.pending_days || 0) + " days pending</p>";
+  const fmtPx = (v) => (v == null || isNaN(v)) ? " - " : "$" + Number(v).toFixed(2);
+  const outcome = (count, move, isBull) => {
+   if (!count) return "<td> - </td>";
+   if (move == null) return "<td>Pending</td>";
+   const paid = isBull ? move > 0 : move < 0;
+   return '<td class="' + (paid ? "pos" : "neg") + '">' + (paid ? "Paid" : "Did not pay") + "</td>";
+  };
+  const days = sb.days.slice(-10).reverse();
+  h += '<div class="card"><div class="table-wrap"><table class="coverage"><thead><tr>' +
+   "<th>Date</th><th>Bull</th><th>Bear</th><th>Close</th><th>Close +5d</th><th>Move %</th><th>Bullish</th><th>Bearish</th></tr></thead><tbody>";
+  h += days.map((d) => {
+   const move = (d.move_pct == null || isNaN(d.move_pct)) ? null : Number(d.move_pct);
+   const moveTxt = move == null ? " - " : ((move > 0 ? "+" : "") + move.toFixed(2) + "%");
+   const moveCls = move == null || move === 0 ? "" : (move > 0 ? "pos" : "neg");
+   return "<tr><td>" + esc(d.date || "") + "</td><td>" + (d.bullish || 0) + "</td><td>" + (d.bearish || 0) + "</td><td>" +
+    fmtPx(d.close0) + "</td><td>" + fmtPx(d.close5) + '</td><td class="' + moveCls + '">' + moveTxt + "</td>" +
+    outcome(d.bullish, move, true) + outcome(d.bearish, move, false) + "</tr>";
+  }).join("");
+  return h + "</tbody></table></div></div>" + caveat + "</div>";
  }
 
  function earningsDateHtml(tk) {

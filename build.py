@@ -243,6 +243,10 @@ def main():
     except FileNotFoundError:
         minervini_data = {}
     ticker_options = load(os.path.join(MR, "ticker_options.json"))
+    try:
+        flow_scoreboard = load(os.path.join(MR, "flow_scoreboard.json"))
+    except FileNotFoundError:
+        flow_scoreboard = {}
     bellwethers = load(os.path.join(MR, "bellwether_earnings.json"))
     try:
         earnings_history = load(os.path.join(MR, "earnings_history.json"))
@@ -505,6 +509,7 @@ def main():
         "aaii_sentiment": aaii_sentiment,
         "cot_data": cot_data,
         "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
+        "flow_scoreboard": flow_scoreboard,
         "readthroughs": readthroughs,
         "earnings_history": earnings_history,
         "earnings_revisions": earnings_revisions,
@@ -519,6 +524,7 @@ def main():
         "gex": {"gex_data": site.pop("gex_data", {}), "ticker_gex": site.pop("ticker_gex", {})},
         "volatility_skew": {"skew_data": site.pop("skew_data", {}), "ticker_skew": site.pop("ticker_skew", {})},
         "unusual_options_flow": site.pop("ticker_options", {}),
+        "flow_scoreboard": site.pop("flow_scoreboard", {}),
         "market_leadership": site.pop("leadership", {}),
         "macro_analysis": site.pop("market_analysis_report", {}),
         "rsi_cyclical_defensive": site.pop("rsi_cd_history", {}),
