@@ -10424,6 +10424,14 @@ route("alerts", function () {
  // universe, which crushed every bubble into a strip along the axes.)
  // Points beyond a cap are drawn at the edge; their true values stay on
  // the point for the tooltip and in the table.
+ // Signed-out teaser copy: the comps universe size comes from the matrix
+ // itself when the Pro payload is already loaded in this session, never a
+ // hardcoded count (the matrix spans the S&P 500 plus coverage names, far
+ // beyond the ORDER coverage list).
+ function compsUniverseLabel() {
+  const n = ((D.comps_matrix || {}).records || []).length;
+  return n ? n + " names" : "the full comps universe";
+ }
  function compsPct(vals, p) {
   if (!vals.length) return 0;
   const s = [...vals].sort((a, b) => a - b);
@@ -10487,12 +10495,18 @@ route("alerts", function () {
   // HTML chip legend under the chart (renderCompsLegend in the route) and
   // the whole box is plot area. The zoom modal is large enough to keep the
   // native legend, at a bigger font.
-  const cfg = {data: {datasets}, options: {animation: false, responsive: true, maintainAspectRatio: false,
+  // Chart.js scale resolution needs an explicit anchor: with no top-level
+  // chart type and no scale types, Chart.js falls back to a category scale
+  // for the x axis, which parses every point's x to 0 and collapses the
+  // whole scatter (and the fair-value lines) onto the y axis. Every other
+  // chart on the site passes a top-level type; this config must too, and
+  // the scales declare linear so the axes do not depend on that fallback.
+  const cfg = {type: "bubble", data: {datasets}, options: {animation: false, responsive: true, maintainAspectRatio: false,
    plugins: {legend: zoom ? {position: "bottom", labels: {color: "#aeb9c9", boxWidth: 12, boxHeight: 12, padding: 10, font: {size: 12}}} : {display: false},
     tooltip: {padding: 10, titleFont: {size: 13}, bodyFont: {size: 12}, callbacks: {title: (it) => it[0].raw.ticker || it[0].dataset.label || "Fair value",
      label: (c) => c.raw.ticker ? [c.raw.ticker + (c.raw.name ? " · " + c.raw.name : ""), "Growth: " + c.raw.ox.toFixed(1) + "%", "Multiple: " + c.raw.oy.toFixed(1) + "x", "Market cap: " + (c.raw.mcapFmt || "N/A")] : "Sector fair: " + c.parsed.y.toFixed(1) + "x"}}},
-   scales: {x: {min: xMin, max: xCap, title: {display: true, text: "NTM Revenue Growth (%)", color: "#aeb9c9", font: {size: 13, weight: "600"}}, ticks: {color: "#aeb9c9", font: {size: 12}, callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
-    y: {min: 0, max: yCap, title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#aeb9c9", font: {size: 13, weight: "600"}}, ticks: {color: "#aeb9c9", font: {size: 12}, callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}};
+   scales: {x: {type: "linear", min: xMin, max: xCap, title: {display: true, text: "NTM Revenue Growth (%)", color: "#aeb9c9", font: {size: 13, weight: "600"}}, ticks: {color: "#aeb9c9", font: {size: 12}, callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+    y: {type: "linear", min: 0, max: yCap, title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#aeb9c9", font: {size: 13, weight: "600"}}, ticks: {color: "#aeb9c9", font: {size: 12}, callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}};
   cfg._caps = {xMin, xCap, yCap};
   return cfg;
  }
@@ -10507,7 +10521,7 @@ route("alerts", function () {
     '<div class="hero"><div><h1 class="hero-h">Relative Valuation</h1>' +
     "<p class='hero-sub'>Cross-reference DCF values with regression-modeled peer multiples.</p></div></div>" +
     '<div class="section"><div class="section-title">Comps Matrix ' + PRO_BADGE + '</div>' +
-    proTeaser("Comps Matrix, Pro", "OLS regression of EV/Revenue and P/E against NTM growth across all " + ORDER.length + " tickers. Find discounted growth and stretched multiples.") + "</div>" + realYieldShockHtml();
+    proTeaser("Comps Matrix, Pro", "OLS regression of EV/Revenue and P/E against NTM growth across " + compsUniverseLabel() + ". Find discounted growth and stretched multiples.") + "</div>" + realYieldShockHtml();
    return;
   }
   const cm = D.comps_matrix || {};
