@@ -464,6 +464,77 @@
      "body": "Data note. Tracker readings are as of the October 21 close, ahead of the scheduled October 22 refresh, verified against source data this morning, with the French spot spread fetched intraday on October 22. Weekly, monthly, and quarterly models run on natural publication cadences and are labeled as such on the site. Neocloud compute share, lab commitment, and capacity backstop figures are third party estimates from industry commentary and are framed as estimates where used. Fair values are Cascadia house DCF outputs. This memo is for information and discussion and is not investment advice."
     }
    ]
+  },
+  {
+   "id": "terminal-spread",
+   "title": "Terminal Spread: The Two Numbers That Decide Every Valuation",
+   "date": "2026-10-23",
+   "excerpt": "Every discounted cash flow model ends the same way. The analyst forecasts ten years of cash flows in detail, argues about each one, and then capitalizes the final year into a terminal value with a single division. The numerator of that division gets the attention. The denominator decides the answer.",
+   "sections": [
+    {
+     "body": "Every discounted cash flow model ends the same way. The analyst forecasts ten years of cash flows in detail, argues about each one, and then capitalizes the final year into a terminal value with a single division. The numerator of that division gets the attention. The denominator decides the answer. The denominator is the terminal spread, the gap between the discount rate in the terminal year and the terminal growth rate, and in a typical model it carries more value than every forecast year combined. In the Axon Base case published by Cascadia Analytics, the terminal value is 83.0% of enterprise value. The ten years of revenue builds, margin arguments, and segment work that fill the research note support the remaining 17.0%."
+    },
+    {
+     "body": "The arithmetic deserves to be seen plainly. Terminal value equals the terminal year's cash flow, grown once, divided by the spread. At a spread of 5.28%, which is where the Axon Base case stands today, the terminal year is capitalized at 18.9 times. At a spread of 4.28% the same cash flow is worth 23.4 times, and at 6.28% it is worth 15.9 times. No cash flow changed in either direction. A single percentage point in a denominator that most readers skip moved the largest component of the valuation by a quarter in one direction and a sixth in the other."
+    },
+    {
+     "heading": "The Dot-Com Denominator",
+     "body": "The cleanest historical demonstration is the peak of the dot-com market, because both legs of the spread were distorted in the same direction at the same time. At the start of January 2000, the market-implied equity risk premium stood at 2.05%, the lowest reading in the modern series, against a 10-year Treasury yield of about 6.5%. Investors were paying prices that implied almost no compensation for equity risk. Sell-side models of the era paired that pricing with terminal growth assumptions of 5% to 6% for large technology companies, growth rates that implied those companies would eventually outgrow the economy that contained them."
+    },
+    {
+     "body": "Run the representative model of that moment. A high-beta technology name at a beta of 1.5, discounted at the January 2000 inputs, carries a cost of equity of 9.6%. Against a terminal growth assumption of 5.5%, the spread is 4.1%, and the terminal year capitalizes at 24.4 times. Now normalize the market inputs to where they actually settled over the following years, a 10-year yield of 4.5%, an equity premium of 4.5%, and a terminal growth rate of 3.5%, holding every cash flow in the model exactly where it was. The cost of equity rises to 11.25%, the spread widens to 7.75%, and the capitalization falls to 12.9 times. The terminal value drops by nearly half. The business did nothing. The denominator moved."
+    },
+    {
+     "body": "The Nasdaq Composite peaked at 5,048.62 on March 10, 2000, and bottomed at 1,114.11 in October 2002, a decline of 78%. Cash flows disappointed in that collapse, and the disappointment was real. But a large share of the destruction was denominator arithmetic working in reverse, the premium normalizing from 2.05% toward 4.5% while terminal growth assumptions were cut toward the growth of the economy itself. Both legs widened the spread at once, which is the specific configuration that makes spread risk dangerous. The legs are not independent in a crisis. They are correlated against the holder."
+    },
+    {
+     "heading": "The Mirror Image",
+     "body": "The spread also explains the great buying opportunities, because at market bottoms it blows out to levels that capitalize sound terminal cash flows at depression multiples. At the start of January 2009 the implied equity premium reached 6.44% while the 10-year yield fell to about 2.4%, and terminal values across the market were being struck at spreads of 6% to 7% and wider, capitalization rates of 14 to 17 times for businesses that subsequently compounded for a decade. The discount rate was pricing a depression that the cash flows, in aggregate, never delivered."
+    },
+    {
+     "body": "The 2022 drawdown is the modern controlled experiment, because it isolated the denominator. The S&P 500 fell 19.4% in price during 2022 while its earnings were roughly flat. There was no earnings collapse to explain the loss. The 10-year yield rose from 1.51% at the start of the year and the implied premium widened from 4.24%, and the index repriced through the spread alone. Anyone who wants to know what a widening spread does to a portfolio that believes itself diversified in cash-flow terms has the answer in that year. The cash flows held. The valuations did not."
+    },
+    {
+     "image": "memo-images/terminal-spread-history.png",
+     "alt": "The Market Terminal Spread at Four Moments",
+     "caption": "The Market Terminal Spread at Four Moments"
+    },
+    {
+     "heading": "Where the Spread Stands Now",
+     "body": "The current configuration is late-cycle but it is not 2000, and the difference is worth stating precisely. The market-implied figures today put the expected return on the index at 8.73%, built from a 10-year yield of 4.988% and an implied premium of 3.7431%. In January 2000 the expected return was similar, near 8.6%, but it was built from a 6.5% yield and a 2.05% premium. The fragility has moved legs. The premium at 3.7431% has little room to compress further and a great deal of room to expand, and the yield at 4.988% sits near a two-decade high rather than at the 1.51% that made the 2022 repricing so violent. A violent widening from here requires a specific event, a price break sharp enough to lift the implied premium above 5%, or a yield move through 5.5% on a fiscal or inflation shock. Neither is the base case. Both are the scenarios a narrow spread cannot absorb, because at a 5.28% spread a 50 basis point widening removes about 9% of terminal value before a single cash flow is reconsidered."
+    },
+    {
+     "heading": "A Worked Example From Today's Market",
+     "body": "The Axon model at Cascadia Analytics passed through three discount-rate vintages in a single week without one dollar of forecast cash flow changing, which makes it a clean public record of what the spread does. The Base case target stood at $489.93 with a terminal spread of 6.63%, built partly on a normalized premium assumption. Replacing the assumed premium with the market-implied premium moved the spread to 5.52% and the Base case to $648.58. Replacing a frozen risk-free rate with the same market yield the premium is solved against moved the spread to 5.28% and the Base case to $688.19. The revenue path, the margins, the share count, and the terminal growth cap of 3.0% are identical in all three versions. The entire $198.26 difference between the lowest and highest Base case is denominator."
+    },
+    {
+     "image": "memo-images/terminal-spread-axon.png",
+     "alt": "Axon: Three Discount Vintages",
+     "caption": "Axon: Three Discount Vintages"
+    },
+    {
+     "body": "The cross-checks discipline the same point from the other side. The Axon model values the terminal year on the growth formula and tests it against an exit multiple of 18 times terminal earnings before interest, taxes, depreciation, and amortization. At today's spread, that multiple implies a perpetual growth rate of 4.4%, against the 3.0% the growth formula is permitted to use. The multiple consistent with 3.0% growth at the current discount rate is 12.9 times. Exit multiples quoted in deal commentary carry growth assumptions inside them exactly as surely as the growth formula does, and the implied figure is rarely printed next to them."
+    },
+    {
+     "heading": "How to Audit Any Valuation in Five Questions",
+     "body": "Ask what the spread is. Any discounted cash flow that does not disclose its terminal discount rate and its terminal growth rate side by side is asking to be trusted on the one number that matters most, and the two figures belong in the first table of the document, not in footnotes."
+    },
+    {
+     "body": "Ask which leg moved. When a target price changes, decompose the change before crediting the analyst with new insight into the business. A target that rose because the spread narrowed is a market call wearing a company call's clothing, and it will reverse when the market inputs reverse, regardless of execution."
+    },
+    {
+     "body": "Ask what the exit multiple implies. Convert every exit multiple into the perpetual growth rate it assumes at the model's own discount rate. A multiple that implies growth above the growth formula's cap is not a cross-check on the valuation. It is a second, larger valuation hiding behind the first one."
+    },
+    {
+     "body": "Ask what share of value is terminal. Above 75%, the investment case is a claim about the discount rate and the steady state, and it should be argued in those terms. Below 60%, the forecast years carry the answer and the spread is a secondary concern. The share itself tells the reader which argument they are actually being asked to underwrite."
+    },
+    {
+     "body": "Ask what 50 basis points does. Rerun the terminal value at a spread 50 basis points wider and read the result as the price of being wrong about the rate regime. If the thesis cannot survive that move, the position size should reflect it, because 50 basis points is not a tail event. It is an ordinary quarter in the life of the 10-year Treasury."
+    },
+    {
+     "body": "Cascadia Analytics caps terminal growth at 3.0% in every scenario of every model it publishes, builds its discount rates from market-implied inputs of a single vintage, and treats any construction that narrows the spread through the growth leg as a defect rather than a view. The reason is the history above. Stories about companies are argued in the numerator, in revenue and margins and market share, and those arguments deserve the scrutiny they get. Fortunes are decided in the denominator, usually quietly, and usually at exactly the moments when both of its legs are leaning the same way."
+    }
+   ]
   }
  ]
 }
