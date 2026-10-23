@@ -1711,7 +1711,7 @@ function bindZoomHandlers() {
     (authUser ? "Signed in as <b>" + esc(authUser.email) + "</b>. " : "") +
     (isAdmin ? "Admin access is active." : "Your Pro subscription is active.") + "</p>";
   } else if (authUser) {
-   statusLine = "<p style='color:var(--muted);font-size:14px'>Signed in as <b>" + esc(authUser.email) + "</b>. Subscribe below, your account upgrades automatically after checkout.</p>";
+   statusLine = "<p style='color:var(--muted);font-size:14px'>Signed in as <b>" + esc(authUser.email) + "</b>. Start your 7-day free trial below, your account upgrades automatically after checkout.</p>";
   } else {
    statusLine = "<p style='color:var(--muted);font-size:14px'>Log in or create an account first, then subscribe, your Pro access is tied to your account email.</p>";
   }
@@ -1719,14 +1719,14 @@ function bindZoomHandlers() {
    '<div class="modal-back" id="mb"><div class="modal">' +
    '<div class="modal-logo"><img src="logo-icon.png" alt="Cascadia Analytics"></div>' +
    "<h3>Cascadia Analytics Pro</h3>" +
-   "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, seasonality, Cascadia Scores, screeners including the Inflection Growth and Operating Leverage Screener, exports, earnings history, and Cascadia Research Reports. $19/month.</p>" +
+   "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, seasonality, Cascadia Scores, screeners including the Inflection Growth and Operating Leverage Screener, exports, earnings history, and Cascadia Research Reports. $19/month after a 7-day free trial.</p>" +
    statusLine +
    (isPro()
     ? '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-bottom:8px;text-decoration:none;">Manage subscription</a>' +
      '<div id="nl-toggle-wrap" style="margin:12px 0;padding:12px;border:1px solid var(--border);border-radius:8px;"></div>' +
      '<button class="btn secondary" id="pro-logout" style="width:100%">Log out</button>'
     : (authUser
-     ? '<a class="cta-btn" style="display:block;text-align:center;margin:14px 0;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Subscribe, $19/mo</a>'
+     ? '<a class="cta-btn" style="display:block;text-align:center;margin:14px 0;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Start 7-day free trial</a><p style="text-align:center;font-size:13px;color:var(--muted);margin:0 0 6px;">$0 due today. Your card is charged $19/mo starting day 8 unless you cancel before the trial ends.</p>'
      : '<button class="btn" id="pro-login" style="width:100%">Log in / Sign up</button>')) +
    '<button class="btn secondary" id="pro-x" style="width:100%;margin-top:8px;">Close</button>' +
    "</div></div>";
@@ -14938,7 +14938,7 @@ function volSurfaceHtml() {
    '<div style="position:absolute;top:-14px;right:20px;background:#d9a441;color:#0a0f0a;font-size:11px;font-weight:800;padding:4px 12px;border-radius:12px;letter-spacing:1px;">MOST POPULAR</div>' +
    '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#d9a441;margin-bottom:8px;">PRO</div>' +
    '<div style="font-size:36px;font-weight:800;color:#f5f7fa;margin-bottom:4px;">$19<span style="font-size:16px;font-weight:400;color:#dbe5f1;">/month</span></div>' +
-   '<div style="font-size:13px;color:#dbe5f1;opacity:0.7;margin-bottom:20px;">billed monthly · cancel anytime</div>' +
+   '<div style="font-size:13px;color:#dbe5f1;opacity:0.7;margin-bottom:20px;">7-day free trial, then billed monthly · cancel anytime</div>' +
    '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#dbe5f1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
    '<li>✓ All ' + riskModelCount() + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Liquidity Stress, Macro Regime, with readings, charts, history, and plain-English explainers</li>' +
@@ -14986,7 +14986,8 @@ function volSurfaceHtml() {
   if (proActive) {
    h += '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-top:20px;text-decoration:none;">Manage subscription</a>';
   } else if (authUser) {
-   h += '<a class="cta-btn" style="display:block;text-align:center;margin-top:20px;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Subscribe, $19/mo</a>';
+   h += '<a class="cta-btn" style="display:block;text-align:center;margin-top:20px;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Start 7-day free trial</a>';
+   h += '<p style="text-align:center;font-size:13px;color:#dbe5f1;opacity:0.7;margin-top:10px;">$0 due today. Your card is charged $19/mo starting day 8 unless you cancel before the trial ends.</p>';
   } else {
    h += '<button class="btn" id="pricing-login" style="width:100%;margin-top:20px;">Log in / Sign up to subscribe</button>';
   }
