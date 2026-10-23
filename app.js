@@ -10416,16 +10416,28 @@ route("alerts", function () {
   "Information Technology":"#38bdf8","Health Care":"#6366f1","Financials":"#4dd2aa","Consumer Discretionary":"#e0aa46","Consumer Staples":"#84cc16","Industrials":"#8d99aa","Energy":"#f37d83","Utilities":"#facc15","Real Estate":"#a855f7","Materials":"#f97316","Communication Services":"#ec4899","Other":"#647184",
   "Aerospace & Defense":"#e879f9","Fintech":"#2dd4bf","Telecom & Networking":"#67e8f9","Utilities & Energy":"#bef264"};
  // Axis caps keep a handful of extreme outliers from stretching the plot and
- // crushing the other 500+ names into one corner. Points beyond a cap are
- // drawn at the edge; their true values stay on the point for the tooltip.
- const COMPS_X_CAP = 200, COMPS_Y_CAP_EVREV = 45, COMPS_Y_CAP_PE = 150;
+ // crushing the other 500+ names into one corner. The caps are derived from
+ // the names actually plotted on each view: the 98th percentile of the
+ // visible values, rounded up to a clean step, with a floor so a quiet
+ // dataset does not over-zoom. (The old fixed caps, +200% growth / 45x
+ // EV/Revenue / 150x P/E, sat 2-3x beyond the 98th percentile of the real
+ // universe, which crushed every bubble into a strip along the axes.)
+ // Points beyond a cap are drawn at the edge; their true values stay on
+ // the point for the tooltip and in the table.
+ function compsPct(vals, p) {
+  if (!vals.length) return 0;
+  const s = [...vals].sort((a, b) => a - b);
+  return s[Math.min(s.length - 1, Math.max(0, Math.ceil(p / 100 * s.length) - 1))];
+ }
+ const compsCeilTo = (v, step) => Math.ceil(v / step) * step;
  // Bubble radius scales with the square root of market cap (so bubble AREA
- // tracks cap), compressed into a legible band. The old log formula put
- // nearly every bubble at 11-14px radius, which buried the plot.
+ // tracks cap), in a band sized for the taller plot: the median name draws
+ // near 5px radius and the largest caps near 13px. The old band (median
+ // 2.8px, max 9px) read as specks on a phone.
  function compsBubbleRadius(marketCap, zoom) {
   const s = Math.sqrt(Math.max(marketCap || 0, 0) / 1e9);
-  const r = 2.1 + 0.105 * s;
-  return zoom ? Math.max(3.5, Math.min(13, r * 1.45)) : Math.max(2.5, Math.min(9, r));
+  const r = 3.8 + 0.13 * s;
+  return zoom ? Math.max(5.5, Math.min(19, r * 1.4)) : Math.max(4, Math.min(13.5, r));
  }
  function buildCompsChartConfig(usePE, zoom) {
   const cm = D.comps_matrix || {};
@@ -10433,20 +10445,27 @@ route("alerts", function () {
   const meta = cm.metadata || {};
   if (!recs.length) return null;
   const yKey = usePE ? "forwardPe" : "ntmEvRevenue";
-  const yCap = usePE ? COMPS_Y_CAP_PE : COMPS_Y_CAP_EVREV;
   const bySec = {};
   recs.forEach((r) => {
    if (usePE && !(r.forwardPe > 0 && r.forwardPe < 150)) return;
    (bySec[r.sector] = bySec[r.sector] || []).push(r);
   });
-  const xsAll = recs.map((r) => r.ntmRevGrowth);
-  const xMin = Math.min(-20, Math.floor(Math.min(...xsAll)));
+  // Data-driven axis caps from the names plotted on this view (see the
+  // note above compsPct). The lower x bound gets the same treatment (2nd
+  // percentile) so a few deep-negative growers cannot stretch the left
+  // edge either; names outside either bound pin at the edge as before.
+  const plotted = Object.values(bySec).flat();
+  const xsPlotted = plotted.map((r) => r.ntmRevGrowth).filter((v) => v != null && isFinite(v));
+  const ysPlotted = plotted.map((r) => r[yKey]).filter((v) => v != null && isFinite(v));
+  const xCap = Math.max(60, compsCeilTo(compsPct(xsPlotted, 98), 10));
+  const yCap = Math.max(usePE ? 40 : 15, compsCeilTo(compsPct(ysPlotted, 98), 5));
+  const xMin = Math.max(-40, Math.min(-10, Math.floor(compsPct(xsPlotted, 2) / 5) * 5));
   const datasets = Object.keys(bySec).map((sec) => ({
    type: "bubble",
    label: sec,
    data: bySec[sec].map((r) => {
     const gx = r.ntmRevGrowth, gy = r[yKey];
-    return {x: Math.max(xMin, Math.min(COMPS_X_CAP, gx)), y: Math.max(0, Math.min(yCap, gy)), ox: gx, oy: gy, ticker: r.ticker, name: r.name, mcapFmt: r.marketCapFormatted || "", r: compsBubbleRadius(r.marketCap, zoom)};
+    return {x: Math.max(xMin, Math.min(xCap, gx)), y: Math.max(0, Math.min(yCap, gy)), ox: gx, oy: gy, ticker: r.ticker, name: r.name, mcapFmt: r.marketCapFormatted || "", r: compsBubbleRadius(r.marketCap, zoom)};
    }),
    backgroundColor: (COMPS_COLORS[sec] || "#38bdf8") + "99",
    borderColor: COMPS_COLORS[sec] || "#38bdf8",
@@ -10460,15 +10479,22 @@ route("alerts", function () {
    const sr = secRegs[sec];
    const rr = sr && (usePE ? sr.forwardPe : sr.evRevenue);
    if (!rr) return;
-   datasets.unshift({type: "line", label: sec + " fair value", data: [{x: xMin, y: rr.slope * xMin + rr.intercept}, {x: COMPS_X_CAP, y: rr.slope * COMPS_X_CAP + rr.intercept}],
+   datasets.unshift({type: "line", label: sec + " fair value", data: [{x: xMin, y: rr.slope * xMin + rr.intercept}, {x: xCap, y: rr.slope * xCap + rr.intercept}],
     borderColor: COMPS_COLORS[sec] || "#c99a6b", borderWidth: 1.5, borderDash: [6, 4], pointRadius: 0, fill: false});
   });
-  return {data: {datasets}, options: {animation: false, responsive: true, maintainAspectRatio: false,
-   plugins: {legend: {position: "bottom", labels: {color: "#8d99aa", boxWidth: 10, font: {size: 10}}},
-    tooltip: {callbacks: {title: (it) => it[0].raw.ticker || it[0].dataset.label || "Fair value",
+  // Inline view: the in-canvas Chart.js legend (38+ entries at 10px) ate a
+  // third of the old 420px box and shrank the plot, so inline uses a custom
+  // HTML chip legend under the chart (renderCompsLegend in the route) and
+  // the whole box is plot area. The zoom modal is large enough to keep the
+  // native legend, at a bigger font.
+  const cfg = {data: {datasets}, options: {animation: false, responsive: true, maintainAspectRatio: false,
+   plugins: {legend: zoom ? {position: "bottom", labels: {color: "#aeb9c9", boxWidth: 12, boxHeight: 12, padding: 10, font: {size: 12}}} : {display: false},
+    tooltip: {padding: 10, titleFont: {size: 13}, bodyFont: {size: 12}, callbacks: {title: (it) => it[0].raw.ticker || it[0].dataset.label || "Fair value",
      label: (c) => c.raw.ticker ? [c.raw.ticker + (c.raw.name ? " · " + c.raw.name : ""), "Growth: " + c.raw.ox.toFixed(1) + "%", "Multiple: " + c.raw.oy.toFixed(1) + "x", "Market cap: " + (c.raw.mcapFmt || "N/A")] : "Sector fair: " + c.parsed.y.toFixed(1) + "x"}}},
-   scales: {x: {min: xMin, max: COMPS_X_CAP, title: {display: true, text: "NTM Revenue Growth (%)", color: "#8d99aa"}, ticks: {color: "#8d99aa", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
-    y: {min: 0, max: yCap, title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#8d99aa"}, ticks: {color: "#8d99aa", callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}};
+   scales: {x: {min: xMin, max: xCap, title: {display: true, text: "NTM Revenue Growth (%)", color: "#aeb9c9", font: {size: 13, weight: "600"}}, ticks: {color: "#aeb9c9", font: {size: 12}, callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+    y: {min: 0, max: yCap, title: {display: true, text: usePE ? "Forward P/E (x)" : "NTM EV/Revenue (x)", color: "#aeb9c9", font: {size: 13, weight: "600"}}, ticks: {color: "#aeb9c9", font: {size: 12}, callback: (v) => v + "x"}, grid: {color: "rgba(42,46,57,0.4)"}}}}};
+  cfg._caps = {xMin, xCap, yCap};
+  return cfg;
  }
 
  /* ================= COMPS MATRIX (PRO) ================= */
@@ -10515,9 +10541,10 @@ route("alerts", function () {
   // Scatter chart
   h += '<div class="section"><div class="section-title">Growth vs Multiple ' + PRO_BADGE + ' <span style="font-size:11px;color:#8d99aa;">(bubble size = market cap)</span></div>';
   h += '<div style="margin-bottom:8px;"><button class="btn" id="comps-toggle" style="font-size:12px;">Switch to Forward P/E</button></div>';
-  h += '<div class="zoomable-chart" data-chart="comps" style="position:relative;height:420px;cursor:zoom-in;" title="Click to zoom"><canvas id="comps-chart"></canvas>' +
+  h += '<div class="zoomable-chart comps-chart-wrap" data-chart="comps" title="Click to zoom"><canvas id="comps-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
-  h += '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axes are capped for readability (growth at +200%, EV/Revenue at 45x, Forward P/E at 150x); names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.</div></div>';
+  h += '<div id="comps-legend" class="comps-legend"></div>';
+  h += '<div id="comps-cap-note" style="font-size:12px;color:#8d99aa;margin-top:8px;">Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axis caps are set from the names plotted on each view (98th percentile, rounded up) so the bulk of the universe stays legible; names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.</div></div>';
   // Table
   h += '<div class="section"><div class="section-title">Comps Table ' + PRO_BADGE + '</div><div class="card" style="overflow-x:auto;">';
   h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid #253142;color:#8d99aa;text-align:right;">' +
@@ -10558,7 +10585,39 @@ route("alerts", function () {
    const old = Chart.getChart(cv);
    if (old) old.destroy();
    const cfg = buildCompsChartConfig(mode, false);
-   if (cfg) new Chart(cv, cfg);
+   if (cfg) { new Chart(cv, cfg); renderCompsLegend(cfg); }
+  }
+  // Custom legend for the inline scatter: sector chips and fair-value line
+  // chips at phone-legible size with real tap targets, rebuilt per view so
+  // it always matches the datasets on the chart. Clicking a chip toggles
+  // that dataset, matching the old in-canvas legend's behavior.
+  function renderCompsLegend(cfg) {
+   const lg = document.getElementById("comps-legend");
+   if (!lg) return;
+   const byLabel = (a, b) => a.label < b.label ? -1 : 1;
+   const secs = cfg.data.datasets.filter((d) => d.type === "bubble").sort(byLabel);
+   const lines = cfg.data.datasets.filter((d) => d.type === "line").sort(byLabel);
+   let lh = '<div class="comps-legend-group"><span class="comps-legend-head">Sectors</span>' + secs.map((d) =>
+    '<button type="button" class="comps-chip" data-ds="' + esc(d.label) + '"><span class="comps-swatch" style="background:' + d.borderColor + '"></span>' + esc(d.label) + "</button>").join("") + "</div>";
+   lh += '<div class="comps-legend-group"><span class="comps-legend-head">Fair value</span>' + lines.map((d) =>
+    '<button type="button" class="comps-chip" data-ds="' + esc(d.label) + '"><span class="comps-swatch-line" style="border-top-color:' + d.borderColor + '"></span>' + esc(d.label.replace(/ fair value$/, "")) + "</button>").join("") + "</div>";
+   lg.innerHTML = lh;
+   lg.querySelectorAll(".comps-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+     const cv2 = document.getElementById("comps-chart");
+     const ch = cv2 && window.Chart && Chart.getChart(cv2);
+     if (!ch) return;
+     const idx = ch.data.datasets.findIndex((d) => d.label === chip.dataset.ds);
+     if (idx < 0) return;
+     ch.setDatasetVisibility(idx, !ch.isDatasetVisible(idx));
+     chip.classList.toggle("comps-chip-off", !ch.isDatasetVisible(idx));
+     ch.update();
+    });
+   });
+   const note = document.getElementById("comps-cap-note");
+   if (note && cfg._caps) {
+    note.textContent = "Sector-relative OLS: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axis caps are set from the names plotted on each view (98th percentile, rounded up): this view runs from " + cfg._caps.xMin + "% to +" + cfg._caps.xCap + "% growth and up to " + cfg._caps.yCap + "x. Names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.";
+   }
   }
  });
 

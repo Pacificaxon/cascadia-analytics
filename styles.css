@@ -687,3 +687,16 @@ table.fin-table tr:last-child td { border-bottom: none; }
    background (--surface-2). Route hook is set in render() (app.js). */
 body[data-route="monitor"] .card, body[data-route="analysis"] .card, body[data-route="risk"] .card { background: var(--card2); }
 body[data-route="monitor"] .card .card, body[data-route="analysis"] .card .card, body[data-route="risk"] .card .card { background: var(--card); }
+
+/* ---------- comps scatter: tall plot + chip legend (2026-10-23) ----------
+   The scatter's whole box is plot area now; the legend lives under the
+   chart as HTML chips instead of inside the canvas. */
+.comps-chart-wrap { position: relative; height: 620px; cursor: zoom-in; }
+@media (max-width: 700px) { .comps-chart-wrap { height: 580px; } }
+.comps-legend { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.comps-legend-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.comps-legend-head { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+.comps-chip { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 6px 11px; font-size: 13px; font-family: var(--sans); color: var(--text); background: var(--card2, #131a28); border: 1px solid var(--border); border-radius: 999px; cursor: pointer; }
+.comps-chip-off { opacity: .35; }
+.comps-swatch { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.comps-swatch-line { width: 16px; border-top: 2px dashed transparent; flex: none; }
