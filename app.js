@@ -172,6 +172,17 @@
  let proVerified = null; // null = not yet checked this load; true/false after server verification
  let isAdmin = false;
  let PRO_DATA = null; // Pro-only data fetched from /api/pro-data (never in public bundle)
+let PRO_DATA_FETCHED_AT = 0; // When PRO_DATA was fetched (ms epoch)
+// The payload is a daily snapshot rebuilt at 12:00 UTC. A long-lived tab or
+// installed PWA session must not render from its first fetch forever: before
+// this guard existed, a session that first loaded before a ticker's Pro data
+// existed (e.g. LITE before 2026-10-20) showed "not available" fallbacks for
+// that ticker indefinitely, because nothing ever refetched. Treat the payload
+// as stale after 3 hours and refetch on the next auth check / route need.
+const PRO_DATA_MAX_AGE_MS = 3 * 60 * 60 * 1000;
+function proDataStale() {
+ return !PRO_DATA || !PRO_DATA_FETCHED_AT || (Date.now() - PRO_DATA_FETCHED_AT > PRO_DATA_MAX_AGE_MS);
+}
 
  async function fetchProData() {
   if (!supa) {
@@ -285,12 +296,15 @@
  // Ensure Pro data is loaded before rendering Pro-gated routes
  // Call this at the start of any route that needs PRO_DATA
  async function ensureProData() {
-  if (PRO_DATA) return; // Already loaded
+  if (PRO_DATA && !proDataStale()) return; // Loaded and still fresh
   // Don't check isPro() here - auth may not have completed yet
   // fetchProData() will return null if no valid session
   try {
    const data = await fetchProData();
-   if (data) PRO_DATA = data;
+   if (data) {
+    PRO_DATA = data;
+    PRO_DATA_FETCHED_AT = Date.now();
+   }
   } catch (e) {
    console.error("ensureProData failed:", e);
   }
@@ -378,11 +392,15 @@
   // The payload is a daily snapshot and is fetched once per page load;
   // auth re-checks (token events, tab wake) must not re-download it.
   // ensureProData() keeps its own guarded fetch for routes that need it.
-  // Never clear existing PRO_DATA on failure, only update on success
-  if (proVerified === true && !PRO_DATA) {
+  // Never clear existing PRO_DATA on failure, only update on success.
+  // Refetch when missing OR stale, so a tab/PWA session that wakes after
+  // the daily rebuild (or after new coverage data lands) does not keep
+  // rendering the vintage it first fetched.
+  if (proVerified === true && (!PRO_DATA || proDataStale())) {
    const newData = await fetchProData();
    if (newData) {
     PRO_DATA = newData;
+    PRO_DATA_FETCHED_AT = Date.now();
    }
    // If API fetch failed but we have cached data, keep it
    // If API fetch failed and no cached data, PRO_DATA stays as-is (may be null)
@@ -401,8 +419,8 @@
     render();
     window._proRenderTimeout = null;
    }, 300);
-  } else if (!prevProData && PRO_DATA) {
-   render(); // Pro data newly arrived, re-render to reveal Pro content
+  } else if (prevProData !== PRO_DATA && PRO_DATA) {
+   render(); // Pro data newly arrived or refreshed, re-render to reveal Pro content
   }
   // Re-run visual embedding after auth completes (for analysis route)
   // This ensures visuals load even if PRO_DATA wasn't ready on first render
@@ -462,6 +480,7 @@
   } catch (e) {}
   authUser = null; proVerified = false; isAdmin = false;
   PRO_DATA = null; // Clear Pro data on explicit logout
+  PRO_DATA_FETCHED_AT = 0;
   setPro(false);
   document.getElementById("modal-root").innerHTML = "";
   updateAuthBtn();

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cascadia-pwa-cache-v5';
+const CACHE_NAME = 'cascadia-pwa-cache-v6';
 // Precache only the PWA manifest. The HTML shell and app code are deliberately
 // NOT precached: v2 precached '/' and '/index.html' and served them cache-first
 // under a cache name that never changed, so returning visitors (notably the
@@ -38,8 +38,42 @@ self.addEventListener('fetch', event => {
     );
     return;
   }
-  // For data.js and API calls, use network-first (always get fresh data)
-  if (url.pathname.endsWith('data.js') || url.pathname.startsWith('/api/')) {
+  // API calls (notably /api/pro-data, the Pro payload): network-first, and
+  // the offline cache fallback is AGE-BOUNDED. Before v6 the fallback served
+  // whatever response happened to be cached, however old: a client whose
+  // last cached payload predated a ticker's Pro data (e.g. LITE, added
+  // 2026-10-20) rendered that ticker's Pro sections as "not available"
+  // while a fresh data.js gave the ticker a page. A cached API response
+  // older than 24h is worse than an error the app can recover from, so it
+  // is not served. Only successful GET responses are cached.
+  if (url.pathname.startsWith('/api/') && event.request.method === 'GET') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+          }
+          return response;
+        })
+        .catch(async () => {
+          const cached = await caches.match(event.request);
+          if (cached) {
+            const servedAt = Date.parse(cached.headers.get('date') || '');
+            if (!isNaN(servedAt) && (Date.now() - servedAt) < 24 * 60 * 60 * 1000) {
+              return cached;
+            }
+          }
+          return new Response(JSON.stringify({ error: 'offline' }), {
+            status: 504,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        })
+    );
+    return;
+  }
+  // For data.js, use network-first (always get fresh data)
+  if (url.pathname.endsWith('data.js')) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
