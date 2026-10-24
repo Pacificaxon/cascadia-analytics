@@ -14959,9 +14959,25 @@ function volSurfaceHtml() {
   h += '<div class="card" style="padding:28px;border:2px solid #d9a441;position:relative;">' +
    '<div style="position:absolute;top:-14px;right:20px;background:#d9a441;color:#0a0f0a;font-size:11px;font-weight:800;padding:4px 12px;border-radius:12px;letter-spacing:1px;">MOST POPULAR</div>' +
    '<div style="font-size:13px;font-weight:700;letter-spacing:2px;color:#d9a441;margin-bottom:8px;">PRO</div>' +
-   '<div style="font-size:36px;font-weight:800;color:#f5f7fa;margin-bottom:4px;">$19<span style="font-size:16px;font-weight:400;color:#dbe5f1;">/month</span></div>' +
-   '<div style="font-size:13px;color:#dbe5f1;opacity:0.7;margin-bottom:20px;">7-day free trial · $19/mo billed monthly, or $190/yr billed annually (two months free) · cancel anytime</div>' +
-   '<ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#dbe5f1;">' +
+   '<div style="display:flex;border:1px solid #3a4759;border-radius:10px;overflow:hidden;margin-bottom:14px;">' +
+   '<button type="button" id="pricing-bill-monthly" style="flex:1;padding:10px;border:0;cursor:pointer;font-size:14px;font-weight:700;background:#d9a441;color:#0a0f0a;">Monthly</button>' +
+   '<button type="button" id="pricing-bill-annual" style="flex:1;padding:10px;border:0;cursor:pointer;font-size:14px;font-weight:700;background:transparent;color:#dbe5f1;">Annual · Save $38</button>' +
+   '</div>' +
+   '<div id="pricing-pro-price" style="font-size:36px;font-weight:800;color:#f5f7fa;margin-bottom:4px;">$19<span style="font-size:16px;font-weight:400;color:#dbe5f1;">/month</span></div>' +
+   '<div id="pricing-pro-sub" style="font-size:13px;color:#dbe5f1;opacity:0.7;margin-bottom:16px;">7-day free trial · billed monthly · cancel anytime</div>';
+  // Single checkout button directly under the price, above the feature
+  // list, so the annual option is visible without scrolling. Its
+  // destination and trial terms follow the billing toggle below.
+  if (proActive) {
+   h += '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;text-decoration:none;">Manage subscription</a>';
+  } else if (authUser) {
+   h += '<a id="pricing-cta" class="cta-btn" style="display:block;text-align:center;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Start 7-day free trial</a>';
+   h += '<p id="pricing-cta-terms" style="text-align:center;font-size:13px;color:#dbe5f1;opacity:0.7;margin-top:10px;">$0 due today. Your card is charged $19/mo starting day 8 unless you cancel before the trial ends.</p>';
+  } else {
+   h += '<button class="btn" id="pricing-login" style="width:100%;">Log in / Sign up to subscribe</button>';
+   h += '<p id="pricing-cta-terms" style="text-align:center;font-size:13px;color:#dbe5f1;opacity:0.7;margin-top:10px;">7-day free trial available on monthly and annual billing.</p>';
+  }
+  h += '<ul style="list-style:none;padding:0;margin:20px 0 0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#dbe5f1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
    '<li>✓ All ' + riskModelCount() + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Liquidity Stress, Macro Regime, with readings, charts, history, and plain-English explainers</li>' +
    '<li>✓ Global Macro suite: Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, and Sovereign Credit Fragmentation (BTP/Bund and OAT/Bund)</li>' +
@@ -15006,16 +15022,6 @@ function volSurfaceHtml() {
    '<li style="color:#d9a441;">✓ <b>Legacy price lock</b>, your $19/mo rate is locked in. If prices increase in the future, you keep paying $19 as long as your subscription stays active.</li>' +
    "</ul>";
 
-  if (proActive) {
-   h += '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-top:20px;text-decoration:none;">Manage subscription</a>';
-  } else if (authUser) {
-   h += '<a class="cta-btn" style="display:block;text-align:center;margin-top:20px;" href="' + esc(UPGRADE_URL) + '" target="_blank" rel="noopener">Start 7-day free trial</a>';
-   h += '<p style="text-align:center;font-size:13px;color:#dbe5f1;opacity:0.7;margin-top:10px;">$0 due today. Your card is charged $19/mo starting day 8 unless you cancel before the trial ends.</p>';
-   h += '<a class="btn" style="display:block;text-align:center;margin-top:14px;text-decoration:none;" href="' + esc(UPGRADE_URL_ANNUAL) + '" target="_blank" rel="noopener">Start 7-day free trial, annual $190/yr</a>';
-   h += '<p style="text-align:center;font-size:13px;color:#dbe5f1;opacity:0.7;margin-top:10px;">Annual is two months free against the monthly rate: $190 a year instead of $228. $0 due today; your card is charged $190/yr starting day 8 unless you cancel before the trial ends.</p>';
-  } else {
-   h += '<button class="btn" id="pricing-login" style="width:100%;margin-top:20px;">Log in / Sign up to subscribe</button>';
-  }
   h += "</div></div>";
 
   // Price lock terms
@@ -15039,6 +15045,37 @@ function volSurfaceHtml() {
 
   const loginBtn = document.getElementById("pricing-login");
   if (loginBtn) loginBtn.addEventListener("click", () => { close(); showProModal(); });
+
+  // Billing toggle: price, subline, checkout link, and trial terms all
+  // follow the selected period. Monthly is the default. Logged-out
+  // visitors see the toggle and both prices, but their button only opens
+  // login, so their generic trial line is left alone.
+  const billMonthly = document.getElementById("pricing-bill-monthly");
+  const billAnnual = document.getElementById("pricing-bill-annual");
+  if (billMonthly && billAnnual) {
+   const priceEl = document.getElementById("pricing-pro-price");
+   const subEl = document.getElementById("pricing-pro-sub");
+   const cta = document.getElementById("pricing-cta");
+   const termsEl = document.getElementById("pricing-cta-terms");
+   const setBilling = (annual) => {
+    billMonthly.style.background = annual ? "transparent" : "#d9a441";
+    billMonthly.style.color = annual ? "#dbe5f1" : "#0a0f0a";
+    billAnnual.style.background = annual ? "#d9a441" : "transparent";
+    billAnnual.style.color = annual ? "#0a0f0a" : "#dbe5f1";
+    if (priceEl) priceEl.innerHTML = annual
+     ? '$190<span style="font-size:16px;font-weight:400;color:#dbe5f1;">/year</span>'
+     : '$19<span style="font-size:16px;font-weight:400;color:#dbe5f1;">/month</span>';
+    if (subEl) subEl.textContent = annual
+     ? "7-day free trial · $15.83 a month, billed annually · two months free · cancel anytime"
+     : "7-day free trial · billed monthly · cancel anytime";
+    if (cta) cta.href = annual ? UPGRADE_URL_ANNUAL : UPGRADE_URL;
+    if (termsEl && cta) termsEl.textContent = annual
+     ? "$0 due today. Your card is charged $190/yr starting day 8 unless you cancel before the trial ends."
+     : "$0 due today. Your card is charged $19/mo starting day 8 unless you cancel before the trial ends.";
+   };
+   billMonthly.addEventListener("click", () => setBilling(false));
+   billAnnual.addEventListener("click", () => setBilling(true));
+  }
  }
 
  window.CA = { nav, isPro, cascadiaScore };
