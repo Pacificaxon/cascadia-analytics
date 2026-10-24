@@ -411,6 +411,20 @@ def main():
         for sc in ("bear", "base", "bull"):
             p = scenarios.get(sc, {}).get("path")
             if p and len(p) >= 2:
+                # Re-anchor (2026-10-23, C2 remainder, Justin-approved):
+                # the series opens with the model-date point at the
+                # scenario target, per the documented intent of this chart
+                # and of the note generator's fair-value table. The
+                # extractor's opening point drifts ~0.8% from the published
+                # manifest vintage as live workbook inputs move, which both
+                # misstated the chart against the page's own printed targets
+                # and failed the note generator's fair-value-path gate. The
+                # published manifest target is authoritative; only the
+                # opening anchor moves to it, the rest of the path (and every
+                # published target and rating) is untouched.
+                anchor = m.get(sc)
+                if isinstance(anchor, (int, float)):
+                    p = [[p[0][0], anchor]] + [list(pt) for pt in p[1:]]
                 fv_paths[sc] = p
         if fv_paths:
             t["fv_paths"] = fv_paths
