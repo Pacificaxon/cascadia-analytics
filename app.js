@@ -7162,14 +7162,21 @@ route("alerts", function () {
   h += '<div class="card" id="tk-sec-multiples" data-toc="Valuation Multiples"><h3>Valuation</h3><div class="section-sub">Market cap, enterprise value and trading multiples.</div>' +
    valuationHtml(t) + "</div>";
 
-  // Sum of the parts (Pro-gated)
-  if (t.sotp) {
+  // Sum of the parts (Pro-gated): the shell renders for every tier on
+  // tickers with an SOTP build (see has_sotp in build.py). Free users see
+  // the standard Pro teaser with no values, Pro users see the table, and
+  // the chip exists from first paint. Gating the shell itself on t.sotp
+  // hid the section and its chip from free users entirely, because free
+  // records never carry the Pro-merged sotp field. The description read
+  // is null guarded: for a free user t.sotp is undefined, so the scenario
+  // description is chosen by ticker (AXON keeps its own description).
+  if (t.has_sotp || t.sotp) {
    h += '<div class="section" id="tk-sec-sotp" data-toc="Sum of the Parts"><div class="section-title">Sum of the Parts</div>';
    h += gated("Sum of the Parts, Pro",
-    t.sotp.kind === "scenario"
+    (t.sotp ? t.sotp.kind === "scenario" : tk !== "AXON")
      ? t.name + " valued segment by segment, each business on its own operating base and scenario multiple, bridged through the balance sheet to equity value per share."
      : "Axon's five-segment bottom-up build: 2036 revenue and EBITDA by business line.",
-    sotpHtml(t));
+    t.sotp ? sotpHtml(t) : '<p style="color:var(--muted)">No sum of the parts data available for this ticker.</p>');
    h += "</div>";
   }
 

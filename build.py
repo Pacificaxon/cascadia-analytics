@@ -464,6 +464,13 @@ def main():
                 sotp_map[tk] = load(os.path.join(HERE, "axon_sotp_detail.json"))
             except FileNotFoundError:
                 sotp_map[tk] = AXON_SOTP
+        # Free-bundle presence flag (SOTP teaser fix, 2026-10-24): the
+        # ticker route renders the SOTP shell from this flag so free users
+        # see the standard Pro teaser; the segment builds themselves stay
+        # Pro-only in sotp_map above. A boolean leaks no SOTP values, and
+        # future SOTP tickers pick the flag up automatically.
+        if tk in sotp_map:
+            t["has_sotp"] = True
         # Cascadia Score (finding C1): computed here from the full factor
         # set; the bundle ships the score, never the computation.
         t["cascadia_score"] = _cascadia_score(
