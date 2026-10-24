@@ -4,6 +4,7 @@
    "date": "2026-10-18",
    "excerpt": "Municipal moratoriums on data center development are not the structural headwind the market fears. The risk is overstated.",
    "id": "scarcity-premium-data-centers",
+   "tickers": ["DLR", "EQIX", "IRM", "MSFT", "AMZN", "GOOGL"],
    "sections": [
     {
      "body": "The prevailing market anxiety surrounding municipal moratoriums on data center development represents a fundamental mispricing of risk. Rather than a structural headwind that impairs sector growth, these regulatory pauses act as a manageable friction that ultimately entrenches the market power of incumbent operators. We believe regulatory barriers are inadvertently creating an economic moat, pricing out undercapitalized entrants while supercharging the yield on existing operational compute.",
@@ -35,6 +36,7 @@
   },
   {
    "id": "axon-flock-backlash-sotp",
+   "tickers": ["AXON"],
    "title": "How Much Does the Flock Backlash Actually Cost Axon? A Full Sum-of-the-Parts",
    "date": "2026-10-14",
    "excerpt": "An 11-year, five-segment bottom-up build: $3.7B in 2026 to $29.5B in 2036, with a quantified $732M haircut for the surveillance backlash. The backlash costs low-single-digit percent of terminal value. It does not change the investment case.",
@@ -73,6 +75,7 @@
    "date": "2026-10-20",
    "excerpt": "We are operating in a late-cycle transitional regime defined by severe index concentration, persistent fiscal dominance, and a mechanically constrained liquidity environment. Our composite models point to a structural migration toward Elevated Vulnerability.",
    "id": "regime-shift-fiscal-dominance",
+   "tickers": [],
    "sections": [
     {
      "body": "We are currently operating in a late-cycle transitional regime characterized by severe index concentration, persistent fiscal dominance, and a mechanically constrained liquidity environment. The prevailing macro narrative assumes a seamless transition into a disinflationary \"Goldilocks\" expansion, pricing in immaculate central bank easing. Our internal composite models, however, indicate a structural migration toward Elevated Vulnerability. The market is levitating on a historically narrow breadth of mega-cap technology and AI infrastructure plays, while underlying cross-asset volatility, particularly in foreign exchange carry trades and sovereign rate term premiums, is flashing systemic stress.",
@@ -135,6 +138,7 @@
    "date": "2026-10-20",
    "excerpt": "Two emerging market internet ecosystems run the same three-engine blueprint on opposite sides of the Pacific. Sea Limited has converted that blueprint into profit and credit discipline, while MercadoLibre is spending margin to buy structural dominance. Our models rate both names Buy, and the choice between them comes down to which risk an investor would rather own.",
    "id": "se-vs-meli-emerging-market-ecosystems",
+   "tickers": ["SE", "MELI"],
    "sections": [
     {
      "heading": "Executive Summary",
@@ -348,6 +352,7 @@
   },
   {
    "id": "week-ahead-2026-10-21",
+   "tickers": [],
    "title": "Week Ahead: October 21, 2026",
    "date": "2026-10-21",
    "excerpt": "The week ahead will be defined by the interplay between persistent inflationary pressures and a Federal Reserve that remains hawkish despite modest near-term disinflation in refined energy prices. Cru...",
@@ -385,6 +390,7 @@
   },
   {
    "id": "france-leverage-buildout-survival",
+   "tickers": ["META", "DLR", "EQIX", "VST"],
    "title": "The AI Buildout Survives: France, Leverage, and the Vulture Opportunity",
    "date": "2026-10-22",
    "excerpt": "France is repricing at the core of the euro curve, with the spot OAT to Bund spread at 173.9 basis points, and our credit differential sits in its widest tier at plus 2.24 while equity volatility stays cheap. Our desk puts five year buildout failure at 10 percent on a strict definition and prices a 2022 style bear market at roughly 20 percent. The opportunity sits with the survivors. The hyperscalers are the vultures of this cycle, positioned to buy distressed capacity, power, and shells at creditor set prices, and Meta is the structural beneficiary, an outright Buy on our values whose open weight strategy deflates the labs while its own buildout is funded from advertising cash flow.",
@@ -467,6 +473,7 @@
   },
   {
    "id": "terminal-spread",
+   "tickers": ["AXON"],
    "title": "Terminal Spread: The Two Numbers That Decide Every Valuation",
    "date": "2026-10-23",
    "excerpt": "Every discounted cash flow model ends the same way. The analyst forecasts ten years of cash flows in detail, argues about each one, and then capitalizes the final year into a terminal value with a single division. The numerator of that division gets the attention. The denominator decides the answer.",
@@ -538,6 +545,7 @@
   },
   {
    "id": "axon-price-target-update-2026-10-24",
+   "tickers": ["AXON"],
    "title": "Axon Price Target Update: Base $688.19 as the Flock Analysis Re-Prices",
    "date": "2026-10-24",
    "excerpt": "The updated Axon model reads Bear $230.18, Base $688.19, Bull $845.36, and Blended $612.98, with a Buy rating. The Flock backlash still costs about $13 to $14 per share in present value, roughly 2.0% of the Base target. It does not change the investment case.",
@@ -574,6 +582,7 @@
   },
   {
    "id": "se-trade-idea-2026-10-24",
+   "tickers": ["SE"],
    "title": "Sea Limited Reversal Idea",
    "date": "2026-10-24",
    "excerpt": "We see $SE as a contrarian reversal long, not as an investment case. The stock has fallen 24.5 percent across the 20 closes in our trend file, from $98.91 to $74.63 at the October 23 close, and the decline has now carried it through every support level on our technical panel and below its 52 week low.",

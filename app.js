@@ -14442,13 +14442,14 @@ function volSurfaceHtml() {
      h += '</tbody></table></div>';
     }
    });
-   // Pro CTA (free users only) - links to covered ticker pages
-   if (!isPro()) {
+   // Pro CTA (free users only) - links to this memo's own subject tickers
+   const memoTickers = (memo.tickers || []).filter((tk) => typeof tk === "string" && tk);
+   if (!isPro() && memoTickers.length) {
     h += '<div style="background:#101620;border:1px solid #d9a441;border-radius:12px;padding:24px;margin-top:32px;text-align:center;">';
     h += '<div style="font-size:16px;font-weight:700;color:#d9a441;margin-bottom:8px;">Explore the coverage</div>';
     h += '<div style="font-size:14px;color:#dbe5f1;margin-bottom:16px;">Deep dive into the DCF models behind this thesis:</div>';
     h += '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">';
-    ["DLR", "EQIX", "IRM", "MSFT", "AMZN", "GOOGL"].forEach((tk) => {
+    memoTickers.forEach((tk) => {
      h += '<a href="#/ticker/' + tk + '" class="btn" style="text-decoration:none;">' + tk + '</a>';
     });
     h += '</div></div>';
