@@ -7109,14 +7109,16 @@ route("alerts", function () {
    ).join("") + "</div>";
   // Discount Rate Sensitivity (Pro): build-time grid of model outputs
   // only (ERP / 10-year deltas around the published-target inputs).
-  // Renders only for tickers with a validated grid; free users see the
-  // standard Pro teaser with no numbers.
-  if (t.sensitivity && t.sensitivity.scenarios) {
-   h += '<div class="card" id="tk-sec-sensitivity" data-toc="Discount Rate Sensitivity">' +
-    gated("Discount Rate Sensitivity, Pro",
-     "Move the model's discount-rate inputs and watch the price target respond.",
-     '<div id="sens-panel"></div>') + "</div>";
-  }
+  // Shell renders for every tier like the other Pro sections (GEX,
+  // skew, FCF): free users see the standard Pro teaser with no numbers,
+  // Pro users see the panel, and a ticker without a validated grid
+  // shows a fallback instead of a blank card.
+  h += '<div class="card" id="tk-sec-sensitivity" data-toc="Discount Rate Sensitivity">' +
+   gated("Discount Rate Sensitivity, Pro",
+    "Move the model's discount-rate inputs and watch the price target respond.",
+    (t.sensitivity && t.sensitivity.scenarios)
+     ? '<div id="sens-panel"></div>'
+     : '<p style="color:var(--muted)">No sensitivity data available for this ticker.</p>') + "</div>";
   // Table of contents bar: populated by initTickerToc() after render by
   // scanning the page for [data-toc] sections (see the TOC convention note
   // above initTickerToc). Empty until then; hidden if no sections qualify.
