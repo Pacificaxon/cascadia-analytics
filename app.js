@@ -279,6 +279,7 @@ function proDataStale() {
    if (sections.axon_altdata) flat.axon_altdata = sections.axon_altdata;
    if (sections.detailed_breakdowns) flat.detailed_breakdowns = sections.detailed_breakdowns;
    if (sections.sotp) flat._sotp = sections.sotp;
+   if (sections.sensitivity) flat._sensitivity = sections.sensitivity;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -334,6 +335,7 @@ function proDataStale() {
      if (PRO_DATA._fcf_projections[tk]) merged[tk].fcf = PRO_DATA._fcf_projections[tk];
      // SOTP segment builds ship only in the Pro payload (finding C3).
      if (PRO_DATA._sotp && PRO_DATA._sotp[tk]) merged[tk].sotp = PRO_DATA._sotp[tk];
+     if (PRO_DATA._sensitivity && PRO_DATA._sensitivity[tk]) merged[tk].sensitivity = PRO_DATA._sensitivity[tk];
     }
     return merged;
    }
@@ -7105,6 +7107,16 @@ route("alerts", function () {
     '<div class="tkx-srow"><span class="' + cls(c[3]) + '">' + fmtPct(c[3]) + " vs current</span>" +
     (endYear ? '<span class="tkx-ends">Ends ' + endYear + "</span>" : "") + "</div></div>"
    ).join("") + "</div>";
+  // Discount Rate Sensitivity (Pro): build-time grid of model outputs
+  // only (ERP / 10-year deltas around the published-target inputs).
+  // Renders only for tickers with a validated grid; free users see the
+  // standard Pro teaser with no numbers.
+  if (t.sensitivity && t.sensitivity.scenarios) {
+   h += '<div class="card" id="tk-sec-sensitivity" data-toc="Discount Rate Sensitivity">' +
+    gated("Discount Rate Sensitivity, Pro",
+     "Move the model's discount-rate inputs and watch the price target respond.",
+     '<div id="sens-panel"></div>') + "</div>";
+  }
   // Table of contents bar: populated by initTickerToc() after render by
   // scanning the page for [data-toc] sections (see the TOC convention note
   // above initTickerToc). Empty until then; hidden if no sections qualify.
@@ -7369,7 +7381,7 @@ route("alerts", function () {
   initTickerToc();
   drawPriceChart(t);
   drawFcfChart(t);
-  if (isPro()) { initSandbox(tk, t); loadAgencyRisk(tk); if (tk === "AXON") wireAxonAltSim(); }
+  if (isPro()) { initSandbox(tk, t); initSensitivity(tk, t); loadAgencyRisk(tk); if (tk === "AXON") wireAxonAltSim(); }
   wireEarningsTabs(tk);
   wireBreakdownTabs(tk);
   wireFinTabs(tk);
@@ -9405,6 +9417,90 @@ route("alerts", function () {
   a.href = URL.createObjectURL(new Blob([content], { type }));
   a.download = name; a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+ }
+
+ /* ---------- discount rate sensitivity (Pro) ---------- */
+ // Build-time grid of model outputs only: grid[rfIdx][erpIdx] holds the
+ // target at that (10-year delta, ERP delta) pair, spreads the terminal
+ // spread. Sliders snap to grid points, so every displayed value is a
+ // computed model output, never an interpolation. The grid center is the
+ // published target by construction. No model inputs ship with it.
+ function initSensitivity(tk, t) {
+  const wrap = document.getElementById("sens-panel");
+  const sens = t.sensitivity;
+  if (!wrap || !sens || !sens.scenarios) return;
+  const DELTAS = [-100, -75, -50, -25, 0, 25, 50, 75, 100];
+  const SCEN = [["bear", "Bear"], ["base", "Base"], ["bull", "Bull"]];
+  let scen = "base";
+  let dRf = 0, dErp = 0;
+  const bp = (v) => (v === 0 ? "0 bp" : (v > 0 ? "+" : "") + v + " bp");
+  const usd = (v) => (v == null ? "—" : "$" + v.toFixed(2));
+  const btnStyle = (active) => "padding:7px 14px;border-radius:6px;border:1px solid " +
+   (active ? "#d9a441" : "#3a4759") + ";background:" + (active ? "#2a2113" : "transparent") +
+   ";color:" + (active ? "#d9a441" : "#dbe5f1") + ";cursor:pointer;font-size:13px;font-weight:600;";
+  wrap.innerHTML =
+   "<h3>Discount Rate Sensitivity</h3>" +
+   '<div class="section-sub">How the price target moves when the discount-rate inputs move. ' +
+   "Sliders show changes from the model's published-target inputs, in basis points.</div>" +
+   '<div style="display:flex;gap:8px;margin:12px 0;" id="sens-toggle">' +
+   SCEN.map(([k, label]) => '<button type="button" id="sens-sc-' + k + '">' + label + "</button>").join("") +
+   "</div>" +
+   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0;">' +
+   '<div><label style="font-size:13px;color:var(--muted)">10-year yield change <span id="sens-rf-v" style="color:#dbe5f1;font-weight:700;">0 bp</span></label>' +
+   '<input type="range" id="sens-rf" min="-100" max="100" step="25" value="0" style="width:100%;"></div>' +
+   '<div><label style="font-size:13px;color:var(--muted)">ERP change <span id="sens-erp-v" style="color:#dbe5f1;font-weight:700;">0 bp</span></label>' +
+   '<input type="range" id="sens-erp" min="-100" max="100" step="25" value="0" style="width:100%;"></div>' +
+   "</div>" +
+   '<div style="display:flex;gap:24px;flex-wrap:wrap;margin:14px 0;">' +
+   '<div><div style="font-size:12px;color:var(--muted)">ADJUSTED TARGET</div><div id="sens-tgt" style="font-size:26px;font-weight:800;color:#d9a441;">—</div></div>' +
+   '<div><div style="font-size:12px;color:var(--muted)" id="sens-chg-l">CHANGE VS PUBLISHED BASE</div><div id="sens-chg" style="font-size:20px;font-weight:700;">—</div></div>' +
+   '<div><div style="font-size:12px;color:var(--muted)">IMPLIED UPSIDE VS CURRENT</div><div id="sens-up" style="font-size:20px;font-weight:700;">—</div></div>' +
+   '<div><div style="font-size:12px;color:var(--muted)">TERMINAL SPREAD</div><div id="sens-spread" style="font-size:20px;font-weight:700;">—</div></div>' +
+   "</div>" +
+   '<div style="margin-top:10px;"><button type="button" class="btn secondary" id="sens-reset">Reset to published inputs</button></div>' +
+   '<div style="font-size:12px;color:var(--muted);line-height:1.6;margin-top:14px;">' +
+   "Market context as of " + esc(sens.as_of || "") + ": 10-year " +
+   (sens.live_rf != null ? (sens.live_rf * 100).toFixed(2) + "%" : "—") + ", ERP " +
+   (sens.live_erp != null ? (sens.live_erp * 100).toFixed(2) + "%" : "—") +
+   ". These are current market values, not the model's published-target inputs.<br>" +
+   "Each slider moves one input while the other is held fixed. In the live model the ERP is solved over the same spot yield, " +
+   "so the two move together in practice. This panel isolates each leg to show its effect.<br>" +
+   "Grid computed " + esc(sens.as_of || "") + " from the live model. Every value shown is a computed model output at that input pair. " +
+   "The center of the grid is the published target.</div>";
+  const $ = (id) => document.getElementById(id);
+  function render() {
+   const g = sens.scenarios[scen];
+   if (!g) return;
+   const ri = DELTAS.indexOf(dRf), ci = DELTAS.indexOf(dErp);
+   const tgt = g.grid[ri][ci];
+   const spread = g.spreads[ri][ci];
+   const pub = t[scen];
+   const chg = (tgt != null && pub != null) ? tgt - pub : null;
+   const chgPct = (chg != null && pub) ? (chg / pub) * 100 : null;
+   const up = (tgt != null && t.price) ? (tgt / t.price - 1) * 100 : null;
+   $("sens-tgt").textContent = usd(tgt);
+   $("sens-chg").textContent = chg == null ? "—" :
+    ((chg >= 0 ? "+" : "") + "$" + chg.toFixed(2) + " (" + (chgPct >= 0 ? "+" : "") + chgPct.toFixed(1) + "%)");
+   $("sens-chg").style.color = chg == null ? "" : (chg >= 0 ? "#4dd2aa" : "#f37d83");
+   $("sens-up").textContent = up == null ? "—" : ((up >= 0 ? "+" : "") + up.toFixed(1) + "%");
+   $("sens-up").style.color = up == null ? "" : (up >= 0 ? "#4dd2aa" : "#f37d83");
+   $("sens-spread").textContent = spread == null ? "—" :
+    ((spread * 100).toFixed(2) + "% (" + (g.spreads[4][4] * 100).toFixed(2) + "% at published inputs)");
+   $("sens-chg-l").textContent = "CHANGE VS PUBLISHED " + scen.toUpperCase();
+   SCEN.forEach(([k]) => { const b = $("sens-sc-" + k); if (b) b.style.cssText = btnStyle(k === scen); });
+  }
+  SCEN.forEach(([k]) => {
+   $("sens-sc-" + k).addEventListener("click", () => { scen = k; render(); });
+  });
+  $("sens-rf").addEventListener("input", (e) => { dRf = Number(e.target.value); $("sens-rf-v").textContent = bp(dRf); render(); });
+  $("sens-erp").addEventListener("input", (e) => { dErp = Number(e.target.value); $("sens-erp-v").textContent = bp(dErp); render(); });
+  $("sens-reset").addEventListener("click", () => {
+   scen = "base"; dRf = 0; dErp = 0;
+   $("sens-rf").value = "0"; $("sens-erp").value = "0";
+   $("sens-rf-v").textContent = "0 bp"; $("sens-erp-v").textContent = "0 bp";
+   render();
+  });
+  render();
  }
 
  /* ================= SCREENER (Pro) ================= */

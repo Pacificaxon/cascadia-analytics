@@ -706,6 +706,12 @@ def main():
     pro_sections["fcf_projections"] = fcf_projections
     # Sum-of-the-parts segment builds (finding C3): Pro payload only.
     pro_sections["sotp"] = sotp_map
+    # Discount Rate Sensitivity grids (Pro only): build-time grids of
+    # model outputs (targets + terminal spreads per ERP / 10-year delta).
+    # No model internals ship; grids validate against published targets
+    # at build time (see gex-tracker/build_sensitivity_grids.py).
+    _sens = load(os.path.join(MR, "sensitivity_grids.json"))
+    pro_sections["sensitivity"] = _sens if isinstance(_sens, dict) else {}
 
     # Real yield shock 0-100 risk score from 10Y TIPS (higher = more duration risk).
     # Continuous linear rescale; hard floor 1 (no 0 or negative scores).
