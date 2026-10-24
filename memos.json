@@ -233,7 +233,7 @@
     },
     {
      "heading": "Sea Limited, Sum of the Parts",
-     "body": "We also value Sea segment by segment, applying Bear, Base, and Bull multiples to each operating base and bridging through net cash. The build produces $115.57 per share in the Bear case, $175.42 in the Base case, and $256.52 in the Bull case, against an $80.43 spot reference on 638.2 million diluted shares. The Base case sums to $111.95 billion of equity value and sits $58.37, or 49.9 percent, above our $117.05 DCF Base target. Shopee carries the build at 0.43 times annualized GMV, SeaMoney earns 2.00 times its loan book on the strength of its 1.0 percent late-stage delinquency, and Garena is held at 8.5 times trailing adjusted EBITDA. The table below shows the Base case build.",
+     "body": "We also value Sea segment by segment, applying Bear, Base, and Bull multiples to each operating base and bridging through net cash. The restated build, as of October 24, 2026, produces $51.98 per share in the Bear case, $67.14 in the Base case, and $97.36 in the Bull case, against a $74.63 spot reference on 638.2 million diluted shares. The Base case sums to $42.85 billion of equity value and sits $12.11, or 15.3 percent, below our $79.25 DCF Base target. Shopee is valued on profitability rather than volume, at 19.15 times trailing adjusted EBITDA of $867.105 million in the Base case, from a peer median that replaces the old volume multiple. SeaMoney earns 0.32 times its on-book loan portfolio of $10.0 billion, excluding $1.1 billion of off-book loans, and Garena is held at 9.73 times trailing adjusted EBITDA of $1,833.057 million, measured on the definition in effect through the second quarter. A corporate deduction of $1.67 billion covers the trailing drag from Other Services and unallocated costs. The table below shows the Base case build.",
      "table": {
       "headers": [
        "Segment",
@@ -246,27 +246,35 @@
       "rows": [
        [
         "Shopee (E-Commerce)",
-        "$153.2B annualized GMV",
-        "0.43x EV/GMV",
-        "$65.88B",
-        "$103.22",
-        "58.8%"
+        "$867.105M adj. EBITDA, trailing twelve months",
+        "19.15x EV/adj. EBITDA",
+        "$16.61B",
+        "$26.02",
+        "38.75%"
        ],
        [
         "SeaMoney / Monee (Digital Financial Services)",
-        "$11.1B loan book",
-        "2.00x loan book",
-        "$22.2B",
-        "$34.79",
-        "19.8%"
+        "$10.0B on-book loan portfolio",
+        "0.32x loan book",
+        "$3.20B",
+        "$5.01",
+        "7.47%"
        ],
        [
         "Garena (Digital Entertainment)",
-        "$2B adj. EBITDA, trailing twelve months",
-        "8.50x EV/adj. EBITDA",
-        "$17B",
-        "$26.64",
-        "15.2%"
+        "$1,833.057M adj. EBITDA, trailing twelve months",
+        "9.73x EV/adj. EBITDA",
+        "$17.84B",
+        "$27.95",
+        "41.63%"
+       ],
+       [
+        "Corporate and Other",
+        "-$0.17B trailing drag",
+        "9.73x EV/adj. EBITDA",
+        "-$1.67B",
+        "-$2.62",
+        "-3.90%"
        ],
        [
         "Net cash",
@@ -274,22 +282,22 @@
         "n/a",
         "$6.88B",
         "$10.78",
-        "6.1%"
+        "16.05%"
        ],
        [
         "Total equity value",
         "Sum of the parts",
         "n/a",
-        "$111.95B",
-        "$175.42",
-        "100.0%"
+        "$42.85B",
+        "$67.14",
+        "100.00%"
        ]
       ]
      }
     },
     {
      "heading": "MercadoLibre, Sum of the Parts",
-     "body": "The same build for MercadoLibre produces $1,204.77 per share in the Bear case, $2,315.48 in the Base case, and $3,980.64 in the Bull case, against a $1,879.50 spot reference on 50.7 million diluted shares. The Base case sums to $117.39 billion of equity value and sits $488.72, or 17.4 percent, below our $2,804.20 DCF Base target. Commerce and Envios take 0.80 times annualized GMV, Mercado Pago takes 0.08 times annualized payment volume, and Mercado Credito takes 1.30 times its credit portfolio. The balance sheet bridge then subtracts $6.4 billion of net debt, which the segment builds have to overcome before equity value reaches shareholders. The table below shows the Base case build.",
+     "body": "The same restated build, as of October 24, 2026, for MercadoLibre produces $1,104.82 per share in the Bear case, $1,601.24 in the Base case, and $2,097.71 in the Bull case, against a $1,810.15 spot reference on 50.697 million diluted shares. The Base case sums to $81.18 billion of equity value and sits $850.19, or 34.7 percent, below our $2,451.43 DCF Base target. Commerce and Envios take 0.7704 times trailing GMV of $77.326 billion, Mercado Pago takes 0.04786 times trailing payment volume of $265.730 billion after a maximum-bound haircut for on-platform volume, and Mercado Credito takes 1.27444 times its net credit portfolio of $11.996 billion, the midpoint of a two-peer lender set. Credito scenario multiples are the range ends and midpoint of that set, 0.33241 times in the Bear case and 2.21646 times in the Bull case, Nu Holdings and Inter and Co, not percentiles, and the set is dispersed enough that the midpoint calibrates the middle of the span rather than a tight market price. The balance sheet bridge then subtracts $6.4 billion of net debt, which the segment builds have to overcome before equity value reaches shareholders. The table below shows the Base case build.",
      "table": {
       "headers": [
        "Segment",
@@ -302,50 +310,50 @@
       "rows": [
        [
         "Commerce & Envios (Marketplace & Logistics)",
-        "$87.7B annualized GMV",
-        "0.80x EV/GMV",
-        "$70.16B",
-        "$1,383.97",
-        "59.8%"
+        "$77.326B trailing GMV",
+        "0.7704x EV/GMV",
+        "$59.57B",
+        "$1,175.06",
+        "73.38%"
        ],
        [
         "Mercado Pago (Payments & Acquiring)",
-        "$403.81B annualized TPV",
-        "0.08x EV/TPV",
-        "$32.3B",
-        "$637.21",
-        "27.5%"
+        "$265.730B trailing TPV after haircut",
+        "0.04786x EV/TPV",
+        "$12.72B",
+        "$250.86",
+        "15.67%"
        ],
        [
         "Mercado Credito (Lending)",
-        "$16.4B credit portfolio",
-        "1.30x credit book",
-        "$21.32B",
-        "$420.54",
-        "18.2%"
+        "$11.996B net credit portfolio",
+        "1.27444x credit book",
+        "$15.29B",
+        "$301.56",
+        "18.83%"
        ],
        [
         "Less net debt",
         "Balance sheet bridge per the DCF model",
         "n/a",
-        "-$6.4B",
+        "-$6.40B",
         "-$126.24",
-        "-5.5%"
+        "-7.88%"
        ],
        [
         "Total equity value",
         "Sum of the parts",
         "n/a",
-        "$117.39B",
-        "$2,315.48",
-        "100.0%"
+        "$81.18B",
+        "$1,601.24",
+        "100.00%"
        ]
       ]
      }
     },
     {
      "heading": "Two Frameworks, Two Verdicts",
-     "body": "The two frameworks disagree in opposite directions, and we think the disagreement itself is information. For Sea, the SOTP Base of $175.42 stands about 50 percent above the $117.05 DCF Base because the parts capitalize today's operating scale at segment multiples, while the DCF holds Sea to a reported-margin path that starts from an 8.3 percent GAAP operating margin. For MercadoLibre, the SOTP Base of $2,315.48 stands about 17 percent below the $2,804.20 DCF Base, and the gap starts with the balance sheet. MercadoLibre carries $6.4 billion of net debt where the original SOTP blueprint assumed a net cash position, and the DCF further credits years of margin expansion on the credit book that a point-in-time multiple cannot see. We keep the DCF as our primary framework for both names and treat the SOTP as the cross-check that shows where the market could re-rate the parts faster than consolidated cash flows grow. The full SOTP builds now sit on both ticker pages alongside the DCF models."
+     "body": "The two frameworks now point the same way, and we think that agreement is information. For Sea, the restated SOTP Base of $67.14 stands 15.3 percent below the $79.25 DCF Base, because the parts now capitalize Shopee on trailing profitability rather than volume and SeaMoney on its on-book loans only, while the DCF holds Sea to a reported-margin path that starts from an 8.3 percent GAAP operating margin. For MercadoLibre, the SOTP Base of $1,601.24 stands 34.7 percent below the $2,451.43 DCF Base, and the gap starts with the balance sheet and the credit book. MercadoLibre carries $6.4 billion of net debt where the original SOTP blueprint assumed a net cash position, and the DCF further credits years of margin expansion on the credit book that a point-in-time multiple cannot see. We keep the DCF as our primary framework for both names and treat the SOTP as the cross-check that shows where the market could re-rate the parts faster than consolidated cash flows grow. The full SOTP builds now sit on both ticker pages alongside the DCF models."
     }
    ],
    "title": "Emerging Market Ecosystems: Sea Limited's Discipline Against MercadoLibre's Land Grab"
