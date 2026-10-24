@@ -9441,7 +9441,7 @@ route("alerts", function () {
    (active ? "#d9a441" : "#3a4759") + ";background:" + (active ? "#2a2113" : "transparent") +
    ";color:" + (active ? "#d9a441" : "#dbe5f1") + ";cursor:pointer;font-size:13px;font-weight:600;";
   wrap.innerHTML =
-   "<h3>Discount Rate Sensitivity</h3>" +
+   "<h3>Discount Rate Sensitivity " + PRO_BADGE + "</h3>" +
    '<div class="section-sub">How the price target moves when the discount-rate inputs move. ' +
    "Sliders show changes from the model's published-target inputs, in basis points.</div>" +
    '<div style="display:flex;gap:8px;margin:12px 0;" id="sens-toggle">' +
@@ -14978,6 +14978,7 @@ function volSurfaceHtml() {
    '<li>✓ Earnings Dashboard, 8 quarters of surprises and 1-day reactions for every ticker</li>' +
    '<li>✓ Unusual options flow tracker (10 trading days per ticker)</li>' +
    '<li>✓ Interactive FCF simulation sandbox</li>' +
+   '<li>✓ Discount Rate Sensitivity sliders, move the ERP and 10-year yield inputs and watch every ticker price target respond</li>' +
    '<li>✓ Cascadia Score, multi-factor rating (valuation, momentum, earnings, options)</li>' +
    '<li>✓ Earnings call transcript tone analysis, executive confidence scoring via AI</li>' +
    '<li>✓ Detailed Breakdown, institutional Key Read-Throughs of every earnings call for all ' + ORDER.length + ' coverage names</li>' +
