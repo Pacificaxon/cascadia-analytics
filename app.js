@@ -1699,7 +1699,7 @@ function bindZoomHandlers() {
    '<div class="modal-back" id="mb"><div class="modal">' +
    '<div class="modal-logo"><img src="logo-icon.png" alt="Cascadia Analytics"></div>' +
    "<h3>Cascadia Analytics Pro</h3>" +
-   "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, seasonality, Cascadia Scores, screeners including the Inflection Growth and Operating Leverage Screener, exports, earnings history, and Cascadia Research Reports. $19/month after a 7-day free trial.</p>" +
+   "<p style='color:var(--muted);font-size:14px'>Market Internals, options flow, moving averages, the assumption sandbox, seasonality tracker and screener, Cascadia Scores, screeners including the Inflection Growth and Operating Leverage Screener, exports, earnings history, and Cascadia Research Reports. $19/month after a 7-day free trial.</p>" +
    statusLine +
    (isPro()
     ? '<a href="https://billing.stripe.com/p/login/14AbJ16A77FXa180hGbbG00" target="_blank" rel="noopener" class="btn" style="display:block;text-align:center;width:100%;margin-bottom:8px;text-decoration:none;">Manage subscription</a>' +
