@@ -3871,9 +3871,18 @@ function bindZoomHandlers() {
    }
 
    // summary box
+   // The narrow-tape verdict requires both a wide spread and weak
+   // participation, the same gate as the alert, the explainer, and the
+   // collector summary. A wide spread on a broad day is a positional lag.
+   // No A/D data falls back to the spread-only verdict. This retires the
+   // card's old -3 threshold in favor of the house -10/-5 tiers so all
+   // layers agree.
    const sumParts = [];
    if (spread != null) {
-    if (spread <= -3) sumParts.push("the index is holding up far better than the average stock, a narrow tape");
+    const adWeak = adRatio == null || adRatio <= 1.0;
+    if (spread <= -10 && adWeak) sumParts.push("the index is holding up far better than the average stock, a narrow tape");
+    else if (spread <= -10) sumParts.push("the spread is wide, but participation is broad, a positional lag rather than a narrow tape");
+    else if (spread <= -5) sumParts.push("breadth is thinning, the index is holding up better than the average stock");
     else if (spread >= 1) sumParts.push("participation is running wider than the index move");
     else sumParts.push("breadth is roughly neutral");
    }
