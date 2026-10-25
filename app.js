@@ -277,6 +277,7 @@ function proDataStale() {
    if (sections.advanced_macro) flat.advanced_macro = sections.advanced_macro;
    if (sections.leadership_canary) flat.leadership_canary = sections.leadership_canary;
    if (sections.axon_altdata) flat.axon_altdata = sections.axon_altdata;
+   if (sections.seasonality) flat.seasonality = sections.seasonality;
    if (sections.detailed_breakdowns) flat.detailed_breakdowns = sections.detailed_breakdowns;
    if (sections.sotp) flat._sotp = sections.sotp;
    if (sections.sensitivity) flat._sensitivity = sections.sensitivity;
@@ -10819,6 +10820,293 @@ route("alerts", function () {
  }
 
  /* ================= COMPS MATRIX (PRO) ================= */
+ /* ---------- Seasonality Tracker (Pro) ---------- */
+ const SEASON_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+ const SEASON_HORIZONS = [{id: "5", label: "5 years"}, {id: "10", label: "10 years"}, {id: "20", label: "20 years"}, {id: "max", label: "Max"}];
+ function seasonCellColor(v) {
+  if (v == null) return "background:rgb(16,22,32);color:rgb(100,113,132);";
+  if (v >= 8) return "background:rgb(6,60,45);color:rgb(167,243,208);font-weight:700;";
+  if (v >= 4) return "background:rgb(6,45,35);color:rgb(110,231,183);";
+  if (v > 0) return "background:rgb(8,32,26);color:rgb(52,211,153);";
+  if (v === 0) return "background:rgb(30,41,59);color:rgb(203,213,225);";
+  if (v > -4) return "background:rgb(45,16,22);color:rgb(253,164,175);";
+  if (v > -8) return "background:rgb(60,16,24);color:rgb(251,113,133);";
+  return "background:rgb(76,20,30);color:rgb(254,205,211);font-weight:700;";
+ }
+ function seasonBarColor(v) {
+  return v >= 0 ? "rgba(52,211,153,0.85)" : "rgba(251,113,133,0.85)";
+ }
+ async function seasonLookupFetch(ticker, years) {
+  const key = ticker + ":" + years;
+  window._seasonLookupCache = window._seasonLookupCache || {};
+  if (window._seasonLookupCache[key]) return window._seasonLookupCache[key];
+  try {
+   if (!supa) return {error: "unavailable"};
+   try { await supa.auth.refreshSession(); } catch (e) {}
+   const sessRes = await supa.auth.getSession();
+   const session = sessRes && sessRes.data ? sessRes.data.session : null;
+   if (!session || !session.access_token) return {error: "unavailable"};
+   const res = await fetch("/api/seasonality?ticker=" + encodeURIComponent(ticker) + "&years=" + encodeURIComponent(years), {
+    headers: { Authorization: "Bearer " + session.access_token },
+   });
+   const j = await res.json().catch(() => ({}));
+   if (!res.ok || j.error) return {error: res.status === 404 ? "not_found" : "unavailable", status: res.status};
+   window._seasonLookupCache[key] = j;
+   return j;
+  } catch (e) {
+   console.error("Seasonality lookup failed", e.message);
+   return {error: "unavailable"};
+  }
+ }
+ function seasonBlurRender() {
+  const cov = Object.keys(D.tickers || {}).sort();
+  if (!window._seasonTicker || cov.indexOf(window._seasonTicker) < 0) window._seasonTicker = cov[0] || "AXON";
+  if (!SEASON_HORIZONS.some((h) => h.id === window._seasonHorizon)) window._seasonHorizon = "20";
+  const ticker = window._seasonTicker;
+  const horizon = window._seasonHorizon;
+  const blurCard = (label) => '<div class="card"><div style="font-size:11px;letter-spacing:0.08em;color:#8d99aa;text-transform:uppercase;">' + label + '</div><div class="snap-blur" style="width:96px;height:30px;margin:8px 0;"></div><div class="snap-blur" style="width:70%;height:14px;"></div></div>';
+  let h = "<style>.snap-blur{background:linear-gradient(135deg,#243047,#1a2233);border-radius:6px;filter:blur(1.2px);opacity:0.95;}</style>" +
+   '<div class="crumb">SEASONALITY</div><div id="seasonality-page">' +
+   '<div class="hero"><div><h1 class="hero-h">Seasonality</h1>' +
+   "<p class='hero-sub'>Monthly return profiles, win rates, and the average annual drift path for every coverage ticker.</p></div></div>" +
+   '<div class="section"><div class="section-title">Seasonality ' + PRO_BADGE + '</div>' +
+   '<div class="section-sub">The layout is visible to everyone. The monthly readings, drift path, and heatmap values are Pro.</div>';
+  h += '<div class="card" style="margin-bottom:16px;"><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">' +
+   '<select id="season-ticker" class="cov-select" aria-label="Select coverage ticker">' +
+   cov.map((tk) => '<option value="' + esc(tk) + '"' + (tk === ticker ? " selected" : "") + ">" + esc(tk) + "</option>").join("") +
+   "</select>" +
+   '<input type="text" id="season-search" class="comps-search" placeholder="Search any ticker for on demand lookup" autocomplete="off" spellcheck="false" style="min-width:240px;">' +
+   '<button class="btn" id="season-search-btn" style="font-size:12px;">Look up</button>' +
+   '<span style="display:flex;gap:4px;">' + SEASON_HORIZONS.map((hz) => '<button class="btn season-hz" data-hz="' + hz.id + '" style="font-size:12px;' + (hz.id === horizon ? "background:rgb(217,164,65);color:rgb(10,14,23);font-weight:700;" : "") + '">' + hz.label + "</button>").join("") + "</span></div>" +
+   '<div id="season-status" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div></div>';
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px;">' +
+   blurCard("Strongest month") + blurCard("Weakest month") + blurCard("Highest win rate") + blurCard("This month") + blurCard("Next month") + "</div>";
+  h += '<div class="section"><div class="section-title">' + esc(ticker) + " Seasonality " + PRO_BADGE + "</div>";
+  h += '<div class="card" style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">AVERAGE MONTHLY RETURN AND WIN RATE</div>' +
+   '<div class="snap-blur" style="height:280px;"></div>' +
+   '<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:10px;">' +
+   SEASON_MONTHS.map((m) => '<div style="text-align:center;"><div style="font-size:10px;color:#8d99aa;">' + m + '</div><div class="snap-blur" style="height:16px;margin-top:4px;"></div></div>').join("") +
+   "</div></div>";
+  h += '<div class="card" style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">252 DAY COMPOSITE DRIFT PATH</div>' +
+   '<div class="snap-blur" style="height:260px;"></div></div>';
+  h += '<div class="card"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">YEAR BY YEAR RETURN HEATMAP</div>' +
+   '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;text-align:center;"><thead><tr><th style="text-align:left;padding:6px;">Year</th>' +
+   SEASON_MONTHS.map((m) => '<th style="padding:6px;">' + m + "</th>").join("") + '<th style="padding:6px;">Annual</th></tr></thead><tbody>';
+  for (let r = 0; r < 5; r++) {
+   h += '<tr style="border-top:1px solid #101620;"><td style="padding:4px;"><div class="snap-blur" style="width:48px;height:16px;"></div></td>' +
+    SEASON_MONTHS.map(() => '<td style="padding:2px;"><div class="snap-blur" style="height:22px;"></div></td>').join("") +
+    '<td style="padding:4px;"><div class="snap-blur" style="width:56px;height:16px;margin-left:auto;"></div></td></tr>';
+  }
+  h += "</tbody></table></div></div></div>";
+  h += '<div class="card" style="text-align:center;padding:24px;margin-top:16px;"><p style="color:#8d99aa;">Full seasonality readings are Pro.</p>' +
+   '<button class="btn" id="teaser-pricing" style="font-size:13px;">See Pro Plans</button>' +
+   '<div class="pro-price">Cascadia Analytics Pro, $19/month. Cancel anytime.</div></div>';
+  h += "</div>";
+  app.innerHTML = h;
+  const sel = document.getElementById("season-ticker");
+  if (sel) sel.addEventListener("change", () => {
+   window._seasonTicker = sel.value;
+   seasonBlurRender();
+  });
+  const goBlur = () => {
+   const st = document.getElementById("season-status");
+   if (st) st.textContent = "On demand seasonality lookup is Pro.";
+  };
+  const btn = document.getElementById("season-search-btn");
+  if (btn) btn.addEventListener("click", goBlur);
+  const inp = document.getElementById("season-search");
+  if (inp) inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); goBlur(); } });
+  document.querySelectorAll(".season-hz").forEach((b) => {
+   b.addEventListener("click", () => {
+    window._seasonHorizon = b.dataset.hz;
+    seasonBlurRender();
+   });
+  });
+ }
+ route("seasonality", async function () {
+  const mySeq = window._renderSeq || 0;
+  await ensureProData();
+  if (mySeq !== (window._renderSeq || 0)) return;
+  if (!isPro()) {
+   seasonBlurRender();
+   return;
+  }
+  const S = (D.seasonality && D.seasonality.tickers) || {};
+  const covTickers = Object.keys(S).sort();
+  if (!covTickers.length) {
+   app.innerHTML = '<div class="crumb">SEASONALITY</div><div class="card"><p style="color:var(--muted)">No seasonality data available yet.</p></div>';
+   return;
+  }
+  if (!window._seasonTicker || (!S[window._seasonTicker] && !window._seasonLookupTicker)) window._seasonTicker = covTickers[0];
+  if (!SEASON_HORIZONS.some((h) => h.id === window._seasonHorizon)) window._seasonHorizon = "20";
+  const fmtPct = (v, plus) => {
+   if (v == null || !isFinite(v)) return "n/a";
+   return (plus && v > 0 ? "+" : "") + v.toFixed(2) + "%";
+  };
+  const fmtWin = (v) => (v == null ? "n/a" : v.toFixed(1) + "%");
+  function seasonView(ticker, horizon) {
+   if (S[ticker]) {
+    const e = S[ticker];
+    return {ticker: ticker, coverage: true, asOf: e.as_of_date, firstYear: e.first_year, price: e.latest_price,
+     matrix: e.matrix || {}, months: (e.months || {})[horizon] || [], drift: (e.drift || {})[horizon] || [],
+     highlights: (e.highlights || {})[horizon] || {}};
+   }
+   const lk = window._seasonLookupCache ? window._seasonLookupCache[ticker + ":" + horizon] : null;
+   if (lk && !lk.error) {
+    return {ticker: ticker, coverage: false, asOf: lk.as_of_date, firstYear: lk.first_year, price: lk.latest_price,
+     matrix: lk.matrix || {}, months: lk.months || [], drift: lk.drift || [], highlights: lk.highlights || {}};
+   }
+   return null;
+  }
+  function seasonHeatYears(view, horizon) {
+   const nowYear = new Date().getFullYear();
+   const minYear = horizon === "max" ? 0 : nowYear - parseInt(horizon, 10);
+   return Object.keys(view.matrix).map((y) => parseInt(y, 10)).filter((y) => y >= minYear).sort((a, b) => b - a);
+  }
+  function seasonRender() {
+   const ticker = window._seasonTicker;
+   const horizon = window._seasonHorizon;
+   const view = seasonView(ticker, horizon);
+   let h = '<div class="crumb">SEASONALITY</div><div id="seasonality-page">' +
+    '<div class="hero"><div><h1 class="hero-h">Seasonality</h1>' +
+    "<p class='hero-sub'>Monthly return profiles, win rates, and the average annual drift path. Updated " + esc(((D.seasonality || {}).as_of || "").slice(0, 10)) + ".</p></div></div>";
+   h += '<div class="card" style="margin-bottom:16px;"><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">' +
+    '<select id="season-ticker" class="cov-select" aria-label="Select coverage ticker">' +
+    covTickers.map((tk) => '<option value="' + esc(tk) + '"' + (tk === ticker ? " selected" : "") + ">" + esc(tk) + (S[tk] ? " " + esc((D.tickers || {})[tk] ? (D.tickers[tk].name || "") : "") : "") + "</option>").join("") +
+    "</select>" +
+    '<input type="text" id="season-search" class="comps-search" placeholder="Search any ticker for on demand lookup" autocomplete="off" spellcheck="false" style="min-width:240px;">' +
+    '<button class="btn" id="season-search-btn" style="font-size:12px;">Look up</button>' +
+    '<span style="display:flex;gap:4px;">' + SEASON_HORIZONS.map((hz) => '<button class="btn season-hz" data-hz="' + hz.id + '" style="font-size:12px;' + (hz.id === horizon ? "background:rgb(217,164,65);color:rgb(10,14,23);font-weight:700;" : "") + '">' + hz.label + "</button>").join("") + "</span></div>" +
+    '<div id="season-status" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div></div>';
+   if (!view) {
+    h += '<div class="card"><p style="color:var(--muted)">Data is temporarily unavailable for ' + esc(ticker) + ". Please try again in a few minutes.</p></div></div>";
+    app.innerHTML = h;
+    seasonBind();
+    return;
+   }
+   const hl = view.highlights || {};
+   const nowM = new Date().getMonth();
+   const cur = view.months[nowM] || null;
+   const nxt = view.months[(nowM + 1) % 12] || null;
+   const card = (label, big, sub) => '<div class="card"><div style="font-size:11px;letter-spacing:0.08em;color:#8d99aa;text-transform:uppercase;">' + label + '</div><div style="font-size:22px;font-weight:800;margin-top:4px;">' + big + '</div><div style="font-size:12px;color:#8d99aa;margin-top:2px;">' + sub + "</div></div>";
+   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px;">';
+   h += card("Strongest month", hl.best ? esc(hl.best.month) + " " + fmtPct(hl.best.avg, true) + " avg" : "n/a", hl.best ? "Win rate " + fmtWin(hl.best.win_rate) : "");
+   h += card("Weakest month", hl.worst ? esc(hl.worst.month) + " " + fmtPct(hl.worst.avg, true) + " avg" : "n/a", hl.worst ? "Win rate " + fmtWin(hl.worst.win_rate) : "");
+   h += card("Highest win rate", hl.highest_win ? esc(hl.highest_win.month) + " " + fmtWin(hl.highest_win.win_rate) : "n/a", hl.highest_win ? "Avg " + fmtPct(hl.highest_win.avg, true) : "");
+   h += card("This month (" + SEASON_MONTHS[nowM] + ")", cur ? fmtPct(cur.avg, true) + " avg" : "n/a", cur ? "Win rate " + fmtWin(cur.win_rate) + " over " + cur.samples + " years, median " + fmtPct(cur.median, true) : "");
+   h += card("Next month (" + SEASON_MONTHS[(nowM + 1) % 12] + ")", nxt ? fmtPct(nxt.avg, true) + " avg" : "n/a", nxt ? "Win rate " + fmtWin(nxt.win_rate) + " over " + nxt.samples + " years, median " + fmtPct(nxt.median, true) : "");
+   h += "</div>";
+   h += '<div class="section"><div class="section-title">' + esc(ticker) + " Seasonality " + PRO_BADGE +
+    (view.coverage ? "" : ' <span style="font-size:11px;color:#8d99aa;">On demand lookup, not in coverage</span>') +
+    ' <span style="font-size:11px;color:#8d99aa;">Last close ' + (view.price != null ? "$" + view.price.toFixed(2) : "n/a") + " as of " + esc(view.asOf || "") + ", history from " + (view.firstYear || "n/a") + "</span></div>";
+   h += '<div class="card" style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">AVERAGE MONTHLY RETURN AND WIN RATE</div>' +
+    '<div style="height:280px;"><canvas id="season-bar"></canvas></div>' +
+    '<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:10px;text-align:center;">' +
+    view.months.map((st) => '<div style="background:#101620;border:1px solid #253142;border-radius:6px;padding:4px 2px;"><div style="font-size:10px;color:#8d99aa;">' + st.month + '</div><div style="font-size:11px;font-weight:700;color:' + (st.win_rate >= 60 ? "rgb(52,211,153)" : st.win_rate <= 45 ? "rgb(251,113,133)" : "rgb(219,229,241)") + ';">' + fmtWin(st.win_rate) + '</div><div style="font-size:9px;color:#647184;">win</div></div>').join("") +
+    "</div></div>";
+   h += '<div class="card" style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">252 DAY COMPOSITE DRIFT PATH</div>' +
+    '<div style="height:260px;"><canvas id="season-line"></canvas></div>' +
+    '<div style="font-size:12px;color:#8d99aa;margin-top:8px;">Average trajectory across the horizon years, indexed to 100 on trading day 1. Final value ' + (view.drift.length ? view.drift[view.drift.length - 1].toFixed(1) : "n/a") + ".</div></div>";
+   const years = seasonHeatYears(view, horizon);
+   h += '<div class="card"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">YEAR BY YEAR RETURN HEATMAP (' + years.length + " YEARS)</div>" +
+    '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;text-align:center;"><thead><tr><th style="text-align:left;padding:6px;">Year</th>' +
+    SEASON_MONTHS.map((m) => '<th style="padding:6px;">' + m + "</th>").join("") + '<th style="padding:6px;">Annual</th></tr></thead><tbody>';
+   years.forEach((y) => {
+    const row = view.matrix[String(y)] || [];
+    const valid = row.filter((v) => v != null);
+    const annual = valid.length ? (valid.reduce((acc, v) => acc * (1 + v / 100), 1) - 1) * 100 : null;
+    h += '<tr style="border-top:1px solid #101620;"><td style="text-align:left;padding:4px;font-weight:700;">' + y + "</td>" +
+     row.map((v) => '<td style="padding:2px;"><div style="padding:4px 2px;border-radius:4px;' + seasonCellColor(v) + '">' + (v != null ? fmtPct(v, true) : "n/a") + "</div></td>").join("") +
+     '<td style="padding:4px;font-weight:700;color:' + (annual == null ? "rgb(141,153,170)" : annual >= 0 ? "rgb(52,211,153)" : "rgb(251,113,133)") + ';">' + (annual == null ? "n/a" : fmtPct(annual, true)) + "</td></tr>";
+   });
+   h += "</tbody></table></div></div></div></div>";
+   app.innerHTML = h;
+   seasonBind();
+   seasonDraw(view);
+   function seasonBind() {
+    const sel = document.getElementById("season-ticker");
+    if (sel) sel.addEventListener("change", () => {
+     window._seasonTicker = sel.value;
+     window._seasonLookupTicker = null;
+     if (mySeq !== (window._renderSeq || 0)) return;
+     seasonRender();
+    });
+    const go = async () => {
+     const inp = document.getElementById("season-search");
+     const q = inp ? inp.value.toUpperCase().trim().replace(/[^A-Z0-9.\-=]/g, "") : "";
+     if (!q) return;
+     const st = document.getElementById("season-status");
+     if (S[q]) {
+      window._seasonTicker = q;
+      window._seasonLookupTicker = null;
+      seasonRender();
+      return;
+     }
+     if (st) st.textContent = "Looking up " + q + "…";
+     const res = await seasonLookupFetch(q, window._seasonHorizon);
+     if (mySeq !== (window._renderSeq || 0)) return;
+     if (res.error === "not_found") {
+      if (st) st.textContent = "No price history found for " + q + ".";
+      return;
+     }
+     if (res.error) {
+      if (st) st.textContent = "Data is temporarily unavailable for " + q + ". Please try again in a few minutes.";
+      return;
+     }
+     window._seasonTicker = q;
+     window._seasonLookupTicker = q;
+     seasonRender();
+    };
+    const btn = document.getElementById("season-search-btn");
+    if (btn) btn.addEventListener("click", go);
+    const inp = document.getElementById("season-search");
+    if (inp) inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); go(); } });
+    document.querySelectorAll(".season-hz").forEach((b) => {
+     b.addEventListener("click", async () => {
+      window._seasonHorizon = b.dataset.hz;
+      if (window._seasonLookupTicker) {
+       const st = document.getElementById("season-status");
+       if (st) st.textContent = "Looking up " + window._seasonLookupTicker + "…";
+       const res = await seasonLookupFetch(window._seasonLookupTicker, window._seasonHorizon);
+       if (mySeq !== (window._renderSeq || 0)) return;
+       if (res.error) {
+        if (st) st.textContent = "Data is temporarily unavailable for " + window._seasonLookupTicker + ". Please try again in a few minutes.";
+        return;
+       }
+      }
+      seasonRender();
+     });
+    });
+   }
+   function seasonDraw(view) {
+    if (typeof Chart === "undefined") return;
+    if (window._seasonBar) { try { window._seasonBar.destroy(); } catch (e) {} window._seasonBar = null; }
+    if (window._seasonLine) { try { window._seasonLine.destroy(); } catch (e) {} window._seasonLine = null; }
+    const barEl = document.getElementById("season-bar");
+    if (barEl) {
+     window._seasonBar = new Chart(barEl, {
+      type: "bar",
+      data: {labels: SEASON_MONTHS, datasets: [{label: "Average return (%)", data: view.months.map((s) => s.avg), backgroundColor: view.months.map((s) => seasonBarColor(s.avg)), borderWidth: 1}]},
+      options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}, tooltip: {callbacks: {label: (c) => {
+       const st = view.months[c.dataIndex];
+       return ["Avg " + fmtPct(st.avg, true), "Median " + fmtPct(st.median, true), "Win rate " + fmtWin(st.win_rate) + " (" + st.samples + " years)", "Range " + fmtPct(st.max_loss, false) + " to " + fmtPct(st.max_gain, true)];
+      }}}},
+      scales: {x: {type: "category", grid: {display: false}, ticks: {color: "rgb(141,153,170)"}}, y: {type: "linear", grid: {color: "rgb(28,43,62)"}, ticks: {color: "rgb(141,153,170)", callback: (v) => v + "%"}}}}
+     });
+    }
+    const lineEl = document.getElementById("season-line");
+    if (lineEl) {
+     window._seasonLine = new Chart(lineEl, {
+      type: "line",
+      data: {labels: view.drift.map((_, i) => i), datasets: [{label: "Indexed drift", data: view.drift, borderColor: "rgb(217,164,65)", backgroundColor: "rgba(217,164,65,0.08)", borderWidth: 2, pointRadius: 0, fill: true, tension: 0.1}]},
+      options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}, tooltip: {callbacks: {label: (c) => "Day " + c.parsed.x + ": " + c.parsed.y.toFixed(1)}}},
+      scales: {x: {type: "linear", grid: {color: "rgb(28,43,62)"}, ticks: {color: "rgb(141,153,170)", maxTicksLimit: 12, callback: (v) => SEASON_MONTHS[Math.min(11, Math.floor(v / 21))] || ""}}, y: {type: "linear", grid: {color: "rgb(28,43,62)"}, ticks: {color: "rgb(141,153,170)"}}}}
+     });
+    }
+   }
+  }
+ });
+
  route("comps", async function () {
   const mySeq = window._renderSeq || 0;
   await ensureProData();
