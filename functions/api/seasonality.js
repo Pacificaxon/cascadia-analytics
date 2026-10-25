@@ -126,6 +126,14 @@ async function fetchChart(ticker) {
       signal: AbortSignal.timeout(30000),
     });
   }
+  // Yahoo answers 404 for an unknown or delisted symbol. Surface that as a
+  // not-found result instead of letting it fall through to the generic
+  // upstream-error path, so the client can say so plainly.
+  if (res.status === 404) {
+    const e = new Error("Yahoo returned HTTP 404");
+    e.notFound = true;
+    throw e;
+  }
   if (!res.ok) throw new Error("Yahoo returned HTTP " + res.status);
   return res.json();
 }
@@ -200,6 +208,9 @@ export async function onRequest(context) {
     };
     return dataJson(payload, request, 86400);
   } catch (err) {
+    if (err && err.notFound) {
+      return jsonResponse({ error: "not_found", ticker }, 404, request);
+    }
     return upstreamError(request, ticker, err);
   }
 }

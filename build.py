@@ -668,6 +668,7 @@ def main():
         "leadership_canary": load(os.path.join(MR, "leadership_canary.json")) if os.path.exists(os.path.join(MR, "leadership_canary.json")) else {},
         "axon_altdata": load(os.path.join(MR, "axon_altdata.json")) if os.path.exists(os.path.join(MR, "axon_altdata.json")) else {},
         "seasonality": load(os.path.join(MR, "seasonality.json")) if os.path.exists(os.path.join(MR, "seasonality.json")) else {},
+        "seasonality_screener": load(os.path.join(MR, "seasonality_screener.json")) if os.path.exists(os.path.join(MR, "seasonality_screener.json")) else {},
     }
     # Per-ticker transcript tone detail files
     import glob

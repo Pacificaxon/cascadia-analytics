@@ -278,6 +278,7 @@ function proDataStale() {
    if (sections.leadership_canary) flat.leadership_canary = sections.leadership_canary;
    if (sections.axon_altdata) flat.axon_altdata = sections.axon_altdata;
    if (sections.seasonality) flat.seasonality = sections.seasonality;
+   if (sections.seasonality_screener) flat.seasonality_screener = sections.seasonality_screener;
    if (sections.detailed_breakdowns) flat.detailed_breakdowns = sections.detailed_breakdowns;
    if (sections.sotp) flat._sotp = sections.sotp;
    if (sections.sensitivity) flat._sensitivity = sections.sensitivity;
@@ -10168,6 +10169,81 @@ route("alerts", function () {
   draw();
  }
 
+ /* ================= SEASONALITY SCREENER ================= */
+ const SEASON_SCR_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+ function seasonScrData() {
+  const ss = D.seasonality_screener || {};
+  return { meta: ss.metadata || {}, months: ss.seasonalityScreener || {} };
+ }
+ function seasonScrPct(v, plus) {
+  if (v == null || !isFinite(v)) return "n/a";
+  return (plus && v > 0 ? "+" : "") + v.toFixed(2) + "%";
+ }
+ function seasonScrWin(v) {
+  return v == null ? "n/a" : v.toFixed(1) + "%";
+ }
+ function seasonScrRowsHtml(month) {
+  const rows = seasonScrData().months[month] || [];
+  if (!rows.length) return '<tr><td colspan="7" style="text-align:center;color:var(--muted)">No rows for this month.</td></tr>';
+  return rows.map((r) => '<tr><td style="font-weight:700;">' + esc(r.ticker) + '</td><td>' + esc(r.companyName || "") + '</td><td>' + esc(r.index || "") + '</td><td style="text-align:center;">' + (r.yearsHistory != null ? r.yearsHistory : "n/a") + '</td><td style="text-align:center;font-weight:700;color:' + (r.winRatePct >= 80 ? "rgb(52,211,153)" : r.winRatePct <= 55 ? "rgb(251,113,133)" : "rgb(219,229,241)") + ';">' + seasonScrWin(r.winRatePct) + '</td><td style="text-align:center;" class="' + cls(r.avgReturnPct) + '">' + seasonScrPct(r.avgReturnPct, true) + '</td><td style="text-align:center;" class="' + cls(r.medianReturnPct) + '">' + seasonScrPct(r.medianReturnPct, true) + "</td></tr>").join("");
+ }
+ function seasonScreenerSectionHtml() {
+  const cur = SEASON_SCR_MONTHS[new Date().getMonth()];
+  const data = seasonScrData();
+  const meta = data.meta;
+  const hasData = Object.keys(data.months).length > 0;
+  let h = '<div class="section" id="scr-sec-seasonality" data-toc="Seasonality Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Seasonality Screener ' + PRO_BADGE + '</div>' +
+   '<div class="section-sub">Top 10 names for each calendar month, ranked by win rate with average return breaking ties, drawn from the S&P 500, S&P 400, S&P 600, and Nasdaq 100. Only names with at least 10 years of history qualify.</div>';
+  if (meta.lastUpdatedUTC) h += '<div style="font-size:12px;color:#8d99aa;margin-bottom:12px;">Updated ' + esc(String(meta.lastUpdatedUTC).slice(0, 10)) + ". " + (meta.totalEquitiesScanned || "") + " names scanned, " + (meta.qualifyingEquities || "") + " qualify.</div>";
+  if (!hasData) {
+   h += '<div class="card"><p style="color:var(--muted)">Seasonality screener data is not available yet.</p></div></div>';
+   return h;
+  }
+  h += '<div class="card"><div class="filter-bar">' +
+   '<select id="season-scr-month" aria-label="Select month">' +
+   SEASON_SCR_MONTHS.map((m) => '<option value="' + m + '"' + (m === cur ? " selected" : "") + ">" + m + "</option>").join("") +
+   "</select>" +
+   '<button class="btn secondary" id="season-scr-export">Export CSV</button>' +
+   "</div>" +
+   '<div class="table-wrap"><table class="coverage"><thead><tr><th>Ticker</th><th>Company</th><th>Index</th><th style="text-align:center;">Years</th><th style="text-align:center;">Win rate</th><th style="text-align:center;">Avg return</th><th style="text-align:center;">Median return</th></tr></thead><tbody id="season-scr-body"></tbody></table></div></div></div>';
+  return h;
+ }
+ function initSeasonScreener() {
+  const sel = document.getElementById("season-scr-month");
+  const body = document.getElementById("season-scr-body");
+  if (!sel || !body) return;
+  const draw = () => { body.innerHTML = seasonScrRowsHtml(sel.value); };
+  sel.addEventListener("change", draw);
+  draw();
+  const exp = document.getElementById("season-scr-export");
+  if (exp) exp.addEventListener("click", () => {
+   const rows = seasonScrData().months[sel.value] || [];
+   const csv = "month,ticker,company,index,years_history,win_rate_pct,avg_return_pct,median_return_pct\n" + rows.map((r) => [sel.value, r.ticker, '"' + (r.companyName || "").replace(/"/g, "") + '"', r.index || "", r.yearsHistory || "", r.winRatePct || "", r.avgReturnPct || "", r.medianReturnPct || ""].join(",")).join("\n");
+   dl("cascadia_seasonality_screener_" + sel.value + ".csv", csv, "text/csv");
+  });
+ }
+ function seasonScreenerBlurInner(month) {
+  const blurRow = '<tr><td><div class="snap-blur" style="width:56px;height:16px;"></div></td><td><div class="snap-blur" style="width:140px;height:16px;"></div></td><td><div class="snap-blur" style="width:80px;height:16px;"></div></td><td><div class="snap-blur" style="width:36px;height:16px;margin:0 auto;"></div></td><td><div class="snap-blur" style="width:52px;height:16px;margin:0 auto;"></div></td><td><div class="snap-blur" style="width:52px;height:16px;margin:0 auto;"></div></td><td><div class="snap-blur" style="width:52px;height:16px;margin:0 auto;"></div></td></tr>';
+  let rows = "";
+  for (let i = 0; i < 10; i++) rows += blurRow;
+  return "<style>.snap-blur{background:linear-gradient(135deg,#243047,#1a2233);border-radius:6px;filter:blur(1.2px);opacity:0.95;}</style>" +
+   '<div class="section-sub">The layout is visible to everyone. The monthly rankings and return figures are Pro.</div>' +
+   '<div class="card"><div class="filter-bar"><select id="season-scr-month-blur" aria-label="Select month">' +
+   SEASON_SCR_MONTHS.map((m) => '<option value="' + m + '"' + (m === month ? " selected" : "") + ">" + m + "</option>").join("") +
+   "</select></div>" +
+   '<div class="table-wrap"><table class="coverage"><thead><tr><th>Ticker</th><th>Company</th><th>Index</th><th style="text-align:center;">Years</th><th style="text-align:center;">Win rate</th><th style="text-align:center;">Avg return</th><th style="text-align:center;">Median return</th></tr></thead><tbody>' + rows + "</tbody></table></div></div>" +
+   proTeaser("Seasonality Screener, Pro", "Top 10 names for each calendar month by win rate across the S&P 500, S&P 400, S&P 600, and Nasdaq 100, with average and median returns. Only names with at least 10 years of history qualify.");
+ }
+ function bindSeasonScreenerBlur() {
+  const sel = document.getElementById("season-scr-month-blur");
+  if (!sel) return;
+  sel.addEventListener("change", () => {
+   const wrap = document.getElementById("scr-season-blur");
+   if (wrap) wrap.innerHTML = seasonScreenerBlurInner(sel.value);
+   bindSeasonScreenerBlur();
+  });
+ }
+
  route("screener", function () {
   const pro = isPro();
   // Coverage screener is FREE; factor screeners below are Pro
@@ -10250,6 +10326,11 @@ route("alerts", function () {
    inflDiv.innerHTML = inflectionScreenerHtml();
    app.appendChild(inflDiv);
    initInflectionScreener();
+   // Seasonality Screener (Pro), below the inflection screener
+   const ssDiv = document.createElement("div");
+   ssDiv.innerHTML = seasonScreenerSectionHtml();
+   app.appendChild(ssDiv);
+   initSeasonScreener();
   } else {
    const t1 = document.createElement("div");
    t1.innerHTML = '<div class="section" id="scr-sec-quant" data-toc="Quantitative Factor Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener ' + PRO_BADGE + '</div>' +
@@ -10275,6 +10356,11 @@ route("alerts", function () {
    t6.innerHTML = '<div class="section" id="scr-sec-inflection" data-toc="Inflection Growth & Operating Leverage" style="max-width:none;margin-top:32px;"><div class="section-title">Inflection Growth &amp; Operating Leverage Screener ' + PRO_BADGE + '</div>' +
     proTeaser("Inflection Growth & Operating Leverage Screener, Pro", "Companies whose quarter on quarter revenue growth accelerated across each of the last four quarters while gross margins expanded, with operating leverage, free cash flow, dilution, and Stage 2 trend checks on every row. Strict and near qualifiers, sortable, with CSV export.") + "</div>";
    app.appendChild(t6);
+   const t7 = document.createElement("div");
+   const curBlur = SEASON_SCR_MONTHS[new Date().getMonth()];
+   t7.innerHTML = '<div class="section" id="scr-sec-seasonality" data-toc="Seasonality Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Seasonality Screener ' + PRO_BADGE + '</div><div id="scr-season-blur">' + seasonScreenerBlurInner(curBlur) + "</div></div>";
+   app.appendChild(t7);
+   bindSeasonScreenerBlur();
   }
   initScreenerToc();
  });
