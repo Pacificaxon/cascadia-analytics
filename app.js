@@ -4148,18 +4148,20 @@ function bindZoomHandlers() {
      "The blue line is the <b>breadth spread</b>: how far the median S&P 500 stock sits below its 52-week high, minus how far the index itself sits below its high. " +
      "The green and amber lines show what percentage of stocks are above their 50-day and 200-day moving averages.</p>" +
      "<p><b>How to read it.</b> In a healthy rally, most stocks rise together, the breadth spread stays near zero and the % above moving averages is high. " +
-     "When the spread drops below <b>−10 percentage points</b>, a few giants are holding the index up while the average stock lags badly. " +
+     "When the spread drops below <b>−10 percentage points</b> and decliners outnumber advancers, a few giants are holding the index up while the average stock lags badly. " +
      "That\u2019s a narrow, fragile market, the kind that breaks hard when the leaders stumble.</p>" +
      "<p><b>What does today\u2019s reading mean?</b> Breadth spread is <b>" + cur.breadth_spread.toFixed(1) + "pp</b>, " +
-     cur.pct_above_50d.toFixed(0) + "% of stocks above their 50-day MA and " + cur.pct_above_200d.toFixed(0) + "% above their 200-day MA. " +
+     cur.pct_above_50d.toFixed(0) + "% of stocks above their 50-day MA and " + cur.pct_above_200d.toFixed(0) + "% above their 200-day MA. " + (cur.advancers != null && cur.ad_ratio != null ? "Advancers " + cur.advancers + " vs decliners " + cur.decliners + " (A/D " + cur.ad_ratio.toFixed(2) + "). " : "") +
      (cur.new_highs_10d != null ? "52-week highs vs lows, <b>10-day:</b> " + cur.new_highs_10d + "H/" + cur.new_lows_10d + "L " +
       "(net " + (cur.hl_net_10d >= 0 ? "+" : "") + cur.hl_net_10d + "); " +
       "<b>1-month:</b> " + cur.new_highs_21d + "H/" + cur.new_lows_21d + "L " +
       "(net " + (cur.hl_net_21d >= 0 ? "+" : "") + cur.hl_net_21d + "); " +
       "<b>3-month:</b> " + cur.new_highs_63d + "H/" + cur.new_lows_63d + "L " +
       "(net " + (cur.hl_net_63d >= 0 ? "+" : "") + cur.hl_net_63d + "). " : "") +
-     (cur.breadth_spread <= -10
+     (cur.breadth_spread <= -10 && (cur.ad_ratio == null || cur.ad_ratio <= 1)
       ? "Breadth is extremely narrow, the index is masking broad weakness underneath. Rallies built this narrow have a poor track record of lasting."
+      : cur.breadth_spread <= -10
+      ? "The spread is wide, but participation is broad today, so this is a positional lag, not a narrow tape. The median stock trails its high while most stocks still advanced."
       : cur.breadth_spread <= -5
       ? "Breadth is thinning, the rally is increasingly carried by fewer names. Worth watching, but not yet at the danger zone."
       : "Participation looks reasonably broad. The advance has support beyond just the mega-caps.") + "</p>" +
