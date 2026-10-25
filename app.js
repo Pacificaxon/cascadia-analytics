@@ -11105,6 +11105,7 @@ route("alerts", function () {
     }
    }
   }
+  seasonRender();
  });
 
  route("comps", async function () {
