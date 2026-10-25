@@ -7093,7 +7093,7 @@ route("alerts", function () {
    txState.loaded += rows.length;
    txState.cursor = data.next_cursor || null;
    txState.done = !data.next_cursor;
-   txStatus(rows.length || append ? txState.loaded + " transcript" + (txState.loaded === 1 ? "" : "s") + " loaded." + (txState.done ? "" : " More available below.") : "No matches for this search.");
+   txStatus(rows.length || append ? txState.loaded + " transcript" + (txState.loaded === 1 ? "" : "s") + " loaded." + (txState.done ? "" : " More available below.") : (!txState.q && !txState.ticker && !txState.year ? "The library holds no transcripts yet." : "No matches for this search."));
    txSetMore();
   } catch (e) {
    if (!append) listEl.innerHTML = '<div class="card" style="padding:24px;"><div style="font-size:15px;color:#f37d83;">The transcript database is unreachable right now. Try again in a few minutes.</div></div>';
