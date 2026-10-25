@@ -8783,6 +8783,11 @@ route("alerts", function () {
   const escP = (s) => esc(s || "").replace(/\n\n/g, "<br><br>").replace(/\n/g, "<br>");
   let h = '<div class="card"><h3>' + esc(q.title || "") + '</h3>' +
    '<div class="panel-summary">' + escP(q.executive_summary) + "</div></div>";
+  if (q.source && (q.source.transcript_url || q.source.retrieved_from)) {
+   let src = q.source.retrieved_from === "roic" ? "Roic AI" : "";
+   if (!src && q.source.transcript_url) { try { src = new URL(q.source.transcript_url).hostname.replace(/^www\./, ""); } catch (e) { src = q.source.retrieved_from || ""; } }
+   if (src) h += '<div style="font-size:12px;color:var(--muted);margin:2px 0 12px;">Transcript source: ' + esc(src) + '</div>';
+  }
   if (q.correction) h += '<div class="card" style="border-left:3px solid #d9a441;"><div style="font-size:13.5px;"><span style="color:var(--muted)">' + escP(q.correction) + "</span></div></div>";
   (q.themes || []).forEach((t) => {
    h += '<div class="card"><h3 style="letter-spacing:0.4px;">' + esc(t.name || "") + "</h3>" +
