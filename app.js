@@ -7031,6 +7031,133 @@ route("alerts", function () {
   }
  }
 
+ /* ================= EARNINGS TRANSCRIPTS (removable block) ================= */
+ /* BEGIN EARNINGS TRANSCRIPTS. Removal is one delete of this block plus the
+    Earnings Transcripts nav link in index.html, then an app.js version bump.
+    The page is free, reads only reviewed records, and never ships demo data:
+    an empty library honestly shows no records. The data lives in the existing
+    transcript database; this page is only the reading surface. */
+ const TRANSCRIPT_API = "https://callarchive-7ic.pages.dev";
+ const txState = { q: "", ticker: "", year: "", sort: "newest", cursor: null, loading: false, loaded: 0, done: false };
+ function txHost(url) {
+  try { return new URL(url).hostname; } catch (e) { return ""; }
+ }
+ function txCard(r) {
+  const q = r.quarter ? "Q" + r.quarter : "";
+  const yr = r.year ? " " + r.year : "";
+  const date = r.call_date ? " · " + esc(r.call_date) : "";
+  const host = txHost(r.source_url || "");
+  return '<div class="card" style="padding:20px;margin-bottom:16px;">' +
+   '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">' +
+   '<div><span style="font-weight:800;color:#f5f7fa;">' + esc(r.ticker || "") + '</span>' +
+   (r.company ? ' <span style="color:#8d99aa;">' + esc(r.company) + '</span>' : "") + '</div>' +
+   '<div style="color:#8d99aa;font-size:13px;">' + esc(q + yr) + date + '</div></div>' +
+   (r.title ? '<div style="font-size:16px;font-weight:700;color:#f5f7fa;margin-top:8px;">' + esc(r.title) + '</div>' : "") +
+   (r.summary ? '<div style="font-size:14px;color:#dbe5f1;line-height:1.6;margin-top:8px;">' + esc(r.summary) + '</div>' : "") +
+   '<div style="margin-top:12px;display:flex;gap:16px;flex-wrap:wrap;font-size:13px;">' +
+   '<a href="#/transcripts/' + encodeURIComponent(r.id) + '" style="color:#d9a441;font-weight:700;">Read transcript</a>' +
+   (r.source_url ? '<a href="' + esc(r.source_url) + '" target="_blank" rel="noopener" style="color:#8d99aa;">Source: ' + esc(host) + '</a>' : "") +
+   '</div></div>';
+ }
+ function txStatus(msg) {
+  const el = document.getElementById("tx-status");
+  if (el) el.innerHTML = msg;
+ }
+ function txSetMore() {
+  const btn = document.getElementById("tx-more");
+  if (btn) btn.style.display = txState.done ? "none" : "block";
+ }
+ async function txLoad(append) {
+  if (txState.loading) return;
+  txState.loading = true;
+  txStatus(append ? "Loading more transcripts." : "Searching transcripts.");
+  const params = new URLSearchParams();
+  if (txState.q) params.set("q", txState.q);
+  if (txState.ticker) params.set("ticker", txState.ticker);
+  if (txState.year) params.set("year", txState.year);
+  params.set("sort", txState.sort);
+  params.set("limit", "25");
+  if (append && txState.cursor) params.set("cursor", txState.cursor);
+  const listEl = document.getElementById("tx-results");
+  try {
+   const res = await fetch(TRANSCRIPT_API + "/api/calls?" + params.toString());
+   if (!res.ok) throw new Error("HTTP " + res.status);
+   const data = await res.json();
+   const rows = (data.calls || []).filter((r) => r.transcript_status === "reviewed");
+   if (!append) { listEl.innerHTML = ""; txState.loaded = 0; }
+   if (!rows.length && !append) {
+    listEl.innerHTML = '<div class="card" style="padding:24px;"><div style="font-size:15px;color:#dbe5f1;">No transcripts in the library yet. The library covers coverage tickers at 4 reported quarters each and is being built from authorized sources only, so records appear here as they are transcribed and reviewed.</div></div>';
+   } else {
+    listEl.innerHTML += rows.map(txCard).join("");
+   }
+   txState.loaded += rows.length;
+   txState.cursor = data.next_cursor || null;
+   txState.done = !data.next_cursor;
+   txStatus(rows.length || append ? txState.loaded + " transcript" + (txState.loaded === 1 ? "" : "s") + " loaded." + (txState.done ? "" : " More available below.") : "No matches for this search.");
+   txSetMore();
+  } catch (e) {
+   if (!append) listEl.innerHTML = '<div class="card" style="padding:24px;"><div style="font-size:15px;color:#f37d83;">The transcript database is unreachable right now. Try again in a few minutes.</div></div>';
+   txStatus("Transcript database unreachable.");
+   txState.done = true;
+   txSetMore();
+  }
+  txState.loading = false;
+ }
+ function txSearch() {
+  txState.q = (document.getElementById("tx-q").value || "").trim();
+  txState.ticker = (document.getElementById("tx-ticker").value || "").trim().toUpperCase();
+  txState.year = document.getElementById("tx-year").value || "";
+  txState.sort = document.getElementById("tx-sort").value || "newest";
+  txState.cursor = null;
+  txState.done = false;
+  txLoad(false);
+ }
+ route("transcripts", function (param) {
+  const id = (param || "").trim();
+  if (id) {
+   app.innerHTML = '<div class="crumb"><a href="#/transcripts" style="color:#8d99aa;">EARNINGS TRANSCRIPTS</a></div><div class="section" style="max-width:800px;margin:0 auto;"><div style="font-size:15px;color:#dbe5f1;">Loading transcript.</div></div>';
+   fetch(TRANSCRIPT_API + "/api/calls/" + encodeURIComponent(id))
+    .then((res) => { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+    .then((r) => {
+     if (r.transcript_status !== "reviewed") throw new Error("unreviewed");
+     const host = txHost(r.source_url || "");
+     let h = '<div class="crumb"><a href="#/transcripts" style="color:#8d99aa;">EARNINGS TRANSCRIPTS</a></div>';
+     h += '<div class="hero"><div><h1 class="hero-h">' + esc(r.title || (r.ticker + " earnings call")) + '</h1>';
+     h += '<p class="hero-sub">' + esc(r.ticker || "") + (r.company ? " · " + esc(r.company) : "") + (r.quarter ? " · Q" + esc(r.quarter) : "") + (r.year ? " " + esc(r.year) : "") + (r.call_date ? " · " + esc(r.call_date) : "") + '</p></div></div>';
+     h += '<div class="section" style="max-width:800px;margin:0 auto;">';
+     if (r.summary) h += '<div style="font-size:15px;color:#dbe5f1;line-height:1.8;margin-bottom:24px;">' + esc(r.summary) + '</div>';
+     if (r.source_url) h += '<div style="font-size:13px;color:#8d99aa;margin-bottom:24px;">Transcript source: <a href="' + esc(r.source_url) + '" target="_blank" rel="noopener" style="color:#8d99aa;">' + esc(host) + '</a></div>';
+     h += '<div style="font-size:15px;color:#dbe5f1;line-height:1.8;white-space:pre-line;">' + esc(r.transcript || "") + '</div>';
+     h += '<div style="font-size:11px;color:#8d99aa;margin-top:24px;text-align:center;">Not investment advice. For informational purposes only.</div></div>';
+     app.innerHTML = h;
+    })
+    .catch(() => {
+     app.innerHTML = '<div class="crumb"><a href="#/transcripts" style="color:#8d99aa;">EARNINGS TRANSCRIPTS</a></div><div class="section" style="max-width:800px;margin:0 auto;"><div style="font-size:15px;color:#dbe5f1;">This transcript is not available. It may still be under review or the database may be unreachable.</div></div>';
+    });
+   return;
+  }
+  let h = '<div class="crumb">CASCADIA RESEARCH</div>';
+  h += '<div class="hero"><div><h1 class="hero-h">Earnings Transcripts</h1>';
+  h += '<p class="hero-sub">Full earnings call transcripts for coverage tickers, trailing 4 reported quarters each, from authorized sources only. Records appear here as they are transcribed and reviewed.</p></div></div>';
+  h += '<div class="section"><div class="card" style="padding:20px;margin-bottom:16px;"><div style="display:flex;gap:12px;flex-wrap:wrap;">';
+  h += '<input id="tx-q" type="text" placeholder="Search transcripts" style="flex:2;min-width:200px;background:#0d131d;border:1px solid #253142;border-radius:8px;color:#f5f7fa;padding:10px 12px;font-size:14px;">';
+  h += '<input id="tx-ticker" type="text" placeholder="Ticker" style="flex:1;min-width:110px;background:#0d131d;border:1px solid #253142;border-radius:8px;color:#f5f7fa;padding:10px 12px;font-size:14px;">';
+  h += '<select id="tx-year" style="background:#0d131d;border:1px solid #253142;border-radius:8px;color:#f5f7fa;padding:10px 12px;font-size:14px;"><option value="">All years</option><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option></select>';
+  h += '<select id="tx-sort" style="background:#0d131d;border:1px solid #253142;border-radius:8px;color:#f5f7fa;padding:10px 12px;font-size:14px;"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="ticker">By ticker</option></select>';
+  h += '<button class="btn" id="tx-search">Search</button></div>';
+  h += '<div id="tx-status" style="font-size:13px;color:#8d99aa;margin-top:12px;"></div></div>';
+  h += '<div id="tx-results"></div>';
+  h += '<button class="btn" id="tx-more" style="display:none;margin:8px auto 0;">Load more</button></div>';
+  app.innerHTML = h;
+  document.getElementById("tx-search").addEventListener("click", txSearch);
+  document.getElementById("tx-more").addEventListener("click", () => txLoad(true));
+  document.getElementById("tx-q").addEventListener("keydown", (e) => { if (e.key === "Enter") txSearch(); });
+  document.getElementById("tx-ticker").addEventListener("keydown", (e) => { if (e.key === "Enter") txSearch(); });
+  txState.q = ""; txState.ticker = ""; txState.year = ""; txState.sort = "newest"; txState.cursor = null; txState.done = false;
+  txLoad(false);
+ });
+ /* END EARNINGS TRANSCRIPTS */
+
  /* ================= TICKER ================= */
  let fcfChart = null, priceChart = null, sandboxChart = null;
 
