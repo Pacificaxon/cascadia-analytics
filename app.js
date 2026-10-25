@@ -15467,6 +15467,25 @@ function volSurfaceHtml() {
   }
  }
 
+// Back to top: one floating control, created once on the page body outside
+// the routed content, so SPA re-renders never remove it. It appears after
+// scrolling down on any route and returns to the top where the nav sits.
+function initBackToTop() {
+ if (document.getElementById("back-to-top")) return;
+ const btn = document.createElement("button");
+ btn.id = "back-to-top";
+ btn.type = "button";
+ btn.setAttribute("aria-label", "Back to top");
+ btn.textContent = "Back to top";
+ btn.style.cssText = "position:fixed;right:20px;bottom:20px;z-index:900;display:none;padding:10px 16px;border-radius:999px;border:1px solid #d9a441;background:#101620;color:#d9a441;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.4);";
+ btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+ document.body.appendChild(btn);
+ const toggle = () => { btn.style.display = (window.scrollY || 0) > 400 ? "block" : "none"; };
+ window.addEventListener("scroll", toggle, { passive: true });
+ toggle();
+}
+initBackToTop();
+
  window.CA = { nav, isPro, cascadiaScore };
 
  // Initial load: render immediately from cache, then verify auth against Supabase.
