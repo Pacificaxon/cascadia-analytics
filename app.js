@@ -3093,6 +3093,18 @@ function bindZoomHandlers() {
    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Neutral from</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.neutral != null ? sgn(bands.neutral) : "n/a") + '</div></div>' +
    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Capitulation below</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.capitulation != null ? sgn(bands.capitulation) : "n/a") + '</div></div>' +
    '</div></div>';
+  const alertEvents = ((pro && pro.alerts && pro.alerts.events) || []).slice(-10).reverse();
+  if (alertEvents.length) {
+   h += '<div style="margin-top:16px;"><div class="section-title">Breadth Alerts ' + PRO_BADGE + '</div>' +
+    '<div class="section-sub">Recent breadth alerts, newest first. Alerts fire on entry into a condition, not while it persists.</div>';
+   alertEvents.forEach((e) => {
+    h += '<div class="card" style="margin-bottom:8px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;">' + esc(e.date) + ' · ' + esc(mcclellanAlertLabel(e.type)) + '</div>' +
+     '<div style="font-size:12px;color:#8d99aa;margin-top:2px;">MSI ' + sgn(e.msi) +
+     (e.delta10D != null ? ' · 10-day ' + sgn(e.delta10D) + ' pts' : '') +
+     (e.regime ? ' · ' + esc(e.regime) : '') + '</div></div>';
+   });
+   h += '</div>';
+  }
   h += '<div style="margin-top:16px;"><div class="section-title">How to read this gauge ' + PRO_BADGE + '</div>' +
    '<div class="card" style="line-height:1.7;font-size:14px;color:#dbe5f1;">' +
    '<h3 style="color:#d9a441;font-size:15px;margin:0 0 8px;">What it measures</h3>' +
@@ -3105,6 +3117,41 @@ function bindZoomHandlers() {
    '<p style="margin:0;">Three limits apply. This is a proxy built from S&amp;P 500 constituents, not NYSE wide breadth, so it can miss small cap participation. Levels are relative to the anchor date' + (anchor ? ' (' + esc(anchor) + ')' : '') + ', because a summation index has no natural zero point on a short history. And the lowest band edge is the least stable of the four, since it sits in the thin left tail of a young series.</p>' +
    '</div></div>';
   return h + "</div>";
+ }
+
+// McClellan Breadth as a Daily Snapshot composite input (2026-10-26
+// fold-in): a Technical-category summary on the Risk Models page.
+// Outputs only: the composite score and regime plus the current
+// gauge reading and latest alert. The full gauge, chart, history,
+// and alert list live in the Market Internals section.
+function mcclellanBreadthHtml() {
+  const rh = D.risk_headlines || {};
+  const v = (rh.values || {}).mcclellan_breadth || {};
+  const mc = (PRO_DATA && PRO_DATA.mcclellan) || {};
+  const cur = mc.current || {};
+  if (v.score == null && cur.summationIndex == null) {
+   return '<div class="section"><div class="section-title">McClellan Breadth ' + PRO_BADGE + '</div>' +
+    '<div class="card"><p style="color:var(--muted)">Breadth data unavailable. Check back after the next refresh.</p></div></div>';
+  }
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const c = colorMap[v.color] || "#dbe5f1";
+  const sgn = (x) => (x == null ? "n/a" : (x > 0 ? "+" : "") + Number(x).toFixed(1));
+  let h = '<div class="section"><div class="section-title">McClellan Breadth ' + PRO_BADGE + '</div>' +
+   '<div class="section-sub">Cumulative breadth momentum across S&amp;P 500 constituents, carried into the Daily Snapshot composite as a breadth input. The full gauge lives in Market Internals.</div>';
+  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
+   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">BREADTH INPUT</div>' +
+   '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(v.regime || cur.regime || "") + '</div>' +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Summation Index ' + sgn(cur.summationIndex) + ' · Oscillator ' + sgn(cur.oscillator) + ' · 10-day ' + sgn(cur.delta10D) + ' pts · Trend ' + esc(cur.trend || "") + '</div></div>' +
+   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8d99aa;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + (v.score != null ? v.score : "-") + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div></div>';
+  const latestAlert = ((mc.alerts && mc.alerts.events) || []).slice(-1)[0];
+  if (latestAlert) {
+   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:12px;color:#8d99aa;">LATEST BREADTH ALERT</div>' +
+    '<div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-top:2px;">' + esc(latestAlert.date) + ' · ' + esc(mcclellanAlertLabel(latestAlert.type)) + ' · MSI ' + sgn(latestAlert.msi) + '</div></div>';
+  }
+  h += '<div style="margin:12px 0;"><a href="#/monitor/mcclellan" class="btn-gold" style="text-decoration:none;">View the full gauge in Market Internals</a></div>';
+  h += '<div class="panel-asof">As of ' + esc((mc.metadata && mc.metadata.as_of) || (rh.as_of || "")) + '</div></div>';
+  return h;
  }
 
  route("monitor", function (param) {
@@ -5361,6 +5408,13 @@ function mcclellanRegimeColor(regime) {
   if (r.indexOf("HEALTHY") >= 0) return "#4dd2aa";
   if (r.indexOf("NEUTRAL") >= 0) return "#8e9fb5";
   return "#f59e0b";
+}
+// Display labels for breadth alert events. Factual readings only;
+// no advice or posture language is ever attached to an alert.
+function mcclellanAlertLabel(type) {
+  return { extreme_overbought: "Breadth extreme: overbought",
+   extreme_capitulation: "Breadth extreme: capitulation",
+   breadth_thrust: "Breadth thrust", zero_cross: "Zero-line crossover" }[type] || type;
 }
 route("mcclellan", function () {
  // Redirect: McClellan lives as a section of Market Internals (2026-10-26).
@@ -13861,7 +13915,8 @@ function volSurfaceHtml() {
    gamma_flip: "Gamma", pead_screener: "Earn Drift", squeeze_radar: "Squeeze",
    macro_regime: "Macro Regime", fiscal_dominance: "Fiscal Dom.",
    eurodollar_stress: "Eurodollar", economic_nowcast: "Nowcast",
-   taylor_gap: "Taylor Gap", sovereign_fragmentation: "Fragment.", liquidity_stress: "Liq. Stress" };
+   taylor_gap: "Taylor Gap", sovereign_fragmentation: "Fragment.", liquidity_stress: "Liq. Stress",
+   mcclellan_breadth: "McClellan" };
   let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
    '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
    '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8d99aa;">/100</span></div>' +
@@ -15197,6 +15252,7 @@ function volSurfaceHtml() {
      { id: "risk-correction-risk", name: "Correction Risk", fn: () => correctionRiskHtml() },
      { id: "risk-concentration", name: "Leadership Concentration", fn: () => concentrationHtml() },
      { id: "risk-squeeze-fragility", name: "Squeeze Fragility", fn: () => squeezeRadarHtml() },
+     { id: "risk-mcclellan-breadth", name: "McClellan Breadth", fn: () => mcclellanBreadthHtml() },
     ] },
  ];
  const RISK_TOC_CSS =

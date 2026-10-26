@@ -869,6 +869,14 @@ def main():
         "pead_screener": (+1, "Structural & Breadth", "Earnings Drift", 3),
         "squeeze_radar": (+1, "Flow & Leverage", "Squeeze Fragility", 3),
         "flow_divergence": (+1, "Flow & Leverage", "Flow Divergence", 2),
+        # McClellan Breadth (2026-10-26 fold-in): the S&P 500-constituent
+        # breadth proxy's risk contribution, tier 2. Tier 2, not tier 1,
+        # because the proxy history is short (about a year) and breadth
+        # is already partly carried by Correction Risk's breadth leg;
+        # tier 2 gives the input real weight without letting one proxy
+        # dominate the pillar. Missing input is skipped like any other
+        # model (the _raw loop skips None); never a fabricated default.
+        "mcclellan_breadth": (+1, "Structural & Breadth", "McClellan Breadth", 2),
     }
     # --- Risk headline data contract (2026-10-22 redesign) ---
     # _native: registry inputs in each model's native orientation (drives CCRI).
@@ -903,6 +911,8 @@ def main():
     _ts = pro_sections.get("treasury_slr", {}) or {}
     _rys = pro_sections.get("real_yield_shock", {}) or {}
     _mr = pro_sections.get("macro_regime", {}) or {}
+    _mc = pro_sections.get("mcclellan", {}) or {}
+    _mc_cur = _mc.get("current", {}) or {}
     _tg_gap = _am_tg.get("gap_bps")
     _fd_osc = _fd.get("oscillator")
 
@@ -941,6 +951,7 @@ def main():
         "economic_nowcast": _am_nc.get("score"),
         "taylor_gap": _tg_gap,
         "sovereign_fragmentation": _am_sf.get("score"),
+        "mcclellan_breadth": _mc_cur.get("risk_score"),
     }
 
     _hl = {}
@@ -978,6 +989,10 @@ def main():
          _am_tg.get("regime"), _am_tg.get("color"))
     _put("sovereign_fragmentation", _native["sovereign_fragmentation"],
          _am_sf.get("regime"), _am_sf.get("color"))
+    _mc_risk = _mc_cur.get("risk_score")
+    _mc_color = ("rose" if (_mc_risk or 0) >= 70 else "amber" if (_mc_risk or 0) >= 50
+                 else "slate" if (_mc_risk or 0) >= 30 else "emerald")
+    _put("mcclellan_breadth", _mc_risk, _mc_cur.get("regime"), _mc_color)
 
     _NAMES = {
         "correction_risk": "Correction Risk", "liquidity_drain": "Liquidity Drain",
@@ -991,6 +1006,7 @@ def main():
         "macro_regime": "Macro Regime", "fiscal_dominance": "Fiscal Dominance",
         "eurodollar_stress": "Eurodollar Stress", "economic_nowcast": "Nowcast Momentum",
         "taylor_gap": "Taylor Gap", "sovereign_fragmentation": "Sovereign Fragmentation",
+        "mcclellan_breadth": "McClellan Breadth",
     }
     _SLUGS = {
         "correction_risk": "risk-correction-risk", "liquidity_drain": "risk-liquidity-drain",
@@ -1005,6 +1021,7 @@ def main():
         "eurodollar_stress": "risk-eurodollar-stress", "economic_nowcast": "risk-economic-nowcast",
         "taylor_gap": "risk-taylor-gap",
         "sovereign_fragmentation": "risk-sovereign-fragmentation",
+        "mcclellan_breadth": "risk-mcclellan-breadth",
     }
     # Free bundle: snapshot metadata only. No scores, regime labels or colors.
     site["risk_headlines"] = {
@@ -1282,10 +1299,17 @@ def main():
     # after pro_sections is fully built, per the build-ordering rule.
     _mc = pro_sections.get("mcclellan") or {}
     if isinstance(_mc, dict) and isinstance(_mc.get("current"), dict):
+        # Headline allowlist: Pro-only current fields (notably the
+        # composite risk_score) must never reach the free bundle.
+        _mc_cur = _mc["current"]
+        _mc_head = {k: _mc_cur[k] for k in (
+            "summationIndex", "oscillator", "delta1D", "delta10D", "regime",
+            "trend", "advances", "declines", "netAdvances", "bands")
+            if k in _mc_cur}
         site["mcclellan_headline"] = {
             "as_of": (_mc.get("metadata") or {}).get("as_of"),
             "universe": (_mc.get("metadata") or {}).get("universe"),
-            "current": _mc["current"],
+            "current": _mc_head,
         }
     with open(os.path.join(HERE, "functions", "pro-data.json"), "w") as pf:
         json.dump(pro_out, pf)
