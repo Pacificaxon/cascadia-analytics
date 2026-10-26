@@ -13536,6 +13536,22 @@ function volSurfaceHtml() {
   '<p style="margin:0;"><b style="color:#dbe5f1;">How we calculate it.</b> Macro readings come from the Cboe volatility indices. Per-ticker figures come from CBOE delayed options chains, using the expiries nearest 30 and 90 days out, the at-the-money strike, and strikes near 1.05 times spot for the call and 0.95 times spot for the put as the 25-delta approximation. Strikes with no valid implied vol are skipped, never interpolated.</p>' +
   "</div></div>";
 
+ // Skew ratio explainer card (live example: numbers computed from today's index rows, never hardcoded)
+ const ewz = (V.indices || {})["EWZ"], spy = (V.indices || {})["SPY"];
+ let ratioExample = "";
+ if (ewz && ewz.available && spy && spy.available && ewz.atm_iv_30d > 0 && spy.atm_iv_30d > 0) {
+  const ewzGap = ewz.put_25d_iv - ewz.call_25d_iv, spyGap = spy.put_25d_iv - spy.call_25d_iv;
+  ratioExample = '<p style="margin:0 0 10px;">Today, EWZ (' + esc(INDEX_COUNTRY["EWZ"] || "") + ') shows a put call gap of ' + ewzGap.toFixed(2) + ' vol points on an at the money vol of ' + Number(ewz.atm_iv_30d).toFixed(2) + ' percent, a ratio of ' + Number(ewz.skew_ratio).toFixed(3) + ', while SPY (' + esc(INDEX_COUNTRY["SPY"] || "") + ') shows a gap of ' + spyGap.toFixed(2) + ' vol points on an at the money vol of ' + Number(spy.atm_iv_30d).toFixed(2) + ' percent, a ratio of ' + Number(spy.skew_ratio).toFixed(3) + '. The raw gaps look similar, but measured against each market\'s own vol level, SPY\'s smile is far more lopsided than EWZ\'s.</p>';
+ }
+ h += '<div class="card" style="margin:14px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">Reading the skew ratio</div>' +
+  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<p style="margin:0 0 10px;">The skew ratio is built from the 30 day chain. It takes the implied vol of puts struck 5 percent below spot, subtracts the implied vol of calls struck 5 percent above spot, and divides by the at the money vol for the same expiry. Those strikes approximate the 25 delta wings. The result has no units, and it answers one question, which is how much of a market\'s own vol level is priced as downside protection. A reading of 0.145 means the put call gap equals 14.5 percent of that market\'s vol.</p>' +
+  '<p style="margin:0 0 10px;">The division is the whole point. Vol can only be compared relative to its own level. A market trading at 50 percent vol and a market trading at 15 percent vol live in different regimes, so a gap of 7 vol points means something very different in each. Dividing by at the money vol strips out the regime and leaves the shape of the smile, which is what can actually be compared across markets.</p>' +
+  ratioExample +
+  '<p style="margin:0 0 10px;">The sign carries the direction. A positive reading means puts cost more than calls and the market is paying for downside protection. A negative reading means calls cost more than puts, the upside chase the table labels inverted skew.</p>' +
+  '<p style="margin:0;">Two cautions. The ratio is a snapshot of one day\'s chain, not a probability of a fall and not a predicted move size. And the sentiment label beside the ratio is set from the raw gap in vol points, not from the ratio itself, so the two can disagree by design. A high vol market can carry a wide raw gap and still read standard skew once that gap is measured against its own vol level.</p>' +
+  "</div></div>";
+
  h += '<div class="panel-asof">Daily Snapshot as of ' + esc((V.as_of || "").slice(0, 10)) + " · Sources: Cboe indices via Yahoo Finance, CBOE delayed options chains</div></div>";
  return h;
 }
