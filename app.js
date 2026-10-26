@@ -21,9 +21,8 @@
  };
  const fmtPct = (n, d) => (n == null || isNaN(n)) ? " - " : (n >= 0 ? "+" : "") + Number(n).toFixed(d != null ? d : 1) + "%";
  const cls = (n) => (n == null || isNaN(n)) ? "" : (n >= 0 ? "pos" : "neg");
- // Modern FREE/PRO badges (gold = Pro, green outline = Free)
+ // PRO badge (gold); free is the default and carries no badge
  const PRO_BADGE = '<span style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:#0a0e17;background:linear-gradient(135deg,#d9a441,#d9a441 55%,#a8823d);padding:3px 11px;border-radius:20px;vertical-align:middle;box-shadow:0 1px 8px rgba(217,164,65,0.35);white-space:nowrap;">Pro</span>';
- const FREE_BADGE = '<span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#7ab88a;background:#0a0e17;border:1px solid #457854;padding:2px 10px;border-radius:20px;vertical-align:middle;white-space:nowrap;">Free</span>';
  // Company logos (Clearbit) and industries for ticker headers
  const TICKER_META = {
   "ALAB": { domain: "asteralabs.com", industry: "Semiconductors" },
@@ -3037,7 +3036,7 @@ function bindZoomHandlers() {
   if (D.dark_pool && D.dark_pool.tickers && Object.keys(D.dark_pool.tickers).length) {
    const dpAgg = darkPoolAggHtml(D.dark_pool);
    if (dpAgg) {
-    SEC.darkpool = '<div class="section" style="max-width:none;"><div class="section-title">Dark Pool Flow ' + FREE_BADGE + '</div>' +
+    SEC.darkpool = '<div class="section" style="max-width:none;"><div class="section-title">Dark Pool Flow ' + '</div>' +
      '<div class="section-sub">Off-exchange volume share, dark short ratios, and net dark flow aggregated across the coverage universe. Updates every trading morning.</div>' +
      '<div class="card">' + dpAgg + "</div></div>";
    }
@@ -3565,7 +3564,7 @@ function bindZoomHandlers() {
       "Commercials" + extBadge(c) + " · Large Specs" + extBadge(l) + " · Small Specs" + extBadge(s) + "</div>" +
       '<div class="panel-asof">CFTC data as of ' + esc(d.report_date || "") + " (published Friday, 3-day lag)</div></div>";
     }).join("");
-   return '<div class="card" style="margin-bottom:16px;"><h3>Commitments of Traders (COT) ' + FREE_BADGE + '</h3>' +
+   return '<div class="card" style="margin-bottom:16px;"><h3>Commitments of Traders (COT) ' + '</h3>' +
     '<div class="section-sub">Where is institutional capital positioned? Weekly CFTC futures data.</div>' +
     '<div class="zoomable-chart" data-chart="cot" style="position:relative;height:240px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="cot-chart"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
@@ -3592,7 +3591,7 @@ function bindZoomHandlers() {
    // Reading: above 2.5% = elevated expectations, below 2% = disinflation fears
    const read = latest >= 2.5 ? "Elevated" : latest < 2.0 ? "Subdued" : "Anchored";
    const readCls = latest >= 2.5 ? "#f37d83" : latest < 2.0 ? "#58a6ff" : "#4dd2aa";
-   let h = '<div class="section"><div class="section-title">10Y Breakeven Inflation ' + FREE_BADGE + '</div>';
+   let h = '<div class="section"><div class="section-title">10Y Breakeven Inflation ' + '</div>';
    h += '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">' +
     '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">LATEST READING</div>' +
     '<div style="font-size:36px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + latest.toFixed(2) + '%</div></div>' +
@@ -3628,7 +3627,7 @@ function bindZoomHandlers() {
    const read = erp >= 0.045 ? "Elevated" : erp < 0.03 ? "Compressed" : "Normal";
    const readCls = erp >= 0.045 ? "#f37d83" : erp < 0.03 ? "#58a6ff" : "#4dd2aa";
    const cid = "erp-chart";
-   let h = '<div class="section"><div class="section-title">Implied Equity Risk Premium ' + FREE_BADGE + '</div>';
+   let h = '<div class="section"><div class="section-title">Implied Equity Risk Premium ' + '</div>';
    h += '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">' +
     '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">IMPLIED ERP</div>' +
     '<div style="font-size:36px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + erpPct + '%</div></div>' +
@@ -3698,7 +3697,7 @@ function bindZoomHandlers() {
    // Sort ranges numerically
    allRanges.sort((a, b) => parseFloat(a) - parseFloat(b));
 
-   return '<div class="section" style="max-width:none;"><div class="section-title">FOMC Fed Funds Futures ' + FREE_BADGE + '</div>' +
+   return '<div class="section" style="max-width:none;"><div class="section-title">FOMC Fed Funds Futures ' + '</div>' +
     '<div class="section-sub">What the futures market is pricing for upcoming FOMC meetings. Updates every morning.</div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
     '<div class="card" style="padding:16px;"><div style="font-size:11px;color:#dbe5f1;margin-bottom:4px;">EFFECTIVE FED FUNDS RATE</div>' +
@@ -3740,7 +3739,7 @@ function bindZoomHandlers() {
     contrarian = "Bears outnumber bulls, mild contrarian optimism.";
    }
    const chg = (v) => v != null ? ' <span style="font-size:11px;color:' + (v >= 0 ? "#4dd2aa" : "#f37d83") + ';">(' + (v >= 0 ? "+" : "") + v.toFixed(1) + "pt)</span>" : "";
-   return '<div class="card" style="margin-bottom:16px;"><h3>AAII Investor Sentiment ' + FREE_BADGE + '</h3>' +
+   return '<div class="card" style="margin-bottom:16px;"><h3>AAII Investor Sentiment ' + '</h3>' +
     '<div class="section-sub">Weekly survey of individual investors, are they bullish or bearish on stocks over the next 6 months?</div>' +
     '<div class="zoomable-chart" data-chart="aaii" style="position:relative;height:220px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="aaii-chart"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
@@ -6718,14 +6717,14 @@ route("primer", function () {
  const mod = ACADEMY_MODULES.find((m) => m.id === _academyModule) || ACADEMY_MODULES[0];
  const q = _academyQuery.trim().toLowerCase();
  const filtered = ACADEMY_MODULES.filter((m) => !q || m.title.toLowerCase().includes(q) || m.category.toLowerCase().includes(q) || m.summary.toLowerCase().includes(q));
- let h = '<div class="crumb">FREE · EDUCATION</div>' +
+ let h = '<div class="crumb">EDUCATION</div>' +
   '<div class="hero"><div><h1 class="hero-h">Cascadia Primer</h1>' +
   '<p class="hero-sub">Institutional trading and research concepts, taught plainly. ' + ACADEMY_MODULES.length + ' modules across ' + (function(){var c=[],seen={};ACADEMY_MODULES.forEach(function(m){var k=(m.category||'').toLowerCase();if(k&&!seen[k]){seen[k]=1;c.push(k);}});return c.length>1?c.slice(0,-1).join(', ')+', and '+c[c.length-1]:c.join('');})() + '.</p></div></div>' +
   '<div class="card" style="border-left:3px solid #d9a441;margin-bottom:20px;"><div style="font-size:12px;color:#d9a441;font-weight:700;letter-spacing:1px;margin-bottom:6px;">PLEASE READ</div>' +
   '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div></div>" +
   '<div id="acad-layout" style="display:flex;gap:20px;align-items:flex-start;">' +
   '<aside id="acad-side" style="width:280px;flex-shrink:0;position:sticky;top:16px;">' +
-  '<div class="card"><div style="font-size:11px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:10px;">CURRICULUM · FREE</div>' +
+  '<div class="card"><div style="font-size:11px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:10px;">CURRICULUM</div>' +
   '<input id="acad-search" type="text" placeholder="Search topics, Greeks, models..." value="' + esc(_academyQuery) + '" style="width:100%;margin-bottom:10px;padding:8px 10px;border-radius:8px;border:1px solid #253142;background:#0b1119;color:#dbe5f1;font-size:13px;">' +
   '<nav>' + filtered.map((m) => {
    const active = m.id === mod.id;
@@ -7205,7 +7204,7 @@ route("alerts", function () {
 
   // Financial statements (free for all)
   if (t.financials) {
-   h += '<div class="section" id="tk-sec-financials" data-toc="Financials"><div class="section-title">Financials ' + FREE_BADGE + '</div>';
+   h += '<div class="section" id="tk-sec-financials" data-toc="Financials"><div class="section-title">Financials ' + '</div>';
    h += financialsHtml(t);
    h += "</div>";
   }
@@ -7216,13 +7215,13 @@ route("alerts", function () {
   h += "</div>";
 
   // Trading Trends (FREE), quarterly hedge fund + insider flows with price
-  h += '<div class="section" id="tk-sec-trends" data-toc="Trading Trends"><div class="section-title">Trading Trends ' + FREE_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-trends" data-toc="Trading Trends"><div class="section-title">Trading Trends ' + '</div>';
   h += '<div class="section-sub">Quarterly institutional and insider buy/sell flows with the price trend. Hedge fund data from 13F filings, insider data from SEC Form 4.</div>';
   h += tickerTrendsHtml(tk);
   h += "</div>";
 
   // Insider Transactions (FREE), SEC Form 4
-  h += '<div class="section" id="tk-sec-insider" data-toc="Insider Transactions"><div class="section-title">Insider Transactions ' + FREE_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-insider" data-toc="Insider Transactions"><div class="section-title">Insider Transactions ' + '</div>';
   h += '<div class="section-sub">Recent insider buys and sells from SEC Form 4 filings. Open-market transactions signal conviction and are highlighted.</div>';
   h += tickerInsiderHtml(tk);
   h += "</div>";
@@ -7257,7 +7256,7 @@ route("alerts", function () {
   h += "</div>";
 
   // Dark Pool & Off-Exchange Flow (FREE), FINRA Reg SHO daily
-  h += '<div class="section" id="tk-sec-darkpool" data-toc="Dark Pool Flow"><div class="section-title">Dark Pool Flow ' + FREE_BADGE + '</div>';
+  h += '<div class="section" id="tk-sec-darkpool" data-toc="Dark Pool Flow"><div class="section-title">Dark Pool Flow ' + '</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Institutional off-exchange sentiment for ' + esc(tk) + ' from FINRA Reg SHO daily files. High dark short ratio means dealers are shorting to fill institutional buy orders (accumulation).</div>';
   h += darkPoolHtml(tk);
   h += "</div>";
@@ -7350,7 +7349,7 @@ route("alerts", function () {
   h += '<div class="section" id="tk-sec-earnings-date" data-toc="Earnings Date & Whisper"><div class="section-title">Earnings Date & Whisper</div>' + earningsDateHtml(tk) + "</div>";
 
   // Earnings revisions (free) - Zacks-style 90-day revision trends
-  h += '<div class="section" id="tk-sec-revisions" data-toc="Earnings Revisions"><div class="section-title">Earnings Revisions ' + FREE_BADGE + '</div>' + revisionsHtml(tk) + "</div>";
+  h += '<div class="section" id="tk-sec-revisions" data-toc="Earnings Revisions"><div class="section-title">Earnings Revisions ' + '</div>' + revisionsHtml(tk) + "</div>";
 
   h += '<div class="section" id="tk-sec-earnings-history" data-toc="Earnings History"><div class="section-title">Earnings History ' + PRO_BADGE + '</div>';
   h += gated("Earnings History, Pro", "Earnings reviews for every covered quarter, with verdict, bull and bear cases, KPIs, and guidance.", earningsHtml(tk));
@@ -10261,7 +10260,7 @@ route("alerts", function () {
   const pro = isPro();
   // Coverage screener is FREE; factor screeners below are Pro
   let h = '<nav class="tk-toc" id="scr-toc" aria-label="On this page"></nav>' +
-   '<div class="section" id="scr-sec-premium" data-toc="Premium Screener"><div class="section-title">Premium Screener ' + FREE_BADGE + '</div>' +
+   '<div class="section" id="scr-sec-premium" data-toc="Premium Screener"><div class="section-title">Premium Screener ' + '</div>' +
    '<div class="section-sub">Filter the coverage universe. Methodology: the Cascadia Score is a multi-factor composite of valuation (base-case upside), price momentum (MA signals), earnings momentum (latest verdict), and options flow sentiment. Scored 1–100.</div>';
   h += '<div class="card"><div class="filter-bar">' +
    '<select id="f-rating"><option value="">Any rating</option><option>Buy</option><option>Hold</option><option>Sell</option></select>' +
