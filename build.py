@@ -638,6 +638,7 @@ def main():
         "ticker_ma": site.pop("ticker_ma", {}),
         "ticker_ohlcv": site.pop("ticker_ohlcv", {}),
         "macro_indicators": macro_indicators,
+        "mcclellan": load(os.path.join(MR, "mcclellan_summation.json")) if os.path.exists(os.path.join(MR, "mcclellan_summation.json")) else {},
         "technical_analysis": technical_analysis,
         "ticker_macro_takes": {k: v[:8] for k, v in ticker_macro.items()},
         "premarket_report": premarket_report,
@@ -1276,6 +1277,16 @@ def main():
                 "source is marked unavailable with the reason")
 
     pro_out = {"generated_at": site.get("generated_at"), "sections": pro_sections}
+    # McClellan headline for free users: current reading + regime only.
+    # The history series stays Pro-only in pro_sections above. Added here,
+    # after pro_sections is fully built, per the build-ordering rule.
+    _mc = pro_sections.get("mcclellan") or {}
+    if isinstance(_mc, dict) and isinstance(_mc.get("current"), dict):
+        site["mcclellan_headline"] = {
+            "as_of": (_mc.get("metadata") or {}).get("as_of"),
+            "universe": (_mc.get("metadata") or {}).get("universe"),
+            "current": _mc["current"],
+        }
     with open(os.path.join(HERE, "functions", "pro-data.json"), "w") as pf:
         json.dump(pro_out, pf)
     print(f"Wrote functions/pro-data.json ({len(json.dumps(pro_out))//1024} KB)", flush=True)
