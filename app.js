@@ -22,6 +22,7 @@
  const fmtPct = (n, d) => (n == null || isNaN(n)) ? " - " : (n >= 0 ? "+" : "") + Number(n).toFixed(d != null ? d : 1) + "%";
  const cls = (n) => (n == null || isNaN(n)) ? "" : (n >= 0 ? "pos" : "neg");
  // PRO badge (gold); free is the default and carries no badge
+ const INDEX_COUNTRY = { SPY: "United States", QQQ: "United States", IWM: "United States", DIA: "United States", SPX: "United States", EWZ: "Brazil", EEM: "Emerging Markets", EFA: "Developed Markets ex-US", FXI: "China", EWJ: "Japan", EWU: "United Kingdom", EWG: "Germany", EWY: "South Korea", EWT: "Taiwan", INDA: "India" };
  const PRO_BADGE = '<span style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:#0a0e17;background:linear-gradient(135deg,#d9a441,#d9a441 55%,#a8823d);padding:3px 11px;border-radius:20px;vertical-align:middle;box-shadow:0 1px 8px rgba(217,164,65,0.35);white-space:nowrap;">Pro</span>';
  // Company logos (Clearbit) and industries for ticker headers
  const TICKER_META = {
@@ -3996,6 +3997,7 @@ function bindZoomHandlers() {
      const putPct = (d.put_iv / maxIV * 100).toFixed(1);
      const callPct = (d.call_iv / maxIV * 100).toFixed(1);
      return '<div class="card" style="margin-bottom:12px;"><h3>' + esc(d.symbol) +
+      (INDEX_COUNTRY[d.symbol] ? ' <span style="font-size:13px;color:#8d99aa;font-weight:400;">' + esc(INDEX_COUNTRY[d.symbol]) + '</span>' : '') +
       ' <span style="font-size:12px;color:' + rc + ';">' + esc(d.regime_label || "") + "</span></h3>" +
       '<div style="margin:12px 0;">' +
       '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
@@ -13392,7 +13394,7 @@ function volSurfaceRowsHtml(rows) {
  return rows.map((r) => {
   if (!r.e || !r.e.available) {
    return '<tr style="border-bottom:1px solid #1c2434;">' +
-    '<td style="padding:8px 10px;font-weight:700;color:#dbe5f1;">' + esc(r.tk) + '</td>' +
+    '<td style="padding:8px 10px;font-weight:700;color:#dbe5f1;">' + esc(r.tk) + (INDEX_COUNTRY[r.tk] ? ' <span style="font-size:11px;color:#8d99aa;font-weight:400;">' + esc(INDEX_COUNTRY[r.tk]) + '</span>' : '') + '</td>' +
     '<td colspan="7" style="padding:8px 10px;color:#8d99aa;">N/A, options data unavailable</td></tr>';
   }
   const e = r.e;
@@ -13401,6 +13403,7 @@ function volSurfaceRowsHtml(rows) {
   const sentC = colorMap[e.skew_color] || "#dbe5f1";
   return '<tr style="border-bottom:1px solid #1c2434;">' +
    '<td style="padding:8px 10px;font-weight:700;color:#dbe5f1;">' + esc(r.tk) +
+   (INDEX_COUNTRY[r.tk] ? ' <span style="font-size:11px;color:#8d99aa;font-weight:400;">' + esc(INDEX_COUNTRY[r.tk]) + '</span>' : '') +
    (e.stale ? ' <span style="font-size:10px;color:#e0aa46;">STALE</span>' : "") + '</td>' +
    '<td style="padding:8px 10px;color:#dbe5f1;">$' + Number(e.spot).toFixed(2) + '</td>' +
    '<td style="padding:8px 10px;color:#dbe5f1;">' + Number(e.atm_iv_30d).toFixed(1) + '%</td>' +
