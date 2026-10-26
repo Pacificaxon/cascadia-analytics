@@ -45,6 +45,7 @@
   "INTC": { domain: "intel.com", industry: "Semiconductors" },
   "IRM": { domain: "ironmountain.com", industry: "Data Center REIT" },
   "ISRG": { domain: "intuitive.com", industry: "Medical Devices" },
+  "KRMN": { domain: "karman-sd.com", industry: "Aerospace & Defense" },
   "LEU": { domain: "centrusenergy.com", industry: "Uranium" },
   "LITE": { domain: "lumentum.com", industry: "Optical Components" },
   "LRCX": { domain: "lamresearch.com", industry: "Semiconductor Equipment" },
@@ -503,7 +504,7 @@ function proDataStale() {
  // raw notes/ URL cache-first from the first copy ever fetched, so an
  // unversioned republication never reaches them; the versioned URL is a
  // fresh cache key that bypasses the stale copy everywhere.
- const NOTES_PDF_V = "20261026-79";
+ const NOTES_PDF_V = "20261026-80";
  function openPdfModal(pdfUrl, title) {
   const root = document.getElementById("modal-root");
   // #view=FitH asks the embedded viewer to fit the page to the viewer
