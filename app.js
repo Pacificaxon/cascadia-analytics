@@ -3040,12 +3040,20 @@ function bindZoomHandlers() {
  // moved from its standalone route into the Technical breadth category).
  // Returns the section HTML, or null when the section should be skipped
  // this render (Pro data not loaded yet, or genuinely unavailable). Free
- // users always get the headline cards plus the chart/history teaser;
- // Pro users get the full chart, band cards, and explanation card.
+ // users get a blurred placeholder only, no measurements: every McClellan
+ // reading is Pro (2026-10-26), so the free bundle carries no headline.
+ // Pro users get the headline cards, full chart, band cards, and
+ // explanation card.
  function mcclellanSectionHtml() {
-  const head = D.mcclellan_headline || null;
+  if (!isPro()) {
+   return '<div class="section"><div class="section-title">McClellan Summation Index ' + PRO_BADGE + '</div>' +
+    '<div class="card"><div style="display:flex;align-items:center;gap:16px;margin:8px 0;">' +
+    '<div class="snap-blur" style="width:110px;height:40px;border-radius:8px;"></div>' +
+    '<div><div class="snap-blur" style="width:170px;height:16px;border-radius:6px;"></div>' +
+    '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">Cumulative breadth momentum across S&amp;P 500 constituents. The reading is Pro.</div></div></div></div></div>';
+  }
   const pro = (PRO_DATA && PRO_DATA.mcclellan) || null;
-  const cur = (pro && pro.current) || (head && head.current) || null;
+  const cur = (pro && pro.current) || null;
   if (!cur) return null;
   if (isPro() && (!pro || !pro.history || !pro.history.length)) {
    // Full payload arrived without the section: try the section endpoint
@@ -3064,7 +3072,7 @@ function bindZoomHandlers() {
    }
    return null;
   }
-  const asOf = (pro && pro.metadata && pro.metadata.as_of) || (head && head.as_of) || null;
+  const asOf = (pro && pro.metadata && pro.metadata.as_of) || null;
   const anchor = (pro && pro.metadata && pro.metadata.anchor_date) || null;
   const sgn = (v) => (v == null ? "n/a" : (v > 0 ? "+" : "") + Number(v).toFixed(1));
   const rcol = mcclellanRegimeColor(cur.regime);
@@ -3078,10 +3086,6 @@ function bindZoomHandlers() {
    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Regime</div><div style="font-size:18px;font-weight:800;color:' + rcol + ';">' + esc(cur.regime) + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Trend ' + esc(cur.trend || "") + '</div></div>' +
    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Net Advances</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.netAdvances) + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">' + (cur.advances != null ? cur.advances.toLocaleString() : "") + ' advancers · ' + (cur.declines != null ? cur.declines.toLocaleString() : "") + ' decliners</div></div>' +
    '</div>';
-  if (!isPro()) {
-   h += '<div style="margin-top:12px;">' + proTeaser("McClellan chart and history", "The full dual-axis chart against the S&P 500, the complete history series, and the institutional explanation card.") + "</div>";
-   return h + "</div>";
-  }
   const hist = (pro && pro.history) || [];
   const bands = cur.bands || {};
   h += '<div style="margin-top:16px;"><div class="section-title">Summation Index vs S&amp;P 500 ' + PRO_BADGE + '</div>' +
@@ -15676,7 +15680,6 @@ function volSurfaceHtml() {
    '<li>✓ COT Positioning tracker, commercial, large spec, small spec (weekly)</li>' +
    '<li>✓ Fed funds futures tracker with meeting probabilities</li>' +
    '<li>✓ 10Y breakeven inflation tracker</li>' +
-   '<li>✓ McClellan Summation Index headline, current reading and regime</li>' +
    '<li>✓ Dark pool flow, insider transactions, trading trends with 13F</li>' +
    '<li>✓ Earnings revisions</li>' +
    '<li>✓ Coverage premium screener with Cascadia Score and DCF upside</li>' +

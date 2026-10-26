@@ -1294,23 +1294,9 @@ def main():
                 "source is marked unavailable with the reason")
 
     pro_out = {"generated_at": site.get("generated_at"), "sections": pro_sections}
-    # McClellan headline for free users: current reading + regime only.
-    # The history series stays Pro-only in pro_sections above. Added here,
-    # after pro_sections is fully built, per the build-ordering rule.
-    _mc = pro_sections.get("mcclellan") or {}
-    if isinstance(_mc, dict) and isinstance(_mc.get("current"), dict):
-        # Headline allowlist: Pro-only current fields (notably the
-        # composite risk_score) must never reach the free bundle.
-        _mc_cur = _mc["current"]
-        _mc_head = {k: _mc_cur[k] for k in (
-            "summationIndex", "oscillator", "delta1D", "delta10D", "regime",
-            "trend", "advances", "declines", "netAdvances", "bands")
-            if k in _mc_cur}
-        site["mcclellan_headline"] = {
-            "as_of": (_mc.get("metadata") or {}).get("as_of"),
-            "universe": (_mc.get("metadata") or {}).get("universe"),
-            "current": _mc_head,
-        }
+    # McClellan carries no free headline (2026-10-26): every McClellan
+    # measurement is Pro, so the free bundle must not ship the reading.
+    # The Pro payload keeps the full section in pro_sections above.
     with open(os.path.join(HERE, "functions", "pro-data.json"), "w") as pf:
         json.dump(pro_out, pf)
     print(f"Wrote functions/pro-data.json ({len(json.dumps(pro_out))//1024} KB)", flush=True)
