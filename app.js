@@ -280,6 +280,7 @@ function proDataStale() {
    if (sections.axon_altdata) flat.axon_altdata = sections.axon_altdata;
    if (sections.seasonality) flat.seasonality = sections.seasonality;
    if (sections.seasonality_screener) flat.seasonality_screener = sections.seasonality_screener;
+   if (sections.mcclellan) flat.mcclellan = sections.mcclellan;
    if (sections.detailed_breakdowns) flat.detailed_breakdowns = sections.detailed_breakdowns;
    if (sections.sotp) flat._sotp = sections.sotp;
    if (sections.sensitivity) flat._sensitivity = sections.sensitivity;
@@ -297,6 +298,37 @@ function proDataStale() {
    return flat;
   } catch (e) {
    console.warn("fetchProData failed:", e.message);
+   return null;
+  }
+ }
+ // Fetch a single Pro section (small response) as a fallback when the full
+ // payload fetch yields no data for that section. The endpoint serves
+ // ?section=<name> from the same payload, so a small section response
+ // avoids the full-payload delivery path entirely.
+ async function fetchProSection(name) {
+  if (!supa) return null;
+  try {
+   let { data: { session } } = await supa.auth.getSession();
+   if (!session || (session.expires_at && session.expires_at * 1000 < Date.now() + 30000)) {
+    try {
+     await supa.auth.refreshSession();
+     ({ data: { session } } = await supa.auth.getSession());
+    } catch (refreshErr) {
+     console.warn("Section fetch session refresh failed:", refreshErr.message);
+    }
+   }
+   if (!session) return null;
+   const res = await fetch("/api/pro-data?section=" + encodeURIComponent(name), {
+    headers: { "Authorization": "Bearer " + session.access_token }
+   });
+   if (!res.ok) {
+    console.warn("fetchProSection: API returned", res.status, "for", name);
+    return null;
+   }
+   const json = await res.json();
+   return json.data || null;
+  } catch (e) {
+   console.warn("fetchProSection failed:", e.message);
    return null;
   }
  }
@@ -1100,7 +1132,7 @@ function bindZoomHandlers() {
         });
         } catch (e) { console.error("ERP chart error:", e); }
        } else if (kind === "mcclellan") {
-        const mc = (PRO_DATA && PRO_DATA.sections && PRO_DATA.sections.mcclellan) || D.mcclellan || {};
+        const mc = (PRO_DATA && PRO_DATA.mcclellan) || {};
         const hist = mc.history || [];
         if (!hist.length) return;
         try {
@@ -5243,7 +5275,15 @@ route("mcclellan", async function () {
   if (mySeq !== (window._renderSeq || 0)) return;
   try {
   const head = D.mcclellan_headline || null;
-  const pro = (PRO_DATA && PRO_DATA.sections && PRO_DATA.sections.mcclellan) || null;
+  let pro = (PRO_DATA && PRO_DATA.mcclellan) || null;
+  if (isPro() && (!pro || !pro.history || !pro.history.length)) {
+   const sec = await fetchProSection("mcclellan");
+   if (sec) {
+    pro = sec;
+    if (!PRO_DATA) PRO_DATA = {};
+    PRO_DATA.mcclellan = sec;
+   }
+  }
   const cur = (pro && pro.current) || (head && head.current) || null;
   const asOf = (pro && pro.metadata && pro.metadata.as_of) || (head && head.as_of) || null;
   const anchor = (pro && pro.metadata && pro.metadata.anchor_date) || null;
