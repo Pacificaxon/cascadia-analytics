@@ -3979,7 +3979,7 @@ function bindZoomHandlers() {
 
   function skewTrackerHtml(skewData) {
    const indices = skewData.indices || {};
-   const order = ["QQQ", "SPY", "SPX"];
+   const order = ["SPY", "QQQ", "IWM", "DIA", "EWZ", "EEM", "EFA", "FXI", "EWJ", "EWU", "EWG", "EWY", "EWT", "INDA", "SPX"];
    const cards = order
     .map((sym) => indices[sym])
     .filter((d) => d && d.available)
@@ -3989,9 +3989,9 @@ function bindZoomHandlers() {
       normal: "#58a6ff", complacent: "#4dd2aa",
      };
      const rc = regimeColors[d.regime] || "#dbe5f1";
-     const trendIcon = d.trend === "steepening" ? "📈" : d.trend === "flattening" ? "📉" : "➡️";
+     const trendIcon = d.trend === "steepening" ? "📈" : d.trend === "flattening" ? "📉" : d.trend === "stable" ? "➡️" : "—";
      const trendLabel = d.trend === "steepening" ? "Steepening (fear rising)" :
-      d.trend === "flattening" ? "Flattening (fear fading)" : "Stable";
+      d.trend === "flattening" ? "Flattening (fear fading)" : d.trend === "stable" ? "Stable" : "No history yet";
      const maxIV = Math.max(d.put_iv, d.call_iv, 1);
      const putPct = (d.put_iv / maxIV * 100).toFixed(1);
      const callPct = (d.call_iv / maxIV * 100).toFixed(1);
@@ -4318,12 +4318,12 @@ function bindZoomHandlers() {
     "</div>";
    SEC.skew = '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Put vs call implied volatility, what downside protection is costing. Updates daily.</div>' +
-    gated("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.", skewHtml + skewExplainer) +
+    gated("Volatility Skew", "Daily put/call IV skew for US and international index ETFs, read institutional fear.", skewHtml + skewExplainer) +
     "</div>";
   } else if (!isPro()) {
    SEC.skew = '<div class="section" style="max-width:none;"><div class="section-title">Volatility Skew ' + PRO_BADGE + '</div>' +
     '<div class="section-sub">Put vs call implied volatility, what downside protection is costing. Updates daily.</div>' +
-    proTeaser("Volatility Skew", "Daily put/call IV skew for QQQ and SPY, read institutional fear.") +
+    proTeaser("Volatility Skew", "Daily put/call IV skew for US and international index ETFs, read institutional fear.") +
     "</div>";
   }
 
@@ -13513,7 +13513,7 @@ function volSurfaceHtml() {
 
  // Per-ticker table (indices first, then coverage)
  const rows = [];
- ["SPY", "QQQ"].forEach((tk) => { if (V.indices && V.indices[tk]) rows.push({ tk: tk, e: V.indices[tk] }); });
+ ["SPY", "QQQ", "IWM", "DIA", "EWZ", "EEM", "EFA", "FXI", "EWJ", "EWU", "EWG", "EWY", "EWT", "INDA"].forEach((tk) => { if (V.indices && V.indices[tk]) rows.push({ tk: tk, e: V.indices[tk] }); });
  Object.keys(V.tickers || {}).sort().forEach((tk) => rows.push({ tk: tk, e: V.tickers[tk] }));
  window._volSurfaceRows = rows;
  const th = (label, key) => '<th data-vsort="' + key + '" style="padding:9px 10px;text-align:left;font-size:11px;color:#8d99aa;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;">' + label + ' &#8597;</th>';
