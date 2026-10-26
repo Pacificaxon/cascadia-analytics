@@ -205,6 +205,10 @@ def main():
     except FileNotFoundError:
         memos = {"memos": []}
     try:
+        geopolitics_watchlist = load(os.path.join(MR, "geopolitics_watchlist.json"))
+    except FileNotFoundError:
+        geopolitics_watchlist = {"updated": "", "areas": []}
+    try:
         market_analysis_report = load(os.path.join(MR, "market_analysis_report.json"))
     except FileNotFoundError:
         market_analysis_report = {}
@@ -593,6 +597,7 @@ def main():
         "implied_erp": implied_erp,
         "ceo_compensation": ceo_compensation,
         "memos": memos,
+        "geopolitics_watchlist": geopolitics_watchlist,
         "market_analysis_report": market_analysis_report,
         "leadership": leadership,
         "ticker_gex": ticker_gex,

@@ -14884,6 +14884,15 @@ function volSurfaceHtml() {
    if (geoMemos.length) {
     h += '<div id="memo-sec-geopolitics" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">GEOPOLITICS</div>';
     h += '<div style="font-size:13px;color:#8d99aa;margin-bottom:16px;">Politics that move markets: energy shocks, elections, unrest, and great-power friction.</div>';
+    const wl = D.geopolitics_watchlist;
+    if (wl && wl.areas && wl.areas.length) {
+     h += '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:16px 20px;margin-bottom:16px;">';
+     h += '<div style="font-size:12px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:12px;">WHAT WE TRACK' + (wl.updated ? ' &nbsp;<span style="color:#8d99aa;font-weight:400;letter-spacing:0;">Updated ' + esc(wl.updated) + '</span>' : '') + '</div>';
+     wl.areas.forEach((a) => {
+      h += '<div style="margin-bottom:10px;"><span style="font-size:13px;font-weight:700;color:#f5f7fa;">' + esc(a.area) + '</span><span style="font-size:13px;color:#dbe5f1;">: ' + esc(a.status) + '</span>' + (a.post ? ' <a href="#/memos/' + esc(a.post) + '" style="font-size:13px;color:#d9a441;">Latest post \u2192</a>' : '') + '</div>';
+     });
+     h += '</div>';
+    }
     geoMemos.forEach((m) => { h += memoCard(m); });
    }
    restMemos.forEach((m) => { h += memoCard(m); });
