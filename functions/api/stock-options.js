@@ -189,8 +189,47 @@ function computeSkew(options, spot, todayMs) {
     regime = "complacent";
     label = "Complacent";
   }
+  // IV-by-strike curve for the research page's skew chart. The chart
+  // renderer draws nothing without a curve array, which is why the
+  // on-demand skew panel previously showed only the headline IV pair.
+  // One point per strike inside 25% of spot, from the same 25-35 DTE
+  // window; where several expiries share a strike and side, keep the one
+  // nearest 30 DTE. IVs are percents, matching put_iv / call_iv below.
+  const byStrikeSide = {};
+  for (const c of all) {
+    if (c.moneyness < 0.75 || c.moneyness > 1.25) continue;
+    const key = c.strike + ":" + c.cp;
+    const prev = byStrikeSide[key];
+    if (!prev || Math.abs(c.dte - 30) < Math.abs(prev.dte - 30)) byStrikeSide[key] = c;
+  }
+  const strikeSet = {};
+  for (const key of Object.keys(byStrikeSide)) strikeSet[key.split(":")[0]] = true;
+  const curve = Object.keys(strikeSet)
+    .map(Number)
+    .sort((a, b) => a - b)
+    .map((s) => {
+      const p = byStrikeSide[s + ":P"];
+      const cl = byStrikeSide[s + ":C"];
+      return {
+        strike: s,
+        put_iv: p ? round(p.iv * 100, 1) : null,
+        call_iv: cl ? round(cl.iv * 100, 1) : null,
+      };
+    });
+  const dteCounts = {};
+  for (const key of Object.keys(byStrikeSide)) {
+    const d = byStrikeSide[key].dte;
+    dteCounts[d] = (dteCounts[d] || 0) + 1;
+  }
+  let curveDte = tierPuts[0][3];
+  let bestCount = 0;
+  for (const d of Object.keys(dteCounts)) {
+    if (dteCounts[d] > bestCount) { bestCount = dteCounts[d]; curveDte = Number(d); }
+  }
   return {
     spot: round(spot, 2),
+    curve,
+    curve_dte: curveDte,
     put_iv: round(putIv * 100, 1),
     call_iv: round(callIv * 100, 1),
     put_strike: round(tierPuts[0][2], 2),
