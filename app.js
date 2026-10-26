@@ -3046,7 +3046,8 @@ function bindZoomHandlers() {
  // explanation card.
  function mcclellanSectionHtml() {
   if (!isPro()) {
-   return '<div class="section"><div class="section-title">McClellan Summation Index ' + PRO_BADGE + '</div>' +
+   return '<style>.snap-blur{background:linear-gradient(135deg,#243047,#1a2233);border-radius:6px;filter:blur(1.2px);opacity:0.95;}</style>' +
+    '<div class="section"><div class="section-title">McClellan Summation Index ' + PRO_BADGE + '</div>' +
     '<div class="card"><div style="display:flex;align-items:center;gap:16px;margin:8px 0;">' +
     '<div class="snap-blur" style="width:110px;height:40px;border-radius:8px;"></div>' +
     '<div><div class="snap-blur" style="width:170px;height:16px;border-radius:6px;"></div>' +
@@ -13297,7 +13298,8 @@ function treasurySlrBlurCard() {
  // Pro treasury_slr payload, which a lapsed or logged-out session can
  // still hold in memory from an earlier Pro fetch.
  const asOf = ((D.risk_headlines || {}).as_of || (D.generated_at || "")).slice(0, 10);
- return '<div class="card" style="margin-bottom:16px;"><h3>Treasury Absorption &amp; SLR Gauge ' +
+ return '<style>.snap-blur{background:linear-gradient(135deg,#243047,#1a2233);border-radius:6px;filter:blur(1.2px);opacity:0.95;}</style>' +
+  '<div class="card" style="margin-bottom:16px;"><h3>Treasury Absorption &amp; SLR Gauge ' +
   '' + PRO_BADGE + '</h3>' +
   '<div style="display:flex;align-items:center;gap:16px;margin:8px 0;">' +
   '<div class="snap-blur" style="width:110px;height:40px;border-radius:8px;"></div>' +
