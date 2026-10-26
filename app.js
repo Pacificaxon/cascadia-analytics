@@ -1645,8 +1645,9 @@ function bindZoomHandlers() {
   Object.keys(gexStrikeChartData).forEach((k) => delete gexStrikeChartData[k]);
   Object.keys(skewCurveChartData).forEach((k) => delete skewCurveChartData[k]);
   try { document.body.dataset.route = r.name; } catch (e) {}
+  const _activeKey = (r.name === "monitor" && r.param === "mcclellan") ? "mcclellan" : r.name;
   document.querySelectorAll(".topnav a[data-route]").forEach((b) =>
-   b.classList.toggle("active", b.dataset.route === r.name));
+   b.classList.toggle("active", b.dataset.route === _activeKey));
   syncCoveragePick(r);
   updateProBtn();
   if (r.name === "ticker" && routes.ticker) routes.ticker(r.param);
@@ -2883,6 +2884,7 @@ function bindZoomHandlers() {
     sub: "Breadth, rotation, and trend structure. What participation and leadership say about the health of the advance.",
     models: [
      { id: "monitor-market-breadth", key: "panel-breadth", name: "Market Breadth", free: false },
+     { id: "monitor-mcclellan", key: "mcclellan", name: "McClellan Summation Index", free: false },
      { id: "monitor-alligator-jaw", key: "panel-jaw", name: "Alligator Jaw", free: false },
      { id: "monitor-theme-rotation", key: "panel-themerot", name: "Theme Rotation", free: false },
      { id: "monitor-leadership-canary", key: "canaryrs", name: "Industry Leadership & RS Tracker", free: false },
@@ -3034,7 +3036,78 @@ function bindZoomHandlers() {
   document.addEventListener("keydown", window.__monitorTocDocKey);
  }
 
- route("monitor", function () {
+ // McClellan Summation Index as a Market Internals section (2026-10-26:
+ // moved from its standalone route into the Technical breadth category).
+ // Returns the section HTML, or null when the section should be skipped
+ // this render (Pro data not loaded yet, or genuinely unavailable). Free
+ // users always get the headline cards plus the chart/history teaser;
+ // Pro users get the full chart, band cards, and explanation card.
+ function mcclellanSectionHtml() {
+  const head = D.mcclellan_headline || null;
+  const pro = (PRO_DATA && PRO_DATA.mcclellan) || null;
+  const cur = (pro && pro.current) || (head && head.current) || null;
+  if (!cur) return null;
+  if (isPro() && (!pro || !pro.history || !pro.history.length)) {
+   // Full payload arrived without the section: try the section endpoint
+   // once, then re-render when it lands. Until then the section is
+   // skipped, matching the other Pro monitor sections.
+   if (!window._mcSectionFetching) {
+    window._mcSectionFetching = true;
+    fetchProSection("mcclellan").then((sec) => {
+     window._mcSectionFetching = false;
+     if (sec) {
+      if (!PRO_DATA) PRO_DATA = {};
+      PRO_DATA.mcclellan = sec;
+      render();
+     }
+    }).catch(() => { window._mcSectionFetching = false; });
+   }
+   return null;
+  }
+  const asOf = (pro && pro.metadata && pro.metadata.as_of) || (head && head.as_of) || null;
+  const anchor = (pro && pro.metadata && pro.metadata.anchor_date) || null;
+  const sgn = (v) => (v == null ? "n/a" : (v > 0 ? "+" : "") + Number(v).toFixed(1));
+  const rcol = mcclellanRegimeColor(cur.regime);
+  let h = '<div class="section"><div class="section-title">McClellan Summation Index' + (asOf ? ' <span style="font-size:12px;color:var(--muted);font-weight:400;">as of ' + esc(asOf) + '</span>' : '') + '</div>' +
+   '<div class="section-sub">Cumulative breadth momentum across S&amp;P 500 constituents, built from the house daily breadth series. The level is relative to its anchor date, and the regime bands are calibrated to this series own history, not to NYSE bands.</div>' +
+   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">' +
+   '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Summation Index</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.summationIndex) + '</div></div>' +
+   '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Oscillator</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.oscillator) + '</div></div>' +
+   '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">1-Day Change</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.delta1D) + ' pts</div></div>' +
+   '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">10-Day Change</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.delta10D) + ' pts</div></div>' +
+   '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Regime</div><div style="font-size:18px;font-weight:800;color:' + rcol + ';">' + esc(cur.regime) + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Trend ' + esc(cur.trend || "") + '</div></div>' +
+   '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Net Advances</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.netAdvances) + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">' + (cur.advances != null ? cur.advances.toLocaleString() : "") + ' advancers · ' + (cur.declines != null ? cur.declines.toLocaleString() : "") + ' decliners</div></div>' +
+   '</div>';
+  if (!isPro()) {
+   h += '<div style="margin-top:12px;">' + proTeaser("McClellan chart and history", "The full dual-axis chart against the S&P 500, the complete history series, and the institutional explanation card.") + "</div>";
+   return h + "</div>";
+  }
+  const hist = (pro && pro.history) || [];
+  const bands = cur.bands || {};
+  h += '<div style="margin-top:16px;"><div class="section-title">Summation Index vs S&amp;P 500 ' + PRO_BADGE + '</div>' +
+   '<div class="section-sub">Gold line is the Summation Index on the left axis. Grey dashed line is the S&amp;P 500 on the right axis. Click the chart to zoom.</div>' +
+   '<div class="card"><div style="position:relative;height:320px;"><canvas id="mcclellan-chart" class="zoomable-chart" data-chart="mcclellan"></canvas></div></div>' +
+   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px;">' +
+   '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Overbought above</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.overbought != null ? sgn(bands.overbought) : "n/a") + '</div></div>' +
+   '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Healthy from</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.healthy != null ? sgn(bands.healthy) : "n/a") + '</div></div>' +
+   '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Neutral from</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.neutral != null ? sgn(bands.neutral) : "n/a") + '</div></div>' +
+   '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Capitulation below</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.capitulation != null ? sgn(bands.capitulation) : "n/a") + '</div></div>' +
+   '</div></div>';
+  h += '<div style="margin-top:16px;"><div class="section-title">How to read this gauge ' + PRO_BADGE + '</div>' +
+   '<div class="card" style="line-height:1.7;font-size:14px;color:#dbe5f1;">' +
+   '<h3 style="color:#d9a441;font-size:15px;margin:0 0 8px;">What it measures</h3>' +
+   '<p style="margin:0 0 14px;">The gauge starts from daily net advances across S&amp;P 500 constituents, advancers minus decliners from the house breadth series. It smooths net advances with two exponential averages, a faster 19 day average and a slower 39 day average. The difference between them is the McClellan Oscillator, a read on whether breadth momentum is accelerating or fading. The Summation Index adds the oscillator up day after day, turning short term breadth momentum into an intermediate trend gauge.</p>' +
+   '<h3 style="color:#d9a441;font-size:15px;margin:0 0 8px;">Regimes</h3>' +
+   '<p style="margin:0 0 14px;">A positive and rising summation value means advancing issues have dominated long enough to build a constructive trend. A negative value means declining issues have dominated. The regime bands on this page are calibrated to this series own history rather than copied from NYSE bands, because this series covers about 500 large names while NYSE breadth covers thousands. The bands move as history grows, and the current band edges are shown above the chart.</p>' +
+   '<h3 style="color:#d9a441;font-size:15px;margin:0 0 8px;">Divergence and thrust</h3>' +
+   '<p style="margin:0 0 14px;">Two patterns carry the most signal. When the index prints a fresh high while the summation index prints a lower high, the rally is running on narrowing breadth, and that divergence has historically warned of fragile advances. When the summation index climbs rapidly out of deeply negative territory, broad participation is returning at once, and that thrust has historically confirmed durable expansions rather than single day bounces.</p>' +
+   '<h3 style="color:#d9a441;font-size:15px;margin:0 0 8px;">Scope and limits</h3>' +
+   '<p style="margin:0;">Three limits apply. This is a proxy built from S&amp;P 500 constituents, not NYSE wide breadth, so it can miss small cap participation. Levels are relative to the anchor date' + (anchor ? ' (' + esc(anchor) + ')' : '') + ', because a summation index has no natural zero point on a short history. And the lowest band edge is the least stable of the four, since it sits in the thin left tail of a young series.</p>' +
+   '</div></div>';
+  return h + "</div>";
+ }
+
+ route("monitor", function (param) {
   try {
   const panels = D.panels || [];
   // Section buckets, keyed to MONITOR_CATEGORIES. The route builds each
@@ -4993,6 +5066,12 @@ function bindZoomHandlers() {
    SEC.leadership = proTeaser("Market Leadership", "Automated S&P 500 leader tracking with composite scoring and rotation signals.");
   }
 
+  // McClellan section (Technical breadth category). Null when Pro data
+  // is not loaded yet or the section endpoint is still resolving; the
+  // section and its index entry are skipped on that render and appear
+  // when the data lands, matching the other Pro monitor sections.
+  SEC.mcclellan = mcclellanSectionHtml();
+
   // Assemble the page from the buckets, grouped by category, with the
   // Market Internals Index at the top. Category order and free-above-Pro
   // order inside each category come from MONITOR_CATEGORIES. Sections with
@@ -5013,6 +5092,20 @@ function bindZoomHandlers() {
 
   app.innerHTML = h;
   bindMonitorToc();
+  try {
+   const mccv = document.getElementById("mcclellan-chart");
+   if (mccv && PRO_DATA && PRO_DATA.mcclellan && PRO_DATA.mcclellan.history && PRO_DATA.mcclellan.history.length) {
+    const mex = Chart.getChart(mccv);
+    if (mex) mex.destroy();
+    new Chart(mccv, mcclellanChartConfig(PRO_DATA.mcclellan.history));
+   }
+  } catch (e) { console.error("McClellan chart error:", e); }
+  // Nav deep link (#/monitor/mcclellan): render() lands fresh navigations
+  // at the top after this route returns, so the jump to the section runs
+  // on a timer after that scroll settles.
+  if (param === "mcclellan") {
+   setTimeout(() => { const el = document.getElementById("monitor-mcclellan"); if (el) el.scrollIntoView(); }, 100);
+  }
   bindVolSurfaceSort();
   try { drawLeadershipChart(); } catch (e) { console.error("Leadership chart failed:", e); }
   } catch (routeErr) {
@@ -5269,92 +5362,10 @@ function mcclellanRegimeColor(regime) {
   if (r.indexOf("NEUTRAL") >= 0) return "#8e9fb5";
   return "#f59e0b";
 }
-route("mcclellan", async function () {
-  const mySeq = window._renderSeq || 0;
-  await ensureProData();
-  if (mySeq !== (window._renderSeq || 0)) return;
-  try {
-  const head = D.mcclellan_headline || null;
-  let pro = (PRO_DATA && PRO_DATA.mcclellan) || null;
-  if (isPro() && (!pro || !pro.history || !pro.history.length)) {
-   const sec = await fetchProSection("mcclellan");
-   if (sec) {
-    pro = sec;
-    if (!PRO_DATA) PRO_DATA = {};
-    PRO_DATA.mcclellan = sec;
-   }
-  }
-  const cur = (pro && pro.current) || (head && head.current) || null;
-  const asOf = (pro && pro.metadata && pro.metadata.as_of) || (head && head.as_of) || null;
-  const anchor = (pro && pro.metadata && pro.metadata.anchor_date) || null;
-  let h = '<div class="crumb">MARKET INTERNALS · BREADTH</div>';
-  h += '<div class="hero"><div>' +
-    '<h1 class="hero-h">McClellan Summation Index</h1>' +
-    "<p class='hero-sub'>Cumulative breadth momentum across S&amp;P 500 constituents, built from the house daily breadth series. The level is relative to its anchor date, and the regime bands are calibrated to this series own history, not to NYSE bands.</p></div>" +
-    '</div>';
-  if (!cur) {
-    h += '<div class="card"><p style="color:var(--muted);font-size:12px;">McClellan data is temporarily unavailable. The daily pipeline writes it each trading morning.</p></div>';
-    app.innerHTML = h;
-    return;
-  }
-  const sgn = (v) => (v == null ? "n/a" : (v > 0 ? "+" : "") + Number(v).toFixed(1));
-  const rcol = mcclellanRegimeColor(cur.regime);
-  h += '<div class="section"><div class="section-title">Current Reading' + (asOf ? ' <span style="font-size:12px;color:var(--muted);font-weight:400;">as of ' + esc(asOf) + '</span>' : '') + '</div>' +
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">' +
-    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Summation Index</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.summationIndex) + '</div></div>' +
-    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Oscillator</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.oscillator) + '</div></div>' +
-    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">1-Day Change</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.delta1D) + ' pts</div></div>' +
-    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">10-Day Change</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.delta10D) + ' pts</div></div>' +
-    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Regime</div><div style="font-size:18px;font-weight:800;color:' + rcol + ';">' + esc(cur.regime) + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Trend ' + esc(cur.trend || "") + '</div></div>' +
-    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Net Advances</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + sgn(cur.netAdvances) + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">' + (cur.advances != null ? cur.advances.toLocaleString() : "") + ' advancers · ' + (cur.declines != null ? cur.declines.toLocaleString() : "") + ' decliners</div></div>' +
-    '</div></div>';
-  if (!isPro()) {
-    h += '<div class="section"><div class="section-title">Chart and History ' + PRO_BADGE + '</div>' +
-      proTeaser("McClellan chart and history", "The full dual-axis chart against the S&P 500, the complete history series, and the institutional explanation card.") + "</div>";
-    app.innerHTML = h;
-    return;
-  }
-  const hist = (pro && pro.history) || [];
-  if (!hist.length) {
-    h += '<div class="card"><p style="color:var(--muted);font-size:12px;">The McClellan history series failed to load. Please refresh the page.</p></div>';
-    app.innerHTML = h;
-    return;
-  }
-  const bands = cur.bands || {};
-  h += '<div class="section"><div class="section-title">Summation Index vs S&amp;P 500 ' + PRO_BADGE + '</div>' +
-    '<div class="section-sub">Gold line is the Summation Index on the left axis. Grey dashed line is the S&amp;P 500 on the right axis. Click the chart to zoom.</div>' +
-    '<div class="card"><div style="position:relative;height:320px;"><canvas id="mcclellan-chart" class="zoomable-chart" data-chart="mcclellan"></canvas></div></div>' +
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px;">' +
-    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Overbought above</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.overbought != null ? sgn(bands.overbought) : "n/a") + '</div></div>' +
-    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Healthy from</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.healthy != null ? sgn(bands.healthy) : "n/a") + '</div></div>' +
-    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Neutral from</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.neutral != null ? sgn(bands.neutral) : "n/a") + '</div></div>' +
-    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Capitulation below</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.capitulation != null ? sgn(bands.capitulation) : "n/a") + '</div></div>' +
-    '</div></div>';
-  h += '<div class="section"><div class="section-title">How to read this gauge ' + PRO_BADGE + '</div>' +
-    '<div class="card" style="line-height:1.7;font-size:14px;color:#dbe5f1;">' +
-    '<h3 style="color:#d9a441;font-size:15px;margin:0 0 8px;">What it measures</h3>' +
-    '<p style="margin:0 0 14px;">The gauge starts from daily net advances across S&amp;P 500 constituents, advancers minus decliners from the house breadth series. It smooths net advances with two exponential averages, a faster 19 day average and a slower 39 day average. The difference between them is the McClellan Oscillator, a read on whether breadth momentum is accelerating or fading. The Summation Index adds the oscillator up day after day, turning short term breadth momentum into an intermediate trend gauge.</p>' +
-    '<h3 style="color:#d9a441;font-size:15px;margin:0 0 8px;">Regimes</h3>' +
-    '<p style="margin:0 0 14px;">A positive and rising summation value means advancing issues have dominated long enough to build a constructive trend. A negative value means declining issues have dominated. The regime bands on this page are calibrated to this series own history rather than copied from NYSE bands, because this series covers about 500 large names while NYSE breadth covers thousands. The bands move as history grows, and the current band edges are shown above the chart.</p>' +
-    '<h3 style="color:#d9a441;font-size:15px;margin:0 0 8px;">Divergence and thrust</h3>' +
-    '<p style="margin:0 0 14px;">Two patterns carry the most signal. When the index prints a fresh high while the summation index prints a lower high, the rally is running on narrowing breadth, and that divergence has historically warned of fragile advances. When the summation index climbs rapidly out of deeply negative territory, broad participation is returning at once, and that thrust has historically confirmed durable expansions rather than single day bounces.</p>' +
-    '<h3 style="color:#d9a441;font-size:15px;margin:0 0 8px;">Scope and limits</h3>' +
-    '<p style="margin:0;">Three limits apply. This is a proxy built from S&amp;P 500 constituents, not NYSE wide breadth, so it can miss small cap participation. Levels are relative to the anchor date' + (anchor ? ' (' + esc(anchor) + ')' : '') + ', because a summation index has no natural zero point on a short history. And the lowest band edge is the least stable of the four, since it sits in the thin left tail of a young series.</p>' +
-    '</div></div>';
-  app.innerHTML = h;
-  try {
-    const cv = document.getElementById("mcclellan-chart");
-    if (cv) {
-      const existing = Chart.getChart(cv);
-      if (existing) existing.destroy();
-      new Chart(cv, mcclellanChartConfig(hist));
-    }
-  } catch (e) { console.error("McClellan chart error:", e); }
-  bindZoomHandlers();
-  } catch (e) {
-    console.error("McClellan route error:", e);
-    app.innerHTML = '<div class="card"><p style="color:#f37d83;">This section failed to load. Please refresh the page.</p></div>';
-  }
+route("mcclellan", function () {
+ // Redirect: McClellan lives as a section of Market Internals (2026-10-26).
+ // Old links and bookmarks land on the section, not a dead route.
+ nav("monitor/mcclellan");
  });
  route("analysis", async function () {
   const mySeq = window._renderSeq || 0;
