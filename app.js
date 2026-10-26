@@ -7946,7 +7946,7 @@ route("alerts", function () {
    s.segments.every((sg) => sg.revenue_b != null && sg.ebitda_b != null);
   if (!summaryOk) return "";
   let h = '<div class="card"><h3>Full Sum of the Parts <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;letter-spacing:1px;">· ' + esc(s.as_of || "") + "</span></h3>" +
-   '<div class="section-sub">Bottom-up segment build. The parts sum to $' + esc(s.total_revenue_b) + 'B in 2036 revenue, landing just shy of the $30.3B Bull-case target.</div>' +
+   '<div class="section-sub">Bottom-up segment build. The parts sum to $' + esc(s.total_revenue_b) + 'B in 2036 revenue, </div>' +
    '<div class="table-wrap"><table class="sotp-table"><thead><tr>' +
    "<th>Segment</th><th>2036 Revenue</th><th>2036 EBITDA</th><th>EBITDA Margin</th>" +
    "</tr></thead><tbody>";
@@ -8032,9 +8032,10 @@ route("alerts", function () {
   const pct1 = function(v) { return v == null ? '--' : v.toFixed(1) + '%'; };
   const segShort = ['Dedrone', 'Surveillance', 'Evidence.com', 'TASER', 'Body Cams'];
 
+  const fmtB = function(v) { return v == null ? '--' : '$' + (Number(v) / 1000).toFixed(1) + 'B'; };
   let h = '<div class="card"><h3>Full Sum of the Parts</h3>' +
    '<div class="section-sub">Every segment modeled year by year: Revenue to EBITDA to EBIT to NOPAT to Unlevered FCF. ' +
-   '2026 baselines sum to $3.7B. The parts build to $29.5B revenue / $11.2B EBITDA in 2036.</div>';
+   esc(String(years[0])) + ' baselines sum to ' + fmtB(s.totals.revenue[0]) + '. The parts build to ' + fmtB(s.totals.revenue[10]) + ' revenue / ' + fmtB(s.totals.ebitda[10]) + ' EBITDA in ' + esc(String(years[10])) + '.</div>';
 
   h += '<h4 style="margin:18px 0 8px;color:var(--gold)">Revenue by Segment ($M)</h4>' +
    '<div class="table-wrap"><table class="sotp-table sotp-wide"><thead><tr><th>Segment</th>' + yrHead + '</tr></thead><tbody>';
