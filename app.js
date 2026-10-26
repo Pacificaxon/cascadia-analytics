@@ -4435,6 +4435,8 @@ function bindZoomHandlers() {
      const eps = hist.map((r) => r.forward_eps);
      // shade jaw-open periods
      const jawOpen = hist.map((r) => r.jaw_open);
+     const old = Chart.getChart(jc);
+     if (old) old.destroy();
      new Chart(jc, {
       type: "line",
       data: { labels, datasets: [
