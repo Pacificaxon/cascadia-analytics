@@ -503,7 +503,7 @@ function proDataStale() {
  // raw notes/ URL cache-first from the first copy ever fetched, so an
  // unversioned republication never reaches them; the versioned URL is a
  // fresh cache key that bypasses the stale copy everywhere.
- const NOTES_PDF_V = "20261024-78";
+ const NOTES_PDF_V = "20261026-79";
  function openPdfModal(pdfUrl, title) {
   const root = document.getElementById("modal-root");
   // #view=FitH asks the embedded viewer to fit the page to the viewer
