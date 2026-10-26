@@ -16,6 +16,7 @@
  */
 
 import { stockGate, cleanTicker, missingTicker, dataJson } from "./_stock.js";
+import { jsonResponse } from "./_auth.js";
 
 const CBOE_UA =
   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
@@ -258,15 +259,15 @@ export async function onRequest(context) {
     const res = await fetch("https://cdn.cboe.com/api/global/delayed_quotes/options/" + encodeURIComponent(ticker) + ".json", {
       headers: { "User-Agent": CBOE_UA },
     });
-    if (!res.ok) return dataJson(unavailable, request, 1800);
+    if (!res.ok) return jsonResponse(unavailable, 200, request);
     const json = await res.json();
     data = json && json.data;
   } catch (e) {
-    return dataJson(unavailable, request, 1800);
+    return jsonResponse(unavailable, 200, request);
   }
   const spot = data && data.current_price;
   if (!spot || spot <= 0 || !Array.isArray(data.options)) {
-    return dataJson(unavailable, request, 1800);
+    return jsonResponse(unavailable, 200, request);
   }
 
   // The collectors anchor "today" to the New York date; match that so DTE
@@ -293,7 +294,7 @@ export async function onRequest(context) {
     if (t <= 0 || t > 2) continue;
     contracts.push({ strike: parsed.strike, cp: parsed.cp, oi, iv, t, gamma });
   }
-  if (!contracts.length) return dataJson(unavailable, request, 1800);
+  if (!contracts.length) return jsonResponse(unavailable, 200, request);
 
   const gex = computeGex(contracts, spot, todayMs);
   const skew = computeSkew(data.options, spot, todayMs);
