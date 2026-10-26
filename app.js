@@ -14404,6 +14404,53 @@ function volSurfaceHtml() {
   return h;
  }
 
+ function researchRevisionsHtml(tk, d) {
+  const rev = d.revisions || {};
+  const rows = [];
+  if (rev.quarter) rows.push(["Current quarter", rev.quarter]);
+  if (rev.annual) rows.push(["Current fiscal year", rev.annual]);
+  if (!rows.length) return researchUnavailable(tk);
+  let h = '<div class="card"><div class="table-wrap"><table class="coverage"><thead><tr><th>Period</th><th style="text-align:right;">Consensus EPS</th><th style="text-align:right;">Analysts</th><th style="text-align:right;">90 Days Ago</th><th style="text-align:right;">Drift 90D</th><th style="text-align:right;">Up 7D</th><th style="text-align:right;">Down 7D</th><th style="text-align:right;">Up 30D</th><th style="text-align:right;">Down 30D</th></tr></thead><tbody>';
+  h += rows.map(([label, r]) =>
+   "<tr><td>" + esc(label + (r.endDate ? " (" + r.endDate + ")" : "")) + "</td>" +
+   '<td style="text-align:right;">' + (r.consensus != null ? "$" + r.consensus.toFixed(2) : "N/A") + "</td>" +
+   '<td style="text-align:right;">' + (r.analysts != null ? r.analysts : "N/A") + "</td>" +
+   '<td style="text-align:right;">' + (r.consensus90dAgo != null ? "$" + r.consensus90dAgo.toFixed(2) : "N/A") + "</td>" +
+   '<td style="text-align:right;" class="' + (r.drift90dPct != null ? cls(r.drift90dPct) : "") + '">' + (r.drift90dPct != null ? (r.drift90dPct >= 0 ? "+" : "") + r.drift90dPct.toFixed(1) + "%" : "N/A") + "</td>" +
+   '<td style="text-align:right;">' + (r.up7d != null ? r.up7d : "N/A") + "</td>" +
+   '<td style="text-align:right;">' + (r.down7d != null ? r.down7d : "N/A") + "</td>" +
+   '<td style="text-align:right;">' + (r.up30d != null ? r.up30d : "N/A") + "</td>" +
+   '<td style="text-align:right;">' + (r.down30d != null ? r.down30d : "N/A") + "</td></tr>"
+  ).join("");
+  h += '</tbody></table></div><p style="font-size:11px;color:var(--muted);margin-top:10px;">Consensus and revision counts from Yahoo earningsTrend, the same source as the coverage revisions file. Up and down counts are analyst estimate revisions, not price moves.</p></div>';
+  return h;
+ }
+
+ function researchNewsHtml(tk, d) {
+  const items = d.items || [];
+  if (!items.length) return researchUnavailable(tk);
+  let h = '<div class="card"><ul style="list-style:none;margin:0;padding:0;">';
+  h += items.map((n) =>
+   '<li style="padding:10px 0;border-bottom:1px solid #1c2735;"><a href="' + esc(n.url) + '" target="_blank" rel="noopener" style="color:#dbe5f1;font-size:14px;font-weight:600;text-decoration:none;">' + esc(n.title) + '</a>' +
+   '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">' + esc(n.publisher || "") + (n.published ? " · " + esc(n.published) : "") + "</div></li>"
+  ).join("");
+  return h + "</ul></div>";
+ }
+
+ function researchHoldingsHtml(tk, d) {
+  const holders = d.holders || [];
+  if (!holders.length) return researchUnavailable(tk);
+  let h = '<div class="card"><div class="table-wrap"><table class="coverage"><thead><tr><th>Holder</th><th style="text-align:right;">Shares Held</th><th style="text-align:right;">Change</th><th style="text-align:right;">Reported</th></tr></thead><tbody>';
+  h += holders.map((x) =>
+   "<tr><td>" + esc(x.holder) + "</td>" +
+   '<td style="text-align:right;">' + (x.shares != null ? x.shares.toLocaleString() : "N/A") + "</td>" +
+   '<td style="text-align:right;" class="' + (x.changePct != null ? cls(x.changePct) : "") + '">' + (x.changePct != null ? (x.changePct >= 0 ? "+" : "") + x.changePct.toFixed(1) + "%" : "N/A") + "</td>" +
+   '<td style="text-align:right;">' + esc(x.dateReported || "") + "</td></tr>"
+  ).join("");
+  h += '</tbody></table></div><p style="font-size:11px;color:var(--muted);margin-top:10px;">Top institutional holders from Nasdaq. Coverage pages carry the full quarterly 13F history; on-demand names show the current holder list.</p></div>';
+  return h;
+ }
+
  function researchSeasonalityHtml(seasonality) {
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const vals = (seasonality || []).filter((m) => m.avgReturn !== null && m.avgReturn !== undefined);
@@ -14575,8 +14622,25 @@ function volSurfaceHtml() {
  async function loadResearchEarnings(tk, seq) {
   const d = await fetchStock("stock-earnings", tk);
   if (seq !== (window._renderSeq || 0)) return;
-  if (d.error) { setResearchHtml("research-earnings", researchUnavailable(tk)); return; }
+  if (d.error) {
+   setResearchHtml("research-earnings", researchUnavailable(tk));
+   setResearchHtml("research-revisions", researchUnavailable(tk));
+   return;
+  }
   setResearchHtml("research-earnings", researchEarningsHtml(tk, d));
+  setResearchHtml("research-revisions", researchRevisionsHtml(tk, d));
+ }
+ async function loadResearchHoldings(tk, seq) {
+  const d = await fetchStock("stock-13f", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error || !d.holders) { setResearchHtml("research-holdings", researchUnavailable(tk)); return; }
+  setResearchHtml("research-holdings", researchHoldingsHtml(tk, d));
+ }
+ async function loadResearchNews(tk, seq) {
+  const d = await fetchStock("stock-news", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error) { setResearchHtml("research-news", researchUnavailable(tk)); return; }
+  setResearchHtml("research-news", researchNewsHtml(tk, d));
  }
  async function loadResearchOptions(tk, seq) {
   const d = await fetchStock("stock-options", tk);
@@ -14636,14 +14700,14 @@ function volSurfaceHtml() {
   if (!isPro()) {
    app.innerHTML = hero +
     '<div class="section"><div class="section-title">Ticker Research ' + PRO_BADGE + "</div>" +
-    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
+    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
    return;
   }
   if (!tk) {
    app.innerHTML = hero +
     '<div class="section"><div class="section-title">Ticker Lookup ' + PRO_BADGE + "</div>" +
     researchSearchFormHtml("") +
-    '<div class="card"><p style="font-size:13px;line-height:1.65;color:#dbe5f1;">Enter a ticker symbol and the toolkit builds the page on demand. Statements come from SEC filings, insider activity comes from Form 4, options positioning comes from CBOE delayed chains, and technicals are computed from five years of daily prices.</p>' +
+    '<div class="card"><p style="font-size:13px;line-height:1.65;color:#dbe5f1;">Enter a ticker symbol and the toolkit builds the page on demand. Statements come from SEC filings, insider activity comes from Form 4, options positioning comes from CBOE delayed chains, and technicals are computed from five years of daily prices. Revisions and headlines come from Yahoo, holders from Nasdaq.</p>' +
     '<p style="font-size:13px;line-height:1.65;color:#dbe5f1;margin-top:8px;">Names inside our coverage link straight through to their analyst pages, where the rating, DCF targets, and research report live.</p></div></div>';
    wireResearchForm();
    const inp = document.getElementById("research-ticker");
@@ -14668,7 +14732,10 @@ function volSurfaceHtml() {
   h += '<div class="section"><div class="section-title">Technical Analysis ' + PRO_BADGE + '</div><div id="research-technicals">' + researchLoading("technicals") + "</div></div>";
   h += '<div class="section"><div class="section-title">Seasonality ' + PRO_BADGE + '</div><div id="research-seasonality">' + researchLoading("seasonality") + "</div></div>";
   h += '<div class="section"><div class="section-title">Insider Transactions ' + PRO_BADGE + '</div><div id="research-insider">' + researchLoading("insider filings") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Institutional Holdings ' + PRO_BADGE + '</div><div id="research-holdings">' + researchLoading("institutional holders") + "</div></div>";
   h += '<div class="section"><div class="section-title">Earnings ' + PRO_BADGE + '</div><div id="research-earnings">' + researchLoading("earnings record") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Earnings Revisions ' + PRO_BADGE + '</div><div id="research-revisions">' + researchLoading("earnings revisions") + "</div></div>";
+  h += '<div class="section"><div class="section-title">Company News ' + PRO_BADGE + '</div><div id="research-news">' + researchLoading("company news") + "</div></div>";
   h += '<div class="section"><div class="section-title">Options Positioning ' + PRO_BADGE + '</div><div id="research-options">' + researchLoading("options positioning") + "</div></div>";
   h += '<div class="section"><div class="section-title">Cascadia Catalyst Compass ' + PRO_BADGE + "</div>" +
    '<div class="card"><p style="font-size:13px;color:#dbe5f1;line-height:1.6;margin-bottom:12px;">A probabilistic Bull, Base, and Bear scenario matrix for the next earnings print, mapped to options-implied price bounds with macro, fundamental, tone, and positioning context. Generation takes about 20 to 30 seconds.</p>' +
@@ -14682,7 +14749,9 @@ function volSurfaceHtml() {
   loadResearchFinancials(tk, mySeq);
   loadResearchTechnicals(tk, mySeq);
   loadResearchInsider(tk, mySeq);
+  loadResearchHoldings(tk, mySeq);
   loadResearchEarnings(tk, mySeq);
+  loadResearchNews(tk, mySeq);
   loadResearchOptions(tk, mySeq);
   (async () => {
    const m = await fetchMetrics(tk);

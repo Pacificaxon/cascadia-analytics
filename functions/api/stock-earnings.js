@@ -4,7 +4,11 @@
  *
  * Next scheduled earnings date plus the last four reported quarters (EPS
  * estimate versus actual, surprise percent computed from the two, revenue
- * actuals from the quarterly income statement). Sourced from Yahoo
+ * actuals from the quarterly income statement), plus analyst estimate
+ * revisions for the current quarter and fiscal year from the earningsTrend
+ * module (consensus, analyst count, 90-day-ago consensus, 90-day drift, and
+ * up/down revision counts over 7 and 30 days), mirroring the house
+ * backfill_earnings_revisions.py parse exactly, all sourced from Yahoo
  * quoteSummary behind the house crumb flow, the same data
  * collect_earnings_dashboard.py builds on. Yahoo does not carry per-quarter
  * revenue estimates or announcement dates in these modules, so revenue
@@ -29,7 +33,7 @@ export async function onRequest(context) {
     const { crumb, cookies } = await getCrumb();
     const r = await quoteSummary(
       ticker,
-      "calendarEvents,earningsHistory,incomeStatementHistoryQuarterly",
+      "calendarEvents,earningsHistory,incomeStatementHistoryQuarterly,earningsTrend",
       crumb,
       cookies
     );
@@ -86,6 +90,38 @@ export async function onRequest(context) {
         };
       });
 
+    // Analyst estimate revisions, mirroring backfill_earnings_revisions.py:
+    // trend entries keyed by period, consensus from earningsEstimate.avg,
+    // 90-day-ago consensus from epsTrend, revision counts from epsRevisions.
+    // Yahoo wraps these values in {raw, fmt} or leaves them bare numbers.
+    const numAny = (o) => (typeof o === "number" ? o : num(o));
+    const trends = (r.earningsTrend && r.earningsTrend.trend) || [];
+    const revBlock = (period) => {
+      const t = trends.find((x) => x.period === period);
+      if (!t) return null;
+      const est = t.earningsEstimate || {};
+      const et = t.epsTrend || {};
+      const er = t.epsRevisions || {};
+      const cur = num(est.avg);
+      const ago90 = num(et["90daysAgo"]);
+      const drift =
+        cur !== null && ago90 !== null && ago90 !== 0
+          ? f2(((cur - ago90) / Math.abs(ago90)) * 100)
+          : null;
+      return {
+        period,
+        endDate: (t.endDate && t.endDate.fmt) || null,
+        consensus: cur,
+        analysts: numAny(est.numberOfAnalysts),
+        consensus90dAgo: ago90,
+        drift90dPct: drift,
+        up7d: numAny(er.upLast7days),
+        down7d: numAny(er.downLast7Days),
+        up30d: numAny(er.upLast30days),
+        down30d: numAny(er.downLast30days),
+      };
+    };
+
     return dataJson(
       {
         ticker,
@@ -93,6 +129,7 @@ export async function onRequest(context) {
         nextEarningsDate: next ? next.fmt || null : null,
         nextEarningsDateRaw: next ? next.raw || null : null,
         quarters: history,
+        revisions: { quarter: revBlock("0q"), annual: revBlock("0y") },
       },
       request,
       3600
