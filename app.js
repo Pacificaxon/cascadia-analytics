@@ -14947,7 +14947,7 @@ function volSurfaceHtml() {
     models: [
      { id: "risk-fear-index", name: "Quantitative Fear Index", fn: () => fearIndexHtml() },
      { id: "risk-realized-vol-shock", name: "Realized Vol Shock", fn: () => rvShockHtml() },
-     { id: "risk-contagion", name: "Contagion", fn: () => contagionHtml() },
+     { id: "risk-contagion", name: "Cross-Asset Contagion Risk", fn: () => contagionHtml() },
      { id: "risk-flow-divergence", name: "Institutional Flow Divergence", fn: () => flowDivergenceHtml() },
      { id: "risk-offense-defense", name: "Offense vs Defense", fn: () => sectorRotationHtml() },
      { id: "risk-gamma-regime", name: "Gamma Regime", fn: () => gammaFlipHtml() },
@@ -14957,7 +14957,7 @@ function volSurfaceHtml() {
     sub: "Price structure, breadth, and concentration. What the tape itself is pricing.",
     models: [
      { id: "risk-correction-risk", name: "Correction Risk", fn: () => correctionRiskHtml() },
-     { id: "risk-concentration", name: "Concentration", fn: () => concentrationHtml() },
+     { id: "risk-concentration", name: "Leadership Concentration", fn: () => concentrationHtml() },
      { id: "risk-squeeze-fragility", name: "Squeeze Fragility", fn: () => squeezeRadarHtml() },
     ] },
  ];
@@ -15418,7 +15418,7 @@ function volSurfaceHtml() {
   }
   h += '<ul style="list-style:none;padding:0;margin:20px 0 0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#dbe5f1;">' +
    '<li>✓ <b>Everything in Free</b>, plus:</li>' +
-   '<li>✓ All ' + riskModelCount() + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion, Institutional Flow Divergence, Concentration Gauge, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Liquidity Stress, Macro Regime, with readings, charts, history, and plain-English explainers</li>' +
+   '<li>✓ All ' + riskModelCount() + ' Risk Models in full: Correction Risk, Liquidity Drain, Realized Vol Shock, Cross-Asset Contagion Risk, Institutional Flow Divergence, Leadership Concentration, Systemic Leverage, Offense vs Defense, Fear Index, Credit Stress, Liquidity Stress, Macro Regime, with readings, charts, history, and plain-English explainers</li>' +
    '<li>✓ Global Macro suite: Fiscal Dominance and Debt Coverage, Offshore Dollar Funding and Eurodollar Stress, Economic Nowcast Momentum, Taylor Rule Policy Gap, and Sovereign Credit Fragmentation (BTP/Bund and OAT/Bund)</li>' +
    '<li>✓ Gamma Exposure (GEX), indices + per-ticker dealer positioning with strike-level charts</li>' +
    '<li>✓ Volatility Skew, put/call fear gauge for indices and tickers</li>' +
