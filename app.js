@@ -14869,15 +14869,24 @@ function volSurfaceHtml() {
   if (!allMemos.length) {
    h += '<div class="card"><p style="color:#8d99aa;">No memos yet.</p></div>';
   } else {
-   allMemos.slice().reverse().forEach((m) => {
-    h += '<a href="#/memos/' + esc(m.id) + '" style="text-decoration:none;">';
-    h += '<div class="card" style="margin-bottom:16px;cursor:pointer;">';
-    h += '<div style="font-size:11px;color:#8d99aa;">' + esc(m.date) + (m.pro ? ' &nbsp;<span style="color:#d9a441;font-weight:700;">PRO</span>' : '') + '</div>';
-    h += '<div style="font-size:20px;font-weight:700;color:#f5f7fa;margin:8px 0;">' + esc(m.title) + '</div>';
-    h += '<div style="font-size:14px;color:#8d99aa;line-height:1.6;">' + esc(m.excerpt) + '</div>';
-    h += '<div style="font-size:13px;color:#d9a441;margin-top:8px;">Read memo →</div>';
-    h += '</div></a>';
-   });
+   const geoMemos = allMemos.filter((m) => m.section === "Geopolitics").reverse();
+   const restMemos = allMemos.filter((m) => m.section !== "Geopolitics").reverse();
+   const memoCard = (m) => {
+    let c = '<a href="#/memos/' + esc(m.id) + '" style="text-decoration:none;">';
+    c += '<div class="card" style="margin-bottom:16px;cursor:pointer;">';
+    c += '<div style="font-size:11px;color:#8d99aa;">' + esc(m.date) + (m.pro ? ' &nbsp;<span style="color:#d9a441;font-weight:700;">PRO</span>' : '') + '</div>';
+    c += '<div style="font-size:20px;font-weight:700;color:#f5f7fa;margin:8px 0;">' + esc(m.title) + '</div>';
+    c += '<div style="font-size:14px;color:#8d99aa;line-height:1.6;">' + esc(m.excerpt) + '</div>';
+    c += '<div style="font-size:13px;color:#d9a441;margin-top:8px;">Read memo →</div>';
+    c += '</div></a>';
+    return c;
+   };
+   if (geoMemos.length) {
+    h += '<div id="memo-sec-geopolitics" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">GEOPOLITICS</div>';
+    h += '<div style="font-size:13px;color:#8d99aa;margin-bottom:16px;">Conflicts that move energy markets, and what they mean for prices, rates, and growth.</div>';
+    geoMemos.forEach((m) => { h += memoCard(m); });
+   }
+   restMemos.forEach((m) => { h += memoCard(m); });
   }
   h += '</div>';
   app.innerHTML = h;
