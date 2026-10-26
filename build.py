@@ -845,8 +845,8 @@ def main():
         "correction_risk": (+1, "Structural & Breadth", "Correction Risk", 1),
         "liquidity_drain": (-1, "Macro & Liquidity", "Liquidity Drain", 1),
         "rv_shock": (+1, "Systematic & Volatility", "Realized Vol Shock", 1),
-        "contagion": (+1, "Macro & Liquidity", "Contagion", 2),
-        "concentration": (+1, "Structural & Breadth", "Concentration", 2),
+        "contagion": (+1, "Macro & Liquidity", "Cross-Asset Contagion Risk", 2),
+        "concentration": (+1, "Structural & Breadth", "Leadership Concentration", 2),
         "margin_leverage": (+1, "Flow & Leverage", "Margin Leverage", 2),
         "sector_rotation": (-1, "Structural & Breadth", "Sector Rotation", 2),
         "fear_index": (+1, "Systematic & Volatility", "Fear Index", 1),
@@ -980,8 +980,8 @@ def main():
 
     _NAMES = {
         "correction_risk": "Correction Risk", "liquidity_drain": "Liquidity Drain",
-        "rv_shock": "Realized Vol Shock", "contagion": "Contagion",
-        "flow_divergence": "Flow Divergence", "concentration": "Concentration",
+        "rv_shock": "Realized Vol Shock", "contagion": "Cross-Asset Contagion Risk",
+        "flow_divergence": "Flow Divergence", "concentration": "Leadership Concentration",
         "margin_leverage": "Margin Leverage", "sector_rotation": "Sector Rotation",
         "fear_index": "Fear Index", "oas_distress": "Credit Stress",
         "liquidity_stress": "Liquidity Stress", "treasury_slr": "Treasury Capacity",
