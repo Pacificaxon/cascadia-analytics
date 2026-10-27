@@ -14688,6 +14688,39 @@ function volSurfaceHtml() {
   catch (e) { console.error("Research model update render failed", tk, e); setResearchHtml("research-model-update", researchUnavailable(tk)); }
  }
 
+ function researchGuidanceHtml(tk, d) {
+  const rows = d.rows || [];
+  if (!rows.length || !d.hasReadings) return researchUnavailable(tk);
+  let h = '<div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;">';
+  h += '<div style="font-size:15px;font-weight:700;color:#f5f7fa;">Guidance & Outlook</div>';
+  h += '<div style="font-size:11px;color:#647184;">' + esc(d.companyName || tk) + " (" + esc(tk) + ")" + (d.asOf ? " · As of " + esc(d.asOf.slice(0, 10)) : "") + (d.nextEarningsDate ? " · Next earnings " + esc(d.nextEarningsDate) : "") + "</div></div>";
+  h += '<p style="font-size:13px;line-height:1.65;color:#dbe5f1;margin-top:0;">No management guidance is published in these modules, so this section shows computed consensus and statement readings only. Direction words are mechanical readings of the computed delta in the same row.</p>';
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Item</th><th>Computed outlook</th><th>Direction</th></tr></thead><tbody>';
+  h += rows.map((r) =>
+   "<tr><td>" + esc(r.item || "") + "</td><td>" + esc(r.outlook || "") + "</td><td>" + esc(r.direction || "") + "</td></tr>"
+  ).join("");
+  h += '</tbody></table></div>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-top:10px;">Sources: Yahoo earningsTrend for consensus and drift, quarterly income and cash flow statements for revenue, margin, and cash flow deltas, Yahoo calendar events for the next earnings date. Direction thresholds: consensus drift plus or minus 2 percent, growth delta plus or minus 1 point, revenue change plus or minus 5 percent, margin delta plus or minus 1 point, capex change plus or minus 10 percent. Unavailable means the module did not return that figure, never an estimate.</p>';
+  const syn = d.synthesis || [];
+  if (syn.length) {
+   h += '<div style="margin-top:14px;padding-top:12px;border-top:1px solid #253142;"><div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:8px;">Synthesis of readings</div><ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.65;color:#dbe5f1;">';
+   h += syn.map((s) => "<li>" + esc(s) + "</li>").join("");
+   h += "</ul></div>";
+  }
+  if (typeof ORDER !== "undefined" && ORDER.indexOf(tk) >= 0) {
+   h += '<p style="font-size:12px;color:#dbe5f1;margin-top:14px;">Coverage name: the <a href="#/ticker/' + esc(tk) + '">analyst page</a> carries the rating and valuation targets for this name.</p>';
+  }
+  return h + "</div>";
+ }
+
+ async function loadResearchGuidance(tk, seq) {
+  const d = await fetchStock("stock-guidance", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error || !d.rows || !d.hasReadings) { setResearchHtml("research-guidance", researchUnavailable(tk)); return; }
+  try { setResearchHtml("research-guidance", researchGuidanceHtml(tk, d)); }
+  catch (e) { console.error("Research guidance render failed", tk, e); setResearchHtml("research-guidance", researchUnavailable(tk)); }
+ }
+
  function researchNewsHtml(tk, d) {
   const items = d.items || [];
   if (!items.length) return researchUnavailable(tk);
@@ -14962,7 +14995,7 @@ function volSurfaceHtml() {
   if (!isPro()) {
    app.innerHTML = hero +
     '<div class="section"><div class="section-title">Ticker Research ' + PRO_BADGE + "</div>" +
-    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, post-earnings model adjustment deltas, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
+    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, post-earnings model adjustment deltas, guidance and outlook readings, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
    return;
   }
   if (!tk) {
@@ -14998,6 +15031,7 @@ function volSurfaceHtml() {
   h += '<div class="section"><div class="section-title">Earnings ' + PRO_BADGE + '</div><div id="research-earnings">' + researchLoading("earnings record") + "</div></div>";
   h += '<div class="section"><div class="section-title">Earnings Revisions ' + PRO_BADGE + '</div><div id="research-revisions">' + researchLoading("earnings revisions") + "</div></div>";
   h += '<div class="section" data-toc="Financial Model Adjustments"><div class="section-title">Financial Model Adjustments ' + PRO_BADGE + '</div><div id="research-model-update">' + researchLoading("model adjustments") + "</div></div>";
+  h += '<div class="section" data-toc="Guidance & Outlook"><div class="section-title">Guidance & Outlook ' + PRO_BADGE + '</div><div id="research-guidance">' + researchLoading("guidance and outlook") + "</div></div>";
   h += '<div class="section"><div class="section-title">Company News ' + PRO_BADGE + '</div><div id="research-news">' + researchLoading("company news") + "</div></div>";
   h += '<div class="section"><div class="section-title">Options Positioning ' + PRO_BADGE + '</div><div id="research-options">' + researchLoading("options positioning") + "</div></div>";
   h += '<div class="section"><div class="section-title">Cascadia Catalyst Compass ' + PRO_BADGE + "</div>" +
@@ -15015,6 +15049,7 @@ function volSurfaceHtml() {
   loadResearchHoldings(tk, mySeq);
   loadResearchEarnings(tk, mySeq);
   loadResearchModelUpdate(tk, mySeq);
+  loadResearchGuidance(tk, mySeq);
   loadResearchNews(tk, mySeq);
   loadResearchOptions(tk, mySeq);
   (async () => {
