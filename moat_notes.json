@@ -1,0 +1,1180 @@
+{
+ "as_of": "2026-10-27",
+ "framework_date": "2026-10-27",
+ "recheck_date": "2026-10-27",
+ "backlog_date": "2026-10-27",
+ "status": "This premium or discount is a multiple cross-check and is not in the DCF target itself.",
+ "tickers": {
+  "ALAB": {
+   "moat": "Narrow",
+   "premium": "+15%",
+   "structure": "Oligopoly (AI interconnect)",
+   "reasons": [
+    "design-win incumbency in hyperscaler reference platforms plus the COSMOS software overlay , a source cited PCIe 6.0 as a doubling event for silicon content per server and Astera as the default third-party retimer supplier in Nvidia reference designs .",
+    "FY2025 revenue $852.5m, +115% YoY, with 75.7% non-GAAP gross margin and 40.2% non-GAAP operating margin (Q4 2025 results as reported in 2026 coverage); Q4 2025 guidance was ~75% GAAP gross margin. A 75%+ gross margin sustained while tripling revenue is pricing-power evidence, but it is a growth-phase margin, not yet a through-cycle one.",
+    "The weakest element is customer concentration and standards risk , losing one hyperscaler design is cited as a ~20% revenue hit, and UALink/NVLink Fusion acceptance is unproven."
+   ],
+   "justified_multiples": "21.0-23.0x / 18.3-20.0x",
+   "backlog": {
+    "figure": "Not disclosed",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "$117-$128 vs Base $280.11, spot $269.69",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all , market already pays more than moat justifies (spot P/E 42.1x)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "AMKR": {
+   "moat": "Narrow",
+   "premium": "+5%",
+   "structure": "Oligopoly (OSAT)",
+   "reasons": [
+    "scale and geographic footprint , $6.7bn 2025 revenue, 55+ years, advanced products >80% of Q4 2025 revenue, and a $2bn Arizona facility due 2028 (company/press coverage, 2025-2026).",
+    "Gross margin expanded to 16.7% in Q4 2025 (reported Feb 2026) alongside a $30m strategic asset sale , margin expansion came with a one-off, not a price increase. No evidence of price-led margin expansion was found.",
+    "The weakest element is no pricing power , Q4 2025 gross margin 16.7% and FY2025 net margin 5.6% (net income $373.9m on $6.7bn revenue), with top-10 customers at 72% of sales (Apple 29.8%, Qualcomm 11.1% ). A 16.7% gross margin is a cost-competitor's margin, not a moat-pricing margin."
+   ],
+   "justified_multiples": "21.0-23.0x / 18.3-20.0x",
+   "backlog": {
+    "figure": "Not disclosed, company states no material backlog",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "Neutral, no comparison possible"
+   },
+   "crosscheck": {
+    "value": "$27.63-$30.20",
+    "base": "$1.51 median GAAP EPS, 2021-2025 (= FY2025 trailing)",
+    "verdict": "COLLAPSES, not at all (below Base $34.42)",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "AMPX": {
+   "moat": "None",
+   "premium": "\u221210%",
+   "structure": "Fragmented (batteries)",
+   "reasons": [
+    "demonstrated energy-density lead , ~450 Wh/kg shipped cells vs ~260 Wh/kg for conventional cells, with Q3 2025 revenue +173% YoY to $21.4m (2025-2026 coverage) .",
+    "The inflection is real but thin , FY2025 revenue $73.0m (+202%) with gross margin turning to +11% for the year and 24% in Q4 2025, and positive adjusted EBITDA in Q4 2025 (Wedbush/company coverage, Mar 2026). One quarter of positive gross margin after years of negative margins is proof of unit economics, not pricing power.",
+    "The weakest element is everything else about durability , contract-manufacturing dependence (Korea Battery Alliance, 2+ GWh, only 30-40% utilised for 2026 guidance), one customer at $27.1m of 2025 revenue, and mass-market EV economics unproven (EV buyers optimise $/kWh, not Wh/kg). A technology lead that has not yet survived scale-up is not yet a moat."
+   ],
+   "justified_multiples": "9.8-11.5x / 17.0-20.0x",
+   "backlog": {
+    "figure": "$53.3m RPO, Q3 2025, stale",
+    "book_to_bill": "2.13 computed, Q3 2025",
+    "coverage": "4.6 months vs 2026 guide floor",
+    "visibility": "Low",
+    "stance": "Neutral, model relies on future wins, not booked backlog"
+   },
+   "crosscheck": {
+    "value": "$1.70-$2.00 vs Base $6.87, spot $8.56",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all , market already pays far more than moat justifies (spot P/E 85.6x)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "AMZN": {
+   "moat": "Narrow",
+   "premium": "+10%",
+   "structure": "Oligopoly (cloud + e-commerce)",
+   "reasons": [
+    "AWS breadth + logistics/Prime ecosystem , 240+ services, 120 availability zones (2025 coverage), and AWS Q1 2025 operating margin 39.5%, its highest since at least 2014 .",
+    "AWS Q1 2025 revenue $29.3bn (+17% YoY) at a 39.5% operating margin (Zacks via TradingView, Jul 2025) , that margin at that scale is the pricing-power fact. Offsetting it, retail remains a low-margin pass-through and AWS growth lagged both hyperscaler rivals through 2025.",
+    "The weakest element is regulatory exposure plus share loss at the margin , Azure grew ~39% and Google Cloud ~48% YoY in Q4 2025 vs AWS ~24% (2025/2026 coverage), and the FTC antitrust suit (filed Sep 2023, trial postponed to 2027 per 2025 coverage) overhangs marketplace practices. A moat that is simultaneously being litigated and outgrown in its highest-margin segment does not earn Wide."
+   ],
+   "justified_multiples": "13.0-14.3x / 17.4-19.1x",
+   "backlog": {
+    "figure": "$496bn performance obligations over 1 year, 30 Jun 2026",
+    "book_to_bill": "n/a",
+    "coverage": "7.7 months consolidated, 35.2 months on AWS annualised run rate",
+    "visibility": "High on AWS lens, Medium consolidated",
+    "stance": "Supports"
+   },
+   "crosscheck": {
+    "value": "$182-$199 vs Base $194.15, spot $249.97",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "In part only, trivially (~9% of gap at top); market already pays more (spot P/E 24.0x)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "ASML": {
+   "moat": "Wide",
+   "premium": "+35%",
+   "structure": "Monopoly (EUV lithography)",
+   "reasons": [
+    "sole-supplier EUV + High NA , first High NA shipments 2023, Intel past 1m High NA wafers, Samsung and SK Hynix adopting High NA from 2028 (Reuters, Sep 2026).",
+    "FY2025 net sales \u20ac32.7bn (+15% YoY), EPS \u20ac24.73 (+28.5%), 2026 guidance \u20ac34-39bn at 51-53% gross margin, year-end 2025 backlog \u20ac38.8bn (company/press coverage, 2026); SK Hynix disclosed a ~$8bn EUV order on 24 Mar (delivery by 31 Dec 2027, ~30 tools at $250-300m each, Bernstein estimate). A \u20ac38.8bn backlog at 51-53% guided gross margin is durable pricing power, not a spot spike.",
+    "The weakest element is geopolitical/regulatory exposure , export controls on China sales and single-customer concentration (TSMC, Samsung, Intel, SK Hynix, Micron) cap the rating below an unconditional premium, but do not remove Wide, no rival can replicate the installed base, service network, or Zeiss optics chain within a planning horizon."
+   ],
+   "justified_multiples": "24.0-27.0x / 20.9-23.5x",
+   "backlog": {
+    "figure": "\u20ac38.8bn system backlog, 31 Dec 2025",
+    "book_to_bill": "1.36 computed, Q4 2025",
+    "coverage": "14.2 months vs FY2025 sales, 10.5 months vs 2026 guide",
+    "visibility": "High",
+    "stance": "Supports"
+   },
+   "crosscheck": {
+    "value": "$1,313-$1,477 vs Base $1,203.94, spot $1,603.91",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "In part, materially (~68% of gap at top); spot P/E 25.5x still above justified ceiling",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "AVAV": {
+   "moat": "Narrow",
+   "premium": "+12%",
+   "structure": "Oligopoly (defense niches)",
+   "reasons": [
+    "combat-proven Switchblade franchise plus funded backlog , LMS revenue +83% to $352m in FY2025, funded backlog $726.6m (nearly doubled YoY), and a US Army Switchblade award of up to $990m (FY2025 results coverage, 2025).",
+    "FY2025 revenue $820.6m (+14% YoY), adjusted EBITDA $146.4m, FY2026 guidance $1.9-2.0bn revenue and $300-320m adjusted EBITDA following the $955m BlueHalo acquisition closed May 2025 (company results coverage, 2025). The guidance step-change is acquisition-led, so it evidences scale, not price increases , hence Narrow, not Wide.",
+    "The weakest element is customer and conflict concentration , US Government was 74.7% of FY2025 revenue, international (largely Ukraine-driven) was 52.4%, and UxS revenue fell 15% to $381.8m in FY2025 as Ukraine sales eased. A backlog that doubles on a war is not the same as a moat that compounds in peacetime."
+   ],
+   "justified_multiples": "17.0-18.6x / 18.3-20.0x",
+   "backlog": {
+    "figure": "$1.5bn funded, about $2.8bn funded plus unfunded, 1 Aug 2026",
+    "book_to_bill": "1.4 disclosed",
+    "coverage": "9.1 months funded, 17.0 months total",
+    "visibility": "Medium on funded measure",
+    "stance": "Supports guidance, not the model figure above guidance"
+   },
+   "crosscheck": {
+    "value": "$80-$88 vs Base $68.69, spot $124.79",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "In part (~35% of gap at top); market already pays more (spot P/E 28.4x)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "AVGO": {
+   "moat": "Wide",
+   "premium": "+30%",
+   "structure": "Oligopoly (AI silicon + VMware)",
+   "reasons": [
+    "system-level lock-in , hyperscaler multi-generation XPU agreements plus Tomahawk 6 (102.4 Tbps, no comparable alternative at the top tier per 2026 analysis) plus VMware Cloud Foundation.",
+    "Q1 FY2026 revenue $19.31bn (+29% YoY), AI revenue $8.4bn (+106% YoY), non-GAAP gross margin 76% (Mar 2026 coverage); VMware segment $6.8bn in Q1 FY2026 at 93% gross margin and 78% operating margin with $9.2bn VCF bookings (2026 coverage). FY2023-FY2025 gross margin rose 74.7% \u2192 76.5% \u2192 78.6% (equity-research summary, 2026) .",
+    "The weakest element is vMware durability , the moat is described in 2026 analysis as a \"cash extraction moat\" (forced VCF migration at higher per-core pricing, 92.5-93% software gross margin) with Gartner/William Blair estimates that up to 30% of VMware's customer base may eventually migrate . Concentration (a handful of hyperscalers) is the second weakness."
+   ],
+   "justified_multiples": "24.0-27.0x / 22.9-25.8x",
+   "backlog": {
+    "figure": "$179.2bn RPO, 2 Aug 2026",
+    "book_to_bill": "n/a",
+    "coverage": "20.3 months vs FY2026 model revenue",
+    "visibility": "High",
+    "stance": "Supports direction, does not validate the FY2028 AI trajectory alone"
+   },
+   "crosscheck": {
+    "value": "$446-$502 vs Base $514.88, spot $337.85",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "No upward gap , DCF already above spot; cross-check sits just below Base, well above spot",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "AXON": {
+   "moat": "Wide",
+   "premium": "+30%",
+   "structure": "Near-monopoly (public-safety platform)",
+   "reasons": [
+    "switching costs via the Evidence cloud , 1.5 petabytes of evidentiary video, AI report-writing (Draft One), and bundled Officer Safety Plan subscriptions at $99+/officer/month, with net revenue retention 124-125% (2025-2026 coverage).",
+    "Net revenue retention of 124% (2025 coverage) with contracted future bookings cited at $10.7bn, rising to a $14.3bn contracted backlog in Jul 2026 coverage . A 124% NRR in a government market , customers spending more every year without a competitive rebid , is direct pricing/expansion-power evidence.",
+    "The weakest element is single-buyer / political exposure , government budgets, procurement politics, and AI/surveillance scrutiny can delay or cancel deployments even without a competitor, and Motorola's Command Central + AI Assist is closing the software gap."
+   ],
+   "justified_multiples": "19.4-21.9x / 24.0-27.0x",
+   "backlog": {
+    "figure": "$15.1bn future contracted bookings, $9.8bn RPO, 30 Jun 2026",
+    "book_to_bill": "Not disclosed",
+    "coverage": "49.0 months bookings, 31.8 months RPO vs 2026 model revenue",
+    "visibility": "High",
+    "stance": "Supports"
+   },
+   "crosscheck": {
+    "value": "$252-$284 vs Base $688.19, spot $421.96",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all , no upward gap (DCF above spot) and P/E cross-check is below both; DCF rests on growth, not multiple",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "BSX": {
+   "moat": "Narrow",
+   "premium": "+15%",
+   "structure": "Oligopoly (medtech)",
+   "reasons": [
+    "niche leadership with regulatory/clinical barriers , ~65% share of the pulsed-field ablation (PFA) market exiting 2025, WATCHMAN left-atrial-appendage franchise, and 2026 organic growth guidance of 10-11% with adjusted EPS $3.43-$3.49 (+12-14%) (Q4 2025 earnings coverage, Feb 2026).",
+    "Gross margin 68.3% (TTM to Sep 2025) / 68.8% (TTM to Dec 2025) per Simply Wall St / S&P data (2025-2026), with adjusted operating margin guided +50-75 bps in 2026 (Feb 2026 coverage). A ~68% gross margin sustained while absorbing tariffs is pricing-power evidence; the flat gross-margin guide is why this is Narrow, not Wide.",
+    "The weakest element is share is contestable , management itself anticipates potential PFA share losses against competition even while growing above the expected 15% market rate, and 2026 gross margin is guided only \"roughly in line\" with 2025 as tariffs and supply-chain investment offset mix."
+   ],
+   "justified_multiples": "20.8-22.8x / 18.5-20.2x",
+   "backlog": {
+    "figure": "Not disclosed",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "$62-$68 vs Base $70.22, spot $44.90",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "No upward gap , DCF already above spot; cross-check near Base, well above spot",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "CDNL": {
+   "moat": "None",
+   "premium": "\u221215%",
+   "structure": "Fragmented (civil contracting)",
+   "reasons": [
+    "regional scale and backlog in a growing Sun Belt market , 1,335-1,480 employees, $456.05m annual revenue (+44.7% YoY to Dec 2025) (Oct 2026 profile data).",
+    "The negative evidence is the pricing-power fact , the Aug 2026 EPS miss and the \u221246.0% one-month / \u221269.1% six-month price falls to Oct 2026 (Finnhub data, Oct 2026) show a bidder that cannot pass through cost or defend price. No price-led margin expansion was found.",
+    "The weakest element is execution and bid risk in a newly public company , IPO 10 Dec 2025 at $21.00 ($241.5m gross), price $14.55 at 26 Oct 2026 close, \u221285.7% below its $96.40 high of 1 Jul 2026, and Q2 2026 EPS $0.26 vs $0.48 consensus (miss of $0.22) on revenue $226.93m (Aug 2026 results coverage). A company that misses consensus by 46% a year after IPO has no demonstrated moat to premium."
+   ],
+   "justified_multiples": "14.4-17.0x / 14.8-17.4x",
+   "backlog": {
+    "figure": "$866m total backlog, 30 Jun 2026",
+    "book_to_bill": "1.05 computed, Q2 2026",
+    "coverage": "11.7 months vs 2026 guide midpoint",
+    "visibility": "Medium",
+    "stance": "Supports 2026 anchor, 2027 needs wins beyond the June book"
+   },
+   "crosscheck": {
+    "value": "$34-$40* vs Base $50.01, spot $14.99",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all , no upward gap (DCF far above spot); spot is below even the discounted cross-check",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "CSX": {
+   "moat": "Narrow",
+   "premium": "+10 to +15%",
+   "structure": "Oligopoly (4 Class I rails; east-coast duopoly)",
+   "reasons": [
+    "the owned eastern network itself , a shipper with a plant on CSX track has no second railroad at the siding, and intermodal scale compounds that.",
+    "Q3 2026 revenue $4,017M, +12.0% year on year, with an operating ratio of 60.9% (company quarter as summarised in the 24 Oct 2026 Norfolk Southern Q3 earnings analysis, which tabulates CSX alongside UNP and NSC; single-source summary of company reports , flag). That is evidence of cost discipline holding through a volume recovery, not of unconstrained rate power: the same summary puts UNP at 59.1% and NSC at 67.4%,.",
+    "The weakest element is the moat stops at the siding , long-haul trucking competes for most freight, and STB rate/service oversight caps pricing freedom."
+   ],
+   "justified_multiples": "20.3-21.2\u00d7 / 22.2-23.2\u00d7",
+   "backlog": {
+    "figure": "Not disclosed",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "$51.82-$54.18 vs Base $23.75, spot $51.54",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all (as a DCF add-on; see note)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "DLR": {
+   "moat": "Narrow",
+   "premium": "+8 to +12%",
+   "structure": "Duopoly (public data-center REITs)",
+   "reasons": [
+    "scale in scarce-power markets , 309 data centers in the Q1 2026 portfolio, with Northern Virginia 98.6% occupied at 100% share (DLR Q1 2026 supplement, via btw.media analysis, 2026).",
+    "2026 guidance cited by Zacks/Nasdaq (2026): renewal rental rates +6-8% cash / +8.5-10.5% GAAP, same-capital cash NOI +4-5%, and core FFO per share guided $7.90-$8.00. Separately, the sponsored Digital Core REIT signed 1H 2026 renewals at a +25.0% cash rental reversion (Digital Core REIT 1H 2026 results, 29 Jul 2026 , related vehicle, not DLR itself; flagged).",
+    "The weakest element is the product is increasingly wholesale hyperscale space, where the tenant (not the landlord) holds bargaining power and can self-build."
+   ],
+   "justified_multiples": "22.9-23.7\u00d7 / 36.0-37.4\u00d7",
+   "backlog": {
+    "figure": "$1.9bn annualized GAAP base rent at 100 percent share, $1.4bn at DLR share, signed but not commenced, 30 Jun 2026",
+    "book_to_bill": "Not disclosed as a ratio",
+    "coverage": "20.3 percent of 2026 guide midpoint as annualized rent, not a contract total",
+    "visibility": "Medium, qualified",
+    "stance": "Supports"
+   },
+   "crosscheck": {
+    "value": "$99.47-$103.15 vs Base $179.41, spot $177.31 , P/E artifact, see warning",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "n/a , Base \u2248 spot; no upward gap",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "ENS": {
+   "moat": "Narrow",
+   "premium": "+5 to +10%",
+   "structure": "Oligopoly (industrial stored energy)",
+   "reasons": [
+    "mission-critical qualification , backup power for data centers, telecom, and defense, where failure cost dwarfs battery cost and qualification cycles lock in incumbents.",
+    "management positioning summarised from the Jefferies Renewables, Clean Energy and E&C Conference, 11 Sep 2026 (Quartr summary): leading market share, \"over 50% share in most end markets\" for backup power in data centers, telecom, utilities, and aerospace/defense , single-source conference summary, flagged. Harder company-reported evidence: fiscal Q4 2026 (quarter ended 31 Mar 2026, reported 20 May 2026, Business.",
+    "The weakest element is lead exposure and chemistry transition , the company must fund a lead-acid-to-lithium shift (including a South Carolina lithium gigafactory) while defending a legacy cost base."
+   ],
+   "justified_multiples": "19.4-20.3\u00d7 / 21.2-22.2\u00d7",
+   "backlog": {
+    "figure": "$1,012m, 5 Jul 2026",
+    "book_to_bill": "1.06 disclosed",
+    "coverage": "3.2 months vs TTM proxy",
+    "visibility": "Low",
+    "stance": "Supports or neutral, model needs new orders"
+   },
+   "crosscheck": {
+    "value": "$304.45-$318.95 vs Base $193.00, spot $171.26",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "n/a , Base above spot; market pays LESS than moat justifies",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "EQIX": {
+   "moat": "Wide",
+   "premium": "+25 to +30%",
+   "structure": "Duopoly (public data-center REITs)",
+   "reasons": [
+    "interconnection network effects , 513,000+ interconnections across 281 data centers in 33 countries as of Q1 2026 (same profile), with Q2 2026 adding a record 9,700 net interconnections and interconnection revenue +13.5% year on year to $446M in Q1 2026 (Finsee Q1 2026 review). Each new network/counterparty inside an IBX raises the value of being inside it for everyone else.",
+    "Q1 2026 stabilized recurring revenue +9% year on year with cash gross margin 71% (EQIX Q1 2026 earnings presentation); Q3 2026 guidance $2.525-$2.575B revenue (+9-11% year on year) and adjusted EBITDA $1.275-$1.315B (Zacks preview, Oct 2026). Recurring revenue above 90% of total (company profile, 2026) plus a 71% cash gross margin is the strongest pricing-power evidence in this batch outside ISRG.",
+    "The weakest element is power and capital intensity , AI racks at 30-50 kW versus 5-10 kW traditional (Secure AI Factory coverage, Jun 2026) make growth dependent on securing power and funding heavy build, and hyperscaler self-build caps wholesale pricing."
+   ],
+   "justified_multiples": "26.4-27.5\u00d7 / 41.7-43.4\u00d7",
+   "backlog": {
+    "figure": "About $15.0bn RPO, 30 Jun 2026",
+    "book_to_bill": "Not disclosed",
+    "coverage": "17.6 months vs 2026 guide midpoint",
+    "visibility": "High",
+    "stance": "Supports"
+   },
+   "crosscheck": {
+    "value": "$772.78-$803.69 vs Base $1,032.07, spot $981.67 , P/E artifact, see warning",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "n/a , Base above spot",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "GOOGL": {
+   "moat": "Wide",
+   "premium": "+20 to +25%",
+   "structure": "Near-monopoly (search) + oligopoly elsewhere",
+   "reasons": [
+    "the search data feedback loop at >90% share , more queries improve results, which attract more queries , plus default-distribution scale (the ~$20bn+ annual default payments at issue in the DOJ case).",
+    "the US District Court (D.D.C.) found in August 2024 that Google unlawfully maintained monopolies in general search (90% share) and search text advertising (95% on smartphones); the remedies order (final judgment entered 5 Dec 2025, following the 2 Sep 2025 remedies ruling) imposed no Chrome/Android divestiture but banned exclusive search-distribution contracts and required sharing search-index and user-interaction.",
+    "The weakest element is regulatory exposure that directly attacks that loop (see below), plus generative-AI substitution that could bypass the search results page itself."
+   ],
+   "justified_multiples": "17.5-18.3\u00d7 / 17.4-18.1\u00d7",
+   "backlog": {
+    "figure": "$519.5bn total RPO, of which Cloud $513.9bn, 30 Jun 2026",
+    "book_to_bill": "Not disclosed",
+    "coverage": "13.0 months total, 62.2 months Cloud-only vs annualised Cloud revenue",
+    "visibility": "High",
+    "stance": "Supports Cloud path qualitatively"
+   },
+   "crosscheck": {
+    "value": "$267.59-$278.74 vs Base $149.15, spot $318.87",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "In part (~70-76% of the Base\u2192spot gap)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "IA": {
+   "moat": "Narrow",
+   "premium": "+8 to +12%",
+   "structure": "Fragmented (niche avionics suppliers)",
+   "reasons": [
+    "certification + installed-base aftermarket , avionics are certified to specific airframes, and the Deep Sail Capital Q3 2026 letter (via Seeking Alpha, Oct 2026) notes the model of acquiring niche product lines from larger firms and earning high-margin recurring aftermarket revenue from certification and installed-base advantages.",
+    "FY2025 revenue $84.30M (+78.6% year on year) and net income $15.63M (+123.3%) (stockanalysis.com company profile, Oct 2026); Q3 2026 items include the July 2026 acquisition of Aydin Displays for $24.5M cash and Russell 2000 inclusion effective 29 Jun 2026 (company releases via MarketMinute, 2026). Growth here is substantially acquisition-driven, so it evidences a roll-up/qualification strategy, not pricing power.",
+    "The weakest element is scale and concentration , 147 employees (company profile via stockanalysis.com, Oct 2026), $93.15M TTM revenue, and a Q2 2026 earnings call that attributed a sharp year-on-year decline to the F-16 program (MarketBeat call summary, 2026). A single-program wobble moving the quarter is the opposite of a Wide moat."
+   ],
+   "justified_multiples": "19.9-20.7\u00d7 / 18.8-19.5\u00d7",
+   "backlog": {
+    "figure": "$82.9m, 30 Jun 2026",
+    "book_to_bill": "0.85 computed, Q3 FY2026",
+    "coverage": "11.8 months vs FY2025 revenue, 9.3 months vs annualised Q3 sales",
+    "visibility": "Medium",
+    "stance": "Contradicts the 2029 path on backlog alone, acquisitions plus new orders required"
+   },
+   "crosscheck": {
+    "value": "$20.46-$21.21 vs Base $42.93, spot $19.83",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "n/a , Base above spot; market \u2248 justified",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "INTC": {
+   "moat": "None",
+   "premium": "\u221215 to \u22125%",
+   "structure": "Oligopoly (x86 CPUs) with eroding share",
+   "reasons": [
+    "Susquehanna's Q3 2026 model-share study (reported 5 Oct 2026, MarketFlux): laptop model share fell 3.9 points quarter on quarter to 68.1% (AMD 29.3%, Qualcomm 2.2%, its highest in the study); desktop share fell 1.6 points to ~76%, its lowest since Q2 2023. Intel Foundry lost $2.1B at the operating level in Q2 2026 on $5.8B revenue, of which outside customers paid only $293M (Q2 2026 earnings call, via Trefis, 27 Oct.",
+    "The weakest element is process leadership itself , 10nm ran ~3 years late and 7nm slipped while TSMC shipped 7nm in 2018 and 5nm in 2020 (aitimeline.in history, Sep 2026); Intel itself bought its best laptop silicon from TSMC by 2024."
+   ],
+   "justified_multiples": "21.3-23.8\u00d7 / 16.2-18.1\u00d7",
+   "backlog": {
+    "figure": "Not disclosed company-wide, EMIB-T backlog qualitative only",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "$35.22-$39.37 vs Base $43.14, spot $92.42",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all , market already pays far more than moat justifies",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "IRM": {
+   "moat": "Narrow",
+   "premium": "+5 to +10%",
+   "structure": "Oligopoly (physical records storage) + fragmented data centers",
+   "reasons": [
+    "contracted, sticky storage , records rental agreements generally run 1-5 years, the Global Data Center weighted-average lease expiry was 10.3 years at 31 Dec 2025, and the company stored 740M+ cubic feet of physical volume at year-end 2025 (FY2025 annual report, via TheAdviserMagazine analysis, 2026).",
+    "Q1 2026 total revenue $1.936B (from $1.593B a year earlier), data-center revenue +47% year on year to $255M in Q1 2026, with management expecting 25%+ data-center revenue growth in 2026 and ~400 MW energising over 24 months (Tickeron IRM forecast summary, Oct 2026; Simplify Jobs company summary, 2026 , both secondary summaries, flagged). Growth is real but it is bought with capex, not extracted from pricing power.",
+    "The weakest element is secular decline of the legacy cash cow , AI-driven digitisation erodes physical records volumes, and the data-center pivot is capital-hungry and leveraged (the same coverage flags elevated leverage and heavy capex as principal risks)."
+   ],
+   "justified_multiples": "22.2-23.3\u00d7 / 35.0-36.7\u00d7",
+   "backlog": {
+    "figure": "Data-centre backlog supporting plus $370m revenue growth beyond 2026, 30 Jun 2026, an increment not a total",
+    "book_to_bill": "Not disclosed",
+    "coverage": "0.6 months of total guide, 4.2 months of annualised data-centre revenue",
+    "visibility": "Low on total-company basis",
+    "stance": "Supports"
+   },
+   "crosscheck": {
+    "value": "$95.65-$100.20 vs Base $126.69, spot $115.10 , P/E artifact, see warning",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "n/a , Base above spot",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "ISRG": {
+   "moat": "Wide",
+   "premium": "+30 to +35%",
+   "structure": "Near-monopoly (robotic surgery)",
+   "reasons": [
+    "installed base + recurring instruments/services , ~75% of revenue is recurring (systems ~25%, remainder instruments/services/accessories, per the Jul 2026 iBusiness analysis of Q1 2026), so each placement creates a multi-year annuity of instrument pulls tied to surgeon training and hospital workflow.",
+    "Q3 2026 (reported 20 Oct 2026): revenue $3.05B (+22% year on year), worldwide da Vinci + Ion procedures +15% (da Vinci +14%, Ion +31%), 546 da Vinci systems placed (vs 427 a year earlier), installed base 12,094 da Vinci (+12% year on year) and 1,152 Ion (+21%); full-year 2026 da Vinci procedure guidance narrowed to 14-15% and non-GAAP gross margin guidance raised to 68.7-69.3% (company release via ad-hoc-news/Zacks,.",
+    "The weakest element is single-platform concentration and price regulation , management guided that instrument-pricing actions and China policy changes will cut da Vinci instrument/accessory revenue per procedure by ~3-5% once fully implemented (Q3 2026 call summary, TickerReport, 22 Oct 2026), and a $450M pre-tax antitrust litigation charge hit Q3 2026 GAAP earnings (company Q3 2026 release, 20 Oct 2026)."
+   ],
+   "justified_multiples": "16.9-17.5\u00d7 / 22.9-23.8\u00d7",
+   "backlog": {
+    "figure": "$3.4bn RPO, 30 Jun 2026",
+    "book_to_bill": "Not disclosed",
+    "coverage": "3.5 months vs 2026 model anchor",
+    "visibility": "Low on RPO alone",
+    "stance": "Neutral"
+   },
+   "crosscheck": {
+    "value": "$284.66-$295.61 vs Base $232.22, spot $448.05",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "In part (~30% of the Base\u2192spot gap)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "KRMN": {
+   "moat": "Narrow",
+   "premium": "+12 to +15%",
+   "structure": "Fragmented / oligopolistic defense supplier base",
+   "reasons": [
+    "mission-critical qualification and backlog , Q2 2026 backlog $1.3B (+65% vs fiscal year-end 2025), quarterly bookings ~$500M including a large multi-year space/launch contract (Q2 FY2026 release, 6 Aug 2026, via Quartr filing).",
+    "Q2 FY2026 (6 Aug 2026): record revenue $182.1M (+58.2% year on year, +24.4% organic), record adjusted EBITDA $54.6M (+54.7%), and 2026 outlook raised to $730-$745M revenue and $215-$222.5M adjusted EBITDA (company release). Earlier, Q1 2026 revenue was $151.2M (+51.0% year on year) with backlog $1.0B (+61%) (company Q1 release via Insider Monkey, 19 Jun 2026).",
+    "The weakest element is scale, concentration, and acquisition dependence , $589.55M TTM revenue (stockanalysis.com, Oct 2026), a single-customer ecosystem, and growth substantially via acquisition (Seemann/MSC, ~$220M, announced Jan 2026; Walker Precision, ~$94M, agreed Aug 2026). No demonstrated through-cycle ROIC persistence at scale yet, which is what separates Narrow from Wide."
+   ],
+   "justified_multiples": "20.7-21.2\u00d7 / 19.5-20.0\u00d7",
+   "backlog": {
+    "figure": "$1,322m firm backlog, RPO $703.9m, 30 Jun 2026",
+    "book_to_bill": "About 2.75 computed Q2 2026, about 1.6x disclosed over trailing 18 months",
+    "coverage": "21.5 months firm vs 2026 guide midpoint, 11.5 months on RPO alone",
+    "visibility": "High",
+    "stance": "Supports, model assumes less than backlog implies"
+   },
+   "crosscheck": {
+    "value": "$11.30-$11.61 vs Base $23.66, spot $36.83",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all , market already pays far more than moat justifies",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "LEU": {
+   "moat": "Narrow",
+   "premium": "+10% (range 18.3-20.0\u00d7, point 19.1\u00d7 on Utilities 17.4\u00d7 fallback)",
+   "structure": "Domestic HALEU monopoly inside a global enrichment oligopoly",
+   "reasons": [
+    "regulatory/licensing barrier + DOE-backed chokepoint , the $900m DOE HALEU contract signed 1 Jul 2026 and three new HALEU supply contracts (X-energy 6 Aug 2026, Radiant 9 Sep 2026, Antares 17 Sep 2026, per Quantabundance 4 Oct 2026).",
+    "mixed, and the mix matters. Q1 2026: SWU volume sold fell 47% YoY but average SWU selling price jumped 52%, partly offsetting it (TradingView/Zacks, Q1 2026 results).",
+    "The weakest element is the moat is a demo-scale niche, not a scaled commercial business , commercial-scale output is years away and the build-out runs into the 2030s (Quantabundance, Oct 2026); plus commodity exposure in the legacy LEU/SWU business."
+   ],
+   "justified_multiples": "EV/EBITDA 9.5-10.4\u00d7; P/E 18.3-20.0\u00d7",
+   "backlog": {
+    "figure": "$4.5bn through 2040, 30 Jun 2026",
+    "book_to_bill": "About 4.4x computed Q2 only, a reclassification artefact, not a run rate",
+    "coverage": "9.5 years vs TTM revenue",
+    "visibility": "High",
+    "stance": "Supports direction, model assumes only a fraction converts in the forecast window"
+   },
+   "crosscheck": {
+    "value": "~$80 pt forward ($77-$84); ~$51 terminal",
+    "base": "$4.19 forward (median 2020-2025, also 2022-2025); terminal-converted $2.68",
+    "verdict": "SPLIT: survives forward (~53% at point), collapses to ~0% on terminal lens",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "LITE": {
+   "moat": "Narrow",
+   "premium": "+12% (20.1-22.0\u00d7, point 21.4\u00d7 on IT 19.1\u00d7)",
+   "structure": "Oligopoly (with Coherent) in AI optics / laser chips",
+   "reasons": [
+    "technology/scale position in high-end laser chips and optical circuit switches, with a reported sold-out order position through nearly 2029 (CEO comment reported by Timothy Sykes, 26 Oct 2026 , single source, flagged) and a latest-quarter non-GAAP gross margin of 50.4% on $1.006bn revenue, +109.3% YoY (TradingKey, Oct 2026).",
+    "the 50.4% non-GAAP gross margin above (TradingKey, Oct 2026) plus 8/8 quarters of EPS beats to Aug 2026 (Finviz earnings history, accessed Oct 2026) and FY2027 EPS estimates revised up (24 of 27 up revisions, 0 down, at 20 Oct 2026, Finviz) show pricing/qualification power in the current cycle. Counterweight: GAAP earnings are deeply negative (TTM EPS \u2212$82.23, Finviz) on one-off items , pricing power is in non-GAAP.",
+    "The weakest element is hyperscaler customer concentration and architecture risk , if NVIDIA/Broadcom internalise optics or co-packaged optics (CPO) arrives faster than expected, the component moat is squeezed (FinancialContent, Jan 2026); Coherent is a credible #2 with broader transceiver coverage ($2.05bn latest quarter, 40.2% non-GAAP GM, TradingKey)."
+   ],
+   "justified_multiples": "EV/EBITDA 16.0-17.5\u00d7; P/E 20.1-22.0\u00d7",
+   "backlog": {
+    "figure": "No total disclosed. Pieces only: OCS backlog well beyond $400m, plus a multi-hundred-million-dollar co-packaged optics order",
+    "book_to_bill": "Not disclosed",
+    "coverage": "OCS about 1.6 months of FY2026 revenue. Total coverage not computable",
+    "visibility": "Low on disclosed dollars, capacity sold out separately",
+    "stance": "Supports direction, model already assumes more than disclosed pieces evidence"
+   },
+   "crosscheck": {
+    "value": "$457.96 pt on sanity base ($430.14-$470.80)",
+    "base": "No usable through-cycle base; sanity base Zacks FY2027 $21.40 (still boom)",
+    "verdict": "SHRINKS to ~21% on sanity base; original verdict boom-base only",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "LRCX": {
+   "moat": "Wide",
+   "premium": "+28% (22.9-25.8\u00d7, point 24.4\u00d7 on IT 19.1\u00d7)",
+   "structure": "Oligopoly (3 names at sub-5nm) in etch/deposition",
+   "reasons": [
+    "process-qualification switching costs , displacing etch equipment requires re-qualifying entire manufacturing processes (CrowsEye, 2026), which is why the ~45% etch share is sticky.",
+    "gross margin holding at 47% as of Q1 2026, in line with long-term targets (2026 coverage, Q1 2026); Q3 FY2025 (quarter ended 28 Sep 2025) revenue $5.32bn with 35.0% non-GAAP operating income (AInvest, 2025). Margins held through the cycle's up-leg while selling to every leading AI chip producer , the pick-and-shovel position, not a single-design bet.",
+    "The weakest element is cyclicality + geopolitics , semiconductor capex growth forecast to slow to 7% in 2027 from 28% in 2026, and ~12% of 2025 revenue came from Chinese customers including SMIC, with export-control risk to up to ~9% of projected 2027 revenue per Cowen estimates cited in 2026 coverage. Overall wafer-front-end share fell from 17.1% (2017) to 9.9% (2024) (AInvest, 2025) , leadership is in etch/deposition subsegments, not the whole equipment market."
+   ],
+   "justified_multiples": "EV/EBITDA 18.2-20.5\u00d7; P/E 22.9-25.8\u00d7",
+   "backlog": {
+    "figure": "No order backlog disclosed. Deferred revenue proxy $2.66bn, 27 Sep 2026",
+    "book_to_bill": "Not disclosed",
+    "coverage": "1.4 months on deferred proxy, 1.6 months including Japan shipments",
+    "visibility": "Not disclosed for order backlog, Low on proxy",
+    "stance": "Neutral"
+   },
+   "crosscheck": {
+    "value": "$81.98 pt ($76.94-$86.69)",
+    "base": "$3.36 median GAAP basic EPS, FY2021-FY2025",
+    "verdict": "COLLAPSES, not at all (below Base $153.50)",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "MELI": {
+   "moat": "Wide",
+   "premium": "+25% (19.9-22.4\u00d7, point 20.8\u00d7 on Cons. Disc. 16.6\u00d7 fallback)",
+   "structure": "Regional leader / oligopoly in LatAm e-commerce + fintech",
+   "reasons": [
+    "ecosystem network effects , marketplace + Mercado Pago + logistics + advertising + credit in one loop: 126m active users (Q1 2026, Intellectia/Nasdaq), GMV +36% constant-currency to $21.9bn last quarter (Motley Fool, Oct 2026), Mercado Pago TPV +42% to $83.7bn with credit portfolio +90% (Zacks, Feb 2026).",
+    "advertising share , MercadoLibre estimates ~10% of Latin American digital advertising, +62% YoY last quarter (Motley Fool, Oct 2026) , plus the ability to monetise the same user through commerce, payments, credit, and ads. Counterweight: the Q1 2026 margin compression above shows pricing power is not yet converting into stable operating margin during investment phases.",
+    "The weakest element is margin/credit cyclicality in emerging markets , Q1 2026 operating income fell from $763m to $611m and operating margin from 12.9% to 6.9% (Intellectia, Jul 2026), and the credit portfolio that powers growth is also the balance-sheet risk; FX and country risk (Argentina, Brazil, Mexico >95% of revenue, Intelligent Investor, Oct 2026) cap the premium below the top of Wide."
+   ],
+   "justified_multiples": "EV/EBITDA 10.1-11.3\u00d7; P/E 19.9-22.4\u00d7",
+   "backlog": {
+    "figure": "Not disclosed",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "$1,165.86 vs Base $2,465.23 (\u221253%); vs spot $1,711.40 (\u221232%)",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all; market pays more than moat justifies (spot P/E 30.5\u00d7 vs 20.8\u00d7) and Base sits above both",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "META": {
+   "moat": "Wide",
+   "premium": "+30% (17.4-19.6\u00d7, point 18.9\u00d7 on Comm. Svcs 14.5\u00d7)",
+   "structure": "Duopoly (with Alphabet) in digital advertising",
+   "reasons": [
+    "network effects at unmatched scale , the social graph cannot be replicated, and first-party data + Advantage+ targeting convert scale into advertiser ROI (AInvest duopoly analysis, 2026; Intickers Q2 2026 moat note).",
+    "Q2 2026 ad impressions +14% YoY and average price per ad +12% YoY (Grokipedia summary of Q2 2026 results); Q1 2026 average price per ad +12% YoY with 41% operating margin on $56.31bn revenue, +33% YoY (Substack, Q1 2026 analysis). Pricing rose while impressions grew , the textbook pricing-power print.",
+    "The weakest element is regulatory exposure + capital-allocation drag , EU DMA gatekeeper designation (fully operative Mar 2024) with investigations and fines up to 10% of global turnover (Margin Call, 2026 summary), plus Reality Labs losses (~$6bn operating loss in Q4 2025, Substack 2026) and guided 2026 capex of $115-135bn (Substack, 2026) that the market is explicitly pricing as risk."
+   ],
+   "justified_multiples": "EV/EBITDA 9.7-10.9\u00d7; P/E 17.4-19.6\u00d7",
+   "backlog": {
+    "figure": "Not disclosed. Cost-side commitments $454.5bn are obligations to pay, not backlog",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "$664.03 vs Base $934.22 (\u221229%); vs spot $622.28 (+7%)",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "In part , small part (~13% of Base\u2192spot gap); market pays slightly less than moat justifies (spot P/E 17.7\u00d7 vs 18.9\u00d7)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "MITK": {
+   "moat": "Narrow",
+   "premium": "+5% (13.0-14.3\u00d7, point 13.0\u00d7 on Financials 12.4\u00d7 fallback)",
+   "structure": "Fragmented identity-verification market; niche leader in mobile deposit",
+   "reasons": [
+    "embedded switching costs in bank integrations , Mobile Deposit at ~7,900 FIs plus SaaS identity revenue growth of 23% in Q3 FY2025 (29% in Q1 FY2025) and 85.0% non-GAAP gross margin in Q3 FY2025 (DCFModeling, citing company data).",
+    "the 85.0% non-GAAP gross margin (Q3 FY2025, DCFModeling) and adjusted EBITDA margin expansion from 28% to 38% with 18% YoY revenue growth (Seeking Alpha, 24 Sep 2026, via TickerNerd) show software economics, but the same coverage notes tiered-pricing pressure from competitors (DCFModeling) , i.e., pricing is defended by product, not dictated by market power. FY2025 revenue guidance was only $174-177m (tightened Aug.",
+    "The weakest element is the core niche is structurally declining , \"the use of checks will eventually disappear almost entirely, replaced by digital payments\" (Nasdaq, 2021) , compounded by the long-running USAA patent dispute, in which USAA won two judgments against Wells Fargo totalling over $300m and then targeted PNC (Nasdaq, 2021), an overhang on Mitek's customer base rather than on Mitek directly."
+   ],
+   "justified_multiples": "EV/EBITDA 9.8-10.7\u00d7; P/E 13.0-14.3\u00d7",
+   "backlog": {
+    "figure": "No order backlog disclosed. Deferred revenue proxy $36.1m, 30 Jun 2026",
+    "book_to_bill": "Not disclosed",
+    "coverage": "2.2 months on deferred proxy",
+    "visibility": "Low on proxy",
+    "stance": "Neutral"
+   },
+   "crosscheck": {
+    "value": "$15.52 vs Base $17.41 (\u221211%); vs spot $18.41 (\u221216%)",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all; market pays more than moat justifies (spot P/E 15.4\u00d7 vs 13.0\u00d7)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "MRNA": {
+   "moat": "None",
+   "premium": "\u221210% (reference only 15.8\u00d7 on Health Care 17.6\u00d7; not usable , loss-making, comps fwd P/E 0)",
+   "structure": "Fragmented / competitive biotech; single-platform (mRNA)",
+   "reasons": [
+    "the mRNA platform IP and manufacturing know-how proven at pandemic scale, plus $6.9bn cash and investments at end-Q2 2026 (company via Trefis/Forbes, Jul-Oct 2026) funding the pipeline to a targeted 2028 cash breakeven (Motley Fool, Aug 2026). Weakest element (decisive): single-product concentration , COVID vaccines were 93% of revenue in fiscal 2025 (Trefis, 12 Oct 2026); $1.81bn of $1.92bn FY2025 revenue was COVID.",
+    "revenue collapsed from $18.4bn in 2022 to ~$1.9bn in 2025 (AInvest, 2026; Motley Fool, Aug 2026), a 40% YoY fall in FY2025 (DCFAnalyst, 2026); operating loss was 150.2% of revenue over the twelve months to 30 Jun 2026 vs 107.1% a year earlier (Forbes, 23 Oct 2026); the company lost $3.2bn over the last twelve months (Trefis, Oct 2026). Q2 2026 revenue was $145m, +2% YoY (Trefis) , stabilisation at a small base, not."
+   ],
+   "justified_multiples": "EV/EBITDA n/a; P/E n/a (discount shown for reference only)",
+   "backlog": {
+    "figure": "No order backlog disclosed. Deferred revenue proxy $265m product sales, 30 Jun 2026",
+    "book_to_bill": "Not disclosed",
+    "coverage": "1.5 months on deferred proxy",
+    "visibility": "Low on proxy",
+    "stance": "Neutral, does not close the guidance gap"
+   },
+   "crosscheck": {
+    "value": "No earnings-based value computable; see section",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all; market already pays far more than moat justifies (40.5\u00d7 sales vs S&P 500 3.1\u00d7, Trefis 12 Oct 2026)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "MRVL": {
+   "moat": "Narrow",
+   "premium": "+15% (20.1-22.0\u00d7, point 22.0\u00d7 on IT 19.1\u00d7)",
+   "structure": "Duopoly (#2) in custom AI ASIC co-design",
+   "reasons": [
+    "duopoly position + optical DSP leadership (Inphi acquisition, 2021) inside the AI interconnect stack, with 50+ custom design opportunities across >10 customers (company via Techtimes, Aug 2026) and a $10bn custom-silicon run-rate target by FY2029.",
+    "data-centre sales +46% to 79% of total revenue (OppHub, Oct 2026 tape read) and Q2 FY2027 guidance of $2.7bn (+35% YoY) (Techtimes, Aug 2026) show demand pull, but the margin gap to Broadcom above shows Marvell does not convert that pull into Broadcom-level pricing. NVIDIA's $2bn equity investment (Mar 2026, via Capital Blueprint/Techtimes) is a strategic endorsement, not pricing evidence, and is not counted as such.",
+    "The weakest element is structural sub-scale versus Broadcom , Broadcom's TTM R&D (~$11.7bn) exceeds Marvell's entire FY2026 revenue ($8.2bn) (Capital Blueprint, 2026); Marvell's margin structure is thinner (gross 51.5%, operating 15.97%, EBITDA 30.66%, per AInvest Aug 2026 comparison) versus Broadcom's 69% adjusted EBITDA margin (AInvest, Aug 2026). Marvell is also a TSMC tenant: allocation risk if capacity is diverted to NVIDIA orders (Capital Blueprint, 2026). A Wide rating would ignore that M"
+   ],
+   "justified_multiples": "EV/EBITDA 16.0-17.5\u00d7; P/E 20.1-22.0\u00d7",
+   "backlog": {
+    "figure": "No dollar backlog disclosed, bookings commentary only",
+    "book_to_bill": "Not disclosed",
+    "coverage": "Not computable",
+    "visibility": "Not disclosed",
+    "stance": "Supports direction, model already assumes the guided trajectory"
+   },
+   "crosscheck": {
+    "value": "$160.97 vs Base $289.99 (\u221244%); vs spot $237.30 (\u221232%)",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all; market pays far more than moat justifies (spot P/E 32.4\u00d7 vs 22.0\u00d7)",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "MSFT": {
+   "moat": "Wide",
+   "premium": "+32% (22.9-25.8\u00d7, point 25.2\u00d7 on IT 19.1\u00d7)",
+   "structure": "Oligopoly / quasi-monopoly in enterprise productivity + #2 cloud",
+   "reasons": [
+    "enterprise switching costs across the whole stack , Morningstar assigns a Wide moat overall and to Productivity/Business Processes and Intelligent Cloud, explicitly on switching costs with network effects and cost advantage secondary, and expects returns above cost of capital for 20 years (Morningstar, Oct 2026). Supporting evidence: ~400m Office 365 seats (2026 analyses), LinkedIn ~1.3bn members / GitHub ~180m.",
+    "operating margin ~47% TTM (DBL Fund, 2026; Morningstar models ~47% in FY2026 steady over five years, Oct 2026), ROE ~34% and ROIC ~29.6% (DBL Fund, 2026 , single source, flagged), and Q2 FY2026 Azure growth of 39% with demand outpacing supply (TradingNews summary of Q2 FY2026 results) , growth at a 47% margin while supply-constrained is pricing power, not discounting. MarketBeat (Oct 2026) independently reports.",
+    "The weakest element is the AI capex cycle itself , $65bn FY2025 capex, guided $80bn+ FY2026 (DBL Fund, 2026) , plus DOJ/EU antitrust scrutiny of the OpenAI structure (2026 analysis, citing WSJ Feb 2026). The moat is wide, but its current monetisation is capex-contested."
+   ],
+   "justified_multiples": "EV/EBITDA 18.2-20.5\u00d7; P/E 22.9-25.8\u00d7",
+   "backlog": {
+    "figure": "$678bn commercial RPO, 30 Jun 2026",
+    "book_to_bill": "Not disclosed, RPO up 84 percent year on year",
+    "coverage": "2.04 years vs FY2026 revenue",
+    "visibility": "High",
+    "stance": "Supports"
+   },
+   "crosscheck": {
+    "value": "$495.18 pt ($449.98-$506.97)",
+    "base": "$19.65 Zacks FY2027 consensus (current year)",
+    "verdict": "SHRINKS, in part ~72% of gap (81.8% at range top)",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "MSI": {
+   "moat": "Wide",
+   "premium": "+30% (22.9-25.8\u00d7, point 24.8\u00d7 on IT 19.1\u00d7)",
+   "structure": "Near-monopoly / dominant in North American public-safety LMR",
+   "reasons": [
+    "mission-critical switching costs + contracted backlog , 13,000+ networks supported globally (Tickeron, 2026), record $15.6bn backlog at Q2 FY2026, exceeding the raised full-year revenue outlook of ~$12.98bn (Business News Today, Aug 2026; InvestReport, 2026).",
+    "Q2 FY2026 revenue $3.13bn, +13% YoY (+13.3% per Business News Today), non-GAAP operating margin 32.9%, +330bps (+140bps ex tariff refund), EPS $4.41, +24% (InvestReport, 2026); FY2026 guidance raised to $12.975bn revenue and EPS $17.62-17.72 with ~170bps operating-margin expansion (InvestReport, 2026). Margin expansion alongside a record backlog is the pricing-power print; note the $60m one-off tariff refund.",
+    "The weakest element is technology substitution at the edge , 5G push-to-talk from commercial carriers nibbling at LMR (AInvest, Aug 2026), and the company's own 6-7% growth vs an 11.3% CAGR public-safety market to 2030 (AInvest, Aug 2026 , single source, flagged) suggests it is not capturing the full market expansion. That erosion vector caps the premium below the top of Wide."
+   ],
+   "justified_multiples": "EV/EBITDA 18.2-20.5\u00d7; P/E 22.9-25.8\u00d7",
+   "backlog": {
+    "figure": "$15.6bn, Q2 2026",
+    "book_to_bill": "About 0.98x computed Q2",
+    "coverage": "14.4 months vs guided 2026 revenue",
+    "visibility": "High",
+    "stance": "Supports the guide, model already about 2 percent above guide"
+   },
+   "crosscheck": {
+    "value": "$482.32 vs Base $327.74 (+47%); vs spot $481.23 (+0.2%)",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Whole , justified value essentially equals spot; market pays exactly what the moat justifies on this EPS base",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "NFLX": {
+   "moat": "Wide",
+   "premium": "+30% \u2192 18.9\u00d7 (median 14.5\u00d7)",
+   "structure": "Oligopoly (streaming)",
+   "reasons": [
+    "scale + content library amortised over the largest paid base, converting into pricing power (below) and a 29.5% full-year 2025 operating margin.",
+    "March 2026 US price rise , Premium to $26.99, Standard to $19.99, Standard with Ads to $8.99, the second increase in under two years (Variety, via search results); full-year 2025 revenue $45.2bn (+16% YoY) at 29.5% operating margin, rising to a record 34.6% in Q3 2026. The price rises stuck while margins expanded , genuine pricing power, tempered by the watch-hour stagnation above.",
+    "The weakest element is engagement , Q3 2026 revenue +12% YoY to $12.9bn with a record 34.6% operating margin, yet US/global watch hours flat and US TV share stagnating near 8% while YouTube pushes toward 15% (Motley Fool, 25 Oct 2026). A moat that prices but does not grow attention is wide, not impregnable."
+   ],
+   "justified_multiples": "EV/EBITDA 10.5\u00d7; P/E 18.9\u00d7",
+   "backlog": {
+    "figure": "No revenue backlog disclosed. Content obligations $25.223bn at 30 Sep 2026 are a cost, not revenue",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "$71.09 forward; $65.40 TTM; $47.82 on 2025 annual",
+    "base": "Forward $3.77; TTM $3.46; last annual 2025 $2.53",
+    "verdict": "CONFIRMED on forward and TTM bases (whole); not at all on 2025 annual base; forward base is not a cyclical spike",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "NSC": {
+   "moat": "Wide",
+   "premium": "+20% \u2192 24.0\u00d7 (median 20.0\u00d7)",
+   "structure": "Oligopoly nationally; regional duopoly (East)",
+   "reasons": [
+    "an irreplicable owned rail network plus STB regulatory barrier , no entrant can rebuild an eastern rail network.",
+    "Q3 2026 revenue $3,526m (+13.6% YoY) with net income $759m (+6.8%) at that 67.4% operating ratio (same source) , revenue growth without peer-level cost conversion, i.e. pricing exists but is partly consumed by costs.",
+    "The weakest element is operating execution , Q3 2026 operating ratio 67.4% vs Union Pacific 59.1% and CSX 60.9% (Q3 2026 earnings coverage, 24 Oct 2026). A wide structural moat that is currently monetised worse than its peers does not earn the top of the band."
+   ],
+   "justified_multiples": "EV/EBITDA 12.7\u00d7; P/E 24.0\u00d7",
+   "backlog": {
+    "figure": "Not disclosed",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "P/E-implied $347.14; EV-implied $258.78 vs Base $141.62, spot $334.86",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all (causally) , gap is Union Pacific deal consideration, not a moat premium",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "PANW": {
+   "moat": "Wide",
+   "premium": "+30% \u2192 24.2\u00d7 (median 18.6\u00d7)",
+   "structure": "Oligopoly/fragmented platform market",
+   "reasons": [
+    "platformization switching costs , Q3 FY2026: ~2,280 platformized customers, ~120% net retention for that cohort, ~65% of next-generation security ARR from platformized customers (company Q3 FY2026 presentation, via DCF Analyst).",
+    "Platformized NRR ~120% with low-single-digit churn (Q2-Q3 FY2026 reporting) is expansion pricing power: existing customers spend ~20% more per year before new logos. Offset: FY2026 NGS ARR $9.10bn (+63%) and total RPO +34% in Q4 FY2026 show volume, while GAAP operating margin is thin (5.4%, yfinance) , the moat shows up in retention and ARR, not yet in GAAP margin.",
+    "The weakest element is the moat is bought, not free , free-trial incentives, integration costs (including the ~$25bn CyberArk acquisition, closed Feb 2026 per press coverage), and discounting to displace Zscaler/CrowdStrike pressured FY2026 profit guidance (non-GAAP EPS guided $3.65-$3.70 vs $3.80-$3.90 consensus, Feb 2026)."
+   ],
+   "justified_multiples": "EV/EBITDA 19.8\u00d7; P/E 24.2\u00d7",
+   "backlog": {
+    "figure": "$21.2bn RPO, current RPO $9.3bn, 31 Jul 2026",
+    "book_to_bill": "1.47x computed FY2026, acquisition-inflated",
+    "coverage": "22.1 months",
+    "visibility": "High",
+    "stance": "Supports, after the 27 Oct fix re-anchor to guide"
+   },
+   "crosscheck": {
+    "value": "P/E-implied $117.98; EV-implied $38.30 (GAAP EBITDA depressed by SBC , see note) vs Base $169.15, spot $393.34",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all , market already pays far more than the moat justifies",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "PLPC": {
+   "moat": "Narrow",
+   "premium": "+10% \u2192 22.0\u00d7 (median 20.0\u00d7)",
+   "structure": "Oligopoly in formed-wire/utility hardware within fragmented electrical equipment",
+   "reasons": [
+    "specification/qualification position with utilities plus pricing demonstrated in 2026 (below), reinforced by the May 2026 Delta Star acquisition expanding the substation portfolio.",
+    "Q2 2026 gross margin 34.3%, up 160bp YoY and 300bp sequentially, attributed by the company to \"pricing strategies, supply chain discipline, and operational efficiency\"; Q2 2026 diluted EPS $4.49, +75% YoY from $2.56, on record sales $212.7m (+25.4% YoY) (company Q2 2026 reporting via StockTitan, July 2026). Pricing is real in the boom , which is precisely why the cyclical treatment below matters.",
+    "The weakest element is thin through-cycle profitability , TTM net margin 5.82%, return on capital 10.53% (Motley Fool TTM summary, Oct 2026), and demand tied to utility capex cycles."
+   ],
+   "justified_multiples": "EV/EBITDA 11.7\u00d7; P/E 22.0\u00d7",
+   "backlog": {
+    "figure": "$232.8m firm order backlog, 31 Dec 2025",
+    "book_to_bill": "1.06x computed 2025",
+    "coverage": "4.2 months vs 2025 sales",
+    "visibility": "Low",
+    "stance": "Neutral near term, does not support Bull 20 percent CAGR durability"
+   },
+   "crosscheck": {
+    "value": "$168.2",
+    "base": "$7.65 (7.35% normalized EBIT \u00d7 FY2025 revenue $669.3M \u00d7 0.76 \u00f7 4.89M shares)",
+    "verdict": "SHRINKS but survives, in part ~38%",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "POWW": {
+   "moat": "None",
+   "premium": "\u221210% \u2192 18.0\u00d7 (median 20.0\u00d7)",
+   "structure": "Fragmented, commodity-exposed",
+   "reasons": [
+    "There is no demonstrated ammunition pricing power in the sourced figures , the ammunition segment lost money at the gross line in Q1 FY2025 (\u22124.0%) while the marketplace earned 85.6%. That inversion is the pricing-power evidence: where POWW has a network (GunBroker), it prices; where it makes a commodity (ammunition), it does not.",
+    "The weakest element is the ammunition operation itself , negative gross margin in that quarter and, on FY2026 summaries, weak profitability (net margin \u22126.9%, FCF margin \u22122.7% per Upturn FY2026 vs FY2025 summary; single-source, flagged). Brand alone (STREAK\u2122, /stelTH/\u2122 specialty rounds) does not premium a commodity manufacturer, per the task guardrail."
+   ],
+   "justified_multiples": "EV/EBITDA 9.5\u00d7; P/E 18.0\u00d7",
+   "backlog": {
+    "figure": "Not disclosed for the current marketplace business",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "EV-implied $2.33; P/E-implied not meaningful (EPS \u2248 $0) vs Base $3.55, spot $2.45",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all , discount, not premium; DCF Base already sits above spot",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "RBRK": {
+   "moat": "Narrow",
+   "premium": "+12% \u2192 20.8\u00d7 (Info Tech proxy, median 18.6\u00d7)",
+   "structure": "Fragmented/oligopolistic data security",
+   "reasons": [
+    "switching costs once deployed , backup/cyber-recovery is embedded in enterprise recovery workflows, with subscription ARR $1.25bn (+36% YoY) at Q2 2026 and net retention above 120% with gross margins above 80% (narrative summary, Mar 2026; Q2 2026 revenue $309.9m, +51% YoY, subscription ARR $1.25bn per CMC Markets, Sept 2026).",
+    "Net retention above 120% plus Q2 2026 subscription revenue +55% YoY are expansion evidence, but they are growth evidence, not yet margin evidence: the company reported a $0.03 loss per share in Q2 2026 (better than the $0.34 loss expected) and only swung to a $0.20 profit per share in Q2 2027 on $427.3m revenue (+41% YoY, Motley Fool, Sept 2026). Pricing power is prospective, not yet banked in GAAP margin.",
+    "The weakest element is unproven profitability at scale , FY2026 revenue $1.32bn (+48%) still carried sales & marketing of $770m (~58% of revenue; TIKR, Oct 2026), and GAAP EBITDA is negative (\u2212$263m, yfinance)."
+   ],
+   "justified_multiples": "EV/EBITDA 17.0\u00d7; P/E 20.8\u00d7",
+   "backlog": {
+    "figure": "$2.62bn non-cancellable RPO, 31 Jul 2026",
+    "book_to_bill": "About 1.28x computed H1 FY2027, approximate",
+    "coverage": "20.4 months vs TTM revenue",
+    "visibility": "High",
+    "stance": "Supports guide, Base marginally below guide"
+   },
+   "crosscheck": {
+    "value": "P/E-implied $16.00; EV-implied not computable (negative GAAP EBITDA) vs Base $127.55, spot $135.08",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all , market already pays far more than the moat justifies on current earnings",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "RNMBY": {
+   "moat": "Wide",
+   "premium": "+25% \u2192 25.0\u00d7 (median 20.0\u00d7)",
+   "structure": "European defence oligopoly",
+   "reasons": [
+    "sovereign qualification, scale, and backlog , record order backlog \u20ac80.5bn at H1 2026 (+44% YoY), with vehicle-systems backlog \u20ac28.8bn (+41%), and H1 2026 revenue \u20ac5.2bn at a 15% operating margin (interim report via ad-hoc-news, Aug-Sept 2026); full-year 2026 guidance \u20ac13.7-14.2bn revenue at ~19% operating margin.",
+    "Q2 2026 revenue \u20ac3.289bn (+69.8% YoY) with operating profit \u20ac562m (+115%) and a 17.1% operating margin (Q2 2026 reporting, Aug 2026), on a backlog that lets the company guide ~19% for the full year despite losing its largest naval programme , margin held while a flagship contract was cancelled, which is pricing/position evidence. Offset: the F126 cancellation itself proves the customer can walk away from a prime.",
+    "The weakest element is political/customer concentration , Germany's defence ministry cancelled the \u20ac12.8bn F126 frigate programme in early July 2026 (Rheinmetall had been slated as prime), trimming 2026 guidance by \u20ac300m (NewsCase, July 2026); management also flags markedly negative 2026 operating free cash flow."
+   ],
+   "justified_multiples": "EV/EBITDA 13.3\u00d7; P/E 25.0\u00d7",
+   "backlog": {
+    "figure": "Firm order backlog \u20ac56.342bn, total Rheinmetall Backlog \u20ac80.467bn, 30 Jun 2026",
+    "book_to_bill": "2.86x computed H1 2026, 3.32x Q2 alone",
+    "coverage": "4.94 years firm, 7.05 years total vs approximate TTM revenue",
+    "visibility": "High",
+    "stance": "Supports boom direction, does not pre-fund the live model outer years"
+   },
+   "crosscheck": {
+    "value": "$76-$84",
+    "base": "$3.03-$3.35/ADR (2023-2024 average, ADR-converted)",
+    "verdict": "No-gap direction survives (Base still above spot), justification REVERSES: market now pays far more, not less, than moat justifies",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "ROAD": {
+   "moat": "Narrow",
+   "premium": "+10% \u2192 22.0\u00d7 (median 20.0\u00d7)",
+   "structure": "Fragmented nationally; local oligopoly by plant footprint",
+   "reasons": [
+    "local vertical integration and plant density , the 5 Oct 2026 Texas acquisition added two hot-mix asphalt plants and 125+ employees to Lone Star Paving (StockTitan via ad-hoc-news, Oct 2026), the classic local-moat investment.",
+    "Q3 fiscal 2026 revenue $999.42m (+28.2% YoY), EPS $1.08 vs $1.01 consensus and $0.81 a year earlier (MarketBeat via ad-hoc-news, 1-5 Oct 2026). Growth with a beat shows execution and scale, but a 4.1% net margin caps any claim of pricing power: ROAD wins work and integrates it, it does not price like a monopolist.",
+    "The weakest element is thin, bid-driven margins , TTM net margin 4.1%, net income $142.5m on $3.5bn revenue to 30 June 2026 (TickerNerd, 27 Oct 2026) , and dependence on public infrastructure budgets."
+   ],
+   "justified_multiples": "EV/EBITDA 11.7\u00d7; P/E 22.0\u00d7",
+   "backlog": {
+    "figure": "$3.36bn project backlog, record, 30 Jun 2026",
+    "book_to_bill": "1.22x computed Q3 FY2026, acquisition-affected",
+    "coverage": "11.6 months vs approximate TTM revenue",
+    "visibility": "High",
+    "stance": "Supports, Base FY2027 cover 84.6 percent matches the disclosed 80 to 85 percent"
+   },
+   "crosscheck": {
+    "value": "P/E-implied $82.87; EV-implied $85.39 vs Base $77.82, spot $83.22",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Whole , of a small $5.40 gap; spot-implied P/E (\u224822.1\u00d7) \u2248 justified 22.0\u00d7",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "SE": {
+   "moat": "Narrow",
+   "premium": "+15% \u2192 19.8\u00d7 (broad-market fallback 17.2\u00d7)",
+   "structure": "SEA e-commerce oligopoly trending to duopoly",
+   "reasons": [
+    "integrated infrastructure , Shopee logistics (SPX Express), ShopeePay at checkout, and Monee credit (loan book $11.1bn, +62.5% YoY at Q2 2026; UOB Kay Hian, 12 Aug 2026) , plus Garena's high-margin engine (Q1 2026 adjusted EBITDA $573.6m, ~61.6% margin on bookings).",
+    "Take-rate expansion is the pricing fact: Shopee's take rate rose to ~14.6% in Q2 2026 (UOB Kay Hian, Aug 2026) from ~13.7% in Q1 2026 (earnings coverage), while Q1 2026 core marketplace revenue grew 61% YoY , monetisation rising faster than volume. Garena is the profit anchor: 666.5m quarterly active users and bookings $931.4m in Q1 2026, its strongest quarter since 2021.",
+    "The weakest element is contested leadership and thin marketplace margin , TikTok Shop is closing the gap (Vietnam: Shopee ~64% in 2024 to ~52% in early 2026, TikTok Shop 28% to 41%, per Q1 2026 earnings coverage) and Shopee's EBITDA/GMV is razor-thin (~0.6% per Sleepwell analysis of Q2 2026), with take rate ~14.6% (Q2 2026) doing the monetisation work."
+   ],
+   "justified_multiples": "EV/EBITDA 9.7\u00d7; P/E 19.8\u00d7",
+   "backlog": {
+    "figure": "Not disclosed",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "P/E-implied $100.80; EV-implied $54.48 (see divergence note) vs Base $79.49, spot $74.96",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not at all , no gap to close: DCF Base already exceeds spot",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "SMTC": {
+   "moat": "Narrow",
+   "premium": "+10%",
+   "structure": "Fragmented oligopoly (analog/mixed-signal)",
+   "reasons": [
+    "the LoRa ecosystem , 178 million deployed LoRa devices cited in coverage of Q2 FY2026 results, plus data-center signal-integrity content (FiberEdge TIAs, CopperEdge) riding AI-cluster buildout.",
+    "Q2 FY2027 data-center revenue $100M, +91% YoY, and LoRa revenue $58M, +58% YoY (Zacks, October 12, 2026); fiscal Q2 2027 revenue $342M, +32.7% YoY, with TTM operating margin 12.0% vs 11.2% a year earlier (Trefis, October 23, 2026). Growth is real, but it is volume/AI-demand growth, not demonstrated price-setting: adjusted gross margin ~53-54% has been roughly flat, not expanding.",
+    "The weakest element is small scale and thin profitability , FY2026 revenue $1.05B (+15.5% YoY) with a 3.1% GAAP operating margin (SEC companyfacts via pxsresearch summary), so the moat has not yet converted into wide-moat economics."
+   ],
+   "justified_multiples": "26.2-28.7x / 20.1-22.0x",
+   "backlog": {
+    "figure": "No dollar backlog disclosed. Qualitative only: rest of FY2027 fully booked, over 70 percent of FY2028 covered",
+    "book_to_bill": "n/a",
+    "coverage": "n/a, no dollar numerator",
+    "visibility": "Medium, qualitative only",
+    "stance": "Supports direction, pre-fix model was contradicted, fixed model is consistent"
+   },
+   "crosscheck": {
+    "value": "~$77 pt ($73-$80) on FY2027; ~$36 on actual",
+    "base": "$3.65 FY2027 consensus non-GAAP; $1.71 FY2026 actual non-GAAP",
+    "verdict": "COLLAPSES to ~5% at point (11% at top) on FY2027, 0% on actual",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "SNPS": {
+   "moat": "Wide",
+   "premium": "+30%",
+   "structure": "Duopoly (EDA)",
+   "reasons": [
+    "switching costs plus foundry lock-in , designers train for years on a tool flow, and Synopsys co-develops process design kits with TSMC, Samsung, and Intel; the Ansys acquisition (closed July 2025, ~$35B) extends this to multiphysics simulation no rival spans.",
+    "September 30, 2026, Amazon named lead customer for application-optimized silicon IP in a multi-year deal worth more than $1B, shifting to a license-plus-royalty structure (tech-insider, October 2026) , a hyperscaler paying royalties is direct pricing-power evidence. Supporting: ~90% time-based/recurring license model and ~$11.0B backlog at April 30, 2026 including $1.8B non-cancellable commitments (Q2 FY2026 10-Q.",
+    "The weakest element is the duopoly rival is a genuine peer (Cadence is stronger in analog/custom), and Ansys integration execution plus export-control exposure to China are live discounts , hence +30%, not the +35% top."
+   ],
+   "justified_multiples": "30.0-33.8x / 22.9-25.8x",
+   "backlog": {
+    "figure": "$10.9bn RPO, 31 Jul 2026",
+    "book_to_bill": "Not disclosed, about 0.96 mechanical computation, not a company figure",
+    "coverage": "13.5 months vs FY2026 model anchor",
+    "visibility": "High",
+    "stance": "Supports, backlog growth trails model growth"
+   },
+   "crosscheck": {
+    "value": "$429-$482 (point $464) vs Base $308.06, spot $466.92",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Market already pays the full wide premium (spot-implied 25.0x at top of range); nothing further available",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "TSM": {
+   "moat": "Wide",
+   "premium": "+30%",
+   "structure": "Near-monopoly at leading edge; oligopoly overall foundry",
+   "reasons": [
+    "foundry scale plus process lead , 3nm at sustained full utilization, 2nm ramping to 8% of revenue in a single quarter (Q3 2026, TechTimes October 15, 2026), and CoWoS advanced packaging with spillover demand.",
+    "IDC (2026): TSMC raised wafer pricing by more than 5% while raising its 3nm monthly capacity target to 165,000 wafers and CoWoS to 125,000 wafers, on sustained full utilization , raising price into full utilization is the cleanest pricing-power test in this batch. Corroborating: 2nm wafers at ~$30,000, roughly 50% above 3nm pricing, with demand unabated (TechTimes, October 15, 2026).",
+    "The weakest element is concentration , high-performance computing (AI accelerators) was 68% of Q3 2026 revenue (+22% sequentially), and essentially all leading-edge capacity sits in Taiwan, so geopolitical and single-cycle concentration cut against the top of the band."
+   ],
+   "justified_multiples": "30.0-33.8x / 22.9-25.8x",
+   "backlog": {
+    "figure": "Not disclosed in dollars",
+    "book_to_bill": "Not disclosed",
+    "coverage": "Not computable",
+    "visibility": "Not disclosed in dollars",
+    "stance": "Supports demand direction only, no dollar comparison possible"
+   },
+   "crosscheck": {
+    "value": "$224.0-$252.3 (pt $242.6)",
+    "base": "$9.78/ADR (49.328% normalized EBIT \u00d7 FY2025 revenue $122.42bn \u00d7 0.84 \u00f7 5,186.5M ADRs)",
+    "verdict": "SHRINKS, in part small part ~11% at point (2-16% range)",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "TTMI": {
+   "moat": "Narrow",
+   "premium": "+8%",
+   "structure": "Fragmented PCB; oligopoly niches in high-complexity/A&D",
+   "reasons": [
+    "qualification and process barriers in aerospace/defense plus proprietary N+M asymmetrical PCB technology for AI servers , A&D backlog reached a record $2.0B in Q3 2026, with 65% of projected 2027 A&D revenue already under contract (Q3 2026 earnings coverage, October 25, 2026).",
+    "Q3 2026: revenue $1.2B (+59.9% YoY), adjusted EBITDA $242.3M with margin expanding to 20.1% from 16.1% a year earlier, data-center/networking +115% YoY to 41% of sales, and a consolidated book-to-bill of 2.13 (Q3 2026 earnings coverage, October 24-25, 2026; Motley Fool transcript). Margin expansion alongside volume is mix/pricing evidence , but it is boom-mix evidence, and the terminal EBIT normalization to 6.52%.",
+    "The weakest element is the commercial PCB core remains commodity-adjacent with thin margins and cyclical utilization swings, and the Epiq acquisition (~$1.1B cash, announced 2026) nearly triples leverage , a single-source-structure critique (AInvest, August 2026) that is flagged as analysis, not filing fact."
+   ],
+   "justified_multiples": "19.4-21.3x / 18.3-20.0x",
+   "backlog": {
+    "figure": "90-day backlog $1.3bn plus A&D programme backlog $2.0bn, 28 Sep 2026",
+    "book_to_bill": "2.13 disclosed Q3 2026",
+    "coverage": "3.5 months on 90-day book vs FY2026 anchor, 1.20 years on A&D run rate",
+    "visibility": "High",
+    "stance": "Supports, model FY2027 already equals the preliminary guide midpoint"
+   },
+   "crosscheck": {
+    "value": "$36.1-$39.4 (pt $37.0)",
+    "base": "$1.97 (6.52% normalized EBIT \u00d7 TTM revenue $3.83bn \u00d7 0.85 \u00f7 107.7M shares)",
+    "verdict": "CONFIRMED does not close; 20-25% partial credit quantified, fair summary still not at all",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "UNP": {
+   "moat": "Wide",
+   "premium": "+25%",
+   "structure": "Western duopoly / Class I oligopoly",
+   "reasons": [
+    "an irreplaceable western rail network with pricing power through fuel surcharge and service pricing , Q3 2026 operating ratio 59.1% on $7,197M revenue (+15.3% YoY) vs NSC's 67.4% and CSX's 60.9% (Q3 2026 earnings coverage, October 24, 2026).",
+    "the 59.1% Q3 2026 operating ratio above, plus the deal itself as pricing evidence in reverse: UNP agreed to pay 1.0 UNP share + $88.82 cash per NSC share (~$85B enterprise value, agreed July 28, 2025; ~$375.25 per NSC share at current prices per the October 2026 Chafic case study , single-source case study, flagged). A carrier able to fund an $85B acquisition from network economics is demonstrating, not just.",
+    "The weakest element is surface Transportation Board regulation , the first Class I merger under the 2001 rules, which require applicants to enhance competition, with comments due November 18, 2026 and a decision falling in 2027 (AInvest merger-arb coverage, August 2026). Regulation trims the Wide band from its top."
+   ],
+   "justified_multiples": "22.2-25.0x / 24.2-27.3x",
+   "backlog": {
+    "figure": "Not disclosed",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "$349-$393 (point $364) vs Base $202.40, spot $296.82",
+    "base": "Framework base from the October 27 moat report",
+    "verdict": "Not a moat gap , gap is deal-consideration/arb pricing; justified range already clears spot",
+    "rechecked": false,
+    "base_note": ""
+   }
+  },
+  "VIAV": {
+   "moat": "Narrow",
+   "premium": "+10%",
+   "structure": "Oligopoly niches (optical test; high-speed Ethernet test duopoly with Keysight)",
+   "reasons": [
+    "the Spirent carve-out consolidated a genuine duopoly in AI data-center fabric validation, plus the Optical Security and Performance (OSP) segment's ~40% operating margins (intickers segment summary , single-source summary, flagged) subsidizing NSE R&D.",
+    "revenue in the twelve months to June 30, 2026 was $1.5B with the latest quarter +52.5% YoY (TickerNerd, data as of October 26, 2026); shares rose 223% over the past year vs 137.1% for the industry (Zacks, October 2026), with forward earnings estimates static at $1.62 (2026) and $1.86 (2027) over 60 days , demand is real but estimate stability argues against runaway pricing power. The U.S.",
+    "The weakest element is keysight is a far larger rival, carrier capex is cyclical, and Viavi itself was loss-making on a TTM basis (net income \u2212$30.4M on $1.5B revenue for the twelve months to June 30, 2026, via TickerNerd filing summary) , a narrow moat that has not produced through-cycle profitability."
+   ],
+   "justified_multiples": "15.3-16.8x / 18.3-20.0x",
+   "backlog": {
+    "figure": "$610.1m RPO, 27 Jun 2026",
+    "book_to_bill": "Not disclosed",
+    "coverage": "4.8 months vs FY2026 revenue",
+    "visibility": "Medium",
+    "stance": "Supports near term, model assumes less than the guided-quarter pace"
+   },
+   "crosscheck": {
+    "value": "$6.09-$6.65 (pt $6.36)",
+    "base": "$0.333 FCF/share proxy (5.72% normalized FCF \u00d7 FY2026 revenue $1.518bn \u00f7 261M shares)",
+    "verdict": "COLLAPSES, not at all (below Base $11.33)",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "VLO": {
+   "moat": "None",
+   "premium": "\u221210%",
+   "structure": "Fragmented refining (scale oligopoly among independents)",
+   "reasons": [
+    "scale plus complexity , Nelson Complexity 11.5 and Gulf Coast feedstock flexibility let Valero process diverse crudes and capture export demand (August 2026 industry analysis). Weakest element, and the deciding one: Valero sells the crack spread, not a differentiated product.",
+    "Q2 2026 refining margin $23.62/barrel vs $12.35 a year earlier; adjusted refining operating income rose $1.27B \u2192 $4.44B, with ~$3.1B of the ~$3.2B increase explained by the $11.27/barrel margin improvement \u00d7 ~3M bpd \u00d7 91 days (AInvest reconciliation, August 2026). Q3 2026 system-wide margin reached $39.24/barrel vs $13.14 a year earlier (MarketBeat, October 2026)."
+   ],
+   "justified_multiples": "7.4-8.7x / 10.9-12.8x",
+   "backlog": {
+    "figure": "Not disclosed",
+    "book_to_bill": "n/a",
+    "coverage": "n/a",
+    "visibility": "Not disclosed",
+    "stance": "No comparison possible"
+   },
+   "crosscheck": {
+    "value": "$81-$95",
+    "base": "$7.43 median diluted EPS, 2016-2025",
+    "verdict": "Already not at all, stays; original arithmetic collapses ~86%",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  },
+  "VST": {
+   "moat": "None",
+   "premium": "\u221210%",
+   "structure": "Fragmented merchant generation; oligopoly in contracted nuclear",
+   "reasons": [
+    "contracted nuclear , 52.4% of the 6,448 MW nuclear fleet contracted to AWS (1,200 MW) and Meta (2,176 MW) on an operating basis, 59.1% including uprates (pxsresearch, October 2026), plus PJM capacity clearing at the $325-333/MW-day cap.",
+    "PJM capacity at the $325/MW-day cap on ~10,924 MW (\u2248$1.30B/year capacity revenue, pxsresearch) is genuine contracted pricing power , but it is capped upside (the cap limits further gains) and runs only through May 2029. Against it: Q2 2026 adjusted EPS $1.68 missed the $2.05 consensus, and management guided 2027 adjusted EBITDA toward the low end of $7.4-7.8B (August 7, 2026 call via TIKR).",
+    "The weakest element is merchant energy price-taking , ERCOT prices averaged ~$30/MWh in 2026, flat with 2025 (CEO Jim Burke, August 7, 2026 call via TIKR), ERCOT North Hub forwards fell 21% for 2027 between Q3 2025 and Q2 2026 reporting dates, and batteries now shave the evening peaks that used to set generator margins (Brandon Leon analysis, October 2026 , single-source analysis, flagged). Per the task instruction, VST is not premiumed as if it were a regulated utility: its earnings are merchan"
+   ],
+   "justified_multiples": "10.9-12.8x / 14.8-17.4x",
+   "backlog": {
+    "figure": "Not disclosed in dollars. Data-centre PPAs in megawatts only",
+    "book_to_bill": "n/a",
+    "coverage": "Not computable in dollars",
+    "visibility": "Not disclosed in dollars",
+    "stance": "Assumes less than PPAs imply at full delivery, neutral for 2027"
+   },
+   "crosscheck": {
+    "value": "$32-$38 (FCF-as-EPS ceiling $78-$92, still below spot)",
+    "base": "$2.18 median GAAP diluted EPS, 2021-2025",
+    "verdict": "Already not at all, stays; original arithmetic collapses ~79%",
+    "rechecked": true,
+    "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
+   }
+  }
+ }
+}

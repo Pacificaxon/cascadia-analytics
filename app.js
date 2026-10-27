@@ -287,6 +287,7 @@ function proDataStale() {
    if (sections.detailed_breakdowns) flat.detailed_breakdowns = sections.detailed_breakdowns;
    if (sections.sotp) flat._sotp = sections.sotp;
    if (sections.sensitivity) flat._sensitivity = sections.sensitivity;
+   if (sections.moat_detail) flat.moat_detail = sections.moat_detail;
    // Transcript tone: merge per-ticker detail files into flat.transcript_tone[tk]
    if (sections.transcript_tone_detail) {
     flat.transcript_tone = flat.transcript_tone || {};
@@ -374,6 +375,7 @@ function proDataStale() {
      // SOTP segment builds ship only in the Pro payload (finding C3).
      if (PRO_DATA._sotp && PRO_DATA._sotp[tk]) merged[tk].sotp = PRO_DATA._sotp[tk];
      if (PRO_DATA._sensitivity && PRO_DATA._sensitivity[tk]) merged[tk].sensitivity = PRO_DATA._sensitivity[tk];
+     if (PRO_DATA.moat_detail && PRO_DATA.moat_detail[tk]) merged[tk].moat_detail = PRO_DATA.moat_detail[tk];
     }
     return merged;
    }
@@ -7654,6 +7656,12 @@ route("alerts", function () {
     '<div class="tkx-srow"><span class="' + cls(c[3]) + '">' + fmtPct(c[3]) + " vs current</span>" +
     (endYear ? '<span class="tkx-ends">Ends ' + endYear + "</span>" : "") + "</div></div>"
    ).join("") + "</div>";
+  // Competitive Moat note (free, inside Valuation): rating, premium or
+  // discount, reasons, and backlog visibility, with the status line that
+  // the premium is a multiple cross-check and is not in the DCF target.
+  // Pro detail (justified multiples and cross-check values) renders only
+  // when the Pro payload has merged moat_detail for this ticker.
+  h += '<div class="card" id="tk-sec-moat" data-toc="Competitive Moat"><h3>Competitive Moat</h3>' + moatNoteHtml(t) + "</div>";
   // Discount Rate Sensitivity (Pro): build-time grid of model outputs
   // only (ERP / 10-year deltas around the published-target inputs).
   // Shell renders for every tier like the other Pro sections (GEX,
@@ -9441,6 +9449,48 @@ route("alerts", function () {
 
  // Valuation multiples section (free): market cap, EV, year switcher, multiple cards
  // Logo colors: forest green #46634d, gold #d9a441
+ function moatNoteHtml(t) {
+  const m = t.moat;
+  if (!m) return '<p style="color:var(--muted)">We have not published a competitive moat note for this ticker yet.</p>';
+  const cap = (s) => {
+   s = String(s || "").trim();
+   return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  };
+  const cleanPeriod = (s) => String(s || "").trim().replace(/\.+$/, "");
+  let h = "";
+  const prem = String(m.premium || "");
+  if (prem.indexOf("\u2212") === 0 || prem.indexOf("-") === 0) {
+   const disc = prem.replace(/[\u2212-]/g, "");
+   h += "<p>We assign a discount of " + esc(disc) + " to sector median multiples for " + esc(t.ticker) + ".</p>";
+  } else {
+   h += "<p>We assign a premium of " + esc(prem) + " to sector median multiples for " + esc(t.ticker) + ".</p>";
+  }
+  h += "<p>We rate the moat as " + esc(m.moat) + " and we view the market structure as " + esc(cleanPeriod(m.structure)) + ".</p>";
+  if (m.reasons && m.reasons.length) {
+   h += "<ul>" + m.reasons.map((r) => "<li>" + esc(cap(r)) + "</li>").join("") + "</ul>";
+  }
+  const b = m.backlog || {};
+  const fig = String(b.figure || "");
+  if (/not disclosed/i.test(fig) || /^no /i.test(fig)) {
+   h += "<p>We have no disclosed backlog figure for this company, so backlog gives no support to the growth path here.</p>";
+  } else if (/proxy/i.test(fig)) {
+   h += "<p>The closest disclosed figure is a deferred revenue proxy, not an order book, at " + esc(fig) + ", with coverage of " + esc(b.coverage) + " and visibility rated " + esc(b.visibility) + ".</p>";
+  } else {
+   h += "<p>Backlog is " + esc(fig) + ", with coverage of " + esc(b.coverage) + " and visibility rated " + esc(b.visibility) + ". On backlog alone, the stance is " + esc(cleanPeriod(b.stance)) + ".</p>";
+  }
+  if (m.status) h += "<p>" + esc(m.status) + "</p>";
+  const d = t.moat_detail;
+  if (d && (d.justified_multiples || (d.crosscheck && d.crosscheck.value))) {
+   h += "<p>The justified multiple range is " + esc(d.justified_multiples) + ".</p>";
+   if (d.crosscheck && d.crosscheck.value) {
+    h += "<p>The multiple cross-check value is " + esc(d.crosscheck.value) + ", on a base of " + esc(d.crosscheck.base) + ". The gap verdict is " + esc(cleanPeriod(d.crosscheck.verdict)) + ".</p>";
+    if (d.crosscheck.base_note) h += "<p>" + esc(d.crosscheck.base_note) + "</p>";
+    h += "<p>These cross-check figures are dated October 27, 2026, and were computed against the Base in the October 27 framework, so they may differ from the live Base shown above if that Base has since moved.</p>";
+   }
+  }
+  return h;
+ }
+
  function valuationHtml(t) {
   const v = t.valuation;
   if (!v || !v.years || !v.years.length)

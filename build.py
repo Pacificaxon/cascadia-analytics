@@ -345,6 +345,31 @@ def main():
         val_multiples = load(os.path.join(MR, "valuation_multiples.json"))
     except FileNotFoundError:
         val_multiples = {}
+    # --- Competitive Moat note (2026-10-27): one entry per coverage ticker
+    # from the moat premium framework, the normalized-base recheck, and the
+    # backlog visibility report. The free bundle carries the moat rating,
+    # premium or discount, market structure, reasons, backlog, and the
+    # status line; the full cross-check detail ships Pro-only below.
+    try:
+        moat_notes = load(os.path.join(HERE, "moat_notes.json"))
+    except FileNotFoundError:
+        moat_notes = {}
+    moat_free = {}
+    moat_detail = {}
+    for _tk, _e in (moat_notes.get("tickers", {}) or {}).items():
+        moat_free[_tk] = {
+            "moat": _e.get("moat"),
+            "premium": _e.get("premium"),
+            "structure": _e.get("structure"),
+            "reasons": _e.get("reasons", []),
+            "backlog": _e.get("backlog", {}),
+            "status": moat_notes.get("status", ""),
+            "as_of": moat_notes.get("as_of", ""),
+        }
+        moat_detail[_tk] = {
+            "justified_multiples": _e.get("justified_multiples", ""),
+            "crosscheck": _e.get("crosscheck", {}),
+        }
     # --- Earnings calendar: next earnings date per ticker (YYYY-MM-DD).
     # NOTE: when a new ticker is added to coverage, add its next earnings date here.
     # Dates verified 2026-10-14 via Nasdaq calendar API + Zacks/MarketBeat/Finviz/company IR.
@@ -494,6 +519,11 @@ def main():
         # Valuation multiples: market cap, EV, TTM + forward multiples (free)
         if tk in val_multiples:
             t["valuation"] = val_multiples[tk]
+        # Competitive Moat note (free): rating, premium or discount,
+        # structure, reasons, backlog, and status line. Cross-check
+        # detail stays Pro-only in moat_detail below.
+        if tk in moat_free:
+            t["moat"] = moat_free[tk]
         tickers[tk] = t
 
     # --- Copy chart images ---
@@ -701,6 +731,10 @@ def main():
         except Exception:
             pass
     pro_sections["detailed_breakdowns"] = breakdown_detail
+    # Competitive Moat cross-check detail (Pro only): justified multiple
+    # ranges and multiple-implied values with their base and gap verdict.
+    # The free bundle carries the moat note itself, never this detail.
+    pro_sections["moat_detail"] = moat_detail
     # DCF targets per ticker (bear/base/bull/blended)
     dcf_targets = {}
     fcf_projections = {}
