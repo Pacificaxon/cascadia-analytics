@@ -542,26 +542,45 @@ function proDataStale() {
  // unversioned republication never reaches them; the versioned URL is a
  // fresh cache key that bypasses the stale copy everywhere.
  const NOTES_PDF_V = "20261026-80";
- function openPdfModal(pdfUrl, title) {
+ async function openPdfModal(pdfUrl, title) {
   const root = document.getElementById("modal-root");
-  // #view=FitH asks the embedded viewer to fit the page to the viewer
-  // width (honored by the Chrome/Edge/Firefox/Android PDF viewers), so a
-  // note fills a phone screen instead of leaving blank space at the right.
-  const versionedUrl = pdfUrl + (pdfUrl.indexOf("?") >= 0 ? "&" : "?") + "v=" + NOTES_PDF_V + "#view=FitH";
+  // Notes and scorecards are file-gated server-side (Pro only), so the
+  // viewer cannot use a bare iframe src: a navigation carries no Bearer
+  // token. Fetch with the Pro session token, then view the blob. Free
+  // users never reach this function (they see the Pro teaser), and a
+  // non-Pro fetch here returns 403 and shows the sign-in message below.
+  const versionedUrl = pdfUrl + (pdfUrl.indexOf("?") >= 0 ? "&" : "?") + "v=" + NOTES_PDF_V;
   root.innerHTML =
    '<div class="modal-back" id="pdf-mb" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;flex-direction:column;">' +
    '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#101620;">' +
    '<div style="font-size:13px;font-weight:600;color:#f5f7fa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;">' + esc(title || "Research Note") + "</div>" +
-   '<a href="' + esc(versionedUrl) + '" target="_blank" rel="noopener" style="background:transparent;color:#d9a441;border:1px solid #d9a441;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;white-space:nowrap;text-decoration:none;">Open in new tab</a>' +
+   '<button id="pdf-newtab" style="background:transparent;color:#d9a441;border:1px solid #d9a441;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;">Open in new tab</button>' +
    '<button id="pdf-close" style="background:#d9a441;color:#0a0e17;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0;">Close</button>' +
    "</div>" +
-   '<iframe src="' + esc(versionedUrl) + '" style="flex:1;width:100%;border:none;background:#fff;" title="PDF Viewer"></iframe>' +
+   '<div id="pdf-body" style="flex:1;display:flex;align-items:center;justify-content:center;color:#f5f7fa;font-size:14px;">Loading document...</div>' +
    '<div style="padding:8px 12px;background:#101620;font-size:11px;color:#8d99aa;text-align:center;">For the best reading experience on mobile, use "Open in new tab" for full-page zoom and page controls.</div>' +
    "</div>";
-  document.getElementById("pdf-close").addEventListener("click", () => { root.innerHTML = ""; });
+  const close = () => { root.innerHTML = ""; };
+  document.getElementById("pdf-close").addEventListener("click", close);
   document.getElementById("pdf-mb").addEventListener("click", (e) => {
-   if (e.target.id === "pdf-mb") root.innerHTML = "";
+   if (e.target.id === "pdf-mb") close();
   });
+  let blobUrl = null;
+  document.getElementById("pdf-newtab").addEventListener("click", () => {
+   if (blobUrl) window.open(blobUrl, "_blank", "noopener");
+  });
+  try {
+   const headers = (typeof proAuthHeaders === "function") ? await proAuthHeaders() : {};
+   const res = await fetch(versionedUrl, { headers });
+   if (!res.ok) throw new Error(res.status === 403 ? "forbidden" : "unavailable");
+   const blob = await res.blob();
+   blobUrl = URL.createObjectURL(blob);
+   document.getElementById("pdf-body").innerHTML =
+    '<iframe src="' + esc(blobUrl) + '#view=FitH" style="flex:1;width:100%;height:100%;border:none;background:#fff;" title="PDF Viewer"></iframe>';
+  } catch (e) {
+   document.getElementById("pdf-body").innerHTML =
+    '<p style="padding:24px;text-align:center;">This document requires a Pro subscription. Please sign in with a Pro account and try again.</p>';
+  }
  }
  window.openPdfModal = openPdfModal;
 
