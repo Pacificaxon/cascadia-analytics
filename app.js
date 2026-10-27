@@ -1648,7 +1648,7 @@ function bindZoomHandlers() {
   Object.keys(gexStrikeChartData).forEach((k) => delete gexStrikeChartData[k]);
   Object.keys(skewCurveChartData).forEach((k) => delete skewCurveChartData[k]);
   try { document.body.dataset.route = r.name; } catch (e) {}
-  const _activeKey = (r.name === "monitor" && r.param && ["mcclellan", "congress", "insider", "whales"].indexOf(r.param) >= 0) ? r.param : r.name;
+  const _activeKey = (r.name === "monitor" && r.param && ["mcclellan"].indexOf(r.param) >= 0) ? r.param : r.name;
   document.querySelectorAll(".topnav a[data-route]").forEach((b) =>
    b.classList.toggle("active", b.dataset.route === _activeKey));
   syncCoveragePick(r);
@@ -2895,13 +2895,6 @@ function bindZoomHandlers() {
      { id: "monitor-rsi-cyclical-defensive", key: "rsi", name: "RSI: Cyclicals vs Defensives", free: false },
      { id: "monitor-market-leadership", key: "leadership", name: "Market Leadership", free: false },
     ] },
-  { key: "flow", num: "04", name: "Insider and Congressional Flow",
-    sub: "Open-market purchases by corporate insiders and stock trades disclosed by members of Congress. What people closest to the business, and to policy, are doing with their own money.",
-    models: [
-     { id: "monitor-congress", key: "congress", name: "Congressional Stock Tracker", free: false },
-     { id: "monitor-insider", key: "insider", name: "Form 4 Insider Screener", free: false },
-     { id: "monitor-whales", key: "whales", name: "13F Whale Filter", free: false },
-    ] },
  ];
  // Panel name (from D.panels) to bucket key. Panels that match nothing here
  // keep their data order and render after the category groups, unchanged.
@@ -3148,39 +3141,41 @@ function flowMoney(v) {
  if (a >= 1e3) return "$" + (v / 1e3).toFixed(0) + "K";
  return "$" + Math.round(v).toLocaleString();
 }
-function flowTeaser(title, desc) {
- return '<style>.snap-blur{background:linear-gradient(135deg,#243047,#1a2233);border-radius:6px;filter:blur(1.2px);opacity:0.95;}</style>' +
-  '<div class="section"><div class="section-title">' + title + ' ' + PRO_BADGE + '</div>' +
-  '<div class="card"><div style="display:flex;align-items:center;gap:16px;margin:8px 0;">' +
-  '<div class="snap-blur" style="width:110px;height:40px;border-radius:8px;"></div>' +
-  '<div><div class="snap-blur" style="width:170px;height:16px;border-radius:6px;"></div>' +
-  '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">' + desc + ' The records are Pro.</div></div></div></div></div>';
-}
-function flowFetchFallback(key, flag) {
- if (!window[flag]) {
-  window[flag] = true;
-  fetchProSection(key).then((sec) => {
-   window[flag] = false;
-   if (sec) {
-    if (!PRO_DATA) PRO_DATA = {};
-    PRO_DATA[key] = sec;
-    render();
-   }
-  }).catch(() => { window[flag] = false; });
+// Ticker page flow blocks and screener flow filters (2026-10-27
+// placement move). Insider, congress, and whale content lives on
+// ticker pages and the screener page only, never on Market
+// Internals. All three blocks read the existing Pro payload keys
+// and show NA where a ticker has no trades, never a fabricated row.
+function tickerFlowInsiderHtml(tk) {
+ const ins = (PRO_DATA && PRO_DATA.insider_screener) || null;
+ if (!ins || typeof ins !== "object" || !("available" in ins)) return '<div class="card"><p style="color:var(--muted)">Loading insider buying data.</p></div>';
+ if (!ins.available) return '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">' + esc(ins.status || "No insider records are available.") + '</p></div>';
+ const trades = ((ins.by_ticker || {})[tk] || []).slice(0, 10);
+ let h = '<div class="card">';
+ if (ins.as_of) h += '<div style="font-size:11px;color:#647184;margin-bottom:10px;">Insider data as of ' + esc(ins.as_of) + '</div>';
+ const clusters = (ins.clusters || []).filter((c) => c.ticker === tk);
+ if (clusters.length) {
+  const c = clusters[0];
+  h += '<div style="background:#1a2233;border:1px solid #d9a441;border-radius:10px;padding:12px 14px;margin-bottom:14px;"><div style="font-size:13px;font-weight:700;color:#d9a441;">Cluster buying: ' + c.distinct_insiders_count + ' insiders · ' + flowMoney(c.total_capital_deployed) + ' · latest ' + esc(c.latest_trade_date || "") + '</div>' +
+   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">' + (c.insider_list || []).map((n) => esc(n)).join(", ") + '</div></div>';
  }
- return null;
+ if (!trades.length) {
+  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">No open-market insider purchases for ' + esc(tk) + ' in the current 45 day window.</p>';
+ } else {
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Insider</th><th>Title</th><th>Shares</th><th>Price</th><th>Value</th><th>Trade Date</th></tr></thead><tbody>';
+  h += trades.map((t) =>
+   "<tr><td>" + esc(t.insider_name || "") + "</td><td>" + esc(t.title || "") + "</td><td>" + (t.shares != null ? Number(t.shares).toLocaleString() : "") + "</td><td>" + (t.price_per_share != null ? "$" + Number(t.price_per_share).toFixed(2) : "n/a") + "</td><td>" + flowMoney(t.total_value) + "</td><td>" + esc(t.transaction_date || "") + "</td></tr>"
+  ).join("");
+  h += '</tbody></table></div>';
+ }
+ return h + "</div>";
 }
-function congressSectionHtml() {
- if (!isPro()) return flowTeaser("Congressional Stock Tracker", "Periodic transaction reports disclosed by members of Congress, with party flow and the most accumulated names.");
- const pro = (PRO_DATA && PRO_DATA.congress_tracker) || null;
- if (!pro || typeof pro !== "object" || !("available" in pro)) return flowFetchFallback("congress_tracker", "_congressSectionFetching");
- const asOf = pro.as_of || null;
- let h = '<div class="section"><div class="section-title">Congressional Stock Tracker' + (asOf ? ' <span style="font-size:12px;color:var(--muted);font-weight:400;">as of ' + esc(asOf) + '</span>' : '') + ' ' + PRO_BADGE + '</div>' +
-  '<div class="section-sub">Periodic transaction reports filed under the STOCK Act by members of the U.S. House and Senate. Amounts are reported as ranges; any midpoint shown is an estimate from the range, never an exact amount. A disclosure reports a trade, not a reason for it.</div>';
- if (!pro.available) {
-  h += '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">Data unavailable</div>' +
-   '<div style="font-size:13px;color:#8d99aa;margin-top:6px;line-height:1.6;">' + esc(pro.status || "No congressional records are available.") + '</div>';
-  const checks = pro.source_checks || [];
+function tickerFlowCongressHtml(tk) {
+ const ct = (PRO_DATA && PRO_DATA.congress_tracker) || null;
+ if (!ct || typeof ct !== "object" || !("available" in ct)) return '<div class="card"><p style="color:var(--muted)">Loading congress buying data.</p></div>';
+ if (!ct.available) {
+  let h = '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">' + esc(ct.status || "No congressional records are available.") + '</p>';
+  const checks = ct.source_checks || [];
   if (checks.length) {
    h += '<div style="margin-top:10px;">';
    checks.forEach((c) => {
@@ -3188,212 +3183,240 @@ function congressSectionHtml() {
    });
    h += '</div>';
   }
-  h += '<div style="font-size:12px;color:#8d99aa;margin-top:10px;">The tracker will populate automatically when an official structured feed permits automated access. No sample or estimated records are shown in the meantime.</div></div>';
   return h + "</div>";
  }
- if (pro.stale) h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;color:#d9a441;">Showing last good data. The latest source check failed: ' + esc(pro.status || "") + '</div></div>';
- const hl = pro.headline || {};
- const pf = pro.party_flow || {};
- h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">' +
-  '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Recent Trades</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (hl.recent_trades != null ? Number(hl.recent_trades).toLocaleString() : "n/a") + '</div></div>';
- Object.keys(pf).forEach((party) => {
-  const p = pf[party] || {};
-  h += '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">' + esc(party) + ' Net Flow, Est.</div><div style="font-size:22px;font-weight:800;color:#dbe5f1;">' + flowMoney(p.net) + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">Buys ' + flowMoney(p.buys) + ' · Sells ' + flowMoney(p.sells) + ', midpoint estimates</div></div>';
- });
- h += '</div>';
- const top = (pro.top_tickers || []).slice(0, 6);
- if (top.length) {
-  h += '<div style="margin-top:16px;"><div class="section-title">Most Accumulated Names</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">';
-  top.forEach((t) => {
-   h += '<div class="card"><div style="font-size:16px;font-weight:800;color:#dbe5f1;">' + esc(t.ticker) + '</div><div style="font-size:11px;color:var(--muted);">' + esc(t.asset_name || "") + '</div><div style="font-size:13px;color:#dbe5f1;margin-top:4px;">Net ' + flowMoney(t.net_flow_est) + ' est.</div><div style="font-size:11px;color:var(--muted);">' + (t.trade_count != null ? t.trade_count : "") + ' trades</div></div>';
-  });
-  h += '</div></div>';
- }
- h += '<div style="margin-top:16px;"><div class="section-title">Disclosed Trades</div>' +
-  '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">' +
-  '<select id="congress-chamber" onchange="congressFilterApply()" style="background:#0d1522;color:#dbe5f1;border:1px solid #1c2b3e;border-radius:8px;padding:6px 10px;font-size:12px;"><option value="ALL">All chambers</option><option value="House">House</option><option value="Senate">Senate</option></select>' +
-  '<select id="congress-party" onchange="congressFilterApply()" style="background:#0d1522;color:#dbe5f1;border:1px solid #1c2b3e;border-radius:8px;padding:6px 10px;font-size:12px;"><option value="ALL">All parties</option><option value="Democrat">Democrat</option><option value="Republican">Republican</option></select>' +
-  '<input id="congress-search" oninput="congressFilterApply()" placeholder="Search member or ticker" style="background:#0d1522;color:#dbe5f1;border:1px solid #1c2b3e;border-radius:8px;padding:6px 10px;font-size:12px;flex:1;min-width:180px;" />' +
-  '</div><div class="card" style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;text-align:left;font-size:12px;"><thead><tr style="border-bottom:1px solid #1c2b3e;color:#c5a059;">' +
-  '<th style="padding:10px;">Member</th><th style="padding:10px;">Party and District</th><th style="padding:10px;">Committee</th><th style="padding:10px;">Ticker</th><th style="padding:10px;">Type</th><th style="padding:10px;">Amount Range</th><th style="padding:10px;">Midpoint Est.</th><th style="padding:10px;">Trade Date</th><th style="padding:10px;">Filed</th></tr></thead>' +
-  '<tbody id="congress-trades-body">' + congressRowsHtml((pro.trades || [])) + '</tbody></table></div></div>';
- return h + "</div>";
-}
-function congressRowsHtml(trades) {
- if (!trades.length) return '<tr><td colspan="9" style="padding:14px;color:#8d99aa;">No trades in the current window.</td></tr>';
- return trades.map((t) => '<tr style="border-bottom:1px solid #1c2b3e;">' +
-  '<td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(t.filer || "") + '</td>' +
-  '<td style="padding:10px;color:#8d99aa;">' + esc(t.party || "") + ' · ' + esc(t.state || "") + '</td>' +
-  '<td style="padding:10px;color:#8d99aa;">' + esc(t.committee || "") + '</td>' +
-  '<td style="padding:10px;font-weight:700;color:#c5a059;">' + esc(t.ticker || "") + '</td>' +
-  '<td style="padding:10px;color:#dbe5f1;">' + esc(t.transaction_type || "") + '</td>' +
-  '<td style="padding:10px;color:#8d99aa;">' + esc(t.amount_range || "") + '</td>' +
-  '<td style="padding:10px;color:#8d99aa;">' + flowMoney(t.amount_mid_estimate) + '</td>' +
-  '<td style="padding:10px;color:#8d99aa;">' + esc(t.transaction_date || "") + '</td>' +
-  '<td style="padding:10px;color:#8d99aa;">' + esc(t.disclosure_date || "") + '</td></tr>').join("");
-}
-function congressFilterApply() {
- const body = document.getElementById("congress-trades-body");
- if (!body) return;
- const pro = (PRO_DATA && PRO_DATA.congress_tracker) || {};
- const chamber = (document.getElementById("congress-chamber") || {}).value || "ALL";
- const party = (document.getElementById("congress-party") || {}).value || "ALL";
- const q = ((document.getElementById("congress-search") || {}).value || "").toLowerCase();
- const rows = (pro.trades || []).filter((t) => {
-  if (chamber !== "ALL" && t.chamber !== chamber) return false;
-  if (party !== "ALL" && t.party !== party) return false;
-  if (q) {
-   const hay = ((t.filer || "") + " " + (t.ticker || "") + " " + (t.asset_name || "")).toLowerCase();
-   if (hay.indexOf(q) < 0) return false;
-  }
-  return true;
- });
- body.innerHTML = congressRowsHtml(rows);
-}
-window.congressFilterApply = congressFilterApply;
-function insiderSectionHtml() {
- if (!isPro()) return flowTeaser("Form 4 Insider Screener", "Open-market Form 4 purchases by corporate insiders, with cluster buying where three or more distinct insiders bought in fourteen days.");
- const pro = (PRO_DATA && PRO_DATA.insider_screener) || null;
- if (!pro || typeof pro !== "object" || !("available" in pro)) return flowFetchFallback("insider_screener", "_insiderSectionFetching");
- const asOf = pro.as_of || null;
- let h = '<div class="section"><div class="section-title">Form 4 Insider Screener' + (asOf ? ' <span style="font-size:12px;color:var(--muted);font-weight:400;">as of ' + esc(asOf) + '</span>' : '') + ' ' + PRO_BADGE + '</div>' +
-  '<div class="section-sub">Open-market purchases only: Form 4 transaction code P with acquired code A, parsed from SEC EDGAR filings. Option exercises, grants, tax withholding, and gifts are excluded. A cluster means three or more distinct insiders bought the same ticker within a rolling fourteen day window. Cluster figures are computed from the filings, not rated.</div>';
- if (!pro.available) {
-  h += '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">Data unavailable</div>' +
-   '<div style="font-size:13px;color:#8d99aa;margin-top:6px;line-height:1.6;">' + esc(pro.status || "No insider records are available.") + '</div></div>';
-  return h + "</div>";
- }
- if (pro.stale) h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;color:#d9a441;">Showing last good data. The latest feed fetch failed: ' + esc(pro.status || "") + '</div></div>';
- const hl = pro.headline || {};
- const clusters = pro.clusters || [];
- h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">' +
-  '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Recent Purchases, 30 Days</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (hl.recent_purchases != null ? Number(hl.recent_purchases).toLocaleString() : "n/a") + '</div></div>' +
-  '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Active Clusters</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + clusters.length + '</div></div>' +
-  '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Tickers With Purchases</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + Object.keys(pro.by_ticker || {}).length + '</div></div></div>';
- if (clusters.length) {
-  h += '<div style="margin-top:16px;"><div class="section-title">Active Cluster Buying</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">';
-  clusters.forEach((c) => {
-   h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:18px;font-weight:800;color:#dbe5f1;">' + esc(c.ticker) + '</span><span style="font-size:13px;font-weight:700;color:#dbe5f1;">' + flowMoney(c.total_capital_deployed) + '</span></div>' +
-    '<div style="font-size:11px;color:var(--muted);margin-top:2px;">' + esc(c.company_name || "") + '</div>' +
-    '<div style="font-size:12px;color:#8d99aa;margin-top:8px;">' + c.distinct_insiders_count + ' insiders · latest ' + esc(c.latest_trade_date || "") + '</div>' +
-    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">' + (c.insider_list || []).map((n) => esc(n)).join(", ") + '</div></div>';
-  });
-  h += '</div></div>';
- }
- const clusterTickers = {};
- clusters.forEach((c) => { clusterTickers[c.ticker] = true; });
- h += '<div style="margin-top:16px;"><div class="section-title">Open-Market Purchases</div>' +
-  '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">' +
-  '<select id="insider-role" onchange="insiderFilterApply()" style="background:#0d1522;color:#dbe5f1;border:1px solid #1c2b3e;border-radius:8px;padding:6px 10px;font-size:12px;"><option value="ALL">All roles</option><option value="CSUITE">C-Suite only</option><option value="DIRECTOR">Directors only</option></select>' +
-  '<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#dbe5f1;background:#0d1522;border:1px solid #1c2b3e;border-radius:8px;padding:6px 10px;"><input type="checkbox" id="insider-cluster-only" onchange="insiderFilterApply()" /> Cluster tickers only</label>' +
-  '<input id="insider-search" oninput="insiderFilterApply()" placeholder="Search ticker, company, or insider" style="background:#0d1522;color:#dbe5f1;border:1px solid #1c2b3e;border-radius:8px;padding:6px 10px;font-size:12px;flex:1;min-width:180px;" />' +
-  '</div><div class="card" style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;text-align:left;font-size:12px;"><thead><tr style="border-bottom:1px solid #1c2b3e;color:#c5a059;">' +
-  '<th style="padding:10px;">Ticker and Issuer</th><th style="padding:10px;">Insider</th><th style="padding:10px;">Title</th><th style="padding:10px;">Cluster</th><th style="padding:10px;">Shares</th><th style="padding:10px;">Price</th><th style="padding:10px;">Value</th><th style="padding:10px;">Trade Date</th></tr></thead>' +
-  '<tbody id="insider-trades-body">' + insiderRowsHtml((pro.trades || []), clusterTickers) + '</tbody></table></div></div>';
- return h + "</div>";
-}
-function insiderRowsHtml(trades, clusterTickers) {
- if (!trades.length) return '<tr><td colspan="8" style="padding:14px;color:#8d99aa;">No purchases in the current window.</td></tr>';
- return trades.map((t) => {
-  const badge = clusterTickers[t.ticker] ? "Cluster" : (t.is_csuite ? "C-Suite" : (t.is_director ? "Director" : esc(t.title || "")));
-  return '<tr style="border-bottom:1px solid #1c2b3e;">' +
-   '<td style="padding:10px;"><span style="font-weight:700;color:#c5a059;">' + esc(t.ticker || "") + '</span><div style="font-size:11px;color:#8d99aa;">' + esc(t.company_name || "") + '</div></td>' +
-   '<td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(t.insider_name || "") + '</td>' +
-   '<td style="padding:10px;color:#8d99aa;">' + esc(t.title || "") + '</td>' +
-   '<td style="padding:10px;color:#dbe5f1;">' + badge + '</td>' +
-   '<td style="padding:10px;color:#dbe5f1;">' + (t.shares != null ? Number(t.shares).toLocaleString() : "") + '</td>' +
-   '<td style="padding:10px;color:#8d99aa;">' + (t.price_per_share != null ? "$" + Number(t.price_per_share).toFixed(2) : "n/a") + '</td>' +
-   '<td style="padding:10px;color:#dbe5f1;">' + flowMoney(t.total_value) + '</td>' +
-   '<td style="padding:10px;color:#8d99aa;">' + esc(t.transaction_date || "") + '</td></tr>';
- }).join("");
-}
-function insiderFilterApply() {
- const body = document.getElementById("insider-trades-body");
- if (!body) return;
- const pro = (PRO_DATA && PRO_DATA.insider_screener) || {};
- const role = (document.getElementById("insider-role") || {}).value || "ALL";
- const clusterOnly = !!(document.getElementById("insider-cluster-only") || {}).checked;
- const q = ((document.getElementById("insider-search") || {}).value || "").toLowerCase();
- const clusterTickers = {};
- (pro.clusters || []).forEach((c) => { clusterTickers[c.ticker] = true; });
- const rows = (pro.trades || []).filter((t) => {
-  if (clusterOnly && !clusterTickers[t.ticker]) return false;
-  if (role === "CSUITE" && !t.is_csuite) return false;
-  if (role === "DIRECTOR" && !t.is_director) return false;
-  if (q) {
-   const hay = ((t.ticker || "") + " " + (t.company_name || "") + " " + (t.insider_name || "")).toLowerCase();
-   if (hay.indexOf(q) < 0) return false;
-  }
-  return true;
- });
- body.innerHTML = insiderRowsHtml(rows, clusterTickers);
-}
-window.insiderFilterApply = insiderFilterApply;
-function whaleRowsHtml(positions, fundName) {
- if (!positions.length) return '<tr><td colspan="6" style="padding:14px;color:#8d99aa;">No positions in this list.</td></tr>';
- return positions.map((p) =>
-  '<tr style="border-bottom:1px solid #1c2b3e;">' +
-  '<td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(p.issuer_name || "") + '<div style="font-size:11px;color:#8d99aa;">' + esc(fundName || "") + ' · ' + esc(p.title_of_class || "") + '</div></td>' +
-  '<td style="padding:10px;color:#8d99aa;">' + esc(p.cusip || "") + '</td>' +
-  '<td style="padding:10px;color:#dbe5f1;">' + (p.shares != null ? Number(p.shares).toLocaleString() : "n/a") + '</td>' +
-  '<td style="padding:10px;color:#dbe5f1;">' + flowMoney(p.value_usd) + '</td>' +
-  '<td style="padding:10px;color:#dbe5f1;">' + (p.weight_pct != null ? Number(p.weight_pct).toFixed(2) + "%" : "n/a") + '</td>' +
-  '<td style="padding:10px;"><a href="' + esc(p.filing_url || "") + '" target="_blank" rel="noopener" style="color:#d9a441;">Filing</a></td></tr>'
- ).join("");
-}
-function whaleSectionHtml() {
- if (!isPro()) return flowTeaser("13F Whale Filter", "New positions at 5 percent or more of a watched fund's reported portfolio, latest 13F versus the prior filing.");
- const pro = (PRO_DATA && PRO_DATA.whale_13f) || null;
- if (!pro || typeof pro !== "object" || !("available" in pro)) return flowFetchFallback("whale_13f", "_whaleSectionFetching");
- const asOf = pro.as_of || null;
- let h = '<div class="section"><div class="section-title">13F Whale Filter' + (asOf ? ' <span style="font-size:12px;color:var(--muted);font-weight:400;">as of ' + esc(asOf) + '</span>' : '') + ' ' + PRO_BADGE + '</div>' +
-  '<div class="section-sub">New positions at 5 percent or more of a watched fund\'s reported portfolio, comparing the latest Form 13F-HR information table with the prior filing for Berkshire Hathaway, Appaloosa, and Pershing Square. 13F filings land up to 45 days after quarter end, so these are disclosed positions, not real-time moves. Positions are identified by issuer name and CUSIP as filed; no ticker symbols are assigned from the filing. A whale is a new position worth 5 percent or more of that fund\'s reported portfolio value in the latest filing.</div>';
- if (!pro.available) {
-  h += '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">Data unavailable</div>' +
-   '<div style="font-size:13px;color:#8d99aa;margin-top:6px;line-height:1.6;">' + esc(pro.status || "No 13F records are available.") + '</div></div>';
-  return h + "</div>";
- }
- if (pro.stale) h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;color:#d9a441;">Showing last good data. The latest fetch failed: ' + esc(pro.status || "") + '</div></div>';
- const hl = pro.headline || {};
- const funds = pro.funds || [];
- h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">' +
-  '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Whale Positions</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (hl.whale_count != null ? Number(hl.whale_count).toLocaleString() : "n/a") + '</div></div>' +
-  '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Funds With Whales</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (hl.funds_with_whales != null ? Number(hl.funds_with_whales).toLocaleString() : "n/a") + '</div></div>' +
-  '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Funds Tracked</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + funds.length + '</div></div></div>';
- h += '<div style="margin-top:16px;"><div class="section-title">Fund Comparisons</div><div class="card" style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;text-align:left;font-size:12px;"><thead><tr style="border-bottom:1px solid #1c2b3e;color:#c5a059;">' +
-  '<th style="padding:10px;">Fund</th><th style="padding:10px;">Latest Period</th><th style="padding:10px;">Prior Period</th><th style="padding:10px;">Reported Portfolio</th><th style="padding:10px;">New Positions</th><th style="padding:10px;">Whales</th></tr></thead><tbody>';
- h += funds.map((f) => {
-  if (f.status !== "ok") return '<tr style="border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(f.fund_name || "") + '</td><td colspan="5" style="padding:10px;color:#8d99aa;">' + esc(f.status || "Unavailable") + '</td></tr>';
-  return '<tr style="border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(f.fund_name || "") + '</td>' +
-   '<td style="padding:10px;color:#dbe5f1;">' + esc(f.latest_report_date || "") + '</td>' +
-   '<td style="padding:10px;color:#dbe5f1;">' + esc(f.prior_report_date || "") + '</td>' +
-   '<td style="padding:10px;color:#dbe5f1;">' + flowMoney(f.portfolio_value_usd) + '</td>' +
-   '<td style="padding:10px;color:#dbe5f1;">' + (f.new_position_count != null ? f.new_position_count : "n/a") + '</td>' +
-   '<td style="padding:10px;color:#dbe5f1;">' + (f.whale_count != null ? f.whale_count : "n/a") + '</td></tr>';
- }).join("");
- h += '</tbody></table></div></div>';
- const allWhales = [];
- funds.forEach((f) => { (f.whales || []).forEach((w) => { allWhales.push({ fund: f.fund_name, pos: w }); }); });
- h += '<div style="margin-top:16px;"><div class="section-title">Whale Positions (new, 5 percent or more)</div>';
- if (!allWhales.length) {
-  h += '<div class="card"><div style="font-size:13px;color:#8d99aa;line-height:1.6;">No new position reached 5 percent of its fund\'s reported portfolio in the latest comparison. The new positions below the threshold are listed underneath.</div></div>';
+ const trades = ((ct.by_ticker || {})[tk] || []).slice(0, 10);
+ let h = '<div class="card">';
+ if (ct.as_of) h += '<div style="font-size:11px;color:#647184;margin-bottom:10px;">Congress data as of ' + esc(ct.as_of) + '</div>';
+ if (!trades.length) {
+  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">No disclosed congressional trades for ' + esc(tk) + ' in the current tracker data.</p>';
  } else {
-  h += '<div class="card" style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;text-align:left;font-size:12px;"><thead><tr style="border-bottom:1px solid #1c2b3e;color:#c5a059;">' +
-   '<th style="padding:10px;">Issuer</th><th style="padding:10px;">CUSIP</th><th style="padding:10px;">Shares</th><th style="padding:10px;">Value</th><th style="padding:10px;">Weight</th><th style="padding:10px;">Source</th></tr></thead><tbody>';
-  h += allWhales.map((x) => whaleRowsHtml([x.pos], x.fund)).join("");
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Filer</th><th>Chamber</th><th>Party</th><th>Type</th><th>Amount Range</th><th>Transaction Date</th></tr></thead><tbody>';
+  h += trades.map((t) =>
+   "<tr><td>" + esc(t.filer || "") + "</td><td>" + esc(t.chamber || "") + "</td><td>" + esc(t.party || "") + "</td><td>" + esc(t.transaction_type || "") + "</td><td>" + esc(t.amount_range || "") + "</td><td>" + esc(t.transaction_date || "") + "</td></tr>"
+  ).join("");
   h += '</tbody></table></div>';
  }
- h += '</div>';
- h += '<div style="margin-top:16px;"><div class="section-title">All New Positions In The Latest Comparison</div><div class="card" style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;text-align:left;font-size:12px;"><thead><tr style="border-bottom:1px solid #1c2b3e;color:#c5a059;">' +
-  '<th style="padding:10px;">Issuer</th><th style="padding:10px;">CUSIP</th><th style="padding:10px;">Shares</th><th style="padding:10px;">Value</th><th style="padding:10px;">Weight</th><th style="padding:10px;">Source</th></tr></thead><tbody>';
- funds.forEach((f) => {
-  if (f.status === "ok" && (f.new_positions || []).length) h += whaleRowsHtml(f.new_positions, f.fund_name);
- });
- h += '</tbody></table></div></div>';
- funds.forEach((f) => {
-  if (f.notice) h += '<div style="margin-top:12px;" class="card"><div style="font-size:13px;color:#8d99aa;line-height:1.6;">' + esc(f.fund_name || "") + ': ' + esc(f.notice) + '</div></div>';
- });
  return h + "</div>";
+}
+function tickerFlowWhalesHtml(tk) {
+ const wh = (PRO_DATA && PRO_DATA.whale_13f) || null;
+ if (!wh || typeof wh !== "object" || !("available" in wh)) return '<div class="card"><p style="color:var(--muted)">Loading whale positions data.</p></div>';
+ if (!wh.available) return '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">' + esc(wh.status || "No 13F records are available.") + '</p></div>';
+ const funds = wh.funds || [];
+ const allWhales = [];
+ funds.forEach((f) => {
+  (f.whales || []).forEach((p) => { allWhales.push({ pos: p, fund: f.fund_name || "" }); });
+ });
+ let h = '<div class="card">';
+ if (wh.as_of) h += '<div style="font-size:11px;color:#647184;margin-bottom:10px;">Whale data as of ' + esc(wh.as_of) + '</div>';
+ h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">These are fund-level whale positions as filed, not trades in ' + esc(tk) + ' on this page. 13F filings land up to 45 days after quarter end, so these are disclosed positions, not real-time moves. Positions are identified by issuer name and CUSIP as filed; no ticker symbols are assigned from the filing.</p>';
+ if (!allWhales.length) {
+  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">No whale positions in the latest comparison.</p>';
+ } else {
+  const pageName = (typeof TICKERS !== "undefined" && TICKERS[tk] && TICKERS[tk].name ? String(TICKERS[tk].name).trim().toLowerCase() : "");
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Issuer</th><th>Fund</th><th>Weight</th><th>Shares</th><th>Value</th><th>CUSIP</th><th>Source</th></tr></thead><tbody>';
+  h += allWhales.map((x) => {
+   const p = x.pos || {};
+   const isMatch = pageName && pageName === String(p.issuer_name || "").trim().toLowerCase();
+   const rowStyle = isMatch ? ' style="background:#1a2233;"' : "";
+   return '<tr' + rowStyle + '><td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(p.issuer_name || "") + (isMatch ? '<div style="font-size:11px;color:#d9a441;">Issuer name matches this ticker page</div>' : "") + '</td>' +
+    '<td style="padding:10px;color:#8d99aa;">' + esc(x.fund) + '</td>' +
+    '<td style="padding:10px;color:#dbe5f1;">' + (p.weight_pct != null ? Number(p.weight_pct).toFixed(2) + "%" : "n/a") + '</td>' +
+    '<td style="padding:10px;color:#dbe5f1;">' + (p.shares != null ? Number(p.shares).toLocaleString() : "n/a") + '</td>' +
+    '<td style="padding:10px;color:#dbe5f1;">' + flowMoney(p.value_usd) + '</td>' +
+    '<td style="padding:10px;color:#8d99aa;">' + esc(p.cusip || "") + '</td>' +
+    '<td style="padding:10px;"><a href="' + esc(p.filing_url || "") + '" target="_blank" rel="noopener" style="color:#d9a441;">Filing</a></td></tr>';
+  }).join("");
+  h += '</tbody></table></div>';
+ }
+ return h + "</div>";
+}
+async function loadTickerFlow(tk) {
+ const needIns = !(PRO_DATA && PRO_DATA.insider_screener);
+ const needCt = !(PRO_DATA && PRO_DATA.congress_tracker);
+ const needWh = !(PRO_DATA && PRO_DATA.whale_13f);
+ if (!needIns && !needCt && !needWh) return;
+ const results = await Promise.all([
+  needIns ? fetchProSection("insider_screener") : Promise.resolve(null),
+  needCt ? fetchProSection("congress_tracker") : Promise.resolve(null),
+  needWh ? fetchProSection("whale_13f") : Promise.resolve(null),
+ ]);
+ if (!PRO_DATA) PRO_DATA = {};
+ if (results[0]) PRO_DATA.insider_screener = results[0];
+ if (results[1]) PRO_DATA.congress_tracker = results[1];
+ if (results[2]) PRO_DATA.whale_13f = results[2];
+ const cur = currentRoute();
+ if (cur.name !== "ticker" || (cur.param || "").toUpperCase() !== tk) return;
+ const insEl = document.getElementById("tk-flow-insider");
+ if (insEl) insEl.innerHTML = tickerFlowInsiderHtml(tk);
+ const ctEl = document.getElementById("tk-flow-congress");
+ if (ctEl) ctEl.innerHTML = tickerFlowCongressHtml(tk);
+ const whEl = document.getElementById("tk-flow-whales");
+ if (whEl) whEl.innerHTML = tickerFlowWhalesHtml(tk);
+}
+function flowScreenerInsiderRows() {
+ const ins = (PRO_DATA && PRO_DATA.insider_screener) || {};
+ const by = ins.by_ticker || {};
+ const clusters = ins.clusters || [];
+ return Object.keys(by).filter((k) => k !== "NONE" && (by[k] || []).length).map((k) => {
+  const trades = by[k] || [];
+  let latest = "";
+  let total = 0;
+  trades.forEach((t) => {
+   if (t.transaction_date && t.transaction_date > latest) latest = t.transaction_date;
+   if (t.total_value) total += t.total_value;
+  });
+  const first = trades[0] || {};
+  return { ticker: k, company: first.company_name || "", count: trades.length, latest: latest, total: total, cluster: clusters.some((c) => c.ticker === k) };
+ }).sort((a, b) => {
+  if (b.latest < a.latest) return -1;
+  if (b.latest > a.latest) return 1;
+  return b.total - a.total;
+ });
+}
+function flowScreenerCongressRows() {
+ const ct = (PRO_DATA && PRO_DATA.congress_tracker) || {};
+ const by = ct.by_ticker || {};
+ return Object.keys(by).filter((k) => k !== "NONE" && (by[k] || []).length).map((k) => {
+  const trades = by[k] || [];
+  const buys = trades.filter((t) => {
+   const ty = String(t.transaction_type || "").toLowerCase();
+   return ty.indexOf("purchase") >= 0 || ty.indexOf("buy") >= 0 || ty === "p";
+  });
+  let latest = "";
+  buys.forEach((t) => {
+   if (t.transaction_date && t.transaction_date > latest) latest = t.transaction_date;
+  });
+  const first = buys[0] || trades[0] || {};
+  return { ticker: k, company: first.asset_name || "", count: buys.length, latest: latest, total: 0, cluster: false };
+ }).filter((r) => r.count > 0).sort((a, b) => {
+  if (b.latest < a.latest) return -1;
+  if (b.latest > a.latest) return 1;
+  return b.count - a.count;
+ });
+}
+function flowScreenerRowsHtml(mode) {
+ if (mode === "congress") {
+  const ct = (PRO_DATA && PRO_DATA.congress_tracker) || {};
+  if (!ct.available) return '<tr><td colspan="6" style="padding:14px;color:#8d99aa;">No stocks with congressional buying in the current data. Congressional data unavailable: ' + esc(ct.status || "No congressional records are available.") + '</td></tr>';
+  const rows = flowScreenerCongressRows();
+  if (!rows.length) return '<tr><td colspan="6" style="padding:14px;color:#8d99aa;">No stocks with congressional buying in the current data.</td></tr>';
+  return rows.map((r) =>
+   '<tr data-tk="' + esc(r.ticker) + '" style="cursor:pointer;border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#c5a059;">' + esc(r.ticker) + '</td><td style="padding:10px;color:#8d99aa;">' + esc(r.company) + '</td><td style="padding:10px;color:#dbe5f1;">' + r.count + '</td><td style="padding:10px;color:#8d99aa;">' + esc(r.latest) + '</td><td style="padding:10px;color:#dbe5f1;">n/a</td><td style="padding:10px;color:#8d99aa;">n/a</td></tr>'
+  ).join("");
+ }
+ const rows = flowScreenerInsiderRows();
+ if (!rows.length) return '<tr><td colspan="6" style="padding:14px;color:#8d99aa;">No stocks with insider buying in the current data.</td></tr>';
+ return rows.map((r) =>
+  '<tr data-tk="' + esc(r.ticker) + '" style="cursor:pointer;border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#c5a059;">' + esc(r.ticker) + '</td><td style="padding:10px;color:#8d99aa;">' + esc(r.company) + '</td><td style="padding:10px;color:#dbe5f1;">' + r.count + '</td><td style="padding:10px;color:#8d99aa;">' + esc(r.latest) + '</td><td style="padding:10px;color:#dbe5f1;">' + flowMoney(r.total) + '</td><td style="padding:10px;color:#dbe5f1;">' + (r.cluster ? "Cluster" : "n/a") + '</td></tr>'
+ ).join("");
+}
+function flowScreenerNoteHtml(mode) {
+ if (mode === "congress") {
+  const ct = (PRO_DATA && PRO_DATA.congress_tracker) || {};
+  if (!ct.available) return 'Congressional data unavailable: ' + esc(ct.status || "No congressional records are available.") + ' The filter therefore returns no stocks, never fabricated rows.';
+  return 'Stocks with disclosed congressional purchases in the current tracker data. Amounts are reported as ranges under the STOCK Act.';
+ }
+ const ins = (PRO_DATA && PRO_DATA.insider_screener) || {};
+ return 'Stocks with open-market insider purchases in the current 45 day window' + (ins.as_of ? ', insider data as of ' + esc(ins.as_of) : '') + '. Click a row to open that ticker.';
+}
+function flowScreenerInner() {
+ let h = '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">' +
+  '<select id="scr-flow-mode" style="background:#0d1522;color:#dbe5f1;border:1px solid #1c2b3e;border-radius:8px;padding:6px 10px;font-size:12px;"><option value="insider">Stocks with insider buying</option><option value="congress">Stocks with congressional buying</option></select>' +
+  '</div><div id="scr-flow-note" style="font-size:12px;color:#8d99aa;margin-bottom:10px;line-height:1.6;">' + flowScreenerNoteHtml("insider") + '</div>' +
+  '<div class="table-wrap"><table class="coverage"><thead><tr><th>Ticker</th><th>Company</th><th>Trades</th><th>Latest</th><th>Total Value</th><th>Cluster</th></tr></thead><tbody id="scr-flow-tbody">' + flowScreenerRowsHtml("insider") + '</tbody></table></div></div>';
+ return h;
+}
+function bindFlowScreenerRowClicks() {
+ const tb = document.getElementById("scr-flow-tbody");
+ if (!tb) return;
+ tb.querySelectorAll("tr[data-tk]").forEach((tr) => tr.addEventListener("click", () => {
+  const tk = tr.dataset.tk;
+  if (typeof ORDER !== "undefined" && ORDER.indexOf(tk) >= 0) nav("ticker/" + tk);
+  else nav("research/" + tk);
+ }));
+}
+async function initFlowScreener() {
+ const body = document.getElementById("scr-flow-body");
+ if (!body) return;
+ let ins = (PRO_DATA && PRO_DATA.insider_screener) || null;
+ let ct = (PRO_DATA && PRO_DATA.congress_tracker) || null;
+ if (!ins || !ct) {
+  const results = await Promise.all([
+   ins ? Promise.resolve(null) : fetchProSection("insider_screener"),
+   ct ? Promise.resolve(null) : fetchProSection("congress_tracker"),
+  ]);
+  if (!PRO_DATA) PRO_DATA = {};
+  if (results[0]) PRO_DATA.insider_screener = results[0];
+  if (results[1]) PRO_DATA.congress_tracker = results[1];
+ }
+ body.innerHTML = flowScreenerInner();
+ bindFlowScreenerRowClicks();
+ const sel = document.getElementById("scr-flow-mode");
+ if (sel) sel.addEventListener("change", () => {
+  const tb = document.getElementById("scr-flow-tbody");
+  if (tb) tb.innerHTML = flowScreenerRowsHtml(sel.value);
+  const note = document.getElementById("scr-flow-note");
+  if (note) note.innerHTML = flowScreenerNoteHtml(sel.value);
+  bindFlowScreenerRowClicks();
+ });
+}
+function whaleScreenerRows() {
+ const wh = (PRO_DATA && PRO_DATA.whale_13f) || {};
+ const funds = wh.funds || [];
+ const rows = [];
+ funds.forEach((f) => {
+  (f.whales || []).forEach((p) => { rows.push({ pos: p, fund: f.fund_name || "" }); });
+ });
+ rows.sort((a, b) => {
+  const av = (a.pos || {}).weight_pct || 0;
+  const bv = (b.pos || {}).weight_pct || 0;
+  return bv - av;
+ });
+ return rows;
+}
+function whaleScreenerRowsHtml(fund) {
+ const rows = whaleScreenerRows().filter((x) => !fund || fund === "ALL" || x.fund === fund);
+ if (!rows.length) return '<tr><td colspan="7" style="padding:14px;color:#8d99aa;">No whale positions in the latest comparison.</td></tr>';
+ return rows.map((x) => {
+  const p = x.pos || {};
+  return '<tr style="border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(p.issuer_name || "") + '</td>' +
+   '<td style="padding:10px;color:#8d99aa;">' + esc(x.fund) + '</td>' +
+   '<td style="padding:10px;color:#dbe5f1;">' + (p.weight_pct != null ? Number(p.weight_pct).toFixed(2) + "%" : "n/a") + '</td>' +
+   '<td style="padding:10px;color:#dbe5f1;">' + (p.shares != null ? Number(p.shares).toLocaleString() : "n/a") + '</td>' +
+   '<td style="padding:10px;color:#dbe5f1;">' + flowMoney(p.value_usd) + '</td>' +
+   '<td style="padding:10px;color:#8d99aa;">' + esc(p.cusip || "") + '</td>' +
+   '<td style="padding:10px;"><a href="' + esc(p.filing_url || "") + '" target="_blank" rel="noopener" style="color:#d9a441;">Filing</a></td></tr>';
+ }).join("");
+}
+function whaleScreenerInner() {
+ const wh = (PRO_DATA && PRO_DATA.whale_13f) || {};
+ if (!wh.available) return '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">' + esc(wh.status || "No 13F records are available.") + '</p></div>';
+ const funds = wh.funds || [];
+ let h = '<div class="card"><p style="font-size:13px;color:#8d99aa;line-height:1.6;">Fund-level whale positions as filed, not trades in any single ticker. 13F filings land up to 45 days after quarter end, so these are disclosed positions, not real-time moves. Positions are identified by issuer name and CUSIP as filed; no ticker symbols are assigned from the filing.</p>' +
+  '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;"><select id="scr-whale-fund" style="background:#0d1522;color:#dbe5f1;border:1px solid #1c2b3e;border-radius:8px;padding:6px 10px;font-size:12px;"><option value="ALL">All funds</option>';
+ funds.forEach((f) => {
+  h += '<option value="' + esc(f.fund_name || "") + '">' + esc(f.fund_name || "") + '</option>';
+ });
+ h += '</select></div><div class="table-wrap"><table class="coverage"><thead><tr><th>Issuer</th><th>Fund</th><th>Weight</th><th>Shares</th><th>Value</th><th>CUSIP</th><th>Source</th></tr></thead><tbody id="scr-whale-tbody">' + whaleScreenerRowsHtml("ALL") + '</tbody></table></div></div>';
+ return h;
+}
+async function initWhaleScreener() {
+ const body = document.getElementById("scr-whale-body");
+ if (!body) return;
+ let wh = (PRO_DATA && PRO_DATA.whale_13f) || null;
+ if (!wh) {
+  const sec = await fetchProSection("whale_13f");
+  if (!PRO_DATA) PRO_DATA = {};
+  if (sec) PRO_DATA.whale_13f = sec;
+ }
+ body.innerHTML = whaleScreenerInner();
+ const sel = document.getElementById("scr-whale-fund");
+ if (sel) sel.addEventListener("change", () => {
+  const tb = document.getElementById("scr-whale-tbody");
+  if (tb) tb.innerHTML = whaleScreenerRowsHtml(sel.value);
+ });
 }
 
 // McClellan Breadth as a Daily Snapshot composite input (2026-10-26
@@ -5396,14 +5419,9 @@ function mcclellanBreadthHtml() {
   // when the data lands, matching the other Pro monitor sections.
   SEC.mcclellan = mcclellanSectionHtml();
 
-  // Congressional STOCK Act tracker and Form 4 insider screener
-  // (Flow category). Null when Pro data is not loaded yet or the
-  // section endpoint is still resolving; the section and its index
-  // entry are skipped on that render and appear when the data lands,
-  // matching the other Pro monitor sections.
-  SEC.congress = congressSectionHtml();
-  SEC.insider = insiderSectionHtml();
-  SEC.whales = whaleSectionHtml();
+  // Insider, congress, and whale content moved to ticker pages and the
+  // screener page in the 2026-10-27 placement move. No flow sections
+  // render on Market Internals any longer.
 
   // Assemble the page from the buckets, grouped by category, with the
   // Market Internals Index at the top. Category order and free-above-Pro
@@ -5439,15 +5457,9 @@ function mcclellanBreadthHtml() {
   if (param === "mcclellan") {
    setTimeout(() => { const el = document.getElementById("monitor-mcclellan"); if (el) el.scrollIntoView(); }, 100);
   }
-  if (param === "congress") {
-   setTimeout(() => { const el = document.getElementById("monitor-congress"); if (el) el.scrollIntoView(); }, 100);
-  }
-  if (param === "insider") {
-   setTimeout(() => { const el = document.getElementById("monitor-insider"); if (el) el.scrollIntoView(); }, 100);
-  }
-  if (param === "whales") {
-   setTimeout(() => { const el = document.getElementById("monitor-whales"); if (el) el.scrollIntoView(); }, 100);
-  }
+  // Former congress, insider, and whales deep links no longer resolve
+  // to Market Internals sections; those routes now land on the
+  // Market Internals page top.
   bindVolSurfaceSort();
   try { drawLeadershipChart(); } catch (e) { console.error("Leadership chart failed:", e); }
   } catch (routeErr) {
@@ -7746,6 +7758,26 @@ route("alerts", function () {
   h += tickerInsiderHtml(tk);
   h += "</div>";
 
+  // Insider Buying (Pro): per-ticker open-market purchases from the
+  // insider screener payload, with NA where the ticker has no trades.
+  h += '<div class="section" id="tk-sec-insider-buying" data-toc="Insider Buying"><div class="section-title">Insider Buying ' + PRO_BADGE + '</div>';
+  h += gated("Insider Buying, Pro", "Open-market insider purchases for this ticker from SEC Form 4 filings.", '<div id="tk-flow-insider">' + tickerFlowInsiderHtml(tk) + '</div>');
+  h += "</div>";
+
+  // Congress Buying (Pro): per-ticker disclosed trades, with NA where
+  // the ticker has no trades. The congress tracker is currently
+  // unavailable, so this block shows NA plus the source reason.
+  h += '<div class="section" id="tk-sec-congress-buying" data-toc="Congress Buying"><div class="section-title">Congress Buying ' + PRO_BADGE + '</div>';
+  h += gated("Congress Buying, Pro", "Disclosed congressional trades for this ticker under the STOCK Act.", '<div id="tk-flow-congress">' + tickerFlowCongressHtml(tk) + '</div>');
+  h += "</div>";
+
+  // Whale Positions (Pro): fund-level whale positions as filed, not
+  // trades in this ticker. The row whose issuer name matches this
+  // ticker page exactly is highlighted; otherwise the full list shows.
+  h += '<div class="section" id="tk-sec-whales" data-toc="Whale Positions"><div class="section-title">Whale Positions ' + PRO_BADGE + '</div>';
+  h += gated("Whale Positions, Pro", "Fund-level whale positions from the latest 13F filings, not trades in this ticker.", '<div id="tk-flow-whales">' + tickerFlowWhalesHtml(tk) + '</div>');
+  h += "</div>";
+
   // Agency Risk (Pro) - Executive Alignment & Agency Risk Score
   h += '<div class="section" id="tk-sec-agency" data-toc="Agency Risk"><div class="section-title">Agency Risk ' + PRO_BADGE + '</div>';
   h += gated("Agency Risk, Pro", "Executive alignment score: insider ownership, open-market Form 4 flow, and pay-for-performance. Detects value traps and mercenary management.", '<div id="agency-risk-' + tk + '"><div style="text-align:center;padding:20px;color:var(--muted);">Loading agency risk data...</div></div>');
@@ -7925,7 +7957,7 @@ route("alerts", function () {
   initTickerToc();
   drawPriceChart(t);
   drawFcfChart(t);
-  if (isPro()) { initSandbox(tk, t); initSensitivity(tk, t); loadAgencyRisk(tk); if (tk === "AXON") wireAxonAltSim(); }
+  if (isPro()) { initSandbox(tk, t); initSensitivity(tk, t); loadAgencyRisk(tk); loadTickerFlow(tk); if (tk === "AXON") wireAxonAltSim(); }
   wireEarningsTabs(tk);
   wireBreakdownTabs(tk);
   wireFinTabs(tk);
@@ -10864,6 +10896,16 @@ route("alerts", function () {
    ssDiv.innerHTML = seasonScreenerSectionHtml();
    app.appendChild(ssDiv);
    initSeasonScreener();
+   // Insider and Congress Buying Screener (Pro), below seasonality
+   const flowDiv = document.createElement("div");
+   flowDiv.innerHTML = '<div class="section" id="scr-sec-flow" data-toc="Insider and Congress Buying Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Insider and Congress Buying Screener ' + PRO_BADGE + '</div><div id="scr-flow-body"><div style="text-align:center;padding:20px;color:var(--muted);">Loading flow screener data.</div></div></div>';
+   app.appendChild(flowDiv);
+   initFlowScreener();
+   // Whale Positions (Pro), below the flow screener
+   const whaleScrDiv = document.createElement("div");
+   whaleScrDiv.innerHTML = '<div class="section" id="scr-sec-whales" data-toc="Whale Positions" style="max-width:none;margin-top:32px;"><div class="section-title">Whale Positions ' + PRO_BADGE + '</div><div id="scr-whale-body"><div style="text-align:center;padding:20px;color:var(--muted);">Loading whale positions data.</div></div></div>';
+   app.appendChild(whaleScrDiv);
+   initWhaleScreener();
   } else {
    const t1 = document.createElement("div");
    t1.innerHTML = '<div class="section" id="scr-sec-quant" data-toc="Quantitative Factor Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Quantitative Factor Screener ' + PRO_BADGE + '</div>' +
@@ -10894,6 +10936,14 @@ route("alerts", function () {
    t7.innerHTML = '<div class="section" id="scr-sec-seasonality" data-toc="Seasonality Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Seasonality Screener ' + PRO_BADGE + '</div><div id="scr-season-blur">' + seasonScreenerBlurInner(curBlur) + "</div></div>";
    app.appendChild(t7);
    bindSeasonScreenerBlur();
+   const t8 = document.createElement("div");
+   t8.innerHTML = '<div class="section" id="scr-sec-flow" data-toc="Insider and Congress Buying Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Insider and Congress Buying Screener ' + PRO_BADGE + '</div>' +
+    proTeaser("Insider and Congress Buying Screener, Pro", "Filter stocks by insider buying or by congressional buying, with cluster flags and trade counts.") + "</div>";
+   app.appendChild(t8);
+   const t9 = document.createElement("div");
+   t9.innerHTML = '<div class="section" id="scr-sec-whales" data-toc="Whale Positions" style="max-width:none;margin-top:32px;"><div class="section-title">Whale Positions ' + PRO_BADGE + '</div>' +
+    proTeaser("Whale Positions, Pro", "Fund-level whale positions from the latest 13F filings, filterable by fund.") + "</div>";
+   app.appendChild(t9);
   }
   initScreenerToc();
  });
@@ -15076,7 +15126,7 @@ function volSurfaceHtml() {
    ).join("");
    h += '</tbody></table></div>';
   }
-  h += '<p style="font-size:11px;color:var(--muted);margin-top:14px;">Sources: SEC EDGAR Form 4 filings for insider purchases and the Congressional Stock Tracker for disclosed member trades. Full sections: <a href="#/monitor/insider">Form 4 Insider Screener</a> and <a href="#/monitor/congress">Congressional Stock Tracker</a>.</p>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-top:14px;">Sources: SEC EDGAR Form 4 filings for insider purchases and disclosed member trades under the STOCK Act. Per-ticker buying blocks also appear on coverage ticker pages.</p>';
   if (typeof ORDER !== "undefined" && ORDER.indexOf(tk) >= 0) {
    h += '<p style="font-size:12px;color:#dbe5f1;margin-top:14px;">Coverage name: the <a href="#/ticker/' + esc(tk) + '">analyst page</a> carries the rating and valuation targets for this name.</p>';
   }
@@ -16136,8 +16186,6 @@ function volSurfaceHtml() {
    '<li>✓ Fed funds futures tracker with meeting probabilities</li>' +
    '<li>✓ 10Y breakeven inflation tracker</li>' +
    '<li>✓ Dark pool flow, insider transactions, trading trends with 13F</li>' +
-   '<li>✓ Congressional Stock Tracker, disclosed member trades with party flow</li>' +
-   '<li>✓ Form 4 Insider Screener, open-market purchases with cluster buying</li>' +
    '<li>✓ Earnings revisions</li>' +
    '<li>✓ Coverage premium screener with Cascadia Score and DCF upside</li>' +
    '<li>✓ Company news feed with ticker navigation</li>' +
