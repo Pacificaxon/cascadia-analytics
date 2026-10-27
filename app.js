@@ -14937,6 +14937,32 @@ function volSurfaceHtml() {
   catch (e) { console.error("Research guidance render failed", tk, e); setResearchHtml("research-guidance", researchUnavailable(tk)); }
  }
 
+ function researchKpisHtml(tk, d) {
+  const rows = d.rows || [];
+  if (!rows.length || !d.hasReadings) return researchUnavailable(tk);
+  let h = '<div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;">';
+  h += '<div style="font-size:15px;font-weight:700;color:#f5f7fa;">Key Performance Indicators</div>';
+  h += '<div style="font-size:11px;color:#647184;">' + esc(d.companyName || tk) + " (" + esc(tk) + ")" + (d.asOf ? " · As of " + esc(d.asOf.slice(0, 10)) : "") + (d.currency ? " · Reporting currency " + esc(d.currency) : "") + "</div></div>";
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>KPI</th><th>This Q</th><th>Detail / Trend</th></tr></thead><tbody>';
+  h += rows.map((r) =>
+   "<tr><td>" + esc(r.kpi || "") + "</td><td>" + esc(r.thisQ || "") + "</td><td>" + esc(r.detail || "") + "</td></tr>"
+  ).join("");
+  h += '</tbody></table></div>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-top:10px;">Sources: quarterly income statements for revenue and margins, quarterly cash flow statements for capex, free cash flow, and buybacks, quarterly balance sheet statements for net cash. Unavailable means the module did not return that figure, never an estimate. Net cash is cash plus short-term investments less total debt.</p>';
+  if (typeof ORDER !== "undefined" && ORDER.indexOf(tk) >= 0) {
+   h += '<p style="font-size:12px;color:#dbe5f1;margin-top:14px;">Coverage name: the <a href="#/ticker/' + esc(tk) + '">analyst page</a> carries the rating and valuation targets for this name.</p>';
+  }
+  return h + "</div>";
+ }
+
+ async function loadResearchKpis(tk, seq) {
+  const d = await fetchStock("stock-kpis", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error || !d.rows || !d.hasReadings) { setResearchHtml("research-kpis", researchUnavailable(tk)); return; }
+  try { setResearchHtml("research-kpis", researchKpisHtml(tk, d)); }
+  catch (e) { console.error("Research KPIs render failed", tk, e); setResearchHtml("research-kpis", researchUnavailable(tk)); }
+ }
+
  function researchNewsHtml(tk, d) {
   const items = d.items || [];
   if (!items.length) return researchUnavailable(tk);
@@ -15211,7 +15237,7 @@ function volSurfaceHtml() {
   if (!isPro()) {
    app.innerHTML = hero +
     '<div class="section"><div class="section-title">Ticker Research ' + PRO_BADGE + "</div>" +
-    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, post-earnings model adjustment deltas, guidance and outlook readings, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
+    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, post-earnings model adjustment deltas, guidance and outlook readings, key performance indicators, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
    return;
   }
   if (!tk) {
@@ -15248,6 +15274,7 @@ function volSurfaceHtml() {
   h += '<div class="section"><div class="section-title">Earnings Revisions ' + PRO_BADGE + '</div><div id="research-revisions">' + researchLoading("earnings revisions") + "</div></div>";
   h += '<div class="section" data-toc="Financial Model Adjustments"><div class="section-title">Financial Model Adjustments ' + PRO_BADGE + '</div><div id="research-model-update">' + researchLoading("model adjustments") + "</div></div>";
   h += '<div class="section" data-toc="Guidance & Outlook"><div class="section-title">Guidance & Outlook ' + PRO_BADGE + '</div><div id="research-guidance">' + researchLoading("guidance and outlook") + "</div></div>";
+  h += '<div class="section" data-toc="Key Performance Indicators"><div class="section-title">Key Performance Indicators ' + PRO_BADGE + '</div><div id="research-kpis">' + researchLoading("key performance indicators") + "</div></div>";
   h += '<div class="section"><div class="section-title">Company News ' + PRO_BADGE + '</div><div id="research-news">' + researchLoading("company news") + "</div></div>";
   h += '<div class="section"><div class="section-title">Options Positioning ' + PRO_BADGE + '</div><div id="research-options">' + researchLoading("options positioning") + "</div></div>";
   h += '<div class="section"><div class="section-title">Cascadia Catalyst Compass ' + PRO_BADGE + "</div>" +
@@ -15266,6 +15293,7 @@ function volSurfaceHtml() {
   loadResearchEarnings(tk, mySeq);
   loadResearchModelUpdate(tk, mySeq);
   loadResearchGuidance(tk, mySeq);
+  loadResearchKpis(tk, mySeq);
   loadResearchNews(tk, mySeq);
   loadResearchOptions(tk, mySeq);
   (async () => {
