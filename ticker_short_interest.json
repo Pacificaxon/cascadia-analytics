@@ -1,5 +1,5 @@
 {
- "as_of": "2026-10-26",
+ "as_of": "2026-10-27",
  "source": "FINRA consolidatedShortInterest",
  "tickers": {
   "ALAB": [
@@ -90,6 +90,14 @@
     "avgDailyVolume": 4126264,
     "daysToCover": 2.22,
     "changePercent": 5.65
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 8015331,
+    "prevShortInterest": 9176900,
+    "avgDailyVolume": 4421940,
+    "daysToCover": 1.81,
+    "changePercent": -12.66
    }
   ],
   "AMKR": [
@@ -180,6 +188,14 @@
     "avgDailyVolume": 3471917,
     "daysToCover": 3.07,
     "changePercent": 7.7
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 10021497,
+    "prevShortInterest": 10662762,
+    "avgDailyVolume": 3524504,
+    "daysToCover": 2.84,
+    "changePercent": -6.01
    }
   ],
   "AMPX": [
@@ -270,6 +286,14 @@
     "avgDailyVolume": 6005257,
     "daysToCover": 3.8,
     "changePercent": 0.57
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 22724816,
+    "prevShortInterest": 22815859,
+    "avgDailyVolume": 5961116,
+    "daysToCover": 3.81,
+    "changePercent": -0.4
    }
   ],
   "AMZN": [
@@ -360,6 +384,14 @@
     "avgDailyVolume": 37732132,
     "daysToCover": 2.3,
     "changePercent": 6.41
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 93656399,
+    "prevShortInterest": 86657682,
+    "avgDailyVolume": 33293284,
+    "daysToCover": 2.81,
+    "changePercent": 8.08
    }
   ],
   "ASML": [
@@ -450,6 +482,14 @@
     "avgDailyVolume": 1378510,
     "daysToCover": 1.05,
     "changePercent": -1.85
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 1327923,
+    "prevShortInterest": 1450298,
+    "avgDailyVolume": 1576026,
+    "daysToCover": 1.0,
+    "changePercent": -8.44
    }
   ],
   "AVAV": [
@@ -540,6 +580,14 @@
     "avgDailyVolume": 1417397,
     "daysToCover": 3.47,
     "changePercent": 8.97
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 4995612,
+    "prevShortInterest": 4920630,
+    "avgDailyVolume": 1529768,
+    "daysToCover": 3.27,
+    "changePercent": 1.52
    }
   ],
   "AVGO": [
@@ -630,6 +678,14 @@
     "avgDailyVolume": 23378908,
     "daysToCover": 2.32,
     "changePercent": 4.38
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 53611331,
+    "prevShortInterest": 54197605,
+    "avgDailyVolume": 22301295,
+    "daysToCover": 2.4,
+    "changePercent": -1.08
    }
   ],
   "AXON": [
@@ -720,6 +776,14 @@
     "avgDailyVolume": 1121713,
     "daysToCover": 3.47,
     "changePercent": 6.81
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 4061720,
+    "prevShortInterest": 3892165,
+    "avgDailyVolume": 952150,
+    "daysToCover": 4.27,
+    "changePercent": 4.36
    }
   ],
   "BSX": [
@@ -810,6 +874,14 @@
     "avgDailyVolume": 21984746,
     "daysToCover": 1.88,
     "changePercent": -10.95
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 40708019,
+    "prevShortInterest": 41410512,
+    "avgDailyVolume": 15744920,
+    "daysToCover": 2.59,
+    "changePercent": -1.7
    }
   ],
   "CDNL": [
@@ -900,6 +972,14 @@
     "avgDailyVolume": 746632,
     "daysToCover": 3.45,
     "changePercent": -0.16
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 2707616,
+    "prevShortInterest": 2574117,
+    "avgDailyVolume": 1220407,
+    "daysToCover": 2.22,
+    "changePercent": 5.19
    }
   ],
   "CSX": [
@@ -990,6 +1070,14 @@
     "avgDailyVolume": 11866296,
     "daysToCover": 3.62,
     "changePercent": 5.47
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 40149900,
+    "prevShortInterest": 42982741,
+    "avgDailyVolume": 8574311,
+    "daysToCover": 4.68,
+    "changePercent": -6.59
    }
   ],
   "DLR": [
@@ -1080,6 +1168,14 @@
     "avgDailyVolume": 1970528,
     "daysToCover": 4.56,
     "changePercent": 6.64
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 7781570,
+    "prevShortInterest": 8994183,
+    "avgDailyVolume": 1774829,
+    "daysToCover": 4.38,
+    "changePercent": -13.48
    }
   ],
   "ENS": [
@@ -1170,6 +1266,14 @@
     "avgDailyVolume": 570487,
     "daysToCover": 5.03,
     "changePercent": -4.7
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 2770522,
+    "prevShortInterest": 2869290,
+    "avgDailyVolume": 565710,
+    "daysToCover": 4.9,
+    "changePercent": -3.44
    }
   ],
   "EQIX": [
@@ -1260,6 +1364,14 @@
     "avgDailyVolume": 514346,
     "daysToCover": 3.06,
     "changePercent": -7.14
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 1620496,
+    "prevShortInterest": 1574961,
+    "avgDailyVolume": 436989,
+    "daysToCover": 3.71,
+    "changePercent": 2.89
    }
   ],
   "GOOGL": [
@@ -1350,6 +1462,14 @@
     "avgDailyVolume": 27456069,
     "daysToCover": 2.93,
     "changePercent": -8.01
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 78436901,
+    "prevShortInterest": 80391960,
+    "avgDailyVolume": 22960469,
+    "daysToCover": 3.42,
+    "changePercent": -2.43
    }
   ],
   "IA": [
@@ -1376,6 +1496,14 @@
     "avgDailyVolume": 244748,
     "daysToCover": 3.7,
     "changePercent": 10.86
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 953417,
+    "prevShortInterest": 906707,
+    "avgDailyVolume": 209595,
+    "daysToCover": 4.55,
+    "changePercent": 5.15
    }
   ],
   "INTC": [
@@ -1466,6 +1594,14 @@
     "avgDailyVolume": 120610361,
     "daysToCover": 1.39,
     "changePercent": 5.28
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 148504504,
+    "prevShortInterest": 167199908,
+    "avgDailyVolume": 96644158,
+    "daysToCover": 1.54,
+    "changePercent": -11.18
    }
   ],
   "IRM": [
@@ -1556,6 +1692,14 @@
     "avgDailyVolume": 1651510,
     "daysToCover": 4.24,
     "changePercent": -11.76
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 7146315,
+    "prevShortInterest": 6999689,
+    "avgDailyVolume": 1391692,
+    "daysToCover": 5.13,
+    "changePercent": 2.09
    }
   ],
   "ISRG": [
@@ -1646,6 +1790,14 @@
     "avgDailyVolume": 2352277,
     "daysToCover": 3.15,
     "changePercent": -8.69
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 7325463,
+    "prevShortInterest": 7411662,
+    "avgDailyVolume": 1807602,
+    "daysToCover": 4.05,
+    "changePercent": -1.16
    }
   ],
   "KRMN": [
@@ -1736,6 +1888,14 @@
     "avgDailyVolume": 4754337,
     "daysToCover": 3.34,
     "changePercent": 12.66
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 15091393,
+    "prevShortInterest": 15897898,
+    "avgDailyVolume": 2869305,
+    "daysToCover": 5.26,
+    "changePercent": -5.07
    }
   ],
   "LEU": [
@@ -1826,6 +1986,14 @@
     "avgDailyVolume": 735244,
     "daysToCover": 8.08,
     "changePercent": 9.56
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 5933422,
+    "prevShortInterest": 5937802,
+    "avgDailyVolume": 874305,
+    "daysToCover": 6.79,
+    "changePercent": -0.07
    }
   ],
   "LITE": [
@@ -1916,6 +2084,14 @@
     "avgDailyVolume": 4952668,
     "daysToCover": 1.5,
     "changePercent": 14.33
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 7740045,
+    "prevShortInterest": 7446554,
+    "avgDailyVolume": 5096807,
+    "daysToCover": 1.52,
+    "changePercent": 3.94
    }
   ],
   "LRCX": [
@@ -2006,6 +2182,14 @@
     "avgDailyVolume": 9844598,
     "daysToCover": 2.62,
     "changePercent": -1.04
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 28325154,
+    "prevShortInterest": 25810795,
+    "avgDailyVolume": 7885386,
+    "daysToCover": 3.59,
+    "changePercent": 9.74
    }
   ],
   "MELI": [
@@ -2096,6 +2280,14 @@
     "avgDailyVolume": 811262,
     "daysToCover": 1.11,
     "changePercent": 8.61
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 1014286,
+    "prevShortInterest": 897046,
+    "avgDailyVolume": 488972,
+    "daysToCover": 2.07,
+    "changePercent": 13.07
    }
   ],
   "META": [
@@ -2186,6 +2378,14 @@
     "avgDailyVolume": 26851312,
     "daysToCover": 1.25,
     "changePercent": 8.33
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 28417942,
+    "prevShortInterest": 33572792,
+    "avgDailyVolume": 15787146,
+    "daysToCover": 1.8,
+    "changePercent": -15.35
    }
   ],
   "MITK": [
@@ -2276,6 +2476,14 @@
     "avgDailyVolume": 667697,
     "daysToCover": 6.76,
     "changePercent": 10.04
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 4283328,
+    "prevShortInterest": 4515543,
+    "avgDailyVolume": 610024,
+    "daysToCover": 7.02,
+    "changePercent": -5.14
    }
   ],
   "MRNA": [
@@ -2366,6 +2574,14 @@
     "avgDailyVolume": 16889344,
     "daysToCover": 1.83,
     "changePercent": -6.11
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 32603398,
+    "prevShortInterest": 30863202,
+    "avgDailyVolume": 18289385,
+    "daysToCover": 1.78,
+    "changePercent": 5.64
    }
   ],
   "MRVL": [
@@ -2456,6 +2672,14 @@
     "avgDailyVolume": 16865037,
     "daysToCover": 1.43,
     "changePercent": -23.26
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 24588610,
+    "prevShortInterest": 24051742,
+    "avgDailyVolume": 22798561,
+    "daysToCover": 1.08,
+    "changePercent": 2.23
    }
   ],
   "MSFT": [
@@ -2546,6 +2770,14 @@
     "avgDailyVolume": 23981233,
     "daysToCover": 2.55,
     "changePercent": -9.22
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 65674557,
+    "prevShortInterest": 61133927,
+    "avgDailyVolume": 20635757,
+    "daysToCover": 3.18,
+    "changePercent": 7.43
    }
   ],
   "MSI": [
@@ -2636,6 +2868,14 @@
     "avgDailyVolume": 852809,
     "daysToCover": 3.78,
     "changePercent": 1.12
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 3282945,
+    "prevShortInterest": 3225101,
+    "avgDailyVolume": 790718,
+    "daysToCover": 4.15,
+    "changePercent": 1.79
    }
   ],
   "NFLX": [
@@ -2726,6 +2966,14 @@
     "avgDailyVolume": 39305437,
     "daysToCover": 2.09,
     "changePercent": -12.69
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 86044199,
+    "prevShortInterest": 82230159,
+    "avgDailyVolume": 35007476,
+    "daysToCover": 2.46,
+    "changePercent": 4.64
    }
   ],
   "NSC": [
@@ -2816,6 +3064,14 @@
     "avgDailyVolume": 938025,
     "daysToCover": 7.63,
     "changePercent": -6.13
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 7136902,
+    "prevShortInterest": 7152583,
+    "avgDailyVolume": 694822,
+    "daysToCover": 10.27,
+    "changePercent": -0.22
    }
   ],
   "PANW": [
@@ -2906,6 +3162,14 @@
     "avgDailyVolume": 6406662,
     "daysToCover": 3.37,
     "changePercent": -1.21
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 21268455,
+    "prevShortInterest": 21608068,
+    "avgDailyVolume": 4779237,
+    "daysToCover": 4.45,
+    "changePercent": -1.57
    }
   ],
   "PLPC": [
@@ -2996,6 +3260,14 @@
     "avgDailyVolume": 75232,
     "daysToCover": 1.86,
     "changePercent": -5.74
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 143295,
+    "prevShortInterest": 139596,
+    "avgDailyVolume": 72742,
+    "daysToCover": 1.97,
+    "changePercent": 2.65
    }
   ],
   "POWW": [
@@ -3086,6 +3358,14 @@
     "avgDailyVolume": 579318,
     "daysToCover": 4.64,
     "changePercent": -7.23
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 2547758,
+    "prevShortInterest": 2688298,
+    "avgDailyVolume": 538149,
+    "daysToCover": 4.73,
+    "changePercent": -5.23
    }
   ],
   "RBRK": [
@@ -3176,6 +3456,14 @@
     "avgDailyVolume": 3107937,
     "daysToCover": 4.21,
     "changePercent": -4.54
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 13243582,
+    "prevShortInterest": 13099712,
+    "avgDailyVolume": 2880130,
+    "daysToCover": 4.6,
+    "changePercent": 1.1
    }
   ],
   "RNMBY": [
@@ -3266,6 +3554,14 @@
     "avgDailyVolume": 114690,
     "daysToCover": 1.0,
     "changePercent": 9.83
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 6536,
+    "prevShortInterest": 5812,
+    "avgDailyVolume": 92192,
+    "daysToCover": 1.0,
+    "changePercent": 12.46
    }
   ],
   "ROAD": [
@@ -3356,6 +3652,14 @@
     "avgDailyVolume": 699596,
     "daysToCover": 4.59,
     "changePercent": -16.31
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 3643975,
+    "prevShortInterest": 3209233,
+    "avgDailyVolume": 670168,
+    "daysToCover": 5.44,
+    "changePercent": 13.55
    }
   ],
   "SE": [
@@ -3446,6 +3750,14 @@
     "avgDailyVolume": 3578902,
     "daysToCover": 2.86,
     "changePercent": -6.44
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 8214313,
+    "prevShortInterest": 10237179,
+    "avgDailyVolume": 4826555,
+    "daysToCover": 1.7,
+    "changePercent": -19.76
    }
   ],
   "SMTC": [
@@ -3536,6 +3848,14 @@
     "avgDailyVolume": 3638653,
     "daysToCover": 1.71,
     "changePercent": -9.13
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 6018132,
+    "prevShortInterest": 6213132,
+    "avgDailyVolume": 3870874,
+    "daysToCover": 1.55,
+    "changePercent": -3.14
    }
   ],
   "SNPS": [
@@ -3626,6 +3946,14 @@
     "avgDailyVolume": 2067706,
     "daysToCover": 2.41,
     "changePercent": -12.94
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 6478309,
+    "prevShortInterest": 4973135,
+    "avgDailyVolume": 2972398,
+    "daysToCover": 2.18,
+    "changePercent": 30.27
    }
   ],
   "TSM": [
@@ -3716,6 +4044,14 @@
     "avgDailyVolume": 9954640,
     "daysToCover": 3.06,
     "changePercent": 9.73
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 29310548,
+    "prevShortInterest": 30492512,
+    "avgDailyVolume": 11131330,
+    "daysToCover": 2.63,
+    "changePercent": -3.88
    }
   ],
   "TTMI": [
@@ -3806,6 +4142,14 @@
     "avgDailyVolume": 1938366,
     "daysToCover": 2.13,
     "changePercent": 20.09
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 4969766,
+    "prevShortInterest": 4128561,
+    "avgDailyVolume": 2937681,
+    "daysToCover": 1.69,
+    "changePercent": 20.38
    }
   ],
   "UNP": [
@@ -3896,6 +4240,14 @@
     "avgDailyVolume": 2945033,
     "daysToCover": 9.43,
     "changePercent": 1.21
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 27911017,
+    "prevShortInterest": 27763071,
+    "avgDailyVolume": 2164174,
+    "daysToCover": 12.9,
+    "changePercent": 0.53
    }
   ],
   "VIAV": [
@@ -3986,6 +4338,14 @@
     "avgDailyVolume": 6076780,
     "daysToCover": 2.16,
     "changePercent": 16.49
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 11973323,
+    "prevShortInterest": 13119443,
+    "avgDailyVolume": 5372658,
+    "daysToCover": 2.23,
+    "changePercent": -8.74
    }
   ],
   "VLO": [
@@ -4076,6 +4436,14 @@
     "avgDailyVolume": 4619975,
     "daysToCover": 1.95,
     "changePercent": -7.22
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 8011885,
+    "prevShortInterest": 8999474,
+    "avgDailyVolume": 2395737,
+    "daysToCover": 3.34,
+    "changePercent": -10.97
    }
   ],
   "VST": [
@@ -4166,6 +4534,14 @@
     "avgDailyVolume": 4788550,
     "daysToCover": 2.19,
     "changePercent": 8.05
+   },
+   {
+    "date": "2026-10-15",
+    "shortInterest": 9946752,
+    "prevShortInterest": 10482914,
+    "avgDailyVolume": 9389454,
+    "daysToCover": 1.06,
+    "changePercent": -5.11
    }
   ]
  }
