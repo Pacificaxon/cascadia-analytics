@@ -14656,6 +14656,38 @@ function volSurfaceHtml() {
   return h;
  }
 
+ function researchModelUpdateHtml(tk, d) {
+  const rows = d.rows || [];
+  if (!rows.length) return researchUnavailable(tk);
+  let h = '<div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;">';
+  h += '<div style="font-size:15px;font-weight:700;color:#f5f7fa;">Model Update Needed</div>';
+  h += '<div style="font-size:11px;color:#647184;">' + esc(d.companyName || tk) + " (" + esc(tk) + ")" + (d.asOf ? " · As of " + esc(d.asOf.slice(0, 10)) : "") + "</div></div>";
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Item</th><th>Prior assumption</th><th>Suggested change</th><th>Reason</th></tr></thead><tbody>';
+  h += rows.map((r) =>
+   "<tr><td>" + esc(r.item || "") + "</td><td>" + esc(r.priorAssumption || "") + "</td><td>" + esc(r.suggestedChange || "") + "</td><td>" + esc(r.reason || "") + "</td></tr>"
+  ).join("");
+  h += '</tbody></table></div>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-top:10px;">The research page carries no house model. Prior assumption reads No house model for every row; the table leads with the reported print and the consensus trend. Revenue estimates are not carried in these modules, so no revenue surprise is computed.</p>';
+  const syn = d.synthesis || [];
+  if (syn.length) {
+   h += '<div style="margin-top:14px;padding-top:12px;border-top:1px solid #253142;"><div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:8px;">Synthesis of readings</div><ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.65;color:#dbe5f1;">';
+   h += syn.map((s) => "<li>" + esc(s) + "</li>").join("");
+   h += "</ul></div>";
+  }
+  if (typeof ORDER !== "undefined" && ORDER.indexOf(tk) >= 0) {
+   h += '<p style="font-size:12px;color:#dbe5f1;margin-top:14px;">Coverage name: the <a href="#/ticker/' + esc(tk) + '">analyst page</a> carries the rating and valuation targets for this name.</p>';
+  }
+  return h + "</div>";
+ }
+
+ async function loadResearchModelUpdate(tk, seq) {
+  const d = await fetchStock("stock-model-update", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error || !d.rows) { setResearchHtml("research-model-update", researchUnavailable(tk)); return; }
+  try { setResearchHtml("research-model-update", researchModelUpdateHtml(tk, d)); }
+  catch (e) { console.error("Research model update render failed", tk, e); setResearchHtml("research-model-update", researchUnavailable(tk)); }
+ }
+
  function researchNewsHtml(tk, d) {
   const items = d.items || [];
   if (!items.length) return researchUnavailable(tk);
@@ -14930,7 +14962,7 @@ function volSurfaceHtml() {
   if (!isPro()) {
    app.innerHTML = hero +
     '<div class="section"><div class="section-title">Ticker Research ' + PRO_BADGE + "</div>" +
-    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
+    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, post-earnings model adjustment deltas, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
    return;
   }
   if (!tk) {
@@ -14965,6 +14997,7 @@ function volSurfaceHtml() {
   h += '<div class="section"><div class="section-title">Institutional Holdings ' + PRO_BADGE + '</div><div id="research-holdings">' + researchLoading("institutional holders") + "</div></div>";
   h += '<div class="section"><div class="section-title">Earnings ' + PRO_BADGE + '</div><div id="research-earnings">' + researchLoading("earnings record") + "</div></div>";
   h += '<div class="section"><div class="section-title">Earnings Revisions ' + PRO_BADGE + '</div><div id="research-revisions">' + researchLoading("earnings revisions") + "</div></div>";
+  h += '<div class="section" data-toc="Financial Model Adjustments"><div class="section-title">Financial Model Adjustments ' + PRO_BADGE + '</div><div id="research-model-update">' + researchLoading("model adjustments") + "</div></div>";
   h += '<div class="section"><div class="section-title">Company News ' + PRO_BADGE + '</div><div id="research-news">' + researchLoading("company news") + "</div></div>";
   h += '<div class="section"><div class="section-title">Options Positioning ' + PRO_BADGE + '</div><div id="research-options">' + researchLoading("options positioning") + "</div></div>";
   h += '<div class="section"><div class="section-title">Cascadia Catalyst Compass ' + PRO_BADGE + "</div>" +
@@ -14981,6 +15014,7 @@ function volSurfaceHtml() {
   loadResearchInsider(tk, mySeq);
   loadResearchHoldings(tk, mySeq);
   loadResearchEarnings(tk, mySeq);
+  loadResearchModelUpdate(tk, mySeq);
   loadResearchNews(tk, mySeq);
   loadResearchOptions(tk, mySeq);
   (async () => {
