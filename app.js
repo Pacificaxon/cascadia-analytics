@@ -9484,7 +9484,14 @@ route("alerts", function () {
    h += "<p>Backlog is " + esc(fig) + ", with coverage of " + esc(b.coverage) + " and visibility rated " + esc(b.visibility) + ". On backlog alone, the stance is " + esc(cleanPeriod(b.stance)) + ".</p>";
   }
   if (m.status) h += "<p>" + esc(m.status) + "</p>";
+  const c = m.concentration;
+  if (c && c.combined) {
+   h += "<p>Concentration and credit risk, used as a ranking only: combined discount " + esc(c.combined) + "% (uncapped " + esc(c.uncapped) + "%), net stance against the moat premium or discount " + esc(c.net_stance) + ", shown side by side and never netted into a target. This ranking is not in the DCF target itself, and the discount ladder ranks risk coarsely, so it is not applied as a valuation haircut.</p>";
+  }
   const d = t.moat_detail;
+  if (d && d.concentration_families && d.concentration_families.length) {
+   h += "<p>Concentration risk family scores, in points, with excluded families already reflected in the moat discount and counted at zero: " + d.concentration_families.map((f) => esc(f.name) + " " + esc(f.score)).join("; ") + ".</p>";
+  }
   if (d && (d.justified_multiples || (d.crosscheck && d.crosscheck.value))) {
    h += "<p>The justified multiple range is " + esc(d.justified_multiples) + ".</p>";
    if (d.crosscheck && d.crosscheck.value) {

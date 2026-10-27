@@ -382,6 +382,23 @@ def main():
             "justified_multiples": _e.get("justified_multiples", ""),
             "crosscheck": _e.get("crosscheck", {}),
         }
+    # --- Concentration and credit risk ranking (2026-10-27): ranking
+    # and note input only, never a valuation haircut and never netted
+    # into a target. Free bundle carries the combined discount, the
+    # uncapped total, and the net stance; family scores stay Pro-only.
+    try:
+        _conc = load(os.path.join(HERE, "concentration_risk.json"))
+    except FileNotFoundError:
+        _conc = {}
+    for _tk, _c in (_conc.get("tickers", {}) or {}).items():
+        if _tk in moat_free:
+            moat_free[_tk]["concentration"] = {
+                "combined": _c.get("combined"),
+                "uncapped": _c.get("uncapped"),
+                "net_stance": _c.get("net_stance"),
+            }
+        if _tk in moat_detail:
+            moat_detail[_tk]["concentration_families"] = _c.get("families", [])
     # --- Earnings calendar: next earnings date per ticker (YYYY-MM-DD).
     # NOTE: when a new ticker is added to coverage, add its next earnings date here.
     # Dates verified 2026-10-14 via Nasdaq calendar API + Zacks/MarketBeat/Finviz/company IR.

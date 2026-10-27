@@ -1,0 +1,1652 @@
+{
+ "as_of": "2026-10-27",
+ "framework": "concentration-credit-risk-framework-2026-10-27",
+ "note": "Risk ranking only. Combined discount is capped at 20 percent. Moat and concentration are shown side by side, never netted into a target, and the ladder is not applied as a valuation haircut.",
+ "tickers": {
+  "ALAB": {
+   "combined": "20",
+   "uncapped": "30",
+   "net_stance": "-5 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "8"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "AMKR": {
+   "combined": "20",
+   "uncapped": "27",
+   "net_stance": "-15 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "8"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "AMPX": {
+   "combined": "20",
+   "uncapped": "22",
+   "net_stance": "-30 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "excl."
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "8"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "excl."
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "AMZN": {
+   "combined": "16",
+   "uncapped": "16",
+   "net_stance": "-6 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "ASML": {
+   "combined": "20",
+   "uncapped": "31",
+   "net_stance": "+15 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "8"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "AVAV": {
+   "combined": "20",
+   "uncapped": "26",
+   "net_stance": "-8 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "ND"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "AVGO": {
+   "combined": "20",
+   "uncapped": "44",
+   "net_stance": "+10 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "8"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "8"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "8"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "AXON": {
+   "combined": "12",
+   "uncapped": "12",
+   "net_stance": "+18 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "ND"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "BSX": {
+   "combined": "15",
+   "uncapped": "15",
+   "net_stance": "0 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "ND"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "1"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "CDNL": {
+   "combined": "20",
+   "uncapped": "23",
+   "net_stance": "-35 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "8"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "CSX": {
+   "combined": "19",
+   "uncapped": "19",
+   "net_stance": "-9 to -4 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "DLR": {
+   "combined": "20",
+   "uncapped": "23",
+   "net_stance": "-12 to -8 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "8"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "ENS": {
+   "combined": "13",
+   "uncapped": "13",
+   "net_stance": "-8 to -3 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "EQIX": {
+   "combined": "13",
+   "uncapped": "13",
+   "net_stance": "+12 to +17 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "GOOGL": {
+   "combined": "20",
+   "uncapped": "34",
+   "net_stance": "0 to +5 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "8"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "8"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "IA": {
+   "combined": "20",
+   "uncapped": "26",
+   "net_stance": "-12 to -8 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "INTC": {
+   "combined": "20",
+   "uncapped": "33",
+   "net_stance": "-35 to -25 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "8"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "excl."
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "IRM": {
+   "combined": "13",
+   "uncapped": "13",
+   "net_stance": "-8 to -3 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "1"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "ISRG": {
+   "combined": "20",
+   "uncapped": "27",
+   "net_stance": "+10 to +15 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "8"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "KRMN": {
+   "combined": "20",
+   "uncapped": "24",
+   "net_stance": "-8 to -5 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "1"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "LEU": {
+   "combined": "20",
+   "uncapped": "38",
+   "net_stance": "-10 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "8"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "8"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "LITE": {
+   "combined": "20",
+   "uncapped": "26",
+   "net_stance": "-8 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "LRCX": {
+   "combined": "20",
+   "uncapped": "26",
+   "net_stance": "+8 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "8"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "0"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "MELI": {
+   "combined": "20",
+   "uncapped": "23",
+   "net_stance": "+5 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "8"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "1"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "META": {
+   "combined": "20",
+   "uncapped": "37",
+   "net_stance": "+10 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "8"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "8"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "MITK": {
+   "combined": "20",
+   "uncapped": "26",
+   "net_stance": "-15 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "1"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "MRNA": {
+   "combined": "20",
+   "uncapped": "21",
+   "net_stance": "-30 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "excl."
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "0"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "MRVL": {
+   "combined": "20",
+   "uncapped": "34",
+   "net_stance": "-5 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "8"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "8"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "MSFT": {
+   "combined": "20",
+   "uncapped": "22",
+   "net_stance": "+12 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "MSI": {
+   "combined": "20",
+   "uncapped": "29",
+   "net_stance": "+10 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "NFLX": {
+   "combined": "13",
+   "uncapped": "13",
+   "net_stance": "+17 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "1"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "NSC": {
+   "combined": "17",
+   "uncapped": "17",
+   "net_stance": "+3 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "PANW": {
+   "combined": "16",
+   "uncapped": "16",
+   "net_stance": "+14 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "0"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "8"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "PLPC": {
+   "combined": "11",
+   "uncapped": "11",
+   "net_stance": "-1 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "0"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "0"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "POWW": {
+   "combined": "20",
+   "uncapped": "23",
+   "net_stance": "-30 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "8"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "RBRK": {
+   "combined": "20",
+   "uncapped": "26",
+   "net_stance": "-8 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "8"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "RNMBY": {
+   "combined": "20",
+   "uncapped": "33",
+   "net_stance": "+5 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "ROAD": {
+   "combined": "19",
+   "uncapped": "19",
+   "net_stance": "-9 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "SE": {
+   "combined": "20",
+   "uncapped": "25",
+   "net_stance": "-5 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "SMTC": {
+   "combined": "20",
+   "uncapped": "26",
+   "net_stance": "-10 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "8"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "SNPS": {
+   "combined": "20",
+   "uncapped": "23",
+   "net_stance": "+10 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "4"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "TSM": {
+   "combined": "20",
+   "uncapped": "37",
+   "net_stance": "+10 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "8"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "8"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "0"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "TTMI": {
+   "combined": "19",
+   "uncapped": "19",
+   "net_stance": "-11 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  },
+  "UNP": {
+   "combined": "20",
+   "uncapped": "20",
+   "net_stance": "+5 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "8"
+    }
+   ]
+  },
+  "VIAV": {
+   "combined": "19",
+   "uncapped": "19",
+   "net_stance": "-9 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "4"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "1"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "4"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "4"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "1"
+    }
+   ]
+  },
+  "VLO": {
+   "combined": "12",
+   "uncapped": "12",
+   "net_stance": "-22 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "1"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "4"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "excl."
+    }
+   ]
+  },
+  "VST": {
+   "combined": "20",
+   "uncapped": "20",
+   "net_stance": "-30 pp",
+   "families": [
+    {
+     "name": "customer concentration",
+     "score": "8"
+    },
+    {
+     "name": "counterparty credit and funding dependence",
+     "score": "1"
+    },
+    {
+     "name": "single product, single program, or single platform dependency",
+     "score": "1"
+    },
+    {
+     "name": "single supplier, single fab, or single geography exposure",
+     "score": "4"
+    },
+    {
+     "name": "platform, channel, or distribution dependency",
+     "score": "1"
+    },
+    {
+     "name": "customer insourcing risk",
+     "score": "1"
+    },
+    {
+     "name": "regulatory single point risk",
+     "score": "4"
+    }
+   ]
+  }
+ }
+}
