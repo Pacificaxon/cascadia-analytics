@@ -677,6 +677,7 @@ def main():
         "seasonality_screener": load(os.path.join(MR, "seasonality_screener.json")) if os.path.exists(os.path.join(MR, "seasonality_screener.json")) else {},
         "congress_tracker": load(os.path.join(MR, "congress_tracker.json")) if os.path.exists(os.path.join(MR, "congress_tracker.json")) else {},
         "insider_screener": load(os.path.join(MR, "insider_screener.json")) if os.path.exists(os.path.join(MR, "insider_screener.json")) else {},
+        "whale_13f": load(os.path.join(MR, "whale_13f.json")) if os.path.exists(os.path.join(MR, "whale_13f.json")) else {},
     }
     # Per-ticker transcript tone detail files
     import glob

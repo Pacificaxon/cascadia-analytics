@@ -283,6 +283,7 @@ function proDataStale() {
    if (sections.mcclellan) flat.mcclellan = sections.mcclellan;
    if (sections.congress_tracker) flat.congress_tracker = sections.congress_tracker;
    if (sections.insider_screener) flat.insider_screener = sections.insider_screener;
+   if (sections.whale_13f) flat.whale_13f = sections.whale_13f;
    if (sections.detailed_breakdowns) flat.detailed_breakdowns = sections.detailed_breakdowns;
    if (sections.sotp) flat._sotp = sections.sotp;
    if (sections.sensitivity) flat._sensitivity = sections.sensitivity;
@@ -1647,7 +1648,7 @@ function bindZoomHandlers() {
   Object.keys(gexStrikeChartData).forEach((k) => delete gexStrikeChartData[k]);
   Object.keys(skewCurveChartData).forEach((k) => delete skewCurveChartData[k]);
   try { document.body.dataset.route = r.name; } catch (e) {}
-  const _activeKey = (r.name === "monitor" && r.param && ["mcclellan", "congress", "insider"].indexOf(r.param) >= 0) ? r.param : r.name;
+  const _activeKey = (r.name === "monitor" && r.param && ["mcclellan", "congress", "insider", "whales"].indexOf(r.param) >= 0) ? r.param : r.name;
   document.querySelectorAll(".topnav a[data-route]").forEach((b) =>
    b.classList.toggle("active", b.dataset.route === _activeKey));
   syncCoveragePick(r);
@@ -2899,6 +2900,7 @@ function bindZoomHandlers() {
     models: [
      { id: "monitor-congress", key: "congress", name: "Congressional Stock Tracker", free: false },
      { id: "monitor-insider", key: "insider", name: "Form 4 Insider Screener", free: false },
+     { id: "monitor-whales", key: "whales", name: "13F Whale Filter", free: false },
     ] },
  ];
  // Panel name (from D.panels) to bucket key. Panels that match nothing here
@@ -3327,6 +3329,72 @@ function insiderFilterApply() {
  body.innerHTML = insiderRowsHtml(rows, clusterTickers);
 }
 window.insiderFilterApply = insiderFilterApply;
+function whaleRowsHtml(positions, fundName) {
+ if (!positions.length) return '<tr><td colspan="6" style="padding:14px;color:#8d99aa;">No positions in this list.</td></tr>';
+ return positions.map((p) =>
+  '<tr style="border-bottom:1px solid #1c2b3e;">' +
+  '<td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(p.issuer_name || "") + '<div style="font-size:11px;color:#8d99aa;">' + esc(fundName || "") + ' · ' + esc(p.title_of_class || "") + '</div></td>' +
+  '<td style="padding:10px;color:#8d99aa;">' + esc(p.cusip || "") + '</td>' +
+  '<td style="padding:10px;color:#dbe5f1;">' + (p.shares != null ? Number(p.shares).toLocaleString() : "n/a") + '</td>' +
+  '<td style="padding:10px;color:#dbe5f1;">' + flowMoney(p.value_usd) + '</td>' +
+  '<td style="padding:10px;color:#dbe5f1;">' + (p.weight_pct != null ? Number(p.weight_pct).toFixed(2) + "%" : "n/a") + '</td>' +
+  '<td style="padding:10px;"><a href="' + esc(p.filing_url || "") + '" target="_blank" rel="noopener" style="color:#d9a441;">Filing</a></td></tr>'
+ ).join("");
+}
+function whaleSectionHtml() {
+ if (!isPro()) return flowTeaser("13F Whale Filter", "New positions at 5 percent or more of a watched fund's reported portfolio, latest 13F versus the prior filing.");
+ const pro = (PRO_DATA && PRO_DATA.whale_13f) || null;
+ if (!pro || typeof pro !== "object" || !("available" in pro)) return flowFetchFallback("whale_13f", "_whaleSectionFetching");
+ const asOf = pro.as_of || null;
+ let h = '<div class="section"><div class="section-title">13F Whale Filter' + (asOf ? ' <span style="font-size:12px;color:var(--muted);font-weight:400;">as of ' + esc(asOf) + '</span>' : '') + ' ' + PRO_BADGE + '</div>' +
+  '<div class="section-sub">New positions at 5 percent or more of a watched fund\'s reported portfolio, comparing the latest Form 13F-HR information table with the prior filing for Berkshire Hathaway, Appaloosa, and Pershing Square. 13F filings land up to 45 days after quarter end, so these are disclosed positions, not real-time moves. Positions are identified by issuer name and CUSIP as filed; no ticker symbols are assigned from the filing. A whale is a new position worth 5 percent or more of that fund\'s reported portfolio value in the latest filing.</div>';
+ if (!pro.available) {
+  h += '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">Data unavailable</div>' +
+   '<div style="font-size:13px;color:#8d99aa;margin-top:6px;line-height:1.6;">' + esc(pro.status || "No 13F records are available.") + '</div></div>';
+  return h + "</div>";
+ }
+ if (pro.stale) h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;color:#d9a441;">Showing last good data. The latest fetch failed: ' + esc(pro.status || "") + '</div></div>';
+ const hl = pro.headline || {};
+ const funds = pro.funds || [];
+ h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">' +
+  '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Whale Positions</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (hl.whale_count != null ? Number(hl.whale_count).toLocaleString() : "n/a") + '</div></div>' +
+  '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Funds With Whales</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (hl.funds_with_whales != null ? Number(hl.funds_with_whales).toLocaleString() : "n/a") + '</div></div>' +
+  '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Funds Tracked</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + funds.length + '</div></div></div>';
+ h += '<div style="margin-top:16px;"><div class="section-title">Fund Comparisons</div><div class="card" style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;text-align:left;font-size:12px;"><thead><tr style="border-bottom:1px solid #1c2b3e;color:#c5a059;">' +
+  '<th style="padding:10px;">Fund</th><th style="padding:10px;">Latest Period</th><th style="padding:10px;">Prior Period</th><th style="padding:10px;">Reported Portfolio</th><th style="padding:10px;">New Positions</th><th style="padding:10px;">Whales</th></tr></thead><tbody>';
+ h += funds.map((f) => {
+  if (f.status !== "ok") return '<tr style="border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(f.fund_name || "") + '</td><td colspan="5" style="padding:10px;color:#8d99aa;">' + esc(f.status || "Unavailable") + '</td></tr>';
+  return '<tr style="border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(f.fund_name || "") + '</td>' +
+   '<td style="padding:10px;color:#dbe5f1;">' + esc(f.latest_report_date || "") + '</td>' +
+   '<td style="padding:10px;color:#dbe5f1;">' + esc(f.prior_report_date || "") + '</td>' +
+   '<td style="padding:10px;color:#dbe5f1;">' + flowMoney(f.portfolio_value_usd) + '</td>' +
+   '<td style="padding:10px;color:#dbe5f1;">' + (f.new_position_count != null ? f.new_position_count : "n/a") + '</td>' +
+   '<td style="padding:10px;color:#dbe5f1;">' + (f.whale_count != null ? f.whale_count : "n/a") + '</td></tr>';
+ }).join("");
+ h += '</tbody></table></div></div>';
+ const allWhales = [];
+ funds.forEach((f) => { (f.whales || []).forEach((w) => { allWhales.push({ fund: f.fund_name, pos: w }); }); });
+ h += '<div style="margin-top:16px;"><div class="section-title">Whale Positions (new, 5 percent or more)</div>';
+ if (!allWhales.length) {
+  h += '<div class="card"><div style="font-size:13px;color:#8d99aa;line-height:1.6;">No new position reached 5 percent of its fund\'s reported portfolio in the latest comparison. The new positions below the threshold are listed underneath.</div></div>';
+ } else {
+  h += '<div class="card" style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;text-align:left;font-size:12px;"><thead><tr style="border-bottom:1px solid #1c2b3e;color:#c5a059;">' +
+   '<th style="padding:10px;">Issuer</th><th style="padding:10px;">CUSIP</th><th style="padding:10px;">Shares</th><th style="padding:10px;">Value</th><th style="padding:10px;">Weight</th><th style="padding:10px;">Source</th></tr></thead><tbody>';
+  h += allWhales.map((x) => whaleRowsHtml([x.pos], x.fund)).join("");
+  h += '</tbody></table></div>';
+ }
+ h += '</div>';
+ h += '<div style="margin-top:16px;"><div class="section-title">All New Positions In The Latest Comparison</div><div class="card" style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;text-align:left;font-size:12px;"><thead><tr style="border-bottom:1px solid #1c2b3e;color:#c5a059;">' +
+  '<th style="padding:10px;">Issuer</th><th style="padding:10px;">CUSIP</th><th style="padding:10px;">Shares</th><th style="padding:10px;">Value</th><th style="padding:10px;">Weight</th><th style="padding:10px;">Source</th></tr></thead><tbody>';
+ funds.forEach((f) => {
+  if (f.status === "ok" && (f.new_positions || []).length) h += whaleRowsHtml(f.new_positions, f.fund_name);
+ });
+ h += '</tbody></table></div></div>';
+ funds.forEach((f) => {
+  if (f.notice) h += '<div style="margin-top:12px;" class="card"><div style="font-size:13px;color:#8d99aa;line-height:1.6;">' + esc(f.fund_name || "") + ': ' + esc(f.notice) + '</div></div>';
+ });
+ return h + "</div>";
+}
 
 // McClellan Breadth as a Daily Snapshot composite input (2026-10-26
 // fold-in): a Technical-category summary on the Risk Models page.
@@ -5335,6 +5403,7 @@ function mcclellanBreadthHtml() {
   // matching the other Pro monitor sections.
   SEC.congress = congressSectionHtml();
   SEC.insider = insiderSectionHtml();
+  SEC.whales = whaleSectionHtml();
 
   // Assemble the page from the buckets, grouped by category, with the
   // Market Internals Index at the top. Category order and free-above-Pro
@@ -5375,6 +5444,9 @@ function mcclellanBreadthHtml() {
   }
   if (param === "insider") {
    setTimeout(() => { const el = document.getElementById("monitor-insider"); if (el) el.scrollIntoView(); }, 100);
+  }
+  if (param === "whales") {
+   setTimeout(() => { const el = document.getElementById("monitor-whales"); if (el) el.scrollIntoView(); }, 100);
   }
   bindVolSurfaceSort();
   try { drawLeadershipChart(); } catch (e) { console.error("Leadership chart failed:", e); }
@@ -14965,6 +15037,70 @@ function volSurfaceHtml() {
   catch (e) { console.error("Research KPIs render failed", tk, e); setResearchHtml("research-kpis", researchUnavailable(tk)); }
  }
 
+ function researchFlowIntelHtml(tk) {
+  const ct = (PRO_DATA && PRO_DATA.congress_tracker) || null;
+  const ins = (PRO_DATA && PRO_DATA.insider_screener) || null;
+  if (!ct || !ins) return researchUnavailable(tk);
+  let h = '<div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;">';
+  h += '<div style="font-size:15px;font-weight:700;color:#f5f7fa;">Flow Intel</div>';
+  h += '<div style="font-size:11px;color:#647184;">' + esc(tk) + (ins.as_of ? " · Insider data as of " + esc(ins.as_of) : "") + (ct.as_of ? " · Congress data as of " + esc(ct.as_of) : "") + "</div></div>";
+  const clusters = (ins.clusters || []).filter((c) => c.ticker === tk);
+  if (clusters.length) {
+   const c = clusters[0];
+   h += '<div style="background:#1a2233;border:1px solid #d9a441;border-radius:10px;padding:12px 14px;margin-bottom:14px;"><div style="font-size:13px;font-weight:700;color:#d9a441;">Cluster buying: ' + c.distinct_insiders_count + ' insiders · ' + flowMoney(c.total_capital_deployed) + ' · latest ' + esc(c.latest_trade_date || "") + '</div>' +
+    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">' + (c.insider_list || []).map((n) => esc(n)).join(", ") + '</div></div>';
+  }
+  h += '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:8px;">Insider Form 4 Purchases</div>';
+  const itrades = ((ins.by_ticker || {})[tk] || []).slice(0, 10);
+  if (!ins.available) {
+   h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">Insider data unavailable: ' + esc(ins.status || "No insider records are available.") + '</p>';
+  } else if (!itrades.length) {
+   h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">No open-market insider purchases for ' + esc(tk) + ' in the current 45 day window.</p>';
+  } else {
+   h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Insider</th><th>Title</th><th>Shares</th><th>Price</th><th>Value</th><th>Trade Date</th></tr></thead><tbody>';
+   h += itrades.map((t) =>
+    "<tr><td>" + esc(t.insider_name || "") + "</td><td>" + esc(t.title || "") + "</td><td>" + (t.shares != null ? Number(t.shares).toLocaleString() : "") + "</td><td>" + (t.price_per_share != null ? "$" + Number(t.price_per_share).toFixed(2) : "n/a") + "</td><td>" + flowMoney(t.total_value) + "</td><td>" + esc(t.transaction_date || "") + "</td></tr>"
+   ).join("");
+   h += '</tbody></table></div>';
+  }
+  h += '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin:16px 0 8px;">Congressional Trades</div>';
+  const ctrades = ((ct.by_ticker || {})[tk] || []).slice(0, 10);
+  if (!ct.available) {
+   h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">Congressional data unavailable: ' + esc(ct.status || "No congressional records are available.") + '</p>';
+  } else if (!ctrades.length) {
+   h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">No disclosed congressional trades for ' + esc(tk) + ' in the current tracker data.</p>';
+  } else {
+   h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Filer</th><th>Chamber</th><th>Party</th><th>Type</th><th>Amount Range</th><th>Transaction Date</th></tr></thead><tbody>';
+   h += ctrades.map((t) =>
+    "<tr><td>" + esc(t.filer || "") + "</td><td>" + esc(t.chamber || "") + "</td><td>" + esc(t.party || "") + "</td><td>" + esc(t.transaction_type || "") + "</td><td>" + esc(t.amount_range || "") + "</td><td>" + esc(t.transaction_date || "") + "</td></tr>"
+   ).join("");
+   h += '</tbody></table></div>';
+  }
+  h += '<p style="font-size:11px;color:var(--muted);margin-top:14px;">Sources: SEC EDGAR Form 4 filings for insider purchases and the Congressional Stock Tracker for disclosed member trades. Full sections: <a href="#/monitor/insider">Form 4 Insider Screener</a> and <a href="#/monitor/congress">Congressional Stock Tracker</a>.</p>';
+  if (typeof ORDER !== "undefined" && ORDER.indexOf(tk) >= 0) {
+   h += '<p style="font-size:12px;color:#dbe5f1;margin-top:14px;">Coverage name: the <a href="#/ticker/' + esc(tk) + '">analyst page</a> carries the rating and valuation targets for this name.</p>';
+  }
+  return h + "</div>";
+ }
+
+ async function loadResearchFlowIntel(tk, seq) {
+  let ct = (PRO_DATA && PRO_DATA.congress_tracker) || null;
+  let ins = (PRO_DATA && PRO_DATA.insider_screener) || null;
+  if (!ct || !ins) {
+   const results = await Promise.all([
+    ct ? Promise.resolve(ct) : fetchProSection("congress_tracker"),
+    ins ? Promise.resolve(ins) : fetchProSection("insider_screener"),
+   ]);
+   if (seq !== (window._renderSeq || 0)) return;
+   if (!PRO_DATA) PRO_DATA = {};
+   if (results[0]) PRO_DATA.congress_tracker = results[0];
+   if (results[1]) PRO_DATA.insider_screener = results[1];
+  }
+  if (seq !== (window._renderSeq || 0)) return;
+  try { setResearchHtml("research-flow", researchFlowIntelHtml(tk)); }
+  catch (e) { console.error("Research flow render failed", tk, e); setResearchHtml("research-flow", researchUnavailable(tk)); }
+ }
+
  function researchNewsHtml(tk, d) {
   const items = d.items || [];
   if (!items.length) return researchUnavailable(tk);
@@ -15239,7 +15375,7 @@ function volSurfaceHtml() {
   if (!isPro()) {
    app.innerHTML = hero +
     '<div class="section"><div class="section-title">Ticker Research ' + PRO_BADGE + "</div>" +
-    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, post-earnings model adjustment deltas, guidance and outlook readings, key performance indicators, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
+    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, post-earnings model adjustment deltas, guidance and outlook readings, key performance indicators, congressional and insider flow for the ticker, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
    return;
   }
   if (!tk) {
@@ -15277,6 +15413,7 @@ function volSurfaceHtml() {
   h += '<div class="section" data-toc="Financial Model Adjustments"><div class="section-title">Financial Model Adjustments ' + PRO_BADGE + '</div><div id="research-model-update">' + researchLoading("model adjustments") + "</div></div>";
   h += '<div class="section" data-toc="Guidance & Outlook"><div class="section-title">Guidance & Outlook ' + PRO_BADGE + '</div><div id="research-guidance">' + researchLoading("guidance and outlook") + "</div></div>";
   h += '<div class="section" data-toc="Key Performance Indicators"><div class="section-title">Key Performance Indicators ' + PRO_BADGE + '</div><div id="research-kpis">' + researchLoading("key performance indicators") + "</div></div>";
+  h += '<div class="section" data-toc="Flow Intel"><div class="section-title">Flow Intel ' + PRO_BADGE + '</div><div id="research-flow">' + researchLoading("congressional and insider flow") + "</div></div>";
   h += '<div class="section"><div class="section-title">Company News ' + PRO_BADGE + '</div><div id="research-news">' + researchLoading("company news") + "</div></div>";
   h += '<div class="section"><div class="section-title">Options Positioning ' + PRO_BADGE + '</div><div id="research-options">' + researchLoading("options positioning") + "</div></div>";
   h += '<div class="section"><div class="section-title">Cascadia Catalyst Compass ' + PRO_BADGE + "</div>" +
@@ -15296,6 +15433,7 @@ function volSurfaceHtml() {
   loadResearchModelUpdate(tk, mySeq);
   loadResearchGuidance(tk, mySeq);
   loadResearchKpis(tk, mySeq);
+  loadResearchFlowIntel(tk, mySeq);
   loadResearchNews(tk, mySeq);
   loadResearchOptions(tk, mySeq);
   (async () => {
