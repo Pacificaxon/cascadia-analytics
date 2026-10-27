@@ -3248,6 +3248,7 @@ function congressFilterApply() {
  });
  body.innerHTML = congressRowsHtml(rows);
 }
+window.congressFilterApply = congressFilterApply;
 function insiderSectionHtml() {
  if (!isPro()) return flowTeaser("Form 4 Insider Screener", "Open-market Form 4 purchases by corporate insiders, with cluster buying where three or more distinct insiders bought in fourteen days.");
  const pro = (PRO_DATA && PRO_DATA.insider_screener) || null;
@@ -3325,6 +3326,7 @@ function insiderFilterApply() {
  });
  body.innerHTML = insiderRowsHtml(rows, clusterTickers);
 }
+window.insiderFilterApply = insiderFilterApply;
 
 // McClellan Breadth as a Daily Snapshot composite input (2026-10-26
 // fold-in): a Technical-category summary on the Risk Models page.
