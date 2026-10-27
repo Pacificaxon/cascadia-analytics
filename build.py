@@ -357,9 +357,21 @@ def main():
     moat_free = {}
     moat_detail = {}
     for _tk, _e in (moat_notes.get("tickers", {}) or {}).items():
+        # Free bundle carries the premium or discount percent ONLY.
+        # Several source premium strings embed a justified multiple
+        # range or point multiple in parentheses or after an arrow;
+        # that is Pro detail and must never reach the free bundle.
+        # Keep the leading percent or percent range, cut at the first
+        # parenthesis or arrow, and keep the full string Pro-only.
+        _prem_raw = str(_e.get("premium") or "")
+        _prem_free = _prem_raw
+        for _cut in ("(", "→"):
+            if _cut in _prem_free:
+                _prem_free = _prem_free.split(_cut)[0]
+        _prem_free = _prem_free.strip()
         moat_free[_tk] = {
             "moat": _e.get("moat"),
-            "premium": _e.get("premium"),
+            "premium": _prem_free,
             "structure": _e.get("structure"),
             "reasons": _e.get("reasons", []),
             "backlog": _e.get("backlog", {}),

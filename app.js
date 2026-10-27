@@ -9460,7 +9460,12 @@ route("alerts", function () {
   let h = "";
   const prem = String(m.premium || "");
   if (prem.indexOf("\u2212") === 0 || prem.indexOf("-") === 0) {
-   const disc = prem.replace(/[\u2212-]/g, "");
+   // Discount ranges arrive as "−15 to −5%"; strip the minus signs
+   // (the word discount already carries the sign) but keep a percent
+   // sign on each end of the range, so the page reads "15% to 5%",
+   // never the ambiguous "15 to 5%".
+   let disc = prem.replace(/[\u2212-]/g, "").trim();
+   disc = disc.replace(/^(\d+)\s*to\b/i, "$1% to ");
    h += "<p>We assign a discount of " + esc(disc) + " to sector median multiples for " + esc(t.ticker) + ".</p>";
   } else {
    h += "<p>We assign a premium of " + esc(prem) + " to sector median multiples for " + esc(t.ticker) + ".</p>";
