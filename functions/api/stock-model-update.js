@@ -98,8 +98,14 @@ export function buildModelUpdate(ticker, r) {
     .sort((a, b) => ((b.endDate && b.endDate.raw) || 0) - ((a.endDate && a.endDate.raw) || 0))
     .map((s) => {
       const rev = num(s.totalRevenue);
-      const gp = num(s.grossProfit);
-      const op = num(s.operatingIncome);
+      // Yahoo zero-fills gross profit and operating income when the field
+      // is unpopulated in a quarterly statement. An exact 0 alongside
+      // nonzero revenue is a data gap, never a real 0.0% margin, so it
+      // renders as unavailable rather than a false margin.
+      const gpRaw = num(s.grossProfit);
+      const opRaw = num(s.operatingIncome);
+      const gp = gpRaw === 0 ? null : gpRaw;
+      const op = opRaw === 0 ? null : opRaw;
       return {
         endDate: isoDate(s.endDate && s.endDate.raw),
         endRaw: (s.endDate && s.endDate.raw) || null,
