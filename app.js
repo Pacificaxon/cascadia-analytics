@@ -15223,6 +15223,49 @@ function volSurfaceHtml() {
   catch (e) { console.error("Research benchmark render failed", tk, e); setResearchHtml("research-benchmark", researchUnavailable(tk)); }
  }
 
+ function researchSegmentsHtml(tk, d) {
+  if (!d.available) {
+   return '<div class="card"><p style="color:var(--muted)">' + esc(d.reason || "Segment performance is unavailable for this ticker.") + "</p></div>";
+  }
+  const segs = d.segments || [];
+  const fmtM = (v) => (v === null || v === undefined ? "N/A" : Number(v).toLocaleString());
+  const fmtPct = (v, suffix) => (v === null || v === undefined ? "N/A" : (v >= 0 ? "+" : "") + Number(v).toFixed(1) + (suffix || "%"));
+  const yoyCls = (v) => (v === null || v === undefined ? "" : v >= 0 ? "pos" : "neg");
+  let h = '<div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;">';
+  h += '<div style="font-size:15px;font-weight:700;color:#f5f7fa;">Revenue Mix</div>';
+  h += '<div style="font-size:11px;color:#647184;">' + esc(d.companyName || tk) + " (" + esc(tk) + ")" + (d.currentLabel ? " · " + esc(d.currentLabel) : "") + (d.priorLabel ? " vs " + esc(d.priorLabel) : "") + (d.currency ? " · Values in millions of " + esc(d.currency) : " · Values in millions") + "</div></div>";
+  h += '<div style="font-size:13px;color:#dbe5f1;margin-bottom:12px;">' + segs.length + " reported segments · Total segment revenue " + fmtM(d.totalRevenue) + (d.filingForm ? " · From the latest " + esc(d.filingForm) + " segment note on EDGAR" : "") + "</div>";
+  h += segs.map((s) => {
+   if (s.isElimination || s.revenue === null || s.revenue <= 0 || s.sharePct === null) return "";
+   const w = Math.max(2, Math.min(100, Number(s.sharePct)));
+   return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+    '<div style="width:32%;font-size:13px;font-weight:600;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(s.name) + "</div>" +
+    '<div style="flex:1;background:#1a2233;border-radius:6px;height:18px;overflow:hidden;"><div style="width:' + w + '%;height:100%;background:#d9a441;border-radius:6px;"></div></div>' +
+    '<div style="width:22%;font-size:12px;color:#dbe5f1;text-align:right;">' + fmtM(s.revenue) + " (" + Number(s.sharePct).toFixed(1) + "%)" + ' <span class="' + yoyCls(s.yoyPct) + '">' + fmtPct(s.yoyPct) + "</span></div></div>";
+  }).join("");
+  h += '<div style="font-size:15px;font-weight:700;color:#f5f7fa;margin:20px 0 12px;">Segment Performance</div>';
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Segment' + (d.currency ? " (" + esc(d.currency) + " M)" : " (M)") + '</th><th style="text-align:right;">' + esc(d.currentLabel || "Current period") + ' Revenue</th><th style="text-align:right;">YoY</th><th style="text-align:right;">Segment operating income</th><th>Notable</th></tr></thead><tbody>';
+  h += segs.map((s) => {
+   const notable = (s.marginPct !== null && s.marginPct !== undefined ? "Margin " + Number(s.marginPct).toFixed(1) + "%" : "") + ((s.marginPct !== null && s.marginPct !== undefined && s.sharePct !== null && s.sharePct !== undefined) ? " · " : "") + (s.sharePct !== null && s.sharePct !== undefined ? "Share " + Number(s.sharePct).toFixed(1) + "%" : "");
+   return "<tr><td>" + esc(s.name) + "</td>" +
+    '<td style="text-align:right;">' + fmtM(s.revenue) + "</td>" +
+    '<td style="text-align:right;" class="' + yoyCls(s.yoyPct) + '">' + fmtPct(s.yoyPct) + "</td>" +
+    '<td style="text-align:right;">' + fmtM(s.opInc) + "</td>" +
+    '<td>' + (notable || "N/A") + "</td></tr>";
+  }).join("");
+  h += '</tbody></table></div>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-top:10px;">Segment figures come from the segment note in the latest 10-Q filing on EDGAR, or the latest 10-K where no 10-Q segment report is available. Segment operating income shows only where the filing tags it. N/A means the figure was not reported or tagged, never an estimate.</p>';
+  return h + "</div>";
+ }
+
+ async function loadResearchSegments(tk, seq) {
+  const d = await fetchStock("stock-segments", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error) { setResearchHtml("research-segments", researchUnavailable(tk)); return; }
+  try { setResearchHtml("research-segments", researchSegmentsHtml(tk, d)); }
+  catch (e) { console.error("Research segments render failed", tk, e); setResearchHtml("research-segments", researchUnavailable(tk)); }
+ }
+
  function researchFlowIntelHtml(tk) {
   const ct = (PRO_DATA && PRO_DATA.congress_tracker) || null;
   const ins = (PRO_DATA && PRO_DATA.insider_screener) || null;
@@ -15561,7 +15604,7 @@ function volSurfaceHtml() {
   if (!isPro()) {
    app.innerHTML = hero +
     '<div class="section"><div class="section-title">Ticker Research ' + PRO_BADGE + "</div>" +
-    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, a post-earnings benchmark review, post-earnings model adjustment deltas, guidance and outlook readings, key performance indicators, congressional and insider flow for the ticker, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
+    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, a post-earnings benchmark review, a segment performance breakdown, post-earnings model adjustment deltas, guidance and outlook readings, key performance indicators, congressional and insider flow for the ticker, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
    return;
   }
   if (!tk) {
@@ -15597,6 +15640,7 @@ function volSurfaceHtml() {
   h += '<div class="section"><div class="section-title">Earnings ' + PRO_BADGE + '</div><div id="research-earnings">' + researchLoading("earnings record") + "</div></div>";
   h += '<div class="section"><div class="section-title">Earnings Revisions ' + PRO_BADGE + '</div><div id="research-revisions">' + researchLoading("earnings revisions") + "</div></div>";
   h += '<div class="section" data-toc="Post-Earnings Benchmark"><div class="section-title">Post-Earnings Benchmark ' + PRO_BADGE + '</div><div id="research-benchmark">' + researchLoading("post-earnings benchmark") + "</div></div>";
+  h += '<div class="section" data-toc="Segment Performance"><div class="section-title">Segment Performance ' + PRO_BADGE + '</div><div id="research-segments">' + researchLoading("segment performance") + "</div></div>";
   h += '<div class="section" data-toc="Financial Model Adjustments"><div class="section-title">Financial Model Adjustments ' + PRO_BADGE + '</div><div id="research-model-update">' + researchLoading("model adjustments") + "</div></div>";
   h += '<div class="section" data-toc="Guidance & Outlook"><div class="section-title">Guidance & Outlook ' + PRO_BADGE + '</div><div id="research-guidance">' + researchLoading("guidance and outlook") + "</div></div>";
   h += '<div class="section" data-toc="Key Performance Indicators"><div class="section-title">Key Performance Indicators ' + PRO_BADGE + '</div><div id="research-kpis">' + researchLoading("key performance indicators") + "</div></div>";
@@ -15618,6 +15662,7 @@ function volSurfaceHtml() {
   loadResearchHoldings(tk, mySeq);
   loadResearchEarnings(tk, mySeq);
   loadResearchBenchmark(tk, mySeq);
+  loadResearchSegments(tk, mySeq);
   loadResearchModelUpdate(tk, mySeq);
   loadResearchGuidance(tk, mySeq);
   loadResearchKpis(tk, mySeq);
