@@ -8663,16 +8663,29 @@ route("alerts", function () {
    '<div class="table-wrap"><table class="sotp-table"><tbody>' +
    '<tr><td><div class="sotp-name">SOTP 2036 revenue</div></td><td class="num">' + money(r.sotp_2036_revenue) + '</td></tr>' +
    '<tr><td><div class="sotp-name">SOTP 2036 EBITDA</div></td><td class="num">' + money(r.sotp_2036_ebitda) + '</td></tr>' +
+   (r.no_haircut_2036_revenue != null ? '<tr><td><div class="sotp-name">No-haircut 2036 revenue</div></td><td class="num">' + money(r.no_haircut_2036_revenue) + '</td></tr>' : '') +
    '<tr><td><div class="sotp-name">Bull-case 2036 revenue (DCF top-down)</div></td><td class="num">' + money(r.bull_case_2036_revenue) + '</td></tr>' +
    '</tbody></table></div>';
 
-  h += '<div class="flock-callout">' +
-   '<div class="flock-title">Estimate of terminal revenue impact from flock backlash</div>' +
-   '<div class="flock-number">-' + money(Math.abs(r.gap)) + '</div>' +
-   '<div class="flock-desc">Revenue deficit in the SOTP total vs the Bull-case 2036 target, ' +
-   'attributed to the Flock controversy. The Bull case assumes full recovery of the ' +
-   'mass-surveillance pipeline; the SOTP prices in a permanent haircut to RTCC/ALPR adoption.</div>' +
-   '</div>';
+  if (r.flock_2036_revenue_impact != null) {
+   h += '<div class="flock-callout">' +
+    '<div class="flock-title">Terminal-year impact from flock backlash (annual, 2036)</div>' +
+    '<div style="margin:12px 0;display:flex;gap:28px;flex-wrap:wrap;">' +
+    '<div><div style="font-size:12px;color:#8d99aa;">Revenue</div><div style="font-size:22px;font-weight:800;color:#f37d83;">-' + money(Math.abs(r.flock_2036_revenue_impact)) + '</div></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;">EBITDA</div><div style="font-size:22px;font-weight:800;color:#f37d83;">-' + money(Math.abs(r.flock_2036_ebitda_impact)) + '</div></div>' +
+    '<div><div style="font-size:12px;color:#8d99aa;">FCF</div><div style="font-size:22px;font-weight:800;color:#f37d83;">-' + money(Math.abs(r.flock_2036_fcf_impact)) + '</div></div>' +
+    '</div>' +
+    '<div class="flock-desc">Annual 2036 figures, not sums across years. The SOTP prices a permanent haircut to RTCC/ALPR adoption against no-haircut 2036 revenue of ' + money(r.no_haircut_2036_revenue) + '. EBITDA and FCF impacts apply the SOTP 2036 blended margins to the revenue impact.</div>' +
+    '</div>';
+  } else {
+   h += '<div class="flock-callout">' +
+    '<div class="flock-title">Estimate of terminal revenue impact from flock backlash</div>' +
+    '<div class="flock-number">-' + money(Math.abs(r.gap)) + '</div>' +
+    '<div class="flock-desc">Revenue deficit in the SOTP total vs the Bull-case 2036 target, ' +
+    'attributed to the Flock controversy. The Bull case assumes full recovery of the ' +
+    'mass-surveillance pipeline; the SOTP prices in a permanent haircut to RTCC/ALPR adoption.</div>' +
+    '</div>';
+  }
 
   h += '<div class="panel-asof">Source: Cascadia Analytics segment model. All $ in millions.</div></div>';
   return h;

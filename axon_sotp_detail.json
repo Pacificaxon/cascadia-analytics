@@ -569,7 +569,11 @@
   "sotp_2036_revenue": 29547.9,
   "gap": -8883.2,
   "gap_note": "Revenue gap: SOTP total vs Bull-case 2036 ($M revenue; Flock backlash deficit, not a price target)",
-  "sotp_2036_ebitda": 11159.2
+  "sotp_2036_ebitda": 11159.2,
+  "no_haircut_2036_revenue": 30279.9,
+  "flock_2036_revenue_impact": -732.0,
+  "flock_2036_ebitda_impact": -276.4,
+  "flock_2036_fcf_impact": -179.2
  },
  "mix": [
   {
