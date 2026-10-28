@@ -8,6 +8,7 @@ Usage: python3 build.py
 Output: data.js, charts/*.png in this directory.
 """
 import json
+import math
 import os
 import shutil
 import html
@@ -22,6 +23,21 @@ YF = os.path.join(WS, "your_files")
 def load(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+def _clean_finite(obj, default=None):
+    # Bare NaN/Infinity is not valid JSON and fails the Pages Functions
+    # bundling step, which blocks the whole deploy (2026-10-28: a NaN
+    # earningsSurprisePct in the screener section failed five deploys).
+    # The screener section uses 0.0 as its own unknown default, matching
+    # collect_screener.py; everything else becomes null.
+    if isinstance(obj, float):
+        return obj if math.isfinite(obj) else default
+    if isinstance(obj, dict):
+        return {k: _clean_finite(v, default) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_clean_finite(v, default) for v in obj]
+    return obj
 
 
 def esc(s):
@@ -1359,12 +1375,14 @@ def main():
                 "computed from those observations. Anything this stack cannot "
                 "source is marked unavailable with the reason")
 
-    pro_out = {"generated_at": site.get("generated_at"), "sections": pro_sections}
+    if isinstance(pro_sections.get("screener_data"), dict):
+        pro_sections["screener_data"] = _clean_finite(pro_sections["screener_data"], 0.0)
+    pro_out = {"generated_at": site.get("generated_at"), "sections": _clean_finite(pro_sections)}
     # McClellan carries no free headline (2026-10-26): every McClellan
     # measurement is Pro, so the free bundle must not ship the reading.
     # The Pro payload keeps the full section in pro_sections above.
     with open(os.path.join(HERE, "functions", "pro-data.json"), "w") as pf:
-        json.dump(pro_out, pf)
+        json.dump(pro_out, pf, allow_nan=False)
     print(f"Wrote functions/pro-data.json ({len(json.dumps(pro_out))//1024} KB)", flush=True)
 
     # --- Write data.js ---
