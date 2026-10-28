@@ -541,7 +541,7 @@ function proDataStale() {
  // raw notes/ URL cache-first from the first copy ever fetched, so an
  // unversioned republication never reaches them; the versioned URL is a
  // fresh cache key that bypasses the stale copy everywhere.
- const NOTES_PDF_V = "20261028-86";
+ const NOTES_PDF_V = "20261028-87";
  async function openPdfModal(pdfUrl, title) {
   const root = document.getElementById("modal-root");
   // Notes and scorecards are file-gated server-side (Pro only), so the
