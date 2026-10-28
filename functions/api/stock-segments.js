@@ -11,12 +11,13 @@
  * facts at all (verified for MSFT, NVDA, and AAPL: zero dimension facts
  * in each companyfacts file), so segment data cannot come from them.
  * Instead this endpoint reads the segment detail report inside the
- * latest 10-Q filing on EDGAR: the submissions file gives the filing,
- * FilingSummary.xml names the segment detail report, and that report
- * table carries segment revenue and operating income for the current
- * and prior-year periods. If no 10-Q yields a segment report, recent
- * 10-K filings are tried the same way and the period is labeled as a
- * fiscal year. Yahoo is not used at all: its quarterly statements carry
+ * latest 10-Q or 10-K filing on EDGAR: the submissions file gives the
+ * filing, FilingSummary.xml names the segment detail report, and that
+ * report table carries segment revenue and operating income for the
+ * current and prior-year periods. Filings are tried newest-first by
+ * report date, regardless of form, so a 10-K filed after the last 10-Q
+ * replaces it and the period is labeled as a fiscal year. Yahoo is not
+ * used at all: its quarterly statements carry
  * no segment split, and the company name comes from the EDGAR
  * submissions file.
  *
@@ -186,11 +187,20 @@ function parseSegmentReport(htmlText) {
   }
   if (groupIdx < 0 || groupIdx + 1 >= rows.length) return null;
   const groupCells = rows[groupIdx].slice(1);
-  // The date row usually carries no leading label cell, so it holds exactly
-  // two dates per group; if it does carry one, drop it.
+  // The date row may or may not carry a leading label cell. Key the
+  // slice off the value-column count of a real data row, not off the
+  // group count: an annual report with one group can carry three
+  // annual columns, which the old group-count heuristic mistook for a
+  // leading label and sliced the newest date off. Slice only when the
+  // date row holds one more cell than the value columns.
+  let valueCols = 0;
+  for (let i = groupIdx + 2; i < rows.length; i++) {
+    const vc = rows[i].slice(1);
+    if (vc.some((c) => c)) { valueCols = vc.length; break; }
+  }
   const rawDateCells = rows[groupIdx + 1];
   const dateCells =
-    rawDateCells.length === groupCells.length * 2 + 1
+    valueCols && rawDateCells.length === valueCols + 1
       ? rawDateCells.slice(1)
       : rawDateCells;
   // Groups pair up with date columns two at a time, in order.
@@ -368,8 +378,9 @@ export async function onRequest(context) {
         });
       }
     }
-    // Latest 10-Q filings first, then 10-K filings; at most five attempts.
-    filings.sort((a, b) => (a.form === "10-Q" && b.form !== "10-Q" ? -1 : a.form !== "10-Q" && b.form === "10-Q" ? 1 : 0));
+    // Newest filing first by report date, regardless of form, so a 10-K
+    // filed after the last 10-Q replaces it; at most five attempts.
+    filings.sort((a, b) => (b.reportDate || "").localeCompare(a.reportDate || ""));
     const attempts = filings.slice(0, 5);
     if (!attempts.length) {
       return dataJson(
