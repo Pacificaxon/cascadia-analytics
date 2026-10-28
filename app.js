@@ -15168,6 +15168,61 @@ function volSurfaceHtml() {
   catch (e) { console.error("Research KPIs render failed", tk, e); setResearchHtml("research-kpis", researchUnavailable(tk)); }
  }
 
+ function researchBenchmarkHtml(tk, d) {
+  const rows = d.consensusMetrics || [];
+  const fmtVal = (r, key) => {
+   const v = r[key];
+   if (v === null || v === undefined) return "N/A";
+   return r.unit === "eps" ? Number(v).toFixed(2) : Number(v).toLocaleString();
+  };
+  const tagCls = (t) => (t === "beat" ? "pos" : t === "miss" ? "neg" : "");
+  let h = '<div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;">';
+  h += '<div style="font-size:15px;font-weight:700;color:#f5f7fa;">Key Metrics vs Consensus</div>';
+  h += '<div style="font-size:11px;color:#647184;">' + esc(d.companyName || tk) + " (" + esc(tk) + ")" + (d.currentLabel ? " · " + esc(d.currentLabel) : "") + (d.currency ? " · Values in millions of " + esc(d.currency) + " unless EPS" : " · Values in millions unless EPS") + "</div></div>";
+  h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Metric</th><th style="text-align:right;">Actual</th><th style="text-align:right;">Consensus</th><th>Beat/Miss</th><th style="text-align:right;">Magnitude</th></tr></thead><tbody>';
+  h += rows.map((r) =>
+   "<tr><td>" + esc(r.metric || "") + "</td>" +
+   '<td style="text-align:right;">' + fmtVal(r, "actual") + "</td>" +
+   '<td style="text-align:right;">' + fmtVal(r, "consensus") + "</td>" +
+   '<td class="' + tagCls(r.tagType) + '">' + esc(r.tag || "") + "</td>" +
+   '<td style="text-align:right;" class="' + tagCls(r.tagType) + '">' + (r.magnitude != null ? (r.magnitude >= 0 ? "+" : "") + Number(r.magnitude).toFixed(1) + "%" : "N/A") + "</td></tr>"
+  ).join("");
+  h += '</tbody></table></div>';
+  h += '<div style="font-size:15px;font-weight:700;color:#f5f7fa;margin:20px 0 12px;">Year-over-Year Comparison' + (d.currentLabel && d.priorLabel ? ' <span style="font-size:12px;font-weight:600;color:#647184;">(' + esc(d.currentLabel) + " vs " + esc(d.priorLabel) + ")</span>" : "") + "</div>";
+  if (!d.yoyAvailable) {
+   h += '<p style="color:var(--muted)">' + esc(d.yoyReason || "Year-over-year comparison unavailable.") + " The table above still stands on the latest reported quarter.</p>";
+  } else {
+   h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>' + (d.currency ? "Metric (" + esc(d.currency) + " M)" : "Metric (M)") + '</th><th style="text-align:right;">' + esc(d.currentLabel || "") + '</th><th style="text-align:right;">' + esc(d.priorLabel || "") + '</th><th style="text-align:right;">Change</th></tr></thead><tbody>';
+   h += (d.yoy || []).map((r) => {
+    const withMargin = (v, m) => {
+     if (v === null || v === undefined) return "N/A";
+     const base = r.unit === "eps" ? Number(v).toFixed(2) : Number(v).toLocaleString();
+     return m !== null && m !== undefined ? base + " (" + Number(m).toFixed(1) + "%)" : base;
+    };
+    const chg = r.changePct === null || r.changePct === undefined ? "N/A" : (r.changePct >= 0 ? "+" : "") + Number(r.changePct).toFixed(1) + (r.changeUnit === "pp" ? "pp" : "%");
+    const chgCls = r.changeType === "positive" ? "pos" : r.changeType === "negative" ? "neg" : "";
+    return "<tr><td>" + esc(r.metric || "") + "</td>" +
+     '<td style="text-align:right;">' + withMargin(r.current, r.marginCurrent) + "</td>" +
+     '<td style="text-align:right;">' + withMargin(r.prior, r.marginPrior) + "</td>" +
+     '<td style="text-align:right;" class="' + chgCls + '">' + chg + "</td></tr>";
+   }).join("");
+   h += "</tbody></table></div>";
+  }
+  h += '<p style="font-size:11px;color:var(--muted);margin-top:10px;">Statements come from EDGAR XBRL filings for the reported quarter, with the prior-year quarter matched by fiscal period. Consensus appears only where Yahoo carries it for the reported quarter; revenue, segment and cloud revenue, operating income, net income, and free cash flow consensus values show as N/A. Free cash flow is operating cash flow less capital expenditures for the same quarter. EPS is shown exactly as Yahoo reports it, with no currency conversion. N/A means the figure was not reported or tagged, never an estimate.</p>';
+  if (typeof ORDER !== "undefined" && ORDER.indexOf(tk) >= 0) {
+   h += '<p style="font-size:12px;color:#dbe5f1;margin-top:14px;">Coverage name: the <a href="#/ticker/' + esc(tk) + '">analyst page</a> carries the rating and valuation targets for this name.</p>';
+  }
+  return h + "</div>";
+ }
+
+ async function loadResearchBenchmark(tk, seq) {
+  const d = await fetchStock("stock-consensus-metrics", tk);
+  if (seq !== (window._renderSeq || 0)) return;
+  if (d.error || !d.consensusMetrics) { setResearchHtml("research-benchmark", researchUnavailable(tk)); return; }
+  try { setResearchHtml("research-benchmark", researchBenchmarkHtml(tk, d)); }
+  catch (e) { console.error("Research benchmark render failed", tk, e); setResearchHtml("research-benchmark", researchUnavailable(tk)); }
+ }
+
  function researchFlowIntelHtml(tk) {
   const ct = (PRO_DATA && PRO_DATA.congress_tracker) || null;
   const ins = (PRO_DATA && PRO_DATA.insider_screener) || null;
@@ -15506,7 +15561,7 @@ function volSurfaceHtml() {
   if (!isPro()) {
    app.innerHTML = hero +
     '<div class="section"><div class="section-title">Ticker Research ' + PRO_BADGE + "</div>" +
-    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, post-earnings model adjustment deltas, guidance and outlook readings, key performance indicators, congressional and insider flow for the ticker, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
+    proTeaser("Ticker Research, Pro", "Type any ticker for five years of financial statements, moving-average and RSI technicals with trend gauges, seasonality, insider Form 4 activity, an earnings record with estimate revisions, a post-earnings benchmark review, post-earnings model adjustment deltas, guidance and outlook readings, key performance indicators, congressional and insider flow for the ticker, company news, top institutional holders, and CBOE gamma and skew positioning. Analyst ratings, DCF targets, and research reports stay on the coverage pages, where our " + ORDER.length + " covered names carry the full treatment.") + "</div>";
    return;
   }
   if (!tk) {
@@ -15541,6 +15596,7 @@ function volSurfaceHtml() {
   h += '<div class="section"><div class="section-title">Institutional Holdings ' + PRO_BADGE + '</div><div id="research-holdings">' + researchLoading("institutional holders") + "</div></div>";
   h += '<div class="section"><div class="section-title">Earnings ' + PRO_BADGE + '</div><div id="research-earnings">' + researchLoading("earnings record") + "</div></div>";
   h += '<div class="section"><div class="section-title">Earnings Revisions ' + PRO_BADGE + '</div><div id="research-revisions">' + researchLoading("earnings revisions") + "</div></div>";
+  h += '<div class="section" data-toc="Post-Earnings Benchmark"><div class="section-title">Post-Earnings Benchmark ' + PRO_BADGE + '</div><div id="research-benchmark">' + researchLoading("post-earnings benchmark") + "</div></div>";
   h += '<div class="section" data-toc="Financial Model Adjustments"><div class="section-title">Financial Model Adjustments ' + PRO_BADGE + '</div><div id="research-model-update">' + researchLoading("model adjustments") + "</div></div>";
   h += '<div class="section" data-toc="Guidance & Outlook"><div class="section-title">Guidance & Outlook ' + PRO_BADGE + '</div><div id="research-guidance">' + researchLoading("guidance and outlook") + "</div></div>";
   h += '<div class="section" data-toc="Key Performance Indicators"><div class="section-title">Key Performance Indicators ' + PRO_BADGE + '</div><div id="research-kpis">' + researchLoading("key performance indicators") + "</div></div>";
@@ -15561,6 +15617,7 @@ function volSurfaceHtml() {
   loadResearchInsider(tk, mySeq);
   loadResearchHoldings(tk, mySeq);
   loadResearchEarnings(tk, mySeq);
+  loadResearchBenchmark(tk, mySeq);
   loadResearchModelUpdate(tk, mySeq);
   loadResearchGuidance(tk, mySeq);
   loadResearchKpis(tk, mySeq);
