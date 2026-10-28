@@ -1669,7 +1669,7 @@ function bindZoomHandlers() {
   Object.keys(gexStrikeChartData).forEach((k) => delete gexStrikeChartData[k]);
   Object.keys(skewCurveChartData).forEach((k) => delete skewCurveChartData[k]);
   try { document.body.dataset.route = r.name; } catch (e) {}
-  const _activeKey = (r.name === "monitor" && r.param && ["mcclellan"].indexOf(r.param) >= 0) ? r.param : r.name;
+  const _activeKey = r.name;
   document.querySelectorAll(".topnav a[data-route]").forEach((b) =>
    b.classList.toggle("active", b.dataset.route === _activeKey));
   syncCoveragePick(r);
