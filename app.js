@@ -3229,19 +3229,25 @@ function tickerFlowWhalesHtml(tk) {
  funds.forEach((f) => {
   (f.whales || []).forEach((p) => { allWhales.push({ pos: p, fund: f.fund_name || "" }); });
  });
+ // Ticker pages show only whale positions in the page ticker. Issuer names
+ // arrive as filed ("AXON ENTERPRISE INC") while the page name is the plain
+ // company name ("Axon Enterprise"), so both sides are normalized the same
+ // way (lowercase, punctuation stripped, trailing corporate suffix dropped)
+ // before comparing. Anything else never reaches the table.
+ const normIssuer = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean).filter((w, i, a) => !(i === a.length - 1 && ["inc", "corp", "corporation", "co", "company", "ltd", "llc", "lp", "llp", "plc"].indexOf(w) >= 0)).join(" ");
+ const pageName = (typeof TICKERS !== "undefined" && TICKERS[tk] && TICKERS[tk].name ? String(TICKERS[tk].name).trim().toLowerCase() : "");
+ const pageNorm = normIssuer(pageName);
+ const matches = pageNorm ? allWhales.filter((x) => normIssuer(x.pos && x.pos.issuer_name) === pageNorm) : [];
  let h = '<div class="card">';
  if (wh.as_of) h += '<div style="font-size:11px;color:#647184;margin-bottom:10px;">Whale data as of ' + esc(wh.as_of) + '</div>';
- h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">These are fund-level whale positions as filed, not trades in ' + esc(tk) + ' on this page. 13F filings land up to 45 days after quarter end, so these are disclosed positions, not real-time moves. Positions are identified by issuer name and CUSIP as filed; no ticker symbols are assigned from the filing.</p>';
- if (!allWhales.length) {
-  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">No whale positions in the latest comparison.</p>';
+ h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">Fund-level whale positions in ' + esc(tk) + ' as filed. 13F filings land up to 45 days after quarter end, so these are disclosed positions, not real-time moves. Positions are identified by issuer name and CUSIP as filed.</p>';
+ if (!matches.length) {
+  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">No whale positions in ' + esc(tk) + ' in the latest comparison.</p>';
  } else {
-  const pageName = (typeof TICKERS !== "undefined" && TICKERS[tk] && TICKERS[tk].name ? String(TICKERS[tk].name).trim().toLowerCase() : "");
   h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Issuer</th><th>Fund</th><th>Weight</th><th>Shares</th><th>Value</th><th>CUSIP</th><th>Source</th></tr></thead><tbody>';
-  h += allWhales.map((x) => {
+  h += matches.map((x) => {
    const p = x.pos || {};
-   const isMatch = pageName && pageName === String(p.issuer_name || "").trim().toLowerCase();
-   const rowStyle = isMatch ? ' style="background:#1a2233;"' : "";
-   return '<tr' + rowStyle + '><td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(p.issuer_name || "") + (isMatch ? '<div style="font-size:11px;color:#d9a441;">Issuer name matches this ticker page</div>' : "") + '</td>' +
+   return '<tr><td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(p.issuer_name || "") + '</td>' +
     '<td style="padding:10px;color:#8d99aa;">' + esc(x.fund) + '</td>' +
     '<td style="padding:10px;color:#dbe5f1;">' + (p.weight_pct != null ? Number(p.weight_pct).toFixed(2) + "%" : "n/a") + '</td>' +
     '<td style="padding:10px;color:#dbe5f1;">' + (p.shares != null ? Number(p.shares).toLocaleString() : "n/a") + '</td>' +
@@ -7802,7 +7808,7 @@ route("alerts", function () {
   // trades in this ticker. The row whose issuer name matches this
   // ticker page exactly is highlighted; otherwise the full list shows.
   h += '<div class="section" id="tk-sec-whales" data-toc="Whale Positions"><div class="section-title">Whale Positions ' + PRO_BADGE + '</div>';
-  h += gated("Whale Positions, Pro", "Fund-level whale positions from the latest 13F filings, not trades in this ticker.", '<div id="tk-flow-whales">' + tickerFlowWhalesHtml(tk) + '</div>');
+  h += gated("Whale Positions, Pro", "Whale positions in this ticker from the latest 13F filings.", '<div id="tk-flow-whales">' + tickerFlowWhalesHtml(tk) + '</div>');
   h += "</div>";
 
   // Agency Risk (Pro) - Executive Alignment & Agency Risk Score
