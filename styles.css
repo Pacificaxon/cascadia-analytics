@@ -69,6 +69,22 @@ a:hover { text-decoration: underline; }
 }
 .topnav a:hover { color: var(--gold-bright); }
 .topnav a.active { color: var(--text); background: rgba(106, 154, 106, 0.16); font-weight: 700; }
+/* Pro-only pages: pine-to-gold gradient link text with a gold PRO badge.
+   The badge span keeps its own dark text fill so the gradient clip on the
+   link never washes it out. Active and hover states drop the gradient so
+   the current-page and hover treatments stay identical to other links. */
+.topnav a.pro-link {
+  background: linear-gradient(90deg, #6a9a6a 0%, #c9a961 60%, #f0bd56 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+.topnav a.pro-link span { -webkit-text-fill-color: #0a0f1a; }
+.topnav a.pro-link:hover {
+  background: none; -webkit-text-fill-color: var(--gold-bright); color: var(--gold-bright);
+}
+.topnav a.pro-link.active {
+  background: rgba(106, 154, 106, 0.16); -webkit-text-fill-color: var(--text); color: var(--text);
+}
 .topbar-title {
   font-family: var(--mono); font-weight: 600; font-size: 16px; letter-spacing: 0.12em; color: var(--text);
   cursor: pointer; text-align: center; white-space: nowrap; text-transform: uppercase;
