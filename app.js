@@ -559,7 +559,7 @@ function proDataStale() {
    '<button id="pdf-close" style="background:#d9a441;color:#0a0e17;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0;">Close</button>' +
    "</div>" +
    '<div id="pdf-body" style="flex:1;display:flex;align-items:center;justify-content:center;color:#f5f7fa;font-size:14px;">Loading document...</div>' +
-   '<div style="padding:8px 12px;background:#101620;font-size:11px;color:#8d99aa;text-align:center;">For the best reading experience on mobile, use "Open in new tab" for full-page zoom and page controls.</div>' +
+   '<div style="padding:8px 12px;background:#101620;font-size:11px;color:#a9b7c9;text-align:center;">For the best reading experience on mobile, use "Open in new tab" for full-page zoom and page controls.</div>' +
    "</div>";
   const close = () => { root.innerHTML = ""; };
   document.getElementById("pdf-close").addEventListener("click", close);
@@ -849,7 +849,7 @@ function bindZoomHandlers() {
         },
         options: {
          animation: false, responsive: true, maintainAspectRatio: false,
-         plugins: { legend: { labels: { color: "#8d99aa", font: { size: 12 } } } },
+         plugins: { legend: { labels: { color: "#a9b7c9", font: { size: 12 } } } },
          scales: {
           x: { ticks: { color: "#dbe5f1", font: { size: 12 } }, grid: { display: false } },
           y: { ticks: { color: "#dbe5f1", font: { size: 12 } }, grid: { color: "rgba(42,46,57,0.4)" } }
@@ -1190,7 +1190,7 @@ function bindZoomHandlers() {
            scales: {
             x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
             yPrice: {position: "left", ticks: {color: "#c99a6b"}, grid: {color: "rgba(42,46,57,0.4)"}},
-            yScore: {position: "right", min: 0, max: 100, ticks: {color: "#8d99aa", stepSize: 25}, grid: {display: false}},
+            yScore: {position: "right", min: 0, max: 100, ticks: {color: "#a9b7c9", stepSize: 25}, grid: {display: false}},
            }},
          });
         } catch (e) { console.error("Correction risk chart error:", e); }
@@ -1214,7 +1214,7 @@ function bindZoomHandlers() {
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
            scales: {
             x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
             yLiq: {position: "left", ticks: {color: "#d9a441"}, grid: {color: "rgba(42,46,57,0.4)"}},
@@ -1243,7 +1243,7 @@ function bindZoomHandlers() {
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
            scales: {
             x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
             yScore: {position: "left", min: 0, max: 100, ticks: {color: "#e0aa46"}, grid: {color: "rgba(42,46,57,0.4)"}},
@@ -1272,7 +1272,7 @@ function bindZoomHandlers() {
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
            scales: {
             x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
             yOsc: {position: "left", min: -3, max: 3, ticks: {color: "#f37d83"}, grid: {color: "rgba(42,46,57,0.4)"}},
@@ -1300,14 +1300,14 @@ function bindZoomHandlers() {
             { type: "line", label: "SPY", data: hist.map((r) => r.spy),
               borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
             { type: "line", label: "RSP", data: hist.map((r) => r.rsp),
-              borderColor: "#8d99aa", borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.2 },
+              borderColor: "#a9b7c9", borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.2 },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
            scales: {
             x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
-            y: {ticks: {color: "#8d99aa"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            y: {ticks: {color: "#a9b7c9"}, grid: {color: "rgba(42,46,57,0.4)"}},
            }},
          });
         } catch (e) { console.error("Concentration chart error:", e); }
@@ -1331,10 +1331,10 @@ function bindZoomHandlers() {
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
            scales: {
             x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
-            y: {ticks: {color: "#8d99aa", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            y: {ticks: {color: "#a9b7c9", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
            }},
          });
         } catch (e) { console.error("Margin leverage chart error:", e); }
@@ -1358,10 +1358,10 @@ function bindZoomHandlers() {
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
-           plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+           plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
            scales: {
             x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
-            y: {ticks: {color: "#8d99aa"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            y: {ticks: {color: "#a9b7c9"}, grid: {color: "rgba(42,46,57,0.4)"}},
            }},
          });
         } catch (e) { console.error("Sector rotation chart error:", e); }
@@ -2221,37 +2221,37 @@ function bindZoomHandlers() {
    "MODERATE BUY BIAS": "#58a6ff",
    "INSTITUTIONAL DISTRIBUTION": "#f37d83",
    "BEARISH FADE": "#e0aa46",
-   "NEUTRAL / BALANCED": "#8d99aa",
+   "NEUTRAL / BALANCED": "#a9b7c9",
   };
   const sc = sentimentColors[d.sentiment] || "#dbe5f1";
   const flowM = d.net_dark_flow_usd / 1e6;
   const flowStr = (flowM >= 0 ? "+$" : "-$") + Math.abs(flowM).toFixed(1) + "M";
   const zStr = (d.z_score >= 0 ? "+" : "") + d.z_score.toFixed(2);
   let h = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">' +
-   '<div><div style="font-size:11px;color:#8d99aa;">DARK SHORT RATIO</div>' +
+   '<div><div style="font-size:11px;color:#a9b7c9;">DARK SHORT RATIO</div>' +
    '<div style="font-size:20px;font-weight:700;color:' + sc + ';">' + d.dpsr.toFixed(1) + '%</div>' +
-   '<div style="font-size:11px;color:#8d99aa;">' + (d.dpsr >= 50 ? "Dealers shorting to fill buys" : d.dpsr < 40 ? "Dealers absorbing sells" : "Balanced") + "</div></div>" +
-   '<div><div style="font-size:11px;color:#8d99aa;">PARTICIPATION</div>' +
+   '<div style="font-size:11px;color:#a9b7c9;">' + (d.dpsr >= 50 ? "Dealers shorting to fill buys" : d.dpsr < 40 ? "Dealers absorbing sells" : "Balanced") + "</div></div>" +
+   '<div><div style="font-size:11px;color:#a9b7c9;">PARTICIPATION</div>' +
    '<div style="font-size:20px;font-weight:700;color:#dbe5f1;">' + d.dpr.toFixed(1) + '%</div>' +
-   '<div style="font-size:11px;color:#8d99aa;">of volume off-exchange</div></div>' +
-   '<div><div style="font-size:11px;color:#8d99aa;">NET DARK FLOW</div>' +
+   '<div style="font-size:11px;color:#a9b7c9;">of volume off-exchange</div></div>' +
+   '<div><div style="font-size:11px;color:#a9b7c9;">NET DARK FLOW</div>' +
    '<div style="font-size:20px;font-weight:700;color:' + (flowM >= 0 ? "#4dd2aa" : "#f37d83") + ';">' + flowStr + "</div>" +
-   '<div style="font-size:11px;color:#8d99aa;">Z-score ' + zStr + "</div></div>" +
+   '<div style="font-size:11px;color:#a9b7c9;">Z-score ' + zStr + "</div></div>" +
    "</div>" +
    '<div style="margin:12px 0;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,0.03);border-left:3px solid ' + sc + ';">' +
    '<div style="font-size:13px;font-weight:700;color:' + sc + ';">' + esc(d.sentiment) + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">High dark short ratio (&gt;50%) means wholesale dealers are selling short from inventory to satisfy aggressive institutional buy orders. Low ratio (&lt;40%) means dealers are absorbing institutional sell tickets.</div>' +
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">High dark short ratio (&gt;50%) means wholesale dealers are selling short from inventory to satisfy aggressive institutional buy orders. Low ratio (&lt;40%) means dealers are absorbing institutional sell tickets.</div>' +
    "</div>";
   // 10-day DPSR history bars
   if (d.history && d.history.length > 1) {
    const hist = d.history.slice(-10);
    const maxDpsr = Math.max(...hist.map(x => x.dpsr * 100), 60);
-   h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#8d99aa;margin-bottom:6px;">DARK SHORT RATIO, LAST 10 SESSIONS</div>' +
+   h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#a9b7c9;margin-bottom:6px;">DARK SHORT RATIO, LAST 10 SESSIONS</div>' +
     '<div style="display:flex;align-items:flex-end;gap:3px;height:60px;">' +
     hist.map(x => {
      const v = x.dpsr * 100;
      const ht = Math.max(4, (v / maxDpsr * 56));
-     const c = v >= 55 ? "#4dd2aa" : v >= 50 ? "#58a6ff" : v < 40 ? "#f37d83" : "#8d99aa";
+     const c = v >= 55 ? "#4dd2aa" : v >= 50 ? "#58a6ff" : v < 40 ? "#f37d83" : "#a9b7c9";
      return '<div title="' + x.date + ": " + v.toFixed(1) + '%" style="flex:1;background:' + c + ";height:" + ht + 'px;border-radius:2px;min-width:8px;"></div>';
     }).join("") +
     "</div></div>";
@@ -2267,19 +2267,19 @@ function bindZoomHandlers() {
  function trendGaugesHtml(tk) {
   const sig = ((D.trend_signals || {}).tickers || {})[tk];
   if (!sig) return "";
-  const tc = sig.trendScore >= 60 ? "#4dd2aa" : sig.trendScore >= 30 ? "#e0aa46" : "#8d99aa";
+  const tc = sig.trendScore >= 60 ? "#4dd2aa" : sig.trendScore >= 30 ? "#e0aa46" : "#a9b7c9";
   const ec = sig.exhaustionScore >= 60 ? "#f37d83" : sig.exhaustionScore >= 30 ? "#e0aa46" : "#4dd2aa";
   const flags = (sig.reversalFlags || []).map((f) =>
-   '<div style="font-size:11px;color:' + (f.indexOf("No exhaustion") === 0 ? "#8d99aa" : "#f37d83") + ';margin-top:4px;">' + esc(f) + "</div>").join("");
+   '<div style="font-size:11px;color:' + (f.indexOf("No exhaustion") === 0 ? "#a9b7c9" : "#f37d83") + ';margin-top:4px;">' + esc(f) + "</div>").join("");
   return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
    '<div style="background:#101620;border-radius:10px;padding:12px;">' +
-   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">TREND CONVICTION</div>' +
-   '<div style="font-size:28px;font-weight:800;color:' + tc + ';">' + sig.trendScore + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
+   '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">TREND CONVICTION</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + tc + ';">' + sig.trendScore + '<span style="font-size:14px;color:#a9b7c9;">/100</span></div>' +
    '<div style="font-size:11px;color:#dbe5f1;margin-top:2px;">' + esc(sig.alignment) + " · ADX " + sig.adx + " · " + esc(sig.trendDirection) + "</div>" +
    '<div style="font-size:11px;color:#647184;margin-top:4px;">High RSI alone does not kill a trend. Conviction above 60 means the trend is structurally sound.</div></div>' +
    '<div style="background:#101620;border-radius:10px;padding:12px;">' +
-   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">EXHAUSTION / REVERSAL RISK</div>' +
-   '<div style="font-size:28px;font-weight:800;color:' + ec + ';">' + sig.exhaustionScore + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
+   '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">EXHAUSTION / REVERSAL RISK</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + ec + ';">' + sig.exhaustionScore + '<span style="font-size:14px;color:#a9b7c9;">/100</span></div>' +
    '<div style="font-size:11px;color:#dbe5f1;margin-top:2px;">RSI ' + sig.rsi + "</div>" + flags +
    "</div></div>";
  }
@@ -2300,7 +2300,7 @@ function bindZoomHandlers() {
     '<div style="font-size:12px;color:#dbe5f1;margin-bottom:4px;">MACD: ' + esc(tf.macd.signal) + "</div>" +
     '<div style="font-size:12px;color:#dbe5f1;margin-bottom:4px;">EMA50 vs EMA200: ' + esc(tf.movingAverages.ema50VsEma200) + "</div>" +
     (tf.keyPattern ? '<div style="font-size:12px;color:#dbe5f1;margin-bottom:4px;">Pattern: ' + esc(tf.keyPattern) + "</div>" : "") +
-    '<div style="font-size:12px;color:#8d99aa;">' + esc(tf.summary) + "</div>" +
+    '<div style="font-size:12px;color:#a9b7c9;">' + esc(tf.summary) + "</div>" +
     "</div>";
   };
 
@@ -2312,7 +2312,7 @@ function bindZoomHandlers() {
    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">' +
    '<div style="font-size:15px;font-weight:700;">Overall: <span style="color:' + bc + ';">' + ta.confluence.overallBias + "</span></div>" +
    '<div style="font-size:13px;color:#dbe5f1;">Confidence: <b>' + ta.confluence.confidenceScore + '%</b></div>' +
-   '<div style="font-size:12px;color:#8d99aa;">' + ta.confluence.timeframeAlignment.replace(/_/g, " ") + "</div>" +
+   '<div style="font-size:12px;color:#a9b7c9;">' + ta.confluence.timeframeAlignment.replace(/_/g, " ") + "</div>" +
    "</div>" +
    trendGaugesHtml(tk) +
    '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">' +
@@ -2327,7 +2327,7 @@ function bindZoomHandlers() {
    '<div style="background:#0f2818;border-radius:8px;padding:12px;"><div style="font-size:12px;font-weight:700;color:#4dd2aa;margin-bottom:4px;">Bullish Case</div><div style="font-size:12px;color:#dbe5f1;">' + esc(ta.scenarios.bullishCase) + "</div></div>" +
    '<div style="background:#2a1215;border-radius:8px;padding:12px;"><div style="font-size:12px;font-weight:700;color:#f37d83;margin-bottom:4px;">Bearish Case</div><div style="font-size:12px;color:#dbe5f1;">' + esc(ta.scenarios.bearishCase) + "</div></div>" +
    "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:8px;">Risk/Reward: <b>' + esc(ta.scenarios.riskRewardRatio) + "</b> · As of " + esc(ta.asOfDate) + "</div>" +
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:8px;">Risk/Reward: <b>' + esc(ta.scenarios.riskRewardRatio) + "</b> · As of " + esc(ta.asOfDate) + "</div>" +
    "</div>";
  }
 
@@ -2939,7 +2939,7 @@ function bindZoomHandlers() {
   ".monitor-toc{background:#0a0e17;border:1px solid #253142;border-radius:12px;padding:18px;margin:14px 0 6px;}" +
   ".monitor-toc-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}" +
   ".monitor-toc-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#d9a441;}" +
-  ".monitor-toc-meta{font-size:12px;color:#8d99aa;}" +
+  ".monitor-toc-meta{font-size:12px;color:#a9b7c9;}" +
   ".monitor-toc-btns{display:flex;gap:10px;flex-wrap:wrap;}" +
   ".monitor-toc-cat{position:relative;flex:1 1 200px;min-width:180px;}" +
   ".monitor-toc-cat.open{z-index:60;}" +
@@ -2948,7 +2948,7 @@ function bindZoomHandlers() {
   ".monitor-toc-cat.open .monitor-toc-btn{border-color:#d9a441;border-left-color:#d9a441;box-shadow:inset 0 -2px 0 #d9a441;}" +
   ".monitor-toc-num{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;color:#d9a441;}" +
   ".monitor-toc-btnname{font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap;}" +
-  ".monitor-toc-count{margin-left:auto;font-size:11px;color:#8d99aa;white-space:nowrap;}" +
+  ".monitor-toc-count{margin-left:auto;font-size:11px;color:#a9b7c9;white-space:nowrap;}" +
   ".monitor-toc-chev{display:inline-block;color:#d9a441;font-size:12px;line-height:1;transition:transform .25s ease;}" +
   ".monitor-toc-cat.open .monitor-toc-chev{transform:rotate(180deg);}" +
   ".monitor-toc-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0a0e17;border:1px solid #253142;border-top:2px solid #d9a441;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,0.5);max-height:0;opacity:0;overflow:hidden;pointer-events:none;transform:translateY(-4px);transition:max-height .3s ease,opacity .25s ease,transform .25s ease;}" +
@@ -2959,7 +2959,7 @@ function bindZoomHandlers() {
   ".monitor-cat-band{display:flex;align-items:center;gap:14px;background:#0a0e17;border:1px solid #253142;border-left:3px solid #d9a441;border-radius:10px;padding:16px 18px;margin:42px 0 2px;}" +
   ".monitor-cat-num{font-family:var(--mono);font-size:22px;font-weight:800;color:#d9a441;line-height:1;}" +
   ".monitor-cat-name{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#f5f7fa;}" +
-  ".monitor-cat-sub{font-size:12.5px;color:#8d99aa;margin-top:3px;line-height:1.45;}" +
+  ".monitor-cat-sub{font-size:12.5px;color:#a9b7c9;margin-top:3px;line-height:1.45;}" +
   ".monitor-cat-count{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#d9a441;white-space:nowrap;}" +
   "@media (max-width:640px){.monitor-toc-btns{flex-direction:column;}.monitor-toc-cat{flex:1 1 auto;width:100%;min-width:0;}.monitor-cat-band{flex-wrap:wrap;}.monitor-cat-count{margin-left:0;}}";
  // availableKeys: the bucket keys that actually rendered this page load.
@@ -3077,7 +3077,7 @@ function bindZoomHandlers() {
     '<div class="card"><div style="display:flex;align-items:center;gap:16px;margin:8px 0;">' +
     '<div class="snap-blur" style="width:110px;height:40px;border-radius:8px;"></div>' +
     '<div><div class="snap-blur" style="width:170px;height:16px;border-radius:6px;"></div>' +
-    '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">Cumulative breadth momentum across S&amp;P 500 constituents. The reading is Pro.</div></div></div></div></div>';
+    '<div style="font-size:11px;color:#a9b7c9;margin-top:6px;">Cumulative breadth momentum across S&amp;P 500 constituents. The reading is Pro.</div></div></div></div></div>';
   }
   const pro = (PRO_DATA && PRO_DATA.mcclellan) || null;
   const cur = (pro && pro.current) || null;
@@ -3130,7 +3130,7 @@ function bindZoomHandlers() {
     '<div class="section-sub">Recent breadth alerts, newest first. Alerts fire on entry into a condition, not while it persists.</div>';
    alertEvents.forEach((e) => {
     h += '<div class="card" style="margin-bottom:8px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;">' + esc(e.date) + ' · ' + esc(mcclellanAlertLabel(e.type)) + '</div>' +
-     '<div style="font-size:12px;color:#8d99aa;margin-top:2px;">MSI ' + sgn(e.msi) +
+     '<div style="font-size:12px;color:#a9b7c9;margin-top:2px;">MSI ' + sgn(e.msi) +
      (e.delta10D != null ? ' · 10-day ' + sgn(e.delta10D) + ' pts' : '') +
      (e.regime ? ' · ' + esc(e.regime) : '') + '</div></div>';
    });
@@ -3172,7 +3172,7 @@ function flowMoney(v) {
 function tickerFlowInsiderHtml(tk) {
  const ins = (PRO_DATA && PRO_DATA.insider_screener) || null;
  if (!ins || typeof ins !== "object" || !("available" in ins)) return '<div class="card"><p style="color:var(--muted)">Loading insider buying data.</p></div>';
- if (!ins.available) return '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">' + esc(ins.status || "No insider records are available.") + '</p></div>';
+ if (!ins.available) return '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#a9b7c9;line-height:1.6;">' + esc(ins.status || "No insider records are available.") + '</p></div>';
  const trades = ((ins.by_ticker || {})[tk] || []).slice(0, 10);
  let h = '<div class="card">';
  if (ins.as_of) h += '<div style="font-size:11px;color:#647184;margin-bottom:10px;">Insider data as of ' + esc(ins.as_of) + '</div>';
@@ -3180,10 +3180,10 @@ function tickerFlowInsiderHtml(tk) {
  if (clusters.length) {
   const c = clusters[0];
   h += '<div style="background:#1a2233;border:1px solid #d9a441;border-radius:10px;padding:12px 14px;margin-bottom:14px;"><div style="font-size:13px;font-weight:700;color:#d9a441;">Cluster buying: ' + c.distinct_insiders_count + ' insiders · ' + flowMoney(c.total_capital_deployed) + ' · latest ' + esc(c.latest_trade_date || "") + '</div>' +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">' + (c.insider_list || []).map((n) => esc(n)).join(", ") + '</div></div>';
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">' + (c.insider_list || []).map((n) => esc(n)).join(", ") + '</div></div>';
  }
  if (!trades.length) {
-  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">No open-market insider purchases for ' + esc(tk) + ' in the current 45 day window.</p>';
+  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#a9b7c9;line-height:1.6;">No open-market insider purchases for ' + esc(tk) + ' in the current 45 day window.</p>';
  } else {
   h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Insider</th><th>Title</th><th>Shares</th><th>Price</th><th>Value</th><th>Trade Date</th></tr></thead><tbody>';
   h += trades.map((t) =>
@@ -3197,12 +3197,12 @@ function tickerFlowCongressHtml(tk) {
  const ct = (PRO_DATA && PRO_DATA.congress_tracker) || null;
  if (!ct || typeof ct !== "object" || !("available" in ct)) return '<div class="card"><p style="color:var(--muted)">Loading congress buying data.</p></div>';
  if (!ct.available) {
-  let h = '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">' + esc(ct.status || "No congressional records are available.") + '</p>';
+  let h = '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#a9b7c9;line-height:1.6;">' + esc(ct.status || "No congressional records are available.") + '</p>';
   const checks = ct.source_checks || [];
   if (checks.length) {
    h += '<div style="margin-top:10px;">';
    checks.forEach((c) => {
-    h += '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">' + esc(c.source) + ': ' + esc(c.result) + ' (' + esc(c.detail || "") + ')</div>';
+    h += '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">' + esc(c.source) + ': ' + esc(c.result) + ' (' + esc(c.detail || "") + ')</div>';
    });
    h += '</div>';
   }
@@ -3212,7 +3212,7 @@ function tickerFlowCongressHtml(tk) {
  let h = '<div class="card">';
  if (ct.as_of) h += '<div style="font-size:11px;color:#647184;margin-bottom:10px;">Congress data as of ' + esc(ct.as_of) + '</div>';
  if (!trades.length) {
-  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">No disclosed congressional trades for ' + esc(tk) + ' in the current tracker data.</p>';
+  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#a9b7c9;line-height:1.6;">No disclosed congressional trades for ' + esc(tk) + ' in the current tracker data.</p>';
  } else {
   h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Filer</th><th>Chamber</th><th>Party</th><th>Type</th><th>Amount Range</th><th>Transaction Date</th></tr></thead><tbody>';
   h += trades.map((t) =>
@@ -3225,7 +3225,7 @@ function tickerFlowCongressHtml(tk) {
 function tickerFlowWhalesHtml(tk) {
  const wh = (PRO_DATA && PRO_DATA.whale_13f) || null;
  if (!wh || typeof wh !== "object" || !("available" in wh)) return '<div class="card"><p style="color:var(--muted)">Loading whale positions data.</p></div>';
- if (!wh.available) return '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">' + esc(wh.status || "No 13F records are available.") + '</p></div>';
+ if (!wh.available) return '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#a9b7c9;line-height:1.6;">' + esc(wh.status || "No 13F records are available.") + '</p></div>';
  const funds = wh.funds || [];
  const allWhales = [];
  funds.forEach((f) => {
@@ -3242,19 +3242,19 @@ function tickerFlowWhalesHtml(tk) {
  const matches = pageNorm ? allWhales.filter((x) => normIssuer(x.pos && x.pos.issuer_name) === pageNorm) : [];
  let h = '<div class="card">';
  if (wh.as_of) h += '<div style="font-size:11px;color:#647184;margin-bottom:10px;">Whale data as of ' + esc(wh.as_of) + '</div>';
- h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">Fund-level whale positions in ' + esc(tk) + ' as filed. 13F filings land up to 45 days after quarter end, so these are disclosed positions, not real-time moves. Positions are identified by issuer name and CUSIP as filed.</p>';
+ h += '<p style="font-size:13px;color:#a9b7c9;line-height:1.6;">Fund-level whale positions in ' + esc(tk) + ' as filed. 13F filings land up to 45 days after quarter end, so these are disclosed positions, not real-time moves. Positions are identified by issuer name and CUSIP as filed.</p>';
  if (!matches.length) {
-  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">No whale positions in ' + esc(tk) + ' in the latest comparison.</p>';
+  h += '<div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#a9b7c9;line-height:1.6;">No whale positions in ' + esc(tk) + ' in the latest comparison.</p>';
  } else {
   h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Issuer</th><th>Fund</th><th>Weight</th><th>Shares</th><th>Value</th><th>CUSIP</th><th>Source</th></tr></thead><tbody>';
   h += matches.map((x) => {
    const p = x.pos || {};
    return '<tr><td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(p.issuer_name || "") + '</td>' +
-    '<td style="padding:10px;color:#8d99aa;">' + esc(x.fund) + '</td>' +
+    '<td style="padding:10px;color:#a9b7c9;">' + esc(x.fund) + '</td>' +
     '<td style="padding:10px;color:#dbe5f1;">' + (p.weight_pct != null ? Number(p.weight_pct).toFixed(2) + "%" : "n/a") + '</td>' +
     '<td style="padding:10px;color:#dbe5f1;">' + (p.shares != null ? Number(p.shares).toLocaleString() : "n/a") + '</td>' +
     '<td style="padding:10px;color:#dbe5f1;">' + flowMoney(p.value_usd) + '</td>' +
-    '<td style="padding:10px;color:#8d99aa;">' + esc(p.cusip || "") + '</td>' +
+    '<td style="padding:10px;color:#a9b7c9;">' + esc(p.cusip || "") + '</td>' +
     '<td style="padding:10px;"><a href="' + esc(p.filing_url || "") + '" target="_blank" rel="noopener" style="color:#d9a441;">Filing</a></td></tr>';
   }).join("");
   h += '</tbody></table></div>';
@@ -3328,17 +3328,17 @@ function flowScreenerCongressRows() {
 function flowScreenerRowsHtml(mode) {
  if (mode === "congress") {
   const ct = (PRO_DATA && PRO_DATA.congress_tracker) || {};
-  if (!ct.available) return '<tr><td colspan="6" style="padding:14px;color:#8d99aa;">No stocks with congressional buying in the current data. Congressional data unavailable: ' + esc(ct.status || "No congressional records are available.") + '</td></tr>';
+  if (!ct.available) return '<tr><td colspan="6" style="padding:14px;color:#a9b7c9;">No stocks with congressional buying in the current data. Congressional data unavailable: ' + esc(ct.status || "No congressional records are available.") + '</td></tr>';
   const rows = flowScreenerCongressRows();
-  if (!rows.length) return '<tr><td colspan="6" style="padding:14px;color:#8d99aa;">No stocks with congressional buying in the current data.</td></tr>';
+  if (!rows.length) return '<tr><td colspan="6" style="padding:14px;color:#a9b7c9;">No stocks with congressional buying in the current data.</td></tr>';
   return rows.map((r) =>
-   '<tr data-tk="' + esc(r.ticker) + '" style="cursor:pointer;border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#c5a059;">' + esc(r.ticker) + '</td><td style="padding:10px;color:#8d99aa;">' + esc(r.company) + '</td><td style="padding:10px;color:#dbe5f1;">' + r.count + '</td><td style="padding:10px;color:#8d99aa;">' + esc(r.latest) + '</td><td style="padding:10px;color:#dbe5f1;">n/a</td><td style="padding:10px;color:#8d99aa;">n/a</td></tr>'
+   '<tr data-tk="' + esc(r.ticker) + '" style="cursor:pointer;border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#c5a059;">' + esc(r.ticker) + '</td><td style="padding:10px;color:#a9b7c9;">' + esc(r.company) + '</td><td style="padding:10px;color:#dbe5f1;">' + r.count + '</td><td style="padding:10px;color:#a9b7c9;">' + esc(r.latest) + '</td><td style="padding:10px;color:#dbe5f1;">n/a</td><td style="padding:10px;color:#a9b7c9;">n/a</td></tr>'
   ).join("");
  }
  const rows = flowScreenerInsiderRows();
- if (!rows.length) return '<tr><td colspan="6" style="padding:14px;color:#8d99aa;">No stocks with insider buying in the current data.</td></tr>';
+ if (!rows.length) return '<tr><td colspan="6" style="padding:14px;color:#a9b7c9;">No stocks with insider buying in the current data.</td></tr>';
  return rows.map((r) =>
-  '<tr data-tk="' + esc(r.ticker) + '" style="cursor:pointer;border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#c5a059;">' + esc(r.ticker) + '</td><td style="padding:10px;color:#8d99aa;">' + esc(r.company) + '</td><td style="padding:10px;color:#dbe5f1;">' + r.count + '</td><td style="padding:10px;color:#8d99aa;">' + esc(r.latest) + '</td><td style="padding:10px;color:#dbe5f1;">' + flowMoney(r.total) + '</td><td style="padding:10px;color:#dbe5f1;">' + (r.cluster ? "Cluster" : "n/a") + '</td></tr>'
+  '<tr data-tk="' + esc(r.ticker) + '" style="cursor:pointer;border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#c5a059;">' + esc(r.ticker) + '</td><td style="padding:10px;color:#a9b7c9;">' + esc(r.company) + '</td><td style="padding:10px;color:#dbe5f1;">' + r.count + '</td><td style="padding:10px;color:#a9b7c9;">' + esc(r.latest) + '</td><td style="padding:10px;color:#dbe5f1;">' + flowMoney(r.total) + '</td><td style="padding:10px;color:#dbe5f1;">' + (r.cluster ? "Cluster" : "n/a") + '</td></tr>'
  ).join("");
 }
 function flowScreenerNoteHtml(mode) {
@@ -3353,7 +3353,7 @@ function flowScreenerNoteHtml(mode) {
 function flowScreenerInner() {
  let h = '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">' +
   '<select id="scr-flow-mode" style="background:#0d1522;color:#dbe5f1;border:1px solid #1c2b3e;border-radius:8px;padding:6px 10px;font-size:12px;"><option value="insider">Stocks with insider buying</option><option value="congress">Stocks with congressional buying</option></select>' +
-  '</div><div id="scr-flow-note" style="font-size:12px;color:#8d99aa;margin-bottom:10px;line-height:1.6;">' + flowScreenerNoteHtml("insider") + '</div>' +
+  '</div><div id="scr-flow-note" style="font-size:12px;color:#a9b7c9;margin-bottom:10px;line-height:1.6;">' + flowScreenerNoteHtml("insider") + '</div>' +
   '<div class="table-wrap"><table class="coverage"><thead><tr><th>Ticker</th><th>Company</th><th>Trades</th><th>Latest</th><th>Total Value</th><th>Cluster</th></tr></thead><tbody id="scr-flow-tbody">' + flowScreenerRowsHtml("insider") + '</tbody></table></div></div>';
  return h;
 }
@@ -3407,23 +3407,23 @@ function whaleScreenerRows() {
 }
 function whaleScreenerRowsHtml(fund) {
  const rows = whaleScreenerRows().filter((x) => !fund || fund === "ALL" || x.fund === fund);
- if (!rows.length) return '<tr><td colspan="7" style="padding:14px;color:#8d99aa;">No whale positions in the latest comparison.</td></tr>';
+ if (!rows.length) return '<tr><td colspan="7" style="padding:14px;color:#a9b7c9;">No whale positions in the latest comparison.</td></tr>';
  return rows.map((x) => {
   const p = x.pos || {};
   return '<tr style="border-bottom:1px solid #1c2b3e;"><td style="padding:10px;font-weight:700;color:#dbe5f1;">' + esc(p.issuer_name || "") + '</td>' +
-   '<td style="padding:10px;color:#8d99aa;">' + esc(x.fund) + '</td>' +
+   '<td style="padding:10px;color:#a9b7c9;">' + esc(x.fund) + '</td>' +
    '<td style="padding:10px;color:#dbe5f1;">' + (p.weight_pct != null ? Number(p.weight_pct).toFixed(2) + "%" : "n/a") + '</td>' +
    '<td style="padding:10px;color:#dbe5f1;">' + (p.shares != null ? Number(p.shares).toLocaleString() : "n/a") + '</td>' +
    '<td style="padding:10px;color:#dbe5f1;">' + flowMoney(p.value_usd) + '</td>' +
-   '<td style="padding:10px;color:#8d99aa;">' + esc(p.cusip || "") + '</td>' +
+   '<td style="padding:10px;color:#a9b7c9;">' + esc(p.cusip || "") + '</td>' +
    '<td style="padding:10px;"><a href="' + esc(p.filing_url || "") + '" target="_blank" rel="noopener" style="color:#d9a441;">Filing</a></td></tr>';
  }).join("");
 }
 function whaleScreenerInner() {
  const wh = (PRO_DATA && PRO_DATA.whale_13f) || {};
- if (!wh.available) return '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#8d99aa;line-height:1.6;">' + esc(wh.status || "No 13F records are available.") + '</p></div>';
+ if (!wh.available) return '<div class="card"><div style="font-size:14px;font-weight:700;color:#dbe5f1;">NA</div><p style="font-size:13px;color:#a9b7c9;line-height:1.6;">' + esc(wh.status || "No 13F records are available.") + '</p></div>';
  const funds = wh.funds || [];
- let h = '<div class="card"><p style="font-size:13px;color:#8d99aa;line-height:1.6;">Fund-level whale positions as filed, not trades in any single ticker. 13F filings land up to 45 days after quarter end, so these are disclosed positions, not real-time moves. Positions are identified by issuer name and CUSIP as filed; no ticker symbols are assigned from the filing.</p>' +
+ let h = '<div class="card"><p style="font-size:13px;color:#a9b7c9;line-height:1.6;">Fund-level whale positions as filed, not trades in any single ticker. 13F filings land up to 45 days after quarter end, so these are disclosed positions, not real-time moves. Positions are identified by issuer name and CUSIP as filed; no ticker symbols are assigned from the filing.</p>' +
   '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;"><select id="scr-whale-fund" style="background:#0d1522;color:#dbe5f1;border:1px solid #1c2b3e;border-radius:8px;padding:6px 10px;font-size:12px;"><option value="ALL">All funds</option>';
  funds.forEach((f) => {
   h += '<option value="' + esc(f.fund_name || "") + '">' + esc(f.fund_name || "") + '</option>';
@@ -3462,20 +3462,20 @@ function mcclellanBreadthHtml() {
    return '<div class="section"><div class="section-title">McClellan Breadth ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Breadth data unavailable. Check back after the next refresh.</p></div></div>';
   }
-  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
   const c = colorMap[v.color] || "#dbe5f1";
   const sgn = (x) => (x == null ? "n/a" : (x > 0 ? "+" : "") + Number(x).toFixed(1));
   let h = '<div class="section"><div class="section-title">McClellan Breadth ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Cumulative breadth momentum across S&amp;P 500 constituents, carried into the Daily Snapshot composite as a breadth input. The full gauge lives in Market Internals.</div>';
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">BREADTH INPUT</div>' +
+   '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">BREADTH INPUT</div>' +
    '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(v.regime || cur.regime || "") + '</div>' +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Summation Index ' + sgn(cur.summationIndex) + ' · Oscillator ' + sgn(cur.oscillator) + ' · 10-day ' + sgn(cur.delta10D) + ' pts · Trend ' + esc(cur.trend || "") + '</div></div>' +
-   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8d99aa;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + (v.score != null ? v.score : "-") + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div></div>';
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">Summation Index ' + sgn(cur.summationIndex) + ' · Oscillator ' + sgn(cur.oscillator) + ' · 10-day ' + sgn(cur.delta10D) + ' pts · Trend ' + esc(cur.trend || "") + '</div></div>' +
+   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#a9b7c9;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + (v.score != null ? v.score : "-") + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div></div>';
   const latestAlert = ((mc.alerts && mc.alerts.events) || []).slice(-1)[0];
   if (latestAlert) {
-   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:12px;color:#8d99aa;">LATEST BREADTH ALERT</div>' +
+   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:12px;color:#a9b7c9;">LATEST BREADTH ALERT</div>' +
     '<div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-top:2px;">' + esc(latestAlert.date) + ' · ' + esc(mcclellanAlertLabel(latestAlert.type)) + ' · MSI ' + sgn(latestAlert.msi) + '</div></div>';
   }
   h += '<div style="margin:12px 0;"><a href="#/monitor/mcclellan" class="btn-gold" style="text-decoration:none;">View the full gauge in Market Internals</a></div>';
@@ -3638,10 +3638,10 @@ function mcclellanBreadthHtml() {
    const c = colorMap[L.color] || "#dbe5f1";
    const m = L.metrics || {};
    let h = '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-    '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + L.total_score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+    '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SCORE</div>' +
+    '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + L.total_score + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
     '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(L.regime || "") + "</div>" +
-    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Net liquidity $' + (m.net_liquidity_b != null ? m.net_liquidity_b.toLocaleString() : "-") + "B" +
+    '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">Net liquidity $' + (m.net_liquidity_b != null ? m.net_liquidity_b.toLocaleString() : "-") + "B" +
     (m.net_liquidity_4w_change_b != null ? ' (' + (m.net_liquidity_4w_change_b >= 0 ? "+" : "") + m.net_liquidity_4w_change_b + "B 4W)" : "") + "</div></div>" +
     "</div>";
    // 4-factor breakdown
@@ -3651,16 +3651,16 @@ function mcclellanBreadthHtml() {
     h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
      '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.metric) + "</div>" +
      '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + "</div>" +
-     '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.value) + "</div>" +
-     (b.detail ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;font-style:italic;">' + esc(b.detail) + "</div>" : "") +
+     '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + esc(b.value) + "</div>" +
+     (b.detail ? '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;font-style:italic;">' + esc(b.detail) + "</div>" : "") +
      "</div>";
    });
    h += "</div>";
    // Fed balance sheet decomposition
    h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">' +
-    '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">FED ASSETS</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">$' + (m.fed_assets_b != null ? m.fed_assets_b.toLocaleString() : "-") + "B</div></div>" +
-    '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">TGA</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">$' + (m.tga_b != null ? m.tga_b.toLocaleString() : "-") + "B</div></div>" +
-    '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">REVERSE REPO</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">$' + (m.rrp_b != null ? m.rrp_b.toLocaleString() : "-") + "B</div></div>" +
+    '<div style="text-align:center;"><div style="font-size:11px;color:#a9b7c9;">FED ASSETS</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">$' + (m.fed_assets_b != null ? m.fed_assets_b.toLocaleString() : "-") + "B</div></div>" +
+    '<div style="text-align:center;"><div style="font-size:11px;color:#a9b7c9;">TGA</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">$' + (m.tga_b != null ? m.tga_b.toLocaleString() : "-") + "B</div></div>" +
+    '<div style="text-align:center;"><div style="font-size:11px;color:#a9b7c9;">REVERSE REPO</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">$' + (m.rrp_b != null ? m.rrp_b.toLocaleString() : "-") + "B</div></div>" +
     "</div>";
    // Global central bank balance sheets in USD (Fed + ECB + BOJ)
    const G = L.global || null;
@@ -3671,10 +3671,10 @@ function mcclellanBreadthHtml() {
     const bankColors = { fed: "#58a6ff", ecb: "#e0aa46", boj: "#a371f7" };
     const bankOrder = ["fed", "ecb", "boj"];
     const totChg = G.change_4w_usd_b;
-    const totCol = totChg == null ? "#8d99aa" : (totChg >= 0 ? "#4dd2aa" : "#f37d83");
-    h += '<div style="margin:18px 0 8px;font-size:11px;color:#8d99aa;letter-spacing:0.5px;">GLOBAL CENTRAL BANK BALANCE SHEETS (USD)</div>';
+    const totCol = totChg == null ? "#a9b7c9" : (totChg >= 0 ? "#4dd2aa" : "#f37d83");
+    h += '<div style="margin:18px 0 8px;font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">GLOBAL CENTRAL BANK BALANCE SHEETS (USD)</div>';
     h += '<div style="display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-     '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">GLOBAL TOTAL (FED + ECB + BOJ)</div>' +
+     '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">GLOBAL TOTAL (FED + ECB + BOJ)</div>' +
      '<div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + fmtB0(G.total_usd_b) + "</div></div>" +
      (totChg != null ? '<div style="font-size:12px;color:' + totCol + ';font-weight:600;">' + (totChg >= 0 ? "+" : "-") + "$" + Math.abs(totChg).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B (" + (G.change_4w_pct >= 0 ? "+" : "") + G.change_4w_pct + "%) over 4 weeks</div>" : "") +
      "</div>";
@@ -3693,20 +3693,20 @@ function mcclellanBreadthHtml() {
      if (!b) {
       h += '<div style="background:#101620;border-radius:10px;padding:12px;border-top:3px solid ' + col + ';">' +
        '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + ({ fed: "Federal Reserve", ecb: "European Central Bank", boj: "Bank of Japan" })[k] + "</div>" +
-       '<div style="font-size:16px;font-weight:700;color:#8d99aa;margin-top:6px;">N/A</div>' +
-       '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">Series unavailable in the latest run</div></div>';
+       '<div style="font-size:16px;font-weight:700;color:#a9b7c9;margin-top:6px;">N/A</div>' +
+       '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">Series unavailable in the latest run</div></div>';
       return;
      }
-     const chgCol = b.change_usd_b == null ? "#8d99aa" : (b.change_usd_b >= 0 ? "#4dd2aa" : "#f37d83");
+     const chgCol = b.change_usd_b == null ? "#a9b7c9" : (b.change_usd_b >= 0 ? "#4dd2aa" : "#f37d83");
      const chgTxt = b.change_usd_b == null ? "" :
       '<div style="font-size:11px;color:' + chgCol + ';margin-top:4px;font-weight:600;">' + (b.change_usd_b >= 0 ? "+" : "-") + "$" + Math.abs(b.change_usd_b).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B" + (b.change_pct != null ? " (" + (b.change_pct >= 0 ? "+" : "") + b.change_pct + "%)" : "") + " " + esc(b.change_label || "") + "</div>";
      const localTxt = k === "fed" ? "" :
-      '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.currency) + " " + Number(b.level_local_b).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B at " + (k === "ecb" ? b.fx_rate + " USD per EUR" : b.fx_rate + " JPY per USD") + " (" + fmtD(b.fx_date) + ")</div>";
+      '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + esc(b.currency) + " " + Number(b.level_local_b).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "B at " + (k === "ecb" ? b.fx_rate + " USD per EUR" : b.fx_rate + " JPY per USD") + " (" + fmtD(b.fx_date) + ")</div>";
      h += '<div style="background:#101620;border-radius:10px;padding:12px;border-top:3px solid ' + col + ';">' +
       '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.label) + "</div>" +
-      '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + (b.cadence === "monthly" ? "Monthly, print dated " : "Weekly, ") + fmtD(b.obs_date) + "</div>" +
+      '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + (b.cadence === "monthly" ? "Monthly, print dated " : "Weekly, ") + fmtD(b.obs_date) + "</div>" +
       '<div style="font-size:18px;font-weight:700;color:#dbe5f1;margin-top:6px;">' + fmtB0(b.level_usd_b) + "</div>" +
-      (b.share_pct != null ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + b.share_pct + "% of global total</div>" : "") +
+      (b.share_pct != null ? '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + b.share_pct + "% of global total</div>" : "") +
       localTxt + chgTxt +
       (b.carried_over ? '<div style="font-size:11px;color:#e0aa46;margin-top:4px;">Carried from the prior run</div>' : "") +
       "</div>";
@@ -3731,21 +3731,21 @@ function mcclellanBreadthHtml() {
      let svg = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:auto;display:block;" role="img">';
      svg += '<line x1="' + PL + '" y1="' + Y(mx - padV) + '" x2="' + (W - PR) + '" y2="' + Y(mx - padV) + '" stroke="#253142" stroke-width="1"/>';
      svg += '<line x1="' + PL + '" y1="' + Y(mn + padV) + '" x2="' + (W - PR) + '" y2="' + Y(mn + padV) + '" stroke="#253142" stroke-width="1"/>';
-     svg += '<text x="2" y="' + (Y(mx - padV) + 4) + '" fill="#8d99aa" font-size="11">' + fmtAxis(mx - padV) + "</text>";
-     svg += '<text x="2" y="' + (Y(mn + padV) + 4) + '" fill="#8d99aa" font-size="11">' + fmtAxis(mn + padV) + "</text>";
+     svg += '<text x="2" y="' + (Y(mx - padV) + 4) + '" fill="#a9b7c9" font-size="11">' + fmtAxis(mx - padV) + "</text>";
+     svg += '<text x="2" y="' + (Y(mn + padV) + 4) + '" fill="#a9b7c9" font-size="11">' + fmtAxis(mn + padV) + "</text>";
      series.forEach((s) => {
       const pts = [];
       gh.forEach((r, i) => { if (r[s.key] != null) pts.push(X(i).toFixed(1) + "," + Y(r[s.key]).toFixed(1)); });
       if (pts.length > 1) svg += '<polyline fill="none" stroke="' + s.color + '" stroke-width="' + s.w + '" points="' + pts.join(" ") + '"/>';
      });
      const fd = gh[0].date.split("-"), ld = gh[gh.length - 1].date.split("-");
-     svg += '<text x="' + PL + '" y="' + (H - 6) + '" fill="#8d99aa" font-size="11">' + MONTHS_L[Number(fd[1]) - 1] + " " + Number(fd[2]) + "</text>";
-     svg += '<text x="' + (W - PR) + '" y="' + (H - 6) + '" fill="#8d99aa" font-size="11" text-anchor="end">' + MONTHS_L[Number(ld[1]) - 1] + " " + Number(ld[2]) + "</text>";
+     svg += '<text x="' + PL + '" y="' + (H - 6) + '" fill="#a9b7c9" font-size="11">' + MONTHS_L[Number(fd[1]) - 1] + " " + Number(fd[2]) + "</text>";
+     svg += '<text x="' + (W - PR) + '" y="' + (H - 6) + '" fill="#a9b7c9" font-size="11" text-anchor="end">' + MONTHS_L[Number(ld[1]) - 1] + " " + Number(ld[2]) + "</text>";
      svg += "</svg>";
      h += '<div style="margin:12px 0;"><div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;">' +
-      series.map((s) => '<span style="font-size:11px;color:#8d99aa;"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:' + s.color + ';margin-right:5px;"></span>' + s.label + "</span>").join("") +
+      series.map((s) => '<span style="font-size:11px;color:#a9b7c9;"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:' + s.color + ';margin-right:5px;"></span>' + s.label + "</span>").join("") +
       '</div><div style="background:#0d1420;border:1px solid #253142;border-radius:10px;padding:8px;">' + svg + "</div>" +
-      '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">The Bank of Japan prints monthly, so its line steps between release dates and every point carries the print in effect, most recently ' + fmtD(gh[gh.length - 1].boj_obs_date) + '. The Fed and ECB print weekly. Dollar totals move with exchange rates as well as with the balance sheets themselves.</div></div>';
+      '<div style="font-size:11px;color:#a9b7c9;margin-top:6px;">The Bank of Japan prints monthly, so its line steps between release dates and every point carries the print in effect, most recently ' + fmtD(gh[gh.length - 1].boj_obs_date) + '. The Fed and ECB print weekly. Dollar totals move with exchange rates as well as with the balance sheets themselves.</div></div>';
     }
    }
    // Net liquidity history chart (simple bars)
@@ -3753,7 +3753,7 @@ function mcclellanBreadthHtml() {
     const hist = L.history.slice(-60);
     const vals = hist.map(x => x.net_liquidity_b);
     const mn = Math.min(...vals), mx = Math.max(...vals);
-    h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#8d99aa;margin-bottom:6px;">NET US LIQUIDITY, LAST 60 SESSIONS ($B)</div>' +
+    h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#a9b7c9;margin-bottom:6px;">NET US LIQUIDITY, LAST 60 SESSIONS ($B)</div>' +
      '<div style="display:flex;align-items:flex-end;gap:1px;height:70px;">' +
      hist.map(x => {
       const ht = 8 + ((x.net_liquidity_b - mn) / Math.max(1, mx - mn) * 58);
@@ -3763,7 +3763,7 @@ function mcclellanBreadthHtml() {
    // Explainer card: why liquidity matters
    h += '<div class="panel-about" style="text-align:left;max-width:none;margin:16px 0;">' +
     '<div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">Why global liquidity matters</div>' +
-    '<div style="font-size:12px;color:#8d99aa;line-height:1.6;">' +
+    '<div style="font-size:12px;color:#a9b7c9;line-height:1.6;">' +
     '<p style="margin:0 0 8px;">On an institutional desk, the saying goes: earnings drive single stocks, but liquidity drives the market. Since 2008, asset prices have tracked central bank balance sheets more than fundamentals.</p>' +
     '<p style="margin:0 0 8px;"><b style="color:#dbe5f1;">The multiple expansion engine:</b> abundant liquidity means cheap capital. Institutions lever up and push cash out the risk curve, expanding P/E multiples across the board.</p>' +
     '<p style="margin:0 0 8px;"><b style="color:#dbe5f1;">The dollar wrecking ball:</b> the world runs on dollars. A strong DXY tightens financial conditions globally, choking emerging markets and multinationals on expensive USD debt.</p>' +
@@ -3815,20 +3815,20 @@ function mcclellanBreadthHtml() {
     "MODERATE BUY BIAS": "#58a6ff",
     "INSTITUTIONAL DISTRIBUTION": "#f37d83",
     "BEARISH FADE": "#e0aa46",
-    "NEUTRAL / BALANCED": "#8d99aa",
+    "NEUTRAL / BALANCED": "#a9b7c9",
    };
    // Sentiment breadth across the universe
    const sentCounts = {};
    rows.forEach((r) => { sentCounts[r.sentiment] = (sentCounts[r.sentiment] || 0) + 1; });
    const sentOrder = ["BULLISH ACCUMULATION", "MODERATE BUY BIAS", "NEUTRAL / BALANCED", "BEARISH FADE", "INSTITUTIONAL DISTRIBUTION"];
    const breadth = sentOrder.filter((s) => sentCounts[s]).map((s) =>
-    '<span style="color:' + (sentimentColors[s] || "#8d99aa") + ';font-weight:600;">' + sentCounts[s] + " " + esc(s.toLowerCase()) + "</span>").join(" · ");
+    '<span style="color:' + (sentimentColors[s] || "#a9b7c9") + ';font-weight:600;">' + sentCounts[s] + " " + esc(s.toLowerCase()) + "</span>").join(" · ");
    // Stat cards (visuals first)
    const card = (label, value, sub, color) =>
     '<div style="background:#101620;border-radius:10px;padding:14px;flex:1;min-width:160px;">' +
-    '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + "</div>" +
+    '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">' + label + "</div>" +
     '<div style="font-size:24px;font-weight:800;color:' + (color || "#dbe5f1") + ';margin:4px 0;">' + value + "</div>" +
-    '<div style="font-size:11px;color:#8d99aa;">' + sub + "</div></div>";
+    '<div style="font-size:11px;color:#a9b7c9;">' + sub + "</div></div>";
    let h = '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;">';
    if (macro.dix != null) {
     const dixChg = macro.dix_change != null ? (macro.dix_change * 100) : null;
@@ -3846,7 +3846,7 @@ function mcclellanBreadthHtml() {
     "trailing window, summed across all coverage names", totCum >= 0 ? "#4dd2aa" : "#f37d83");
    h += "</div>";
    if (breadth) {
-    h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0 8px;">Sentiment breadth across the coverage universe · ' + breadth + "</div>";
+    h += '<div style="font-size:12px;color:#a9b7c9;margin:4px 0 8px;">Sentiment breadth across the coverage universe · ' + breadth + "</div>";
    }
    // 10-session trend of the coverage averages, from per-ticker histories
    const byDate = {};
@@ -3862,7 +3862,7 @@ function mcclellanBreadthHtml() {
     if (trend.length < 2) return "";
     const vals = trend.map(pick);
     const mn = Math.min(...vals), mx = Math.max(...vals);
-    return '<div style="margin:12px 0;"><div style="font-size:11px;color:#8d99aa;margin-bottom:6px;">' + label + "</div>" +
+    return '<div style="margin:12px 0;"><div style="font-size:11px;color:#a9b7c9;margin-bottom:6px;">' + label + "</div>" +
      '<div style="display:flex;align-items:flex-end;gap:3px;height:60px;">' +
      trend.map((t) => {
       const v = pick(t);
@@ -3873,11 +3873,11 @@ function mcclellanBreadthHtml() {
    h += barStrip("COVERAGE-AVERAGE PARTICIPATION (DPR), LAST " + trend.length + " SESSIONS",
     (t) => t.dpr, () => "#58a6ff");
    h += barStrip("COVERAGE-AVERAGE DARK SHORT RATIO (DPSR), LAST " + trend.length + " SESSIONS",
-    (t) => t.dpsr, (v) => v >= 55 ? "#4dd2aa" : v >= 50 ? "#58a6ff" : v < 40 ? "#f37d83" : "#8d99aa");
+    (t) => t.dpsr, (v) => v >= 55 ? "#4dd2aa" : v >= 50 ? "#58a6ff" : v < 40 ? "#f37d83" : "#a9b7c9");
    // Per-ticker ranking by participation
    const ranked = rows.slice().sort((a, b) => b.dpr - a.dpr);
    const flowCell = (v) => '<span style="color:' + (v >= 0 ? "#4dd2aa" : "#f37d83") + ';font-weight:600;">' + fmtUsd(v) + "</span>";
-   const th = (label, right) => '<th style="padding:8px 10px;text-align:' + (right ? "right" : "left") + ';color:#8d99aa;font-size:11px;letter-spacing:0.5px;">' + label + "</th>";
+   const th = (label, right) => '<th style="padding:8px 10px;text-align:' + (right ? "right" : "left") + ';color:#a9b7c9;font-size:11px;letter-spacing:0.5px;">' + label + "</th>";
    h += '<div style="overflow:auto;max-height:520px;margin:12px 0;"><table style="width:100%;border-collapse:collapse;min-width:780px;">' +
     "<thead><tr style=\"border-bottom:2px solid rgba(255,255,255,0.1);\">" +
     th("#") + th("TICKER") + th("PRICE", 1) + th("PARTICIPATION", 1) + th("DARK SHORT RATIO", 1) +
@@ -3887,7 +3887,7 @@ function mcclellanBreadthHtml() {
      const sc = sentimentColors[r.sentiment] || "#dbe5f1";
      const z = Number(r.z_score) || 0;
      return '<tr style="border-bottom:1px solid rgba(255,255,255,0.06);">' +
-      '<td style="padding:7px 10px;color:#8d99aa;font-size:12px;">' + (i + 1) + "</td>" +
+      '<td style="padding:7px 10px;color:#a9b7c9;font-size:12px;">' + (i + 1) + "</td>" +
       '<td style="padding:7px 10px;">' + tickerLink(r.ticker) + "</td>" +
       '<td style="padding:7px 10px;text-align:right;color:#dbe5f1;font-size:13px;">$' + (Number(r.price) || 0).toFixed(2) + "</td>" +
       '<td style="padding:7px 10px;text-align:right;color:#dbe5f1;font-size:13px;font-weight:700;">' + r.dpr.toFixed(1) + "%</td>" +
@@ -3901,7 +3901,7 @@ function mcclellanBreadthHtml() {
    // Explainer card: visuals first, explanation after
    h += '<div class="panel-about" style="text-align:left;max-width:none;margin:16px 0;">' +
     '<div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">How to read dark pool flow</div>' +
-    '<div style="font-size:12px;color:#8d99aa;line-height:1.6;">' +
+    '<div style="font-size:12px;color:#a9b7c9;line-height:1.6;">' +
     '<p style="margin:0 0 8px;">Dark pools and other off-exchange venues execute a large share of US equity volume away from the public exchanges. FINRA publishes the off-exchange volume, reported to a Trade Reporting Facility, for every name each day, and this panel aggregates those prints across the coverage universe.</p>' +
     '<p style="margin:0 0 8px;"><b style="color:#dbe5f1;">Participation</b> is the share of a name\u2019s consolidated volume that printed off-exchange. Higher participation means more block flow is being worked away from the lit book. <b style="color:#dbe5f1;">Dark short ratio</b> is the short share of that off-exchange volume. Above 50% it usually means wholesale dealers are selling short from inventory to fill aggressive institutional buy orders, which reads as accumulation. Below 40% it usually means dealers are absorbing institutional sell tickets.</p>' +
     '<p style="margin:0 0 8px;"><b style="color:#dbe5f1;">Net dark flow</b> converts the imbalance into dollars, and the cumulative figure tracks the running total over the trailing window. The S&P 500 Dark Pool Index (DIX) from SqueezeMetrics gives the market-wide context for the coverage averages. Averages here are equal-weighted across the ' + n + ' coverage names with data, and the flow totals are sums of the per-ticker estimates.</p>' +
@@ -4080,7 +4080,7 @@ function mcclellanBreadthHtml() {
   /* ---------- 10Y Breakeven Inflation HTML (FREE) ---------- */
   function breakevenHtml(d) {
    const latest = d.latest, chg = d.change_bps || 0;
-   const chgCls = chg > 0 ? "#4dd2aa" : chg < 0 ? "#f37d83" : "#8d99aa";
+   const chgCls = chg > 0 ? "#4dd2aa" : chg < 0 ? "#f37d83" : "#a9b7c9";
    const chgTxt = (chg >= 0 ? "+" : "") + chg.toFixed(1) + " bps";
    const cid = "breakeven-chart";
    // Reading: above 2.5% = elevated expectations, below 2% = disinflation fears
@@ -4088,13 +4088,13 @@ function mcclellanBreadthHtml() {
    const readCls = latest >= 2.5 ? "#f37d83" : latest < 2.0 ? "#58a6ff" : "#4dd2aa";
    let h = '<div class="section"><div class="section-title">10Y Breakeven Inflation ' + '</div>';
    h += '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">' +
-    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">LATEST READING</div>' +
+    '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">LATEST READING</div>' +
     '<div style="font-size:36px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + latest.toFixed(2) + '%</div></div>' +
-    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">DAY CHANGE</div>' +
+    '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">DAY CHANGE</div>' +
     '<div style="font-size:20px;font-weight:700;color:' + chgCls + ';font-family:monospace;">' + chgTxt + '</div></div>' +
-    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">READING</div>' +
+    '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">READING</div>' +
     '<div style="font-size:20px;font-weight:700;color:' + readCls + ';">' + read + '</div></div>' +
-    '<div style="font-size:11px;color:#8d99aa;">As of ' + esc(d.as_of || "") + ' · FRED T10YIE</div></div>' +
+    '<div style="font-size:11px;color:#a9b7c9;">As of ' + esc(d.as_of || "") + ' · FRED T10YIE</div></div>' +
     '<div class="zoomable-chart" data-chart="breakeven" style="position:relative;height:300px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + cid + '"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
    // Explanation card
@@ -4110,7 +4110,7 @@ function mcclellanBreadthHtml() {
     'Falling breakevens signal disinflation fears, which favors long-duration growth. The Fed watches this closely: ' +
     'a breakeven persistently above 2.5% argues against rate cuts, while one sliding toward 2% or below gives the Fed room to ease. ' +
     'For equity positioning, compare the trend here against CPI prints: when breakevens lead CPI higher, inflation trades have room to run.</div>' +
-    '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Source: Federal Reserve Bank of St. Louis (FRED series T10YIE), updated every trading morning.</div></div>';
+    '<div style="font-size:11px;color:#a9b7c9;margin-top:8px;">Source: Federal Reserve Bank of St. Louis (FRED series T10YIE), updated every trading morning.</div></div>';
    h += '</div></div>';
    return h;
   }
@@ -4124,15 +4124,15 @@ function mcclellanBreadthHtml() {
    const cid = "erp-chart";
    let h = '<div class="section"><div class="section-title">Implied Equity Risk Premium ' + '</div>';
    h += '<div class="card"><div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">' +
-    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">IMPLIED ERP</div>' +
+    '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">IMPLIED ERP</div>' +
     '<div style="font-size:36px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + erpPct + '%</div></div>' +
-    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">S&P 500</div>' +
+    '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">S&P 500</div>' +
     '<div style="font-size:20px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + spx.toLocaleString() + '</div></div>' +
-    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">10Y YIELD</div>' +
+    '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">10Y YIELD</div>' +
     '<div style="font-size:20px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + (tenY * 100).toFixed(2) + '%</div></div>' +
-    '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">READING</div>' +
+    '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">READING</div>' +
     '<div style="font-size:20px;font-weight:700;color:' + readCls + ';">' + read + '</div></div>' +
-    '<div style="font-size:11px;color:#8d99aa;">As of ' + esc(d.as_of || "") + ' · Updated daily</div></div>' +
+    '<div style="font-size:11px;color:#a9b7c9;">As of ' + esc(d.as_of || "") + ' · Updated daily</div></div>' +
     '<div class="zoomable-chart" data-chart="erp" style="position:relative;height:300px;margin-bottom:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + cid + '"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>';
    if (isPro) {
@@ -4147,7 +4147,7 @@ function mcclellanBreadthHtml() {
      'A <b>compressed ERP (below 3.0%)</b> means investors are accepting thin compensation for equity risk, often late in a bull market when complacency runs high. ' +
      'Watch the ERP against the 10Y: when the 10Y rises faster than the ERP, the equity discount rate climbs and growth multiples compress. ' +
      'The current 10Y at ' + (tenY * 100).toFixed(2) + '% is doing most of the work in today\'s discount rates.</div>' +
-     '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Source: Cascadia Analytics market-implied estimate, updated daily.</div></div>';
+     '<div style="font-size:11px;color:#a9b7c9;margin-top:8px;">Source: Cascadia Analytics market-implied estimate, updated daily.</div></div>';
    } else {
     h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;margin-top:12px;text-align:center;">' +
      '<div style="font-size:13px;color:#dbe5f1;margin-bottom:8px;">The full analysis of what this ERP reading means for positioning is a Pro feature.</div>' +
@@ -4320,8 +4320,8 @@ function mcclellanBreadthHtml() {
     '<div style="display:flex;align-items:center;gap:14px;">' +
     '<div style="width:40px;height:40px;background:#d9a441;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#0a0e17;font-family:monospace;">01</div>' +
     '<h3 style="font-size:28px;font-weight:700;letter-spacing:-0.5px;margin:0;">Market Breadth</h3> ' + PRO_BADGE + '</div>' +
-    '<div style="font-size:12px;color:#8d99aa;border:1px solid #253142;padding:6px 14px;border-radius:20px;white-space:nowrap;font-family:monospace;">Snapshot &middot; ' + esc(asOf) + "</div></div>";
-   h += '<p style="color:#8d99aa;font-size:15px;margin:4px 0 0 54px;line-height:1.5;">Breadth measures the degree of participation behind an index move. Broad advancer dominance with a high percentage of constituents above their moving averages confirms a healthy advance. When the index rises on narrow leadership while the median stock lags its 52-week high, the move lacks confirmation and corrective risk increases.</p>';
+    '<div style="font-size:12px;color:#a9b7c9;border:1px solid #253142;padding:6px 14px;border-radius:20px;white-space:nowrap;font-family:monospace;">Snapshot &middot; ' + esc(asOf) + "</div></div>";
+   h += '<p style="color:#a9b7c9;font-size:15px;margin:4px 0 0 54px;line-height:1.5;">Breadth measures the degree of participation behind an index move. Broad advancer dominance with a high percentage of constituents above their moving averages confirms a healthy advance. When the index rises on narrow leadership while the median stock lags its 52-week high, the move lacks confirmation and corrective risk increases.</p>';
    h += '<p style="color:#647184;font-size:13px;margin:20px 0 24px 0;">503 S&amp;P 500 constituents &middot; change vs the prior close</p>';
 
    h += bar("Above 50-day", pct50, d50, false);
@@ -4334,15 +4334,15 @@ function mcclellanBreadthHtml() {
    h += '<div style="background:#0a0e17;border:1px solid #253142;border-radius:14px;padding:18px;">' +
     '<div style="font-size:11px;letter-spacing:1.5px;color:#647184;margin-bottom:10px;font-weight:600;">NEW HIGHS / LOWS</div>' +
     '<div style="font-size:22px;font-weight:700;font-family:monospace;"><span style="color:#4dd2aa;">' + cardVal(nh) + '</span> <span style="color:#647184;font-size:16px;">/</span> <span style="color:#f37d83;">' + cardVal(nl) + "</span></div>" +
-    '<div style="font-size:13px;color:#8d99aa;margin-top:4px;">52-week extremes</div></div>';
+    '<div style="font-size:13px;color:#a9b7c9;margin-top:4px;">52-week extremes</div></div>';
    h += '<div style="background:#0a0e17;border:1px solid #253142;border-radius:14px;padding:18px;">' +
     '<div style="font-size:11px;letter-spacing:1.5px;color:#647184;margin-bottom:10px;font-weight:600;">MEDIAN VS 52WK HIGH</div>' +
     '<div style="font-size:22px;font-weight:700;font-family:monospace;color:' + (medDist != null && medDist < -5 ? "#f37d83" : "#dbe5f1") + ';">' + (medDist != null ? medDist.toFixed(1) + "%" : "N/A") + "</div>" +
-    '<div style="font-size:13px;color:#8d99aa;margin-top:4px;">median stock drawdown</div></div>';
+    '<div style="font-size:13px;color:#a9b7c9;margin-top:4px;">median stock drawdown</div></div>';
    h += '<div style="background:#0a0e17;border:1px solid #253142;border-radius:14px;padding:18px;">' +
     '<div style="font-size:11px;letter-spacing:1.5px;color:#647184;margin-bottom:10px;font-weight:600;">ADVANCERS / DECLINERS</div>' +
     '<div style="font-size:22px;font-weight:700;font-family:monospace;"><span style="color:#4dd2aa;">' + cardVal(adv) + '</span> <span style="color:#647184;font-size:16px;">/</span> <span style="color:#f37d83;">' + cardVal(dec) + "</span></div>" +
-    '<div style="font-size:13px;color:#8d99aa;margin-top:4px;">A/D ratio ' + (adRatio != null ? adRatio.toFixed(2) : "N/A") + "</div></div>";
+    '<div style="font-size:13px;color:#a9b7c9;margin-top:4px;">A/D ratio ' + (adRatio != null ? adRatio.toFixed(2) : "N/A") + "</div></div>";
    h += "</div>";
 
    // sector section
@@ -4419,9 +4419,9 @@ function mcclellanBreadthHtml() {
    (opexData.opex_calendar || []).slice(0, 6).forEach((o) => {
     const bg = o.triple_witching ? "border-color:#d9a441;" : "";
     h += '<div style="min-width:140px;background:#101620;border:1px solid #253142;border-radius:8px;padding:12px;' + bg + '">';
-    h += '<div style="font-size:11px;color:#8d99aa;">' + (o.triple_witching ? '<span style="color:#d9a441;font-weight:700;">TRIPLE WITCHING</span>' : 'MONTHLY OPEX') + '</div>';
+    h += '<div style="font-size:11px;color:#a9b7c9;">' + (o.triple_witching ? '<span style="color:#d9a441;font-weight:700;">TRIPLE WITCHING</span>' : 'MONTHLY OPEX') + '</div>';
     h += '<div style="font-size:14px;font-weight:700;color:#f5f7fa;margin:4px 0;">' + esc(o.label.split(",")[0] + "," + o.label.split(",")[1]) + '</div>';
-    h += '<div style="font-size:12px;color:#8d99aa;">' + o.days_away + ' days away</div>';
+    h += '<div style="font-size:12px;color:#a9b7c9;">' + o.days_away + ' days away</div>';
     h += '</div>';
    });
    h += '</div>';
@@ -4433,19 +4433,19 @@ function mcclellanBreadthHtml() {
     const t = opexData.tickers[tk];
     const pcr = t.put_call_ratio;
     const pcrColor = pcr > 1.2 ? "#f37d83" : (pcr < 0.8 ? "#4dd2aa" : "#dbe5f1");
-    const distColor = t.max_pain_distance_pct != null && Math.abs(t.max_pain_distance_pct) < 2 ? "#d9a441" : "#8d99aa";
+    const distColor = t.max_pain_distance_pct != null && Math.abs(t.max_pain_distance_pct) < 2 ? "#d9a441" : "#a9b7c9";
     h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;">';
     h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
     h += '<span style="font-size:18px;font-weight:800;color:#f5f7fa;">' + esc(tk) + '</span>';
-    h += '<span style="font-size:12px;color:#8d99aa;">$' + (t.spot != null ? t.spot.toFixed(2) : "-") + '</span>';
+    h += '<span style="font-size:12px;color:#a9b7c9;">$' + (t.spot != null ? t.spot.toFixed(2) : "-") + '</span>';
     h += '</div>';
     h += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
-    h += '<span style="font-size:12px;color:#8d99aa;">Max Pain</span>';
+    h += '<span style="font-size:12px;color:#a9b7c9;">Max Pain</span>';
     h += '<span style="font-size:14px;font-weight:700;color:#d9a441;">$' + (t.max_pain != null ? t.max_pain.toFixed(0) : "-") + '</span>';
     h += '</div>';
     if (t.max_pain_distance_pct != null) {
      h += '<div style="display:flex;justify-content:space-between;margin-bottom:8px;">';
-     h += '<span style="font-size:12px;color:#8d99aa;">Distance to Max Pain</span>';
+     h += '<span style="font-size:12px;color:#a9b7c9;">Distance to Max Pain</span>';
      h += '<span style="font-size:13px;font-weight:600;color:' + distColor + ';">' + (t.max_pain_distance_pct > 0 ? "+" : "") + t.max_pain_distance_pct.toFixed(1) + '%</span>';
      h += '</div>';
     }
@@ -4456,11 +4456,11 @@ function mcclellanBreadthHtml() {
     h += '<div style="width:' + (100 - callPct) + '%;background:#f37d83;"></div>';
     h += '</div>';
     h += '<div style="display:flex;justify-content:space-between;font-size:12px;">';
-    h += '<span style="color:#8d99aa;">P/C Ratio</span>';
+    h += '<span style="color:#a9b7c9;">P/C Ratio</span>';
     h += '<span style="font-weight:700;color:' + pcrColor + ';">' + (pcr != null ? pcr.toFixed(2) : "-") + '</span>';
     h += '</div>';
     if (t.call_wall || t.put_wall) {
-     h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #253142;font-size:11px;color:#8d99aa;">';
+     h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #253142;font-size:11px;color:#a9b7c9;">';
      if (t.call_wall) h += 'Call wall: $' + t.call_wall.toFixed(0) + ' &nbsp; ';
      if (t.put_wall) h += 'Put wall: $' + t.put_wall.toFixed(0);
      h += '</div>';
@@ -4468,7 +4468,7 @@ function mcclellanBreadthHtml() {
     h += '</div>';
    });
    h += '</div>';
-   h += '<div style="font-size:11px;color:#8d99aa;margin-top:12px;">As of ' + esc(opexData.as_of || "") + ' &middot; CBOE delayed chains</div>';
+   h += '<div style="font-size:11px;color:#a9b7c9;margin-top:12px;">As of ' + esc(opexData.as_of || "") + ' &middot; CBOE delayed chains</div>';
    return h;
   }
 
@@ -4491,7 +4491,7 @@ function mcclellanBreadthHtml() {
      const putPct = (d.put_iv / maxIV * 100).toFixed(1);
      const callPct = (d.call_iv / maxIV * 100).toFixed(1);
      return '<div class="card" style="margin-bottom:12px;"><h3>' + esc(d.symbol) +
-      (INDEX_COUNTRY[d.symbol] ? ' <span style="font-size:13px;color:#8d99aa;font-weight:400;">' + esc(INDEX_COUNTRY[d.symbol]) + '</span>' : '') +
+      (INDEX_COUNTRY[d.symbol] ? ' <span style="font-size:13px;color:#a9b7c9;font-weight:400;">' + esc(INDEX_COUNTRY[d.symbol]) + '</span>' : '') +
       ' <span style="font-size:12px;color:' + rc + ';">' + esc(d.regime_label || "") + "</span></h3>" +
       '<div style="margin:12px 0;">' +
       '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
@@ -6597,12 +6597,12 @@ function acadPath(pts, color, width, dash) {
 }
 
 function academyInteractiveHtml(kind) {
- const wrap = (inner) => '<div class="card" style="margin-top:14px;"><div style="font-size:11px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:10px;">INTERACTIVE EXAMPLE · FICTIONAL DATA</div>' + inner + '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Illustrative only. Numbers are fictional and not market data.</div></div>';
+ const wrap = (inner) => '<div class="card" style="margin-top:14px;"><div style="font-size:11px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:10px;">INTERACTIVE EXAMPLE · FICTIONAL DATA</div>' + inner + '<div style="font-size:11px;color:#a9b7c9;margin-top:8px;">Illustrative only. Numbers are fictional and not market data.</div></div>';
  if (kind === "netliq") {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["nl-a", "Fed Assets ($T)", 8.5, 5, 10], ["nl-t", "TGA ($T)", 0.8, 0, 2], ["nl-r", "RRP ($T)", 1.9, 0, 3]].map((s) =>
-    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2].toFixed(1) + '</b></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2].toFixed(1) + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="0.1" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="nl-out"></div>');
  }
@@ -6611,20 +6611,20 @@ function academyInteractiveHtml(kind) {
    '<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">' +
    [["yc-bf", "Bear Flattening"], ["yc-bs", "Bear Steepening"], ["yc-us", "Bull Steepening"]].map((b, i) =>
     '<button class="btn secondary acad-yc" data-m="' + b[0] + '" style="' + (i === 0 ? "border-color:#d9a441;color:#d9a441;" : "") + '">' + b[1] + "</button>").join("") +
-   '</div><div id="yc-out"></div><div id="yc-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
+   '</div><div id="yc-out"></div><div id="yc-note" style="font-size:12px;color:#a9b7c9;margin-top:8px;"></div>');
  }
  if (kind === "roic") {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["roic-r", "ROIC (%)", 14, 2, 25], ["roic-w", "WACC (%)", 9, 4, 15]].map((s) =>
-    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="0.5" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="roic-out"></div>');
  }
  if (kind === "dupont") {
   const items = [["dp-tb", "Tax Burden", 0.75, 0.5, 1], ["dp-ib", "Interest Burden", 0.9, 0.5, 1], ["dp-om", "Operating Margin", 0.22, 0.05, 0.4], ["dp-at", "Asset Turnover", 0.8, 0.2, 2], ["dp-fl", "Leverage", 2.2, 1, 4]];
   return wrap('<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">' +
-   items.map((s) => '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
+   items.map((s) => '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="0.01" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="dupont-out" style="font-size:14px;"></div>');
  }
@@ -6633,13 +6633,13 @@ function academyInteractiveHtml(kind) {
    '<div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">' +
    '<button class="btn secondary acad-po" data-m="call" style="border-color:#d9a441;color:#d9a441;">Long Call</button>' +
    '<button class="btn secondary acad-po" data-m="put">Long Put</button>' +
-   '<div style="margin-left:8px;font-size:12px;color:#8d99aa;">Strike: <b id="po-k-v" style="color:#dbe5f1;">100</b></div>' +
+   '<div style="margin-left:8px;font-size:12px;color:#a9b7c9;">Strike: <b id="po-k-v" style="color:#dbe5f1;">100</b></div>' +
    '<input type="range" id="po-k" min="70" max="130" step="1" value="100" style="width:160px;" class="acad-slider"></div>' +
    '<div id="po-out"></div>');
  }
  if (kind === "gamma") {
   return wrap(
-   '<div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Spot price: <b id="gm-s-v" style="color:#dbe5f1;">100</b></div>' +
+   '<div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">Spot price: <b id="gm-s-v" style="color:#dbe5f1;">100</b></div>' +
    '<input type="range" id="gm-s" min="80" max="120" step="0.5" value="100" style="width:100%;max-width:420px;" class="acad-slider">' +
    '<div id="gm-out" style="margin-top:8px;"></div>');
  }
@@ -6648,18 +6648,18 @@ function academyInteractiveHtml(kind) {
    '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
    '<button class="btn secondary acad-sk" data-m="normal" style="border-color:#d9a441;color:#d9a441;">Normal Skew</button>' +
    '<button class="btn secondary acad-sk" data-m="inverted">Inverted Skew</button></div>' +
-   '<div id="sk-out"></div><div id="sk-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
+   '<div id="sk-out"></div><div id="sk-note" style="font-size:12px;color:#a9b7c9;margin-top:8px;"></div>');
  }
  if (kind === "termstruct") {
   return wrap(
    '<div style="display:flex;gap:8px;margin-bottom:10px;">' +
    '<button class="btn secondary acad-ts" data-m="contango" style="border-color:#d9a441;color:#d9a441;">Contango</button>' +
    '<button class="btn secondary acad-ts" data-m="backward">Backwardation</button></div>' +
-   '<div id="ts-out"></div><div id="ts-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
+   '<div id="ts-out"></div><div id="ts-note" style="font-size:12px;color:#a9b7c9;margin-top:8px;"></div>');
  }
  if (kind === "gex") {
   return wrap(
-   '<div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Index level: <b id="gx-s-v" style="color:#dbe5f1;">5000</b> <span style="color:#5b6b82;">(fictional gamma flip: 4950)</span></div>' +
+   '<div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">Index level: <b id="gx-s-v" style="color:#dbe5f1;">5000</b> <span style="color:#5b6b82;">(fictional gamma flip: 4950)</span></div>' +
    '<input type="range" id="gx-s" min="4800" max="5150" step="5" value="5000" style="width:100%;max-width:420px;" class="acad-slider">' +
    '<div id="gx-out" style="margin-top:10px;"></div>');
  }
@@ -6667,7 +6667,7 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["slr-t1", "Tier 1 Capital ($B)", 250, 50, 600, 5], ["slr-on", "On-Balance Assets ($B)", 4000, 1000, 6000, 50], ["slr-off", "Off-Balance Exposures ($B)", 1200, 200, 2500, 25]].map((s) =>
-    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="slr-out"></div>');
  }
@@ -6675,7 +6675,7 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["wc-e", "Market Value of Equity ($M)", 80000, 5000, 300000, 5000], ["wc-d", "Market Value of Debt ($M)", 20000, 0, 150000, 2500], ["wc-re", "Cost of Equity (%)", 9.5, 4, 20, 0.1], ["wc-rd", "Pre-Tax Cost of Debt (%)", 5.5, 2, 12, 0.1], ["wc-t", "Marginal Tax Rate (%)", 21, 0, 35, 1]].map((s) =>
-    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="wacc-out"></div>');
  }
@@ -6684,15 +6684,15 @@ function academyInteractiveHtml(kind) {
    '<div id="be-metrics" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;"></div>' +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["be-n10", "10Y Nominal Yield (%)", 4.25, 2, 7, 0.05], ["be-t10", "10Y TIPS Real Yield (%)", 1.90, -1, 4, 0.05], ["be-n5", "5Y Nominal Yield (%)", 4.00, 2, 7, 0.05], ["be-t5", "5Y TIPS Real Yield (%)", 1.65, -1, 4, 0.05], ["be-lam", "TIPS Liquidity Premium (%)", 0.15, 0, 0.6, 0.02], ["be-dur", "Equity Duration (years)", 18, 8, 30, 1]].map((s) =>
-    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
-   '</div><div id="be-out"></div><div id="be-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
+   '</div><div id="be-out"></div><div id="be-note" style="font-size:12px;color:#a9b7c9;margin-top:8px;"></div>');
  }
  if (kind === "oas") {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["oas-ty", "10Y Treasury Yield (%)", 4.25, 2, 7, 0.05], ["oas-oas", "Corporate OAS (bps)", 380, 100, 900, 10], ["oas-rr", "Recovery Rate (%)", 40, 10, 70, 5]].map((s) =>
-    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="oas-out"></div>');
  }
@@ -6700,13 +6700,13 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["vt-tv", "Target Vol (%)", 10, 8, 15, 1], ["vt-rv", "Realized Vol (%)", 18, 6, 30, 1], ["vt-aum", "Fund AUM ($B)", 50, 10, 200, 5]].map((s) =>
-    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="vt-out"></div>');
  }
  if (kind === "cotz") {
   return wrap(
-   '<div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Speculative Net Positioning Z-Score: <b id="cot-z-v" style="color:#dbe5f1;">2.2</b></div>' +
+   '<div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">Speculative Net Positioning Z-Score: <b id="cot-z-v" style="color:#dbe5f1;">2.2</b></div>' +
    '<input type="range" id="cot-z" min="-3" max="3" step="0.1" value="2.2" style="width:100%;max-width:420px;" class="acad-slider">' +
    '<div id="cot-out" style="margin-top:8px;"></div>');
  }
@@ -6714,13 +6714,13 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["br-spy", "SPY 60-Day Return (%)", 6.5, -10, 15, 0.5], ["br-rsp", "RSP 60-Day Return (%)", -1.2, -10, 15, 0.5]].map((s) =>
-    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="br-out"></div>');
  }
  if (kind === "fxcarry") {
   return wrap(
-   '<div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">USD/JPY 5-Day Move (%): <b id="fx-jpy-v" style="color:#dbe5f1;">-3.5</b></div>' +
+   '<div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">USD/JPY 5-Day Move (%): <b id="fx-jpy-v" style="color:#dbe5f1;">-3.5</b></div>' +
    '<input type="range" id="fx-jpy" min="-6" max="3" step="0.1" value="-3.5" style="width:100%;max-width:420px;" class="acad-slider">' +
    '<div id="fx-out" style="margin-top:8px;"></div>');
  }
@@ -6728,7 +6728,7 @@ function academyInteractiveHtml(kind) {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["bd-fee", "Annual Borrow Fee (%)", 18, 1, 100, 1], ["bd-days", "Holding Days", 45, 7, 180, 1], ["bd-move", "Stock Move (%)", -12, -40, 40, 1]].map((s) =>
-    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="bd-out"></div>');
  }
@@ -6740,11 +6740,11 @@ function academyInteractiveHtml(kind) {
    '<button class="btn secondary acad-sl" data-m="long_put">Long Put</button>' +
    '<button class="btn secondary acad-sl" data-m="short_put">Short Put</button></div>' +
    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">' +
-   '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Strike: <b id="sl-k-v" style="color:#dbe5f1;">100</b></div>' +
+   '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">Strike: <b id="sl-k-v" style="color:#dbe5f1;">100</b></div>' +
    '<input type="range" id="sl-k" min="70" max="130" step="1" value="100" style="width:100%;" class="acad-slider"></div>' +
-   '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Premium: <b id="sl-p-v" style="color:#dbe5f1;">$4.50</b></div>' +
+   '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">Premium: <b id="sl-p-v" style="color:#dbe5f1;">$4.50</b></div>' +
    '<input type="range" id="sl-p" min="0.5" max="15" step="0.25" value="4.5" style="width:100%;" class="acad-slider"></div></div>' +
-   '<div id="sl-out"></div><div id="sl-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
+   '<div id="sl-out"></div><div id="sl-note" style="font-size:12px;color:#a9b7c9;margin-top:8px;"></div>');
  }
  if (kind === "multileg") {
   return wrap(
@@ -6753,19 +6753,19 @@ function academyInteractiveHtml(kind) {
    '<button class="btn secondary acad-ml" data-m="bull_call">Bull Call Spread</button>' +
    '<button class="btn secondary acad-ml" data-m="straddle">Long Straddle</button></div>' +
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
-   '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Spot: <b id="ml-s-v" style="color:#dbe5f1;">100</b></div>' +
+   '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">Spot: <b id="ml-s-v" style="color:#dbe5f1;">100</b></div>' +
    '<input type="range" id="ml-s" min="70" max="130" step="1" value="100" style="width:100%;" class="acad-slider"></div>' +
-   '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Wing width: <b id="ml-w-v" style="color:#dbe5f1;">10</b></div>' +
+   '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">Wing width: <b id="ml-w-v" style="color:#dbe5f1;">10</b></div>' +
    '<input type="range" id="ml-w" min="5" max="25" step="1" value="10" style="width:100%;" class="acad-slider"></div>' +
-   '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">Net credit / cost: <b id="ml-c-v" style="color:#dbe5f1;">$3.20</b></div>' +
+   '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">Net credit / cost: <b id="ml-c-v" style="color:#dbe5f1;">$3.20</b></div>' +
    '<input type="range" id="ml-c" min="0.5" max="8" step="0.1" value="3.2" style="width:100%;" class="acad-slider"></div></div>' +
-   '<div id="ml-out"></div><div id="ml-note" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div>');
+   '<div id="ml-out"></div><div id="ml-note" style="font-size:12px;color:#a9b7c9;margin-top:8px;"></div>');
  }
  if (kind === "straddle") {
   return wrap(
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:10px;">' +
    [["st-px", "Stock Price ($)", 200, 50, 500, 5], ["st-cost", "Straddle Cost ($)", 16, 5, 40, 1], ["st-move", "Realized 1-Day Move (%)", 5, -15, 15, 0.5]].map((s) =>
-    '<div><div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + s[1] + ': <b id="' + s[0] + '-v" style="color:#dbe5f1;">' + s[2] + '</b></div>' +
     '<input type="range" id="' + s[0] + '" min="' + s[3] + '" max="' + s[4] + '" step="' + s[5] + '" value="' + s[2] + '" style="width:100%;" class="acad-slider"></div>').join("") +
    '</div><div id="st-out"></div>');
  }
@@ -6785,7 +6785,7 @@ function wireAcademyInteractive(kind) {
    const bx = (v) => pad + (v / maxV) * (w - pad - 16);
    $("nl-out").innerHTML = acadSvgOpen(w, h) +
     [["Fed Assets", a, "#d9a441", 18], ["TGA", t, "#f37d83", 52], ["RRP", r, "#f37d83", 86]].map((b) =>
-     '<text x="4" y="' + (b[3] + 5) + '" fill="#8d99aa" font-size="11">' + b[0] + '</text>' +
+     '<text x="4" y="' + (b[3] + 5) + '" fill="#a9b7c9" font-size="11">' + b[0] + '</text>' +
      '<rect x="' + pad + '" y="' + (b[3] - 8) + '" width="' + Math.max(2, bx(b[1]) - pad) + '" height="14" rx="3" fill="' + b[2] + '" opacity="0.85"/>').join("") +
     '<text x="' + pad + '" y="' + (h - 6) + '" fill="#dbe5f1" font-size="12" font-weight="700">Net Liquidity = $' + nl.toFixed(1) + 'T (fictional)</text>' + "</svg>";
   };
@@ -6804,7 +6804,7 @@ function wireAcademyInteractive(kind) {
    const y = (v) => h - pad - ((v - 2) / 3.6) * (h - pad - 24);
    const pts = modes[m].pts.map((p) => [x(p[0]), y(p[1])]);
    $("yc-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#d9a441", 2.5) +
-    pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="#d9a441"/><text x="' + p[0] + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="middle">' + xs[i] + 'Y</text><text x="' + (p[0] + 8) + '" y="' + (p[1] - 8) + '" fill="#dbe5f1" font-size="11">' + ys[i].toFixed(1) + '%</text>').join("") + "</svg>";
+    pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="#d9a441"/><text x="' + p[0] + '" y="' + (h - pad + 16) + '" fill="#a9b7c9" font-size="11" text-anchor="middle">' + xs[i] + 'Y</text><text x="' + (p[0] + 8) + '" y="' + (p[1] - 8) + '" fill="#dbe5f1" font-size="11">' + ys[i].toFixed(1) + '%</text>').join("") + "</svg>";
    $("yc-note").textContent = modes[m].note;
    document.querySelectorAll(".acad-yc").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === m) { b.style.borderColor = "#d9a441"; b.style.color = "#d9a441"; } });
   };
@@ -6822,9 +6822,9 @@ function wireAcademyInteractive(kind) {
    $("roic-out").innerHTML = acadSvgOpen(w, h) +
     '<line x1="' + cx + '" y1="10" x2="' + cx + '" y2="60" stroke="#1d2938"/>' +
     '<rect x="' + Math.min(cx, cx + spread * scale) + '" y="24" width="' + Math.abs(spread * scale) + '" height="22" rx="4" fill="' + col + '" opacity="0.85"/>' +
-    '<text x="' + cx + '" y="76" fill="#8d99aa" font-size="11" text-anchor="middle">0</text>' +
-    '<text x="10" y="76" fill="#8d99aa" font-size="11">value destruction</text>' +
-    '<text x="' + (w - 10) + '" y="76" fill="#8d99aa" font-size="11" text-anchor="end">value creation</text>' +
+    '<text x="' + cx + '" y="76" fill="#a9b7c9" font-size="11" text-anchor="middle">0</text>' +
+    '<text x="10" y="76" fill="#a9b7c9" font-size="11">value destruction</text>' +
+    '<text x="' + (w - 10) + '" y="76" fill="#a9b7c9" font-size="11" text-anchor="end">value creation</text>' +
     '<text x="' + (w / 2) + '" y="14" fill="#dbe5f1" font-size="13" font-weight="700" text-anchor="middle">Spread: ' + (spread >= 0 ? "+" : "") + spread.toFixed(1) + 'pp ' + (spread >= 0 ? "· creating value" : "· destroying value") + '</text></svg>';
   };
   ["roic-r", "roic-w"].forEach((id) => on(id, "input", draw)); draw();
@@ -6835,7 +6835,7 @@ function wireAcademyInteractive(kind) {
    const vs = ids.map((id) => +$(id).value);
    ids.forEach((id, i) => { $(id + "-v").textContent = vs[i].toFixed(2); });
    const roe = vs.reduce((a, b) => a * b, 1) * 100;
-   $("dupont-out").innerHTML = 'Implied ROE = <b style="color:#d9a441;font-size:18px;">' + roe.toFixed(1) + '%</b> <span style="color:#8d99aa;font-size:12px;">(fictional inputs)</span>';
+   $("dupont-out").innerHTML = 'Implied ROE = <b style="color:#d9a441;font-size:18px;">' + roe.toFixed(1) + '%</b> <span style="color:#a9b7c9;font-size:12px;">(fictional inputs)</span>';
   };
   ids.forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6858,8 +6858,8 @@ function wireAcademyInteractive(kind) {
     acadPath(pts, mode === "call" ? "#4dd2aa" : "#f37d83", 2.5) +
     '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#d9a441" stroke-dasharray="4"/>' +
     '<text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#d9a441" font-size="11" text-anchor="middle">Strike ' + k + '</text>' +
-    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="end">Spot at expiry →</text>' +
-    '<text x="8" y="16" fill="#8d99aa" font-size="11">Profit / loss (fictional $' + prem + ' premium)</text></svg>';
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#a9b7c9" font-size="11" text-anchor="end">Spot at expiry →</text>' +
+    '<text x="8" y="16" fill="#a9b7c9" font-size="11">Profit / loss (fictional $' + prem + ' premium)</text></svg>';
    document.querySelectorAll(".acad-po").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#d9a441"; b.style.color = "#d9a441"; } });
   };
   document.querySelectorAll(".acad-po").forEach((b) => b.addEventListener("click", () => { mode = b.dataset.m; draw(); }));
@@ -6879,7 +6879,7 @@ function wireAcademyInteractive(kind) {
    $("gm-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#d9a441", 2.5) +
     '<line x1="' + x(s) + '" y1="8" x2="' + x(s) + '" y2="' + (h - pad) + '" stroke="#4dd2aa" stroke-width="2"/>' +
     '<text x="' + x(s) + '" y="' + (h - pad + 16) + '" fill="#4dd2aa" font-size="11" text-anchor="middle">Spot ' + s.toFixed(0) + '</text>' +
-    '<text x="8" y="16" fill="#8d99aa" font-size="11">Gamma by strike (fictional) — ' + (nearK ? "spot near the strike: gamma risk is highest here" : "spot away from the strike: gamma risk is muted") + '</text></svg>';
+    '<text x="8" y="16" fill="#a9b7c9" font-size="11">Gamma by strike (fictional) — ' + (nearK ? "spot near the strike: gamma risk is highest here" : "spot away from the strike: gamma risk is muted") + '</text></svg>';
   };
   on("gm-s", "input", draw); draw();
  }
@@ -6892,9 +6892,9 @@ function wireAcademyInteractive(kind) {
    const pts = [];
    for (let d = 5; d <= 50; d += 1) pts.push([x(d), y(iv(d))]);
    $("sk-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#d9a441", 2.5) +
-    '<text x="' + x(12) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="middle">25Δ Put</text>' +
-    '<text x="' + x(50) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="middle">25Δ Call</text>' +
-    '<text x="8" y="16" fill="#8d99aa" font-size="11">Implied volatility by delta (fictional)</text></svg>';
+    '<text x="' + x(12) + '" y="' + (h - pad + 16) + '" fill="#a9b7c9" font-size="11" text-anchor="middle">25Δ Put</text>' +
+    '<text x="' + x(50) + '" y="' + (h - pad + 16) + '" fill="#a9b7c9" font-size="11" text-anchor="middle">25Δ Call</text>' +
+    '<text x="8" y="16" fill="#a9b7c9" font-size="11">Implied volatility by delta (fictional)</text></svg>';
    $("sk-note").textContent = m === "normal"
     ? "Normal equity skew. Downside puts carry higher implied volatility because portfolio insurance demand is structural."
     : "Inverted skew. Calls bid over puts. This usually marks speculative call chasing and often arrives near short-term tops.";
@@ -6912,8 +6912,8 @@ function wireAcademyInteractive(kind) {
    const y = (v) => h - pad - ((v - 14) / 24) * (h - pad - 24);
    const pts = ivs.map((v, i) => [x(i), y(v)]);
    $("ts-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, m === "contango" ? "#4dd2aa" : "#f37d83", 2.5) +
-    pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="' + (m === "contango" ? "#4dd2aa" : "#f37d83") + '"/><text x="' + p[0] + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="middle">' + tenors[i] + '</text>').join("") +
-    '<text x="8" y="16" fill="#8d99aa" font-size="11">ATM implied volatility by tenor (fictional)</text></svg>';
+    pts.map((p, i) => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="' + (m === "contango" ? "#4dd2aa" : "#f37d83") + '"/><text x="' + p[0] + '" y="' + (h - pad + 16) + '" fill="#a9b7c9" font-size="11" text-anchor="middle">' + tenors[i] + '</text>').join("") +
+    '<text x="8" y="16" fill="#a9b7c9" font-size="11">ATM implied volatility by tenor (fictional)</text></svg>';
    $("ts-note").textContent = m === "contango"
     ? "Contango. Distant uncertainty costs more than near-term calm. Roll decay favors short-volatility carry."
     : "Backwardation. Near-term insurance costs more than distant insurance. This panic pricing has historically coincided with selling climaxes.";
@@ -6931,7 +6931,7 @@ function wireAcademyInteractive(kind) {
    const col = pos ? "#4dd2aa" : "#f37d83";
    $("gx-out").innerHTML = '<div style="display:flex;align-items:center;gap:14px;padding:14px;border:1px solid ' + col + ';border-radius:10px;background:rgba(255,255,255,0.02);">' +
     '<div style="font-size:15px;font-weight:800;color:' + col + ';">' + (pos ? "LONG GAMMA" : "SHORT GAMMA") + '</div>' +
-    '<div style="font-size:12px;color:#8d99aa;max-width:520px;">' + (pos
+    '<div style="font-size:12px;color:#a9b7c9;max-width:520px;">' + (pos
      ? "Index above the fictional flip level. Dealers buy dips and sell rips to stay neutral, which damps realized volatility."
      : "Index below the fictional flip level. Dealers sell weakness and buy strength to stay hedged, which amplifies moves both ways.") + "</div></div>";
   };
@@ -6947,10 +6947,10 @@ function wireAcademyInteractive(kind) {
    const ok = slr >= 5.0;
    const col = ok ? "#4dd2aa" : "#f37d83";
    $("slr-out").innerHTML = '<div style="display:flex;align-items:center;gap:14px;padding:14px;border:1px solid ' + col + ';border-radius:10px;background:rgba(255,255,255,0.02);flex-wrap:wrap;">' +
-    '<div><div style="font-size:11px;color:#8d99aa;">SUPPLEMENTARY LEVERAGE RATIO</div>' +
+    '<div><div style="font-size:11px;color:#a9b7c9;">SUPPLEMENTARY LEVERAGE RATIO</div>' +
     '<div style="font-size:28px;font-weight:800;color:' + col + ';">' + slr.toFixed(2) + '%</div></div>' +
     '<div style="font-size:12px;font-weight:700;color:' + col + ';padding:6px 12px;border:1px solid ' + col + ';border-radius:8px;">' + (ok ? "COMPLIANT (≥ 5.0%)" : "BINDING CONSTRAINT (< 5.0%)") + "</div>" +
-    '<div style="font-size:12px;color:#8d99aa;">Total Leverage Exposure: <b style="color:#dbe5f1;">$' + tle.toLocaleString() + 'B</b> (fictional)</div></div>';
+    '<div style="font-size:12px;color:#a9b7c9;">Total Leverage Exposure: <b style="color:#dbe5f1;">$' + tle.toLocaleString() + 'B</b> (fictional)</div></div>';
   };
   ids.forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6966,13 +6966,13 @@ function wireAcademyInteractive(kind) {
    const W = 560, H = 96;
    const barW = (W - 16);
    $("wacc-out").innerHTML =
-    '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;"><span style="font-size:26px;font-weight:800;color:#d9a441;">' + wacc.toFixed(2) + '%</span><span style="font-size:12px;color:#8d99aa;">WACC (fictional inputs)</span></div>' +
+    '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;"><span style="font-size:26px;font-weight:800;color:#d9a441;">' + wacc.toFixed(2) + '%</span><span style="font-size:12px;color:#a9b7c9;">WACC (fictional inputs)</span></div>' +
     '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block;" role="img">' +
     '<rect x="8" y="18" width="' + (barW * wE).toFixed(1) + '" height="20" rx="4" fill="#d9a441" opacity="0.9"/>' +
     '<rect x="' + (8 + barW * wE).toFixed(1) + '" y="18" width="' + (barW * wD).toFixed(1) + '" height="20" rx="4" fill="#38bdf8" opacity="0.9"/>' +
-    '<text x="8" y="12" fill="#8d99aa" font-size="11">Equity ' + (wE * 100).toFixed(1) + '% @ ' + re.toFixed(1) + '%</text>' +
-    '<text x="' + W - 8 + '" y="12" fill="#8d99aa" font-size="11" text-anchor="end">Debt ' + (wD * 100).toFixed(1) + '% @ ' + afterRd.toFixed(2) + '% after tax</text>' +
-    '<text x="8" y="58" fill="#8d99aa" font-size="11">After-tax cost of debt: ' + afterRd.toFixed(2) + '% · E/V ' + (wE * 100).toFixed(1) + '% · D/V ' + (wD * 100).toFixed(1) + '%</text></svg>';
+    '<text x="8" y="12" fill="#a9b7c9" font-size="11">Equity ' + (wE * 100).toFixed(1) + '% @ ' + re.toFixed(1) + '%</text>' +
+    '<text x="' + W - 8 + '" y="12" fill="#a9b7c9" font-size="11" text-anchor="end">Debt ' + (wD * 100).toFixed(1) + '% @ ' + afterRd.toFixed(2) + '% after tax</text>' +
+    '<text x="8" y="58" fill="#a9b7c9" font-size="11">After-tax cost of debt: ' + afterRd.toFixed(2) + '% · E/V ' + (wE * 100).toFixed(1) + '% · D/V ' + (wD * 100).toFixed(1) + '%</text></svg>';
   };
   ids.forEach((id) => on(id, "input", draw)); draw();
  }
@@ -6987,7 +6987,7 @@ function wireAcademyInteractive(kind) {
    const peDrift = -(dur * (t10 - 1.0));
    const shape = be5 > be10 ? "INVERTED" : "UPWARD SLOPING";
    const shapeCol = be5 > be10 ? "#f37d83" : "#4dd2aa";
-   const card = (label, val, col, sub) => '<div style="background:#0b1119;border:1px solid #253142;border-radius:10px;padding:10px;"><div style="font-size:10px;color:#8d99aa;letter-spacing:0.5px;">' + label + '</div><div style="font-size:22px;font-weight:800;color:' + col + ';margin:2px 0;">' + val + '</div><div style="font-size:10px;color:#8d99aa;">' + sub + "</div></div>";
+   const card = (label, val, col, sub) => '<div style="background:#0b1119;border:1px solid #253142;border-radius:10px;padding:10px;"><div style="font-size:10px;color:#a9b7c9;letter-spacing:0.5px;">' + label + '</div><div style="font-size:22px;font-weight:800;color:' + col + ';margin:2px 0;">' + val + '</div><div style="font-size:10px;color:#a9b7c9;">' + sub + "</div></div>";
    $("be-metrics").innerHTML =
     card("10Y BREAKEVEN", be10.toFixed(2) + "%", "#dbe5f1", "liquidity-adjusted " + adjBe.toFixed(2) + "%") +
     card("5Y5Y FORWARD", fwd.toFixed(2) + "%", "#d9a441", "Fed credibility anchor") +
@@ -7007,8 +7007,8 @@ function wireAcademyInteractive(kind) {
     line(nom, "#d9a441") + dots(nom, "#d9a441") +
     line(tips, "#38bdf8") + dots(tips, "#38bdf8") +
     line(be, "#4dd2aa", "5 4") + dots(be, "#4dd2aa") +
-    tenors.map((t, i) => '<text x="' + x(i).toFixed(1) + '" y="' + (H - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="middle">' + t + "</text>").join("") +
-    '<text x="8" y="16" fill="#8d99aa" font-size="11">Gold nominal · Blue TIPS · Green dashed breakeven (fictional)</text></svg>';
+    tenors.map((t, i) => '<text x="' + x(i).toFixed(1) + '" y="' + (H - pad + 16) + '" fill="#a9b7c9" font-size="11" text-anchor="middle">' + t + "</text>").join("") +
+    '<text x="8" y="16" fill="#a9b7c9" font-size="11">Gold nominal · Blue TIPS · Green dashed breakeven (fictional)</text></svg>';
    $("be-note").innerHTML = 'Breakeven curve: <b style="color:' + shapeCol + ';">' + shape + "</b> — " + (be5 > be10 ? "near-term shock the market expects policy to extinguish." : "normal expansion regime with compounding expectations.");
   };
   ids.forEach((id) => on(id, "input", draw)); draw();
@@ -7031,12 +7031,12 @@ function wireAcademyInteractive(kind) {
     zone(100, 300, "#4dd2aa") + zone(300, 450, "#f0a35e") + zone(450, 900, "#f37d83") +
     '<line x1="' + x(oas) + '" y1="26" x2="' + x(oas) + '" y2="60" stroke="#d9a441" stroke-width="3"/>' +
     '<text x="' + x(oas) + '" y="20" fill="#d9a441" font-size="12" font-weight="700" text-anchor="middle">' + oas + ' bps</text>' +
-    '<text x="' + pad + '" y="72" fill="#8d99aa" font-size="11">Normal</text>' +
-    '<text x="' + x(375) + '" y="72" fill="#8d99aa" font-size="11" text-anchor="middle">Elevated</text>' +
-    '<text x="' + (w - 16) + '" y="72" fill="#8d99aa" font-size="11" text-anchor="end">Critical</text>' +
+    '<text x="' + pad + '" y="72" fill="#a9b7c9" font-size="11">Normal</text>' +
+    '<text x="' + x(375) + '" y="72" fill="#a9b7c9" font-size="11" text-anchor="middle">Elevated</text>' +
+    '<text x="' + (w - 16) + '" y="72" fill="#a9b7c9" font-size="11" text-anchor="end">Critical</text>' +
     '<text x="' + pad + '" y="100" fill="#dbe5f1" font-size="13" font-weight="700">Corporate yield ' + totalY.toFixed(2) + '%</text>' +
     '<text x="' + pad + '" y="122" fill="#dbe5f1" font-size="13">Implied 5Y default prob <tspan font-weight="700" fill="' + (defProb > 25 ? "#f37d83" : "#4dd2aa") + '">' + defProb.toFixed(1) + '%</tspan> <tspan fill="' + sCol + '" font-weight="700">· ' + stress + '</tspan></text>' +
-    '<text x="' + pad + '" y="142" fill="#8d99aa" font-size="10">Merton hazard rate from OAS and recovery rate (fictional inputs)</text></svg>';
+    '<text x="' + pad + '" y="142" fill="#a9b7c9" font-size="10">Merton hazard rate from OAS and recovery rate (fictional inputs)</text></svg>';
   };
   ["oas-ty", "oas-oas", "oas-rr"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -7056,9 +7056,9 @@ function wireAcademyInteractive(kind) {
     '<rect x="' + pad + '" y="30" width="' + (w - pad - 16) + '" height="20" rx="5" fill="#1a2433"/>' +
     '<rect x="' + pad + '" y="30" width="' + ((w - pad - 16) * barW / 100) + '" height="20" rx="5" fill="' + col + '" opacity="0.9"/>' +
     '<text x="' + pad + '" y="20" fill="#dbe5f1" font-size="13" font-weight="700">Systematic allocation: ' + pct.toFixed(0) + '% of capital</text>' +
-    '<text x="' + pad + '" y="72" fill="#8d99aa" font-size="12">Equity exposure: <tspan fill="#dbe5f1" font-weight="700">$' + exposure.toFixed(1) + 'B</tspan></text>' +
-    '<text x="' + pad + '" y="94" fill="#8d99aa" font-size="12">Mechanical selling: <tspan fill="' + (forced > 0.05 ? "#f37d83" : "#4dd2aa") + '" font-weight="700">$' + forced.toFixed(1) + 'B liquidation</tspan></text>' +
-    '<text x="' + pad + '" y="124" fill="#8d99aa" font-size="10">Doubling realized vol roughly halves the allocation (fictional inputs)</text></svg>';
+    '<text x="' + pad + '" y="72" fill="#a9b7c9" font-size="12">Equity exposure: <tspan fill="#dbe5f1" font-weight="700">$' + exposure.toFixed(1) + 'B</tspan></text>' +
+    '<text x="' + pad + '" y="94" fill="#a9b7c9" font-size="12">Mechanical selling: <tspan fill="' + (forced > 0.05 ? "#f37d83" : "#4dd2aa") + '" font-weight="700">$' + forced.toFixed(1) + 'B liquidation</tspan></text>' +
+    '<text x="' + pad + '" y="124" fill="#a9b7c9" font-size="10">Doubling realized vol roughly halves the allocation (fictional inputs)</text></svg>';
   };
   ["vt-tv", "vt-rv", "vt-aum"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -7077,9 +7077,9 @@ function wireAcademyInteractive(kind) {
     '<line x1="' + x(0) + '" y1="34" x2="' + x(0) + '" y2="62" stroke="#1d2938"/>' +
     '<line x1="' + x(z) + '" y1="28" x2="' + x(z) + '" y2="68" stroke="#d9a441" stroke-width="3"/>' +
     '<text x="' + x(z) + '" y="20" fill="#d9a441" font-size="12" font-weight="700" text-anchor="middle">' + (z > 0 ? "+" : "") + z.toFixed(1) + 'σ</text>' +
-    [[-3, "-3"], [-1.5, "-1.5"], [0, "0"], [2, "+2"], [3, "+3"]].map((t) => '<text x="' + x(t[0]) + '" y="80" fill="#8d99aa" font-size="11" text-anchor="middle">' + t[1] + '</text>').join("") +
+    [[-3, "-3"], [-1.5, "-1.5"], [0, "0"], [2, "+2"], [3, "+3"]].map((t) => '<text x="' + x(t[0]) + '" y="80" fill="#a9b7c9" font-size="11" text-anchor="middle">' + t[1] + '</text>').join("") +
     '<text x="' + pad + '" y="106" fill="' + lCol + '" font-size="13" font-weight="700">' + label + '</text>' +
-    '<text x="' + pad + '" y="126" fill="#8d99aa" font-size="10">3-year rolling Z-score of speculative net positioning (fictional)</text></svg>';
+    '<text x="' + pad + '" y="126" fill="#a9b7c9" font-size="10">3-year rolling Z-score of speculative net positioning (fictional)</text></svg>';
   };
   on("cot-z", "input", draw); draw();
  }
@@ -7096,14 +7096,14 @@ function wireAcademyInteractive(kind) {
    const lo = -10, hi = 15;
    const bx = (v) => pad + ((v - lo) / (hi - lo)) * (w - pad - 16);
    const bar = (v, y, c, name) =>
-    '<text x="4" y="' + (y + 5) + '" fill="#8d99aa" font-size="11">' + name + '</text>' +
+    '<text x="4" y="' + (y + 5) + '" fill="#a9b7c9" font-size="11">' + name + '</text>' +
     '<rect x="' + Math.min(bx(0), bx(v)) + '" y="' + (y - 8) + '" width="' + Math.abs(bx(v) - bx(0)) + '" height="14" rx="3" fill="' + c + '" opacity="0.85"/>' +
     '<text x="' + (Math.max(bx(0), bx(v)) + 6) + '" y="' + (y + 5) + '" fill="#dbe5f1" font-size="11">' + (v > 0 ? "+" : "") + v.toFixed(1) + '%</text>';
    $("br-out").innerHTML = acadSvgOpen(w, h) +
     acadAxes(w, h, pad) +
     bar(spy, 34, "#38bdf8", "SPY") + bar(rsp, 64, "#d9a441", "RSP") +
     '<text x="' + pad + '" y="100" fill="#dbe5f1" font-size="13">Dispersion spread: <tspan font-weight="700" fill="' + lCol + '">' + (spread > 0 ? "+" : "") + spread.toFixed(1) + '% · ' + label + '</tspan></text>' +
-    '<text x="' + pad + '" y="122" fill="#8d99aa" font-size="10">Cap-weighted minus equal-weighted 60-day returns (fictional inputs)</text></svg>';
+    '<text x="' + pad + '" y="122" fill="#a9b7c9" font-size="10">Cap-weighted minus equal-weighted 60-day returns (fictional inputs)</text></svg>';
   };
   ["br-spy", "br-rsp"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -7122,9 +7122,9 @@ function wireAcademyInteractive(kind) {
     '<line x1="' + x(0) + '" y1="34" x2="' + x(0) + '" y2="62" stroke="#1d2938"/>' +
     '<line x1="' + x(jpy) + '" y1="28" x2="' + x(jpy) + '" y2="68" stroke="#d9a441" stroke-width="3"/>' +
     '<text x="' + x(jpy) + '" y="20" fill="#d9a441" font-size="12" font-weight="700" text-anchor="middle">' + jpy.toFixed(1) + '%</text>' +
-    [[-6, "-6%"], [-3, "-3%"], [0, "0"], [3, "+3%"]].map((t) => '<text x="' + x(t[0]) + '" y="80" fill="#8d99aa" font-size="11" text-anchor="middle">' + t[1] + '</text>').join("") +
+    [[-6, "-6%"], [-3, "-3%"], [0, "0"], [3, "+3%"]].map((t) => '<text x="' + x(t[0]) + '" y="80" fill="#a9b7c9" font-size="11" text-anchor="middle">' + t[1] + '</text>').join("") +
     '<text x="' + pad + '" y="106" fill="' + lCol + '" font-size="13" font-weight="700">' + label + '</text>' +
-    '<text x="' + pad + '" y="126" fill="#8d99aa" font-size="10">FX vol transmits to rates (MOVE), then equities (VIX) (fictional)</text></svg>';
+    '<text x="' + pad + '" y="126" fill="#a9b7c9" font-size="10">FX vol transmits to rates (MOVE), then equities (VIX) (fictional)</text></svg>';
   };
   on("fx-jpy", "input", draw); draw();
  }
@@ -7138,11 +7138,11 @@ function wireAcademyInteractive(kind) {
    const maxD = 50;
    const bx = (v) => pad + (Math.min(v, maxD) / maxD) * (w - pad - 16);
    $("bd-out").innerHTML = acadSvgOpen(w, h) +
-    '<text x="4" y="39" fill="#8d99aa" font-size="11">Drag</text>' +
+    '<text x="4" y="39" fill="#a9b7c9" font-size="11">Drag</text>' +
     '<rect x="' + pad + '" y="26" width="' + Math.max(2, bx(drag) - pad) + '" height="14" rx="3" fill="#f37d83" opacity="0.85"/>' +
     '<text x="' + (bx(drag) + 6) + '" y="39" fill="#dbe5f1" font-size="11">-' + drag.toFixed(2) + '%</text>' +
-    '<text x="' + pad + '" y="70" fill="#8d99aa" font-size="12">Net short P&amp;L: <tspan fill="' + (netShort >= 0 ? "#4dd2aa" : "#f37d83") + '" font-weight="700">' + (netShort >= 0 ? "+" : "") + netShort.toFixed(2) + '%</tspan> <tspan fill="#8d99aa">(price move ' + (move > 0 ? "+" : "") + move + '% minus borrow drag)</tspan></text>' +
-    '<text x="' + pad + '" y="96" fill="#8d99aa" font-size="10">Borrow cost bleeds the short thesis daily, even when the call is right (fictional)</text></svg>';
+    '<text x="' + pad + '" y="70" fill="#a9b7c9" font-size="12">Net short P&amp;L: <tspan fill="' + (netShort >= 0 ? "#4dd2aa" : "#f37d83") + '" font-weight="700">' + (netShort >= 0 ? "+" : "") + netShort.toFixed(2) + '%</tspan> <tspan fill="#a9b7c9">(price move ' + (move > 0 ? "+" : "") + move + '% minus borrow drag)</tspan></text>' +
+    '<text x="' + pad + '" y="96" fill="#a9b7c9" font-size="10">Borrow cost bleeds the short thesis daily, even when the call is right (fictional)</text></svg>';
   };
   ["bd-fee", "bd-days", "bd-move"].forEach((id) => on(id, "input", draw)); draw();
  }
@@ -7175,8 +7175,8 @@ function wireAcademyInteractive(kind) {
     '<text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#d9a441" font-size="11" text-anchor="middle">Strike ' + k + '</text>' +
     '<line x1="' + x(be) + '" y1="8" x2="' + x(be) + '" y2="' + (h - pad) + '" stroke="#38bdf8" stroke-dasharray="4"/>' +
     '<text x="' + x(be) + '" y="22" fill="#38bdf8" font-size="11" text-anchor="middle">Breakeven ' + be.toFixed(2) + '</text>' +
-    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="end">Spot at expiry →</text>' +
-    '<text x="8" y="16" fill="#8d99aa" font-size="11">' + names[mode] + ' P&L at expiry (fictional)</text></svg>';
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#a9b7c9" font-size="11" text-anchor="end">Spot at expiry →</text>' +
+    '<text x="8" y="16" fill="#a9b7c9" font-size="11">' + names[mode] + ' P&L at expiry (fictional)</text></svg>';
    $("sl-note").innerHTML = 'Max risk: <b style="color:#dbe5f1;">' + maxRisk + '</b> <span style="color:#5b6b82;">per contract</span>';
    document.querySelectorAll(".acad-sl").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#d9a441"; b.style.color = "#d9a441"; } });
   };
@@ -7216,9 +7216,9 @@ function wireAcademyInteractive(kind) {
    $("ml-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) +
     '<line x1="' + pad + '" y1="' + y(0) + '" x2="' + (w - 8) + '" y2="' + y(0) + '" stroke="#1d2938" stroke-dasharray="4"/>' +
     acadPath(pts, "#d9a441", 2.5) + strikeMarks +
-    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="end">Spot at expiry →</text>' +
-    '<text x="8" y="16" fill="#8d99aa" font-size="11">' + names[mode] + ' P&L at expiry (fictional)</text></svg>';
-   $("ml-note").innerHTML = 'Max gain: <b style="color:#4dd2aa;">' + maxGain + '</b> · Max loss: <b style="color:#f37d83;">' + maxLoss + '</b> · <span style="color:#8d99aa;">' + vega + '</span>';
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#a9b7c9" font-size="11" text-anchor="end">Spot at expiry →</text>' +
+    '<text x="8" y="16" fill="#a9b7c9" font-size="11">' + names[mode] + ' P&L at expiry (fictional)</text></svg>';
+   $("ml-note").innerHTML = 'Max gain: <b style="color:#4dd2aa;">' + maxGain + '</b> · Max loss: <b style="color:#f37d83;">' + maxLoss + '</b> · <span style="color:#a9b7c9;">' + vega + '</span>';
    document.querySelectorAll(".acad-ml").forEach((b) => { b.style.borderColor = ""; b.style.color = ""; if (b.dataset.m === mode) { b.style.borderColor = "#d9a441"; b.style.color = "#d9a441"; } });
   };
   document.querySelectorAll(".acad-ml").forEach((b) => b.addEventListener("click", () => { mode = b.dataset.m; draw(); }));
@@ -7247,8 +7247,8 @@ function wireAcademyInteractive(kind) {
     '<text x="' + x(mv) + '" y="14" fill="#38bdf8" font-size="11" text-anchor="middle">realized ' + (mv > 0 ? "+" : "") + mv + '%</text>' +
     '<line x1="' + x(-implPct) + '" y1="8" x2="' + x(-implPct) + '" y2="' + (h - pad) + '" stroke="#1d2938" stroke-dasharray="3"/>' +
     '<line x1="' + x(implPct) + '" y1="8" x2="' + x(implPct) + '" y2="' + (h - pad) + '" stroke="#1d2938" stroke-dasharray="3"/>' +
-    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#8d99aa" font-size="11" text-anchor="end">1-day move % →</text>' +
-    '<text x="8" y="16" fill="#8d99aa" font-size="11">Straddle P&amp;L at expiry (fictional $' + cost + ' premium)</text>' +
+    '<text x="' + (w - 8) + '" y="' + (h - pad + 16) + '" fill="#a9b7c9" font-size="11" text-anchor="end">1-day move % →</text>' +
+    '<text x="8" y="16" fill="#a9b7c9" font-size="11">Straddle P&amp;L at expiry (fictional $' + cost + ' premium)</text>' +
     '<text x="' + pad + '" y="' + (h - 6) + '" fill="#dbe5f1" font-size="12">Implied ±' + implPct.toFixed(1) + '% · P&amp;L <tspan font-weight="700" fill="' + (pnl >= 0 ? "#4dd2aa" : "#f37d83") + '">' + (pnl >= 0 ? "+$" : "-$") + Math.abs(pnl).toFixed(2) + ' (' + (pnlPct >= 0 ? "+" : "") + pnlPct.toFixed(0) + '%)</tspan></text></svg>';
   };
   ["st-px", "st-cost", "st-move"].forEach((id) => on(id, "input", draw)); draw();
@@ -7290,24 +7290,24 @@ route("primer", function () {
   '<nav>' + filtered.map((m) => {
    const active = m.id === mod.id;
    return '<button data-acad="' + m.id + '" style="display:block;width:100%;text-align:left;padding:10px 12px;border-radius:10px;margin-bottom:6px;border:1px solid ' + (active ? "#d9a441" : "#253142") + ';background:' + (active ? "rgba(217,164,65,0.08)" : "transparent") + ';cursor:pointer;">' +
-    '<div style="font-size:11px;font-family:monospace;color:' + (active ? "#d9a441" : "#8d99aa") + ';font-weight:700;">' + m.number + '</div>' +
+    '<div style="font-size:11px;font-family:monospace;color:' + (active ? "#d9a441" : "#a9b7c9") + ';font-weight:700;">' + m.number + '</div>' +
     '<div style="font-size:13px;font-weight:600;color:' + (active ? "#f5f7fa" : "#dbe5f1") + ';line-height:1.4;">' + esc(m.title) + "</div>" +
-    '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(m.category) + " · " + esc(m.readTime) + "</div></button>";
+    '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + esc(m.category) + " · " + esc(m.readTime) + "</div></button>";
   }).join("") + "</nav></div>" +
   '<div class="card" style="margin-top:12px;"><div style="font-size:11px;letter-spacing:1px;color:#d9a441;font-weight:700;margin-bottom:8px;">HOUSE PRINCIPLE</div>' +
-  '<div style="font-size:12px;color:#8d99aa;line-height:1.6;">Price action is evaluated through liquidity plumbing, capital efficiency spreads, and derivatives positioning, not through slower-moving sentiment measures.</div></div>' +
+  '<div style="font-size:12px;color:#a9b7c9;line-height:1.6;">Price action is evaluated through liquidity plumbing, capital efficiency spreads, and derivatives positioning, not through slower-moving sentiment measures.</div></div>' +
   "</aside>" +
   '<main class="card" style="flex:1;min-width:0;" id="acad-main">' +
   '<div style="border-bottom:1px solid #253142;padding-bottom:14px;margin-bottom:20px;">' +
   '<div style="font-size:11px;font-family:monospace;color:#d9a441;font-weight:700;">' + mod.number + " // " + esc(mod.category).toUpperCase() + '</div>' +
   '<h2 style="font-size:24px;font-weight:800;color:#dbe5f1;margin:6px 0;">' + esc(mod.title) + "</h2>" +
-  '<div style="font-size:13px;color:#8d99aa;">' + esc(mod.summary) + " · " + esc(mod.readTime) + "</div></div>" +
+  '<div style="font-size:13px;color:#a9b7c9;">' + esc(mod.summary) + " · " + esc(mod.readTime) + "</div></div>" +
   '<div id="acad-sections">' + mod.sections.map(academySectionHtml).join("") + "</div>" +
   '<div style="display:flex;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:1px solid #253142;">' +
   (ACADEMY_MODULES.indexOf(mod) > 0 ? '<button class="btn secondary" id="acad-prev">← Previous Module</button>' : "<span></span>") +
   (ACADEMY_MODULES.indexOf(mod) < ACADEMY_MODULES.length - 1 ? '<button class="btn secondary" id="acad-next" style="border-color:#d9a441;color:#d9a441;">Next Module →</button>' : "<span></span>") +
   "</div>" +
-  '<div style="margin-top:20px;padding-top:14px;border-top:1px solid #253142;font-size:11px;color:#8d99aa;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div>" +
+  '<div style="margin-top:20px;padding-top:14px;border-top:1px solid #253142;font-size:11px;color:#a9b7c9;line-height:1.6;">' + esc(ACADEMY_DISCLAIMER) + "</div>" +
   "</main></div>";
 
  app.innerHTML = h;
@@ -8296,7 +8296,7 @@ route("alerts", function () {
     '<div style="font-size:13px;color:#dbe5f1;font-weight:600;margin-bottom:8px;">Market-implied revenue CAGR</div>' +
     '<div style="font-size:28px;font-weight:800;color:#d9a441;">' + cagrPct + '%</div>';
    if (rdcf.verdict && typeof rdcf.verdict === "string" && rdcf.verdict.length > 2)
-    h += '<div style="font-size:13px;color:#8d99aa;margin-top:6px;">' + esc(rdcf.verdict) + "</div>";
+    h += '<div style="font-size:13px;color:#a9b7c9;margin-top:6px;">' + esc(rdcf.verdict) + "</div>";
    h += "</div>";
   } else {
    h += '<p style="color:var(--muted);margin-top:12px;">Reverse DCF details unavailable for this ticker.</p>';
@@ -8504,12 +8504,12 @@ route("alerts", function () {
      x: { ticks: { color: "#dbe5f1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
      yMargin: {
       type: "linear", position: "left",
-      ticks: { color: "#8d99aa", callback: (v) => v + "%", font: { size: 11 } },
+      ticks: { color: "#a9b7c9", callback: (v) => v + "%", font: { size: 11 } },
       grid: { color: (c) => c.tick.value === 0 ? "#647184" : "rgba(42,46,57,0.35)" },
      },
      yAmount: {
       type: "linear", position: "right",
-      ticks: { color: "#8d99aa", callback: fmtMoney, font: { size: 11 } },
+      ticks: { color: "#a9b7c9", callback: fmtMoney, font: { size: 11 } },
       grid: { display: false },
      },
     },
@@ -8696,9 +8696,9 @@ route("alerts", function () {
    h += '<div class="flock-callout">' +
     '<div class="flock-title">Terminal-year impact from flock backlash (annual, 2036)</div>' +
     '<div style="margin:12px 0;display:flex;gap:28px;flex-wrap:wrap;">' +
-    '<div><div style="font-size:12px;color:#8d99aa;">Revenue</div><div style="font-size:22px;font-weight:800;color:#f37d83;">-' + money(Math.abs(r.flock_2036_revenue_impact)) + '</div></div>' +
-    '<div><div style="font-size:12px;color:#8d99aa;">EBITDA</div><div style="font-size:22px;font-weight:800;color:#f37d83;">-' + money(Math.abs(r.flock_2036_ebitda_impact)) + '</div></div>' +
-    '<div><div style="font-size:12px;color:#8d99aa;">FCF</div><div style="font-size:22px;font-weight:800;color:#f37d83;">-' + money(Math.abs(r.flock_2036_fcf_impact)) + '</div></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;">Revenue</div><div style="font-size:22px;font-weight:800;color:#f37d83;">-' + money(Math.abs(r.flock_2036_revenue_impact)) + '</div></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;">EBITDA</div><div style="font-size:22px;font-weight:800;color:#f37d83;">-' + money(Math.abs(r.flock_2036_ebitda_impact)) + '</div></div>' +
+    '<div><div style="font-size:12px;color:#a9b7c9;">FCF</div><div style="font-size:22px;font-weight:800;color:#f37d83;">-' + money(Math.abs(r.flock_2036_fcf_impact)) + '</div></div>' +
     '</div>' +
     '<div class="flock-desc">Annual 2036 figures, not sums across years. The SOTP prices a permanent haircut to RTCC/ALPR adoption against no-haircut 2036 revenue of ' + money(r.no_haircut_2036_revenue) + '. EBITDA and FCF impacts apply the SOTP 2036 blended margins to the revenue impact.</div>' +
     '</div>';
@@ -8835,7 +8835,7 @@ route("alerts", function () {
     '">' + esc(d.signal || "") + "</span></h3>" +
     '<div class="zoomable-chart" data-chart="ma" data-ticker="' + esc(tk) + '" data-tf="' + tf + '" style="position:relative;height:420px;margin-bottom:8px;background:#0d131d;border-radius:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + cid + '"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">⛶ click to zoom</div></div>' +
-    '<div style="font-size:12px;color:#8d99aa;margin-bottom:10px;">Overlays: ' +
+    '<div style="font-size:12px;color:#a9b7c9;margin-bottom:10px;">Overlays: ' +
     '<b style="color:#f37d83;">SMA 10</b> · <b style="color:#ff9800;">SMA 20</b> · ' +
     '<b style="color:#2962ff;">SMA 50</b> · <b style="color:#00bcd4;">SMA 200</b> (simple moving averages)</div>' +
     '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
@@ -8906,7 +8906,7 @@ route("alerts", function () {
    const barW = v == null ? 0 : Math.abs(v) / maxA * 100;
    const col = v == null ? "#555" : v >= 0 ? "#4dd2aa" : "#f37d83";
    h += '<div style="background:#101620;border-radius:6px;padding:10px 8px;text-align:center;">' +
-    '<div style="font-size:12px;color:#8d99aa;margin-bottom:4px;">' + name + '</div>' +
+    '<div style="font-size:12px;color:#a9b7c9;margin-bottom:4px;">' + name + '</div>' +
     '<div style="font-size:16px;font-weight:700;color:' + col + ';">' + (v == null ? " - " : (v >= 0 ? "+" : "") + v.toFixed(1) + "%") + "</div>" +
     '<div style="height:4px;background:#253142;border-radius:2px;margin-top:6px;overflow:hidden;">' +
     '<div style="height:100%;width:' + barW.toFixed(0) + '%;background:' + col + ';border-radius:2px;"></div></div>' +
@@ -9049,15 +9049,15 @@ route("alerts", function () {
   h += '<div class="card" style="background:#101620;border:1px solid #253142;border-radius:16px;padding:24px;">' +
    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
    '<span style="color:#c99a6b;font-weight:600;font-size:13px;">Earnings Date</span>' + confirmed + "</div>" +
-   '<div style="color:#8d99aa;font-size:13px;margin-bottom:12px;">' + esc(est.fiscal_period || "") + "</div>" +
+   '<div style="color:#a9b7c9;font-size:13px;margin-bottom:12px;">' + esc(est.fiscal_period || "") + "</div>" +
    '<div style="color:#f5f7fa;font-size:32px;font-weight:800;margin-bottom:4px;">' + fmtDate(est.earnings_date) + "</div>" +
-   '<div style="color:#8d99aa;font-size:13px;">' + (est.as_of ? "Updated " + esc(est.as_of) : "") + "</div></div>";
+   '<div style="color:#a9b7c9;font-size:13px;">' + (est.as_of ? "Updated " + esc(est.as_of) : "") + "</div></div>";
   // Whisper card
   h += '<div class="card" style="background:#101620;border:1px solid #253142;border-radius:16px;padding:24px;">' +
    '<div style="color:#c99a6b;font-weight:600;font-size:13px;margin-bottom:6px;">Earnings Whisper</div>' +
    '<div style="color:#f5f7fa;font-size:32px;font-weight:800;min-height:38px;display:flex;align-items:center;">' + whisper + "</div>" +
-   '<div style="color:#8d99aa;font-size:13px;margin-top:8px;">vs ' + consensusEps + "</div>" +
-   '<div style="color:#8d99aa;font-size:13px;">Rev est ' + revEst + "</div></div>";
+   '<div style="color:#a9b7c9;font-size:13px;margin-top:8px;">vs ' + consensusEps + "</div>" +
+   '<div style="color:#a9b7c9;font-size:13px;">Rev est ' + revEst + "</div></div>";
   h += "</div>";
   // EPS bar chart (logo colors: gold for estimated, forest green for actual)
   const epsHist = est.eps_history || [];
@@ -9065,7 +9065,7 @@ route("alerts", function () {
    const chartId = "eps-chart-" + tk.replace(/[^A-Z0-9]/gi, "");
    h += '<div class="card" style="background:#101620;border:1px solid #253142;border-radius:16px;padding:24px;margin-bottom:16px;">' +
     '<div style="color:#f5f7fa;font-size:20px;font-weight:700;margin-bottom:12px;">Earnings</div>' +
-    '<div style="display:flex;gap:24px;margin-bottom:16px;font-size:13px;color:#8d99aa;">' +
+    '<div style="display:flex;gap:24px;margin-bottom:16px;font-size:13px;color:#a9b7c9;">' +
     '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d9a441;margin-right:6px;"></span>Estimated EPS</span>' +
     '<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5a7d5a;margin-right:6px;"></span>Actual EPS</span></div>' +
     '<div style="position:relative;height:280px;"><canvas id="' + chartId + '"></canvas></div>';
@@ -9128,9 +9128,9 @@ route("alerts", function () {
      },
     },
     scales: {
-     x: { ticks: { color: "#8d99aa" }, grid: { display: false } },
+     x: { ticks: { color: "#a9b7c9" }, grid: { display: false } },
      y: {
-      ticks: { color: "#8d99aa", callback: (v) => "$" + v.toFixed(2) },
+      ticks: { color: "#a9b7c9", callback: (v) => "$" + v.toFixed(2) },
       grid: { color: "rgba(42,46,57,0.4)" },
      },
     },
@@ -9191,10 +9191,10 @@ route("alerts", function () {
   const asOf = (r && r.as_of) || (est && est.as_of) || "";
   return '<div class="card"><div style="font-size:13px;color:#dbe5f1;margin-bottom:10px;">Analyst EPS and revenue estimates, up/down counts and 90-day consensus drift.</div>' +
    '<div class="table-wrap"><table class="coverage ma-table" style="color:#dbe5f1;"><thead><tr>' +
-   '<th style="color:#8d99aa;">Period</th><th style="color:#8d99aa;">Consensus EPS</th><th style="color:#8d99aa;">Revenue Est.</th><th style="color:#8d99aa;">7-day</th><th style="color:#8d99aa;">30-day</th><th style="color:#8d99aa;">90-day drift</th>' +
+   '<th style="color:#a9b7c9;">Period</th><th style="color:#a9b7c9;">Consensus EPS</th><th style="color:#a9b7c9;">Revenue Est.</th><th style="color:#a9b7c9;">7-day</th><th style="color:#a9b7c9;">30-day</th><th style="color:#a9b7c9;">90-day drift</th>' +
    "</tr></thead><tbody>" +
    row("Upcoming quarter", qRow) + row("Full year", aRow) +
-   '</tbody></table></div><div class="panel-asof" style="color:#8d99aa;">As of ' + esc(asOf) + " · Source: Yahoo Finance</div></div>";
+   '</tbody></table></div><div class="panel-asof" style="color:#a9b7c9;">As of ' + esc(asOf) + " · Source: Yahoo Finance</div></div>";
  }
 
  /* ---------- Cascadia Alternative Data Translation Model (Pro, AXON) ---------- */
@@ -9322,7 +9322,7 @@ route("alerts", function () {
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
     '<span style="font-size:12px;color:#dbe5f1;font-weight:600;">' + pillarNames[k] + '</span>' +
     '<span style="font-size:14px;font-weight:700;color:' + scCls + ';">' + sc + '</span></div>' +
-    '<div style="font-size:12px;color:#8d99aa;line-height:1.5;">' + esc(p.assessment || "") + '</div></div>';
+    '<div style="font-size:12px;color:#a9b7c9;line-height:1.5;">' + esc(p.assessment || "") + '</div></div>';
   });
   let qaHtml = "";
   (d.qaDeconstruction || []).forEach((q) => {
@@ -9331,23 +9331,23 @@ route("alerts", function () {
     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">' +
     '<span style="font-size:13px;font-weight:700;color:#f5f7fa;">' + esc(q.analyst || "Analyst") + '</span>' +
     '<span style="font-size:11px;color:' + convCls + ';font-weight:600;">Conviction: ' + esc(q.defenseConviction || "") + '</span></div>' +
-    '<div style="font-size:11px;color:#8d99aa;margin-bottom:4px;">' + esc(q.targetTheme || "") + '</div>' +
-    '<div style="font-size:12px;color:#dbe5f1;margin-bottom:6px;"><b style="color:#8d99aa;">Q:</b> ' + esc(q.questionSummary || "") + '</div>' +
+    '<div style="font-size:11px;color:#a9b7c9;margin-bottom:4px;">' + esc(q.targetTheme || "") + '</div>' +
+    '<div style="font-size:12px;color:#dbe5f1;margin-bottom:6px;"><b style="color:#a9b7c9;">Q:</b> ' + esc(q.questionSummary || "") + '</div>' +
     '<div style="font-size:12px;color:#dbe5f1;"><b style="color:#d9a441;">Defense:</b> ' + esc(q.managementDefense || "") + '</div></div>';
   });
   const kwHtml = (d.hedgingKeywordsFound || []).map((kw) =>
-   '<span style="background:#101620;border:1px solid #253142;color:#8d99aa;padding:2px 8px;border-radius:4px;font-size:11px;">"' + esc(kw) + '"</span>').join(" ");
+   '<span style="background:#101620;border:1px solid #253142;color:#a9b7c9;padding:2px 8px;border-radius:4px;font-size:11px;">"' + esc(kw) + '"</span>').join(" ");
   return '<div class="card">' +
    '<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:16px;">' +
-   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">CONFIDENCE</div>' +
-   '<div style="font-size:32px;font-weight:700;color:#f5f7fa;">' + d.confidenceScore + '<span style="font-size:14px;color:#8d99aa;">/100</span></div></div>' +
-   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">TONE</div>' +
+   '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">CONFIDENCE</div>' +
+   '<div style="font-size:32px;font-weight:700;color:#f5f7fa;">' + d.confidenceScore + '<span style="font-size:14px;color:#a9b7c9;">/100</span></div></div>' +
+   '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">TONE</div>' +
    '<div style="font-size:20px;font-weight:700;color:' + toneCls + ';">' + esc(d.toneClassification || "") + '</div></div>' +
-   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">QOQ SHIFT</div>' +
+   '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">QOQ SHIFT</div>' +
    '<div style="font-size:20px;font-weight:700;color:' + deltaCls + ';">' + deltaTxt + '</div></div>' +
-   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">HEDGING</div>' +
+   '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">HEDGING</div>' +
    '<div style="font-size:16px;font-weight:600;color:#dbe5f1;">' + esc(d.hedgingFrequency || "") + '</div></div></div>' +
-   '<div style="font-size:12px;color:#8d99aa;margin-bottom:12px;">' + esc(d.quarter || "") + ' call · Net tone ' + (d.netToneScore >= 0 ? "+" : "") + d.netToneScore + ' · Keywords: ' + kwHtml + '</div>' +
+   '<div style="font-size:12px;color:#a9b7c9;margin-bottom:12px;">' + esc(d.quarter || "") + ' call · Net tone ' + (d.netToneScore >= 0 ? "+" : "") + d.netToneScore + ' · Keywords: ' + kwHtml + '</div>' +
    '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin:14px 0 8px;">PILLAR BREAKDOWN</div>' +
    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:6px;">' + pillarHtml + '</div>' +
    '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin:14px 0 8px;">Q&A DECONSTRUCTION</div>' + qaHtml +
@@ -9579,17 +9579,17 @@ route("alerts", function () {
   const dIdx = defIdx >= 0 ? defIdx : 0;
   let h = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">' +
    '<div style="background:#101620;border:1px solid #101620;border-radius:12px;padding:16px;">' +
-   '<div style="font-size:12px;color:#8d99aa;margin-bottom:6px;">Market cap</div>' +
+   '<div style="font-size:12px;color:#a9b7c9;margin-bottom:6px;">Market cap</div>' +
    '<div style="font-size:24px;font-weight:800;color:#d9a441;">' + fmtBig(v.market_cap) + "</div></div>" +
    '<div style="background:#101620;border:1px solid #101620;border-radius:12px;padding:16px;">' +
-   '<div style="font-size:12px;color:#8d99aa;margin-bottom:6px;">Enterprise value</div>' +
+   '<div style="font-size:12px;color:#a9b7c9;margin-bottom:6px;">Enterprise value</div>' +
    '<div style="font-size:24px;font-weight:800;color:#d9a441;">' + fmtBig(v.enterprise_value) + "</div></div>" +
    "</div>";
   // Year switcher pills
   h += '<div id="' + uid + '-pills" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">' +
    v.years.map((y, i) =>
     '<button data-vyear="' + i + '" style="padding:6px 18px;font-size:13px;font-weight:700;border:0;border-radius:999px;cursor:pointer;' +
-    (i === dIdx ? "background:#d9a441;color:#0d0f12;" : "background:#1c2028;color:#8d99aa;") + '">' +
+    (i === dIdx ? "background:#d9a441;color:#0d0f12;" : "background:#1c2028;color:#a9b7c9;") + '">' +
     esc(y.label) + "</button>").join("") + "</div>";
   // Multiple cards grid (data embedded as JSON in data attribute)
   h += '<div id="' + uid + '-cards" data-years=\'' + JSON.stringify(v.years).replace(/'/g, "&#39;") + "'></div>";
@@ -9620,7 +9620,7 @@ route("alerts", function () {
   el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">' +
    cards.map((c) =>
     '<div style="background:#101620;border:1px solid #101620;border-radius:12px;padding:14px;">' +
-    '<div style="font-size:12px;color:#8d99aa;margin-bottom:6px;">' + c[0] + "</div>" +
+    '<div style="font-size:12px;color:#a9b7c9;margin-bottom:6px;">' + c[0] + "</div>" +
     '<div style="font-size:22px;font-weight:800;color:' + (c[1] === "N/A" ? "#5a6270" : "#dbe5f1") + ';">' + c[1] + "</div></div>"
    ).join("") + "</div>";
   // Update pill styles
@@ -9628,7 +9628,7 @@ route("alerts", function () {
   if (pills) pills.querySelectorAll("button").forEach((b) => {
    const active = parseInt(b.dataset.vyear, 10) === yearIdx;
    b.style.background = active ? "#d9a441" : "#1c2028";
-   b.style.color = active ? "#0d0f12" : "#8d99aa";
+   b.style.color = active ? "#0d0f12" : "#a9b7c9";
   });
  }
 
@@ -9720,10 +9720,10 @@ route("alerts", function () {
     scales: {
      x: { ticks: { color: "#dbe5f1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
      yRatio: { type: "linear", position: "left",
-      ticks: { color: "#8d99aa", callback: (v) => v + "x", font: { size: 11 } },
+      ticks: { color: "#a9b7c9", callback: (v) => v + "x", font: { size: 11 } },
       grid: { color: (c) => c.tick.value === 0 ? "#647184" : "rgba(42,46,57,0.35)" } },
      yAmount: { type: "linear", position: "right",
-      ticks: { color: "#8d99aa", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
+      ticks: { color: "#a9b7c9", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
     },
    },
   });
@@ -9808,10 +9808,10 @@ route("alerts", function () {
     scales: {
      x: { ticks: { color: "#dbe5f1", font: { size: 11 } }, grid: { color: "rgba(42,46,57,0.35)" } },
      yMargin: { type: "linear", position: "left",
-      ticks: { color: "#8d99aa", callback: (v) => v + "%", font: { size: 11 } },
+      ticks: { color: "#a9b7c9", callback: (v) => v + "%", font: { size: 11 } },
       grid: { color: (c) => c.tick.value === 0 ? "#647184" : "rgba(42,46,57,0.35)" } },
      yAmount: { type: "linear", position: "right",
-      ticks: { color: "#8d99aa", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
+      ticks: { color: "#a9b7c9", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
     },
    },
   });
@@ -9890,7 +9890,7 @@ route("alerts", function () {
   const ann = {};
   if (hasPaths && !isNaN(modelMs)) {
    ann.modelDate = { type: "line", xMin: modelMs, xMax: modelMs, borderColor: "rgba(200,208,220,0.45)", borderWidth: 1, borderDash: [4, 5],
-    label: { display: true, content: "MODEL DATE", position: "start", color: "#8d99aa", font: { size: 9 } } };
+    label: { display: true, content: "MODEL DATE", position: "start", color: "#a9b7c9", font: { size: 9 } } };
    if (t.price != null) ann.spot = { type: "line", xMin: modelMs, yMin: t.price, yMax: t.price, borderColor: "rgba(217,164,65,0.45)", borderWidth: 1, borderDash: [2, 5] };
   }
   return {
@@ -10383,7 +10383,7 @@ route("alerts", function () {
    if (s.trendScore >= 60 && s.exhaustionScore < 40) return '<span style="color:#4dd2aa;font-weight:700;">Strong trend</span>';
    if (s.trendScore >= 60 && s.exhaustionScore >= 60) return '<span style="color:#f37d83;font-weight:700;">Crowded, caution</span>';
    if (s.exhaustionScore >= 60) return '<span style="color:#e0aa46;font-weight:700;">Reversal risk</span>';
-   if (s.trendScore < 30) return '<span style="color:#8d99aa;">Chop</span>';
+   if (s.trendScore < 30) return '<span style="color:#a9b7c9;">Chop</span>';
    return '<span style="color:#dbe5f1;">Developing</span>';
   };
   const draw = () => {
@@ -10399,7 +10399,7 @@ route("alerts", function () {
    });
    body.innerHTML = rows.map((r) => {
     const s = r.s;
-    const tc = s.trendScore >= 60 ? "#4dd2aa" : s.trendScore >= 30 ? "#e0aa46" : "#8d99aa";
+    const tc = s.trendScore >= 60 ? "#4dd2aa" : s.trendScore >= 30 ? "#e0aa46" : "#a9b7c9";
     const ec = s.exhaustionScore >= 60 ? "#f37d83" : s.exhaustionScore >= 30 ? "#e0aa46" : "#4dd2aa";
     return '<tr style="cursor:pointer;" data-tk="' + r.k + '">' +
      '<td style="font-weight:700;"><a href="#/' + r.k + '" style="color:#58a6ff;">' + r.k + "</a></td>" +
@@ -10558,13 +10558,13 @@ route("alerts", function () {
   const pct = (v) => (Number(v) >= 0 ? "+" : "") + Number(v).toFixed(1) + "%";
   return "<tr>" +
    '<td><span style="color:#647184;font-size:11px;">#' + rank + '</span> <a href="' + href + '" style="color:#d9a441;font-weight:700;text-decoration:none;">' + esc(s.ticker) + "</a></td>" +
-   '<td style="color:#8d99aa;font-size:12px;">' + esc(s.company || "") + "</td>" +
+   '<td style="color:#a9b7c9;font-size:12px;">' + esc(s.company || "") + "</td>" +
    '<td style="text-align:right;">' + fmt$(s.price) + "</td>" +
    '<td style="text-align:center;"><span style="display:inline-block;min-width:32px;padding:2px 6px;border-radius:6px;font-weight:800;font-size:12px;' + badge + '">' + s.rs_rating + "</span></td>" +
    '<td style="' + rc(s.ret_1m) + '">' + pct(s.ret_1m) + "</td>" +
    '<td style="' + rc(s.ret_3m) + '">' + pct(s.ret_3m) + "</td>" +
    '<td style="' + rc(s.ret_12m) + '">' + pct(s.ret_12m) + "</td>" +
-   '<td style="text-align:right;color:#8d99aa;">' + Number(s.pct_off_high).toFixed(1) + "%</td></tr>";
+   '<td style="text-align:right;color:#a9b7c9;">' + Number(s.pct_off_high).toFixed(1) + "%</td></tr>";
  }
 
  function rsTableHtml(side, title, note) {
@@ -10595,27 +10595,27 @@ route("alerts", function () {
   }
   h += '<div class="section-sub">Top 10 leaders and bottom 10 laggards by relative strength for every GICS sector and sub-industry across the S&amp;P 500. Daily Snapshot' + (asOf ? " · as of " + esc(asOf) : "") + (meta.stale ? " · stale, showing the last available snapshot" : "") + ".</div>";
   if (!sectors.length || !rs.bySector || !rs.bySubsector) {
-   h += '<div class="card"><p style="color:#8d99aa;">RS screener data is not available yet. It populates with the next daily snapshot.</p></div></div>';
+   h += '<div class="card"><p style="color:#a9b7c9;">RS screener data is not available yet. It populates with the next daily snapshot.</p></div></div>';
    return h;
   }
   const selStyle = "background:#0d131d;border:1px solid #253142;border-radius:6px;color:#f5f7fa;padding:8px 10px;margin-top:4px;max-width:320px;";
   h += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;">';
-  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">VIEW</label><br><div style="display:flex;gap:8px;margin-top:4px;">' +
+  h += '<div><label style="font-size:11px;color:#a9b7c9;letter-spacing:1px;">VIEW</label><br><div style="display:flex;gap:8px;margin-top:4px;">' +
    '<button id="rs-mode-sector" class="btn secondary" style="font-size:12px;background:#d9a441;color:#0a0e17;border-color:#d9a441;">Sector View (' + sectors.length + " sectors)</button>" +
    '<button id="rs-mode-subsector" class="btn secondary" style="font-size:12px;">Subsector View (' + (tax.subsectors || []).length + " sub-industries)</button>" +
    "</div></div>";
-  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">SECTOR</label><br>' +
+  h += '<div><label style="font-size:11px;color:#a9b7c9;letter-spacing:1px;">SECTOR</label><br>' +
    '<select id="rs-sector" style="' + selStyle + '">' +
    sectors.map((s) => '<option value="' + esc(s) + '">' + esc(s) + "</option>").join("") + "</select></div>";
-  h += '<div id="rs-sub-wrap" style="display:none;"><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">SUB-INDUSTRY</label><br>' +
+  h += '<div id="rs-sub-wrap" style="display:none;"><label style="font-size:11px;color:#a9b7c9;letter-spacing:1px;">SUB-INDUSTRY</label><br>' +
    '<select id="rs-subsector" style="' + selStyle + '"></select></div>';
-  h += '<div style="margin-left:auto;font-size:12px;color:#8d99aa;">ACTIVE GROUP: <b id="rs-scope-name" style="color:#f5f7fa;"></b><br>CONSTITUENTS: <b id="rs-scope-count" style="color:#d9a441;"></b></div>';
+  h += '<div style="margin-left:auto;font-size:12px;color:#a9b7c9;">ACTIVE GROUP: <b id="rs-scope-name" style="color:#f5f7fa;"></b><br>CONSTITUENTS: <b id="rs-scope-count" style="color:#d9a441;"></b></div>';
   h += "</div>";
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:20px;">';
   h += rsTableHtml("lead", "TOP 10 RELATIVE STRENGTH LEADERS", "MOMENTUM SPONSORSHIP");
   h += rsTableHtml("lag", "BOTTOM 10 RELATIVE STRENGTH LAGGARDS", "STRUCTURAL WEAKNESS");
   h += "</div>";
-  h += '<div class="card" style="margin-top:20px;"><div style="font-size:12px;color:#8d99aa;letter-spacing:1px;margin-bottom:8px;">HOW THE RS RATING WORKS</div>' +
+  h += '<div class="card" style="margin-top:20px;"><div style="font-size:12px;color:#a9b7c9;letter-spacing:1px;margin-bottom:8px;">HOW THE RS RATING WORKS</div>' +
    '<p style="font-size:13px;line-height:1.6;color:#dbe5f1;margin:0;">The raw relative strength score for each stock blends four stepwise quarterly returns from the trailing year of daily adjusted prices. The most recent quarter carries a 40 percent weight and each of the three earlier quarters carries 20 percent, so recent acceleration counts for more than older performance. Raw scores are ranked across the full S&amp;P 500 universe and converted into a percentile rating from 1 to 99. A rating of 99 means the stock outperformed 99 percent of the universe on this model, and a rating of 1 marks the weakest name in the universe. The Off 52W High column shows how far the latest close sits below the trailing 52-week high, which separates leaders still pressing their highs from leaders that have begun to roll over.</p></div>';
   h += "</div>";
   return h;
@@ -10644,9 +10644,9 @@ route("alerts", function () {
    document.getElementById("rs-scope-name").textContent = c.name;
    document.getElementById("rs-scope-count").textContent = c.g.count + " equities";
    leadBody.innerHTML = (c.g.leaders || []).map((s, i) => rsRowHtml(s, i + 1, "lead")).join("") ||
-    '<tr><td colspan="8" style="text-align:center;color:#8d99aa;padding:20px;">No constituent records available.</td></tr>';
+    '<tr><td colspan="8" style="text-align:center;color:#a9b7c9;padding:20px;">No constituent records available.</td></tr>';
    lagBody.innerHTML = (c.g.laggards || []).map((s, i) => rsRowHtml(s, i + 1, "lag")).join("") ||
-    '<tr><td colspan="8" style="text-align:center;color:#8d99aa;padding:20px;">No constituent records available.</td></tr>';
+    '<tr><td colspan="8" style="text-align:center;color:#a9b7c9;padding:20px;">No constituent records available.</td></tr>';
   }
   function setMode(m) {
    mode = m;
@@ -10669,7 +10669,7 @@ route("alerts", function () {
 
  /* Inflection Growth & Operating Leverage screener (Pro): four quarters of sequential (QoQ) revenue growth acceleration with sequential gross margin expansion */
  function inflFlagHtml(v, label) {
-  if (v == null) return '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#1a2434;color:#8d99aa;border:1px solid #253142;">' + label + ' N/A</span>';
+  if (v == null) return '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#1a2434;color:#a9b7c9;border:1px solid #253142;">' + label + ' N/A</span>';
   return v
    ? '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#0d2b1d;color:#4dd2aa;border:1px solid #1e5c40;">' + label + ' PASS</span>'
    : '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#331419;color:#f37d83;border:1px solid #6e2a30;">' + label + ' FAIL</span>';
@@ -10685,12 +10685,12 @@ route("alerts", function () {
    : '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:800;background:#2b210d;color:#d9a441;border:1px solid #5c4a1e;">3/4</span>';
   const tech = c.passesTechnicals
    ? '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#0d2b1d;color:#4dd2aa;border:1px solid #1e5c40;">STAGE 2</span>'
-   : '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#1a2434;color:#8d99aa;border:1px solid #253142;">CONSOLIDATING</span>';
+   : '<span style="display:inline-block;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:#1a2434;color:#a9b7c9;border:1px solid #253142;">CONSOLIDATING</span>';
   return "<tr>" +
    '<td><a href="' + href + '" style="color:#d9a441;font-weight:700;text-decoration:none;">' + esc(c.ticker) + "</a> " + badge +
-   '<div style="color:#8d99aa;font-size:11px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(c.companyName || "") + "</div></td>" +
+   '<div style="color:#a9b7c9;font-size:11px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(c.companyName || "") + "</div></td>" +
    '<td style="text-align:right;">' + fmt$(c.price) + "</td>" +
-   '<td style="text-align:right;color:#8d99aa;">' + esc(c.marketCapFormatted || "N/A") + "</td>" +
+   '<td style="text-align:right;color:#a9b7c9;">' + esc(c.marketCapFormatted || "N/A") + "</td>" +
    '<td style="text-align:center;"><span style="font-size:11px;font-weight:700;color:#4dd2aa;background:#0d131d;padding:3px 8px;border-radius:6px;border:1px solid #253142;white-space:nowrap;">' + esc(c.revenueGrowthPathStr || "") + "</span></td>" +
    '<td style="' + pos(c.accelDeltaPct) + 'font-weight:800;">' + pct(c.accelDeltaPct) + "</td>" +
    '<td style="text-align:right;font-weight:600;">' + (c.currentGrossMargin == null ? "N/A" : Number(c.currentGrossMargin).toFixed(1) + "%") + "</td>" +
@@ -10714,13 +10714,13 @@ route("alerts", function () {
   h += '<div class="section-sub">Companies whose reported revenue growth accelerated in each of the most recent four quarters on a quarter on quarter basis, while gross margins expanded across the same four quarters, with operating leverage, free cash flow, dilution, and Stage 2 trend checks on every row. Daily Snapshot' + (asOf ? " · as of " + esc(asOf) : "") + (meta.stale ? " · stale, showing the last available snapshot" : "") + ".</div>";
   const hasData = (inf.qualifiers && inf.qualifiers.length) || (inf.nearQualifiers && inf.nearQualifiers.length);
   if (!hasData) {
-   h += '<div class="card"><p style="color:#8d99aa;">Inflection screener data is not available yet. It populates with the next daily snapshot.</p></div></div>';
+   h += '<div class="card"><p style="color:#a9b7c9;">Inflection screener data is not available yet. It populates with the next daily snapshot.</p></div></div>';
    return h;
   }
   const statCard = (label, value, sub, color) =>
-   '<div class="card" style="padding:16px;"><div style="font-size:10px;letter-spacing:1px;color:#8d99aa;">' + label + '</div>' +
+   '<div class="card" style="padding:16px;"><div style="font-size:10px;letter-spacing:1px;color:#a9b7c9;">' + label + '</div>' +
    '<div style="font-size:28px;font-weight:800;color:' + (color || "#f5f7fa") + ';margin-top:4px;">' + value + '</div>' +
-   '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + sub + "</div></div>";
+   '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + sub + "</div></div>";
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px;">';
   h += statCard("TOTAL EQUITIES SCANNED", meta.totalScanned || 0, "Most liquid S&amp;P 500 names");
   h += statCard("STRICT 4Q QUALIFIERS", meta.qualifiersCount || 0, "Full 4/4 acceleration and expansion", "#4dd2aa");
@@ -10735,14 +10735,14 @@ route("alerts", function () {
   const tabBtn = (id, label, active) =>
    '<button id="' + id + '" class="btn secondary" style="font-size:12px;' + (active ? "background:#d9a441;color:#0a0e17;border-color:#d9a441;" : "") + '">' + label + "</button>";
   h += '<div class="card" style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px;">';
-  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">VIEW</label><br><div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">' +
+  h += '<div><label style="font-size:11px;color:#a9b7c9;letter-spacing:1px;">VIEW</label><br><div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">' +
    tabBtn("infl-tab-strict", "Strict 4Q Qualifiers (" + (meta.qualifiersCount || 0) + ")", (meta.qualifiersCount || 0) > 0) +
    tabBtn("infl-tab-near", "Near Qualifiers (" + (meta.nearQualifiersCount || 0) + ")", (meta.qualifiersCount || 0) === 0) +
    tabBtn("infl-tab-all", "Combined (" + ((meta.qualifiersCount || 0) + (meta.nearQualifiersCount || 0)) + ")", false) +
    "</div></div>";
-  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">SEARCH</label><br>' +
+  h += '<div><label style="font-size:11px;color:#a9b7c9;letter-spacing:1px;">SEARCH</label><br>' +
    '<input id="infl-search" type="text" placeholder="Ticker or company" style="' + selStyle + '"></div>';
-  h += '<div><label style="font-size:11px;color:#8d99aa;letter-spacing:1px;">SECTOR</label><br>' +
+  h += '<div><label style="font-size:11px;color:#a9b7c9;letter-spacing:1px;">SECTOR</label><br>' +
    '<select id="infl-sector" style="' + selStyle + '"><option value="">All sectors</option></select></div>';
   h += '<div style="margin-left:auto;"><button class="btn secondary" id="infl-export" style="font-size:12px;">Export CSV</button></div>';
   h += "</div>";
@@ -10756,8 +10756,8 @@ route("alerts", function () {
    th("ttmFcfYield", "FCF Yield", "right") + '<th style="text-align:center;">Checks</th>' +
    '<th style="text-align:center;">Technicals</th>' + th("rankScore", "Composite Rank", "right") +
    '</tr></thead><tbody id="infl-body"></tbody></table></div></div>';
-  h += '<div style="font-size:12px;color:#8d99aa;margin-top:10px;">SHOWING: <b id="infl-count" style="color:#f5f7fa;"></b></div>';
-  h += '<div class="card" style="margin-top:20px;"><div style="font-size:12px;color:#8d99aa;letter-spacing:1px;margin-bottom:8px;">WHAT THIS SCREENER SHOWS</div>' +
+  h += '<div style="font-size:12px;color:#a9b7c9;margin-top:10px;">SHOWING: <b id="infl-count" style="color:#f5f7fa;"></b></div>';
+  h += '<div class="card" style="margin-top:20px;"><div style="font-size:12px;color:#a9b7c9;letter-spacing:1px;margin-bottom:8px;">WHAT THIS SCREENER SHOWS</div>' +
    '<p style="font-size:13px;line-height:1.6;color:#dbe5f1;margin:0;">Every growth figure on this page is quarter on quarter. The growth path prints the sequential revenue growth rate for each of the last four reported quarters, and the acceleration delta is the spread between the latest quarter and the first quarter of that path. Strict qualifiers raised their quarter on quarter growth rate on all three steps while gross margin widened on all three steps. Near qualifiers met most of those steps. The checks column reports whether trailing twelve month free cash flow is positive (FCF), whether the share count grew by no more than 3 percent over the past year (DIL), and whether operating margin expanded across the four quarters (OPL). A Stage 2 badge means the share price sits above its 50 day average, which sits above its 200 day average. Rows are ordered by a composite rank that summarizes the combined strength of the acceleration and margin expansion.</p></div>';
   h += "</div>";
   return h;
@@ -10802,7 +10802,7 @@ route("alerts", function () {
   function draw() {
    const r = rows();
    body.innerHTML = r.map(inflRowHtml).join("") ||
-    '<tr><td colspan="12" style="text-align:center;color:#8d99aa;padding:20px;">No companies match the selected filters.</td></tr>';
+    '<tr><td colspan="12" style="text-align:center;color:#a9b7c9;padding:20px;">No companies match the selected filters.</td></tr>';
    document.getElementById("infl-count").textContent = r.length + (tab === "all" ? " combined qualifiers" : tab === "strict" ? " strict qualifiers" : " near qualifiers");
    ["strict", "near", "all"].forEach((t) => {
     const b = document.getElementById("infl-tab-" + t);
@@ -10878,7 +10878,7 @@ route("alerts", function () {
   const hasData = Object.keys(data.months).length > 0;
   let h = '<div class="section" id="scr-sec-seasonality" data-toc="Seasonality Screener" style="max-width:none;margin-top:32px;"><div class="section-title">Seasonality Screener ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Top 10 names for each calendar month, ranked by win rate with average return breaking ties, drawn from the S&P 500, S&P 400, S&P 600, and Nasdaq 100. Only names with at least 10 years of history qualify.</div>';
-  if (meta.lastUpdatedUTC) h += '<div style="font-size:12px;color:#8d99aa;margin-bottom:12px;">Updated ' + esc(String(meta.lastUpdatedUTC).slice(0, 10)) + ". " + (meta.totalEquitiesScanned || "") + " names scanned, " + (meta.qualifyingEquities || "") + " qualify.</div>";
+  if (meta.lastUpdatedUTC) h += '<div style="font-size:12px;color:#a9b7c9;margin-bottom:12px;">Updated ' + esc(String(meta.lastUpdatedUTC).slice(0, 10)) + ". " + (meta.totalEquitiesScanned || "") + " names scanned, " + (meta.qualifyingEquities || "") + " qualify.</div>";
   if (!hasData) {
    h += '<div class="card"><p style="color:var(--muted)">Seasonality screener data is not available yet.</p></div></div>';
    return h;
@@ -11355,7 +11355,7 @@ route("alerts", function () {
 
  /* ================= COMPS CHART BUILDER (shared by inline view + zoom modal) ================= */
  const COMPS_COLORS = {"Semiconductors":"#4dd2aa","Enterprise Software":"#38bdf8","Mega-Cap Tech":"#a855f7","Consumer & Marketplace":"#e0aa46","Fintech & Digital Assets":"#ec4899","Public Safety & Defense Tech":"#c99a6b","MedTech":"#6366f1","MedTech & Robotics":"#6366f1",
-  "Information Technology":"#38bdf8","Health Care":"#6366f1","Financials":"#4dd2aa","Consumer Discretionary":"#e0aa46","Consumer Staples":"#84cc16","Industrials":"#8d99aa","Energy":"#f37d83","Utilities":"#facc15","Real Estate":"#a855f7","Materials":"#f97316","Communication Services":"#ec4899","Other":"#647184",
+  "Information Technology":"#38bdf8","Health Care":"#6366f1","Financials":"#4dd2aa","Consumer Discretionary":"#e0aa46","Consumer Staples":"#84cc16","Industrials":"#a9b7c9","Energy":"#f37d83","Utilities":"#facc15","Real Estate":"#a855f7","Materials":"#f97316","Communication Services":"#ec4899","Other":"#647184",
   "Aerospace & Defense":"#e879f9","Fintech":"#2dd4bf","Telecom & Networking":"#67e8f9","Utilities & Energy":"#bef264"};
  // Axis caps keep a handful of extreme outliers from stretching the plot and
  // crushing the other 500+ names into one corner. The caps are derived from
@@ -11633,14 +11633,14 @@ route("alerts", function () {
  }
  function compsFmtMult(v) { return v == null || !isFinite(v) ? "—" : (Math.round(v * 100) / 100) + "x"; }
  function compsVsFair(pct) {
-  if (pct == null || !isFinite(pct)) return {text: "—", color: "#8d99aa"};
+  if (pct == null || !isFinite(pct)) return {text: "—", color: "#a9b7c9"};
   const word = pct < 0 ? "discount" : pct > 0 ? "premium" : "in line";
-  return {text: (pct > 0 ? "+" : "") + pct + "% " + word + " vs sector fair value", color: pct < 0 ? "#4dd2aa" : pct > 0 ? "#f37d83" : "#8d99aa"};
+  return {text: (pct > 0 ? "+" : "") + pct + "% " + word + " vs sector fair value", color: pct < 0 ? "#4dd2aa" : pct > 0 ? "#f37d83" : "#a9b7c9"};
  }
  function compsDetailHtml(rec) {
   const usePE = window._compsUsePE === true;
   const caps = window._compsCaps || null;
-  const sc = rec.status === "Discounted Growth" ? "#4dd2aa" : rec.status === "Premium Multiple" ? "#f37d83" : "#8d99aa";
+  const sc = rec.status === "Discounted Growth" ? "#4dd2aa" : rec.status === "Premium Multiple" ? "#f37d83" : "#a9b7c9";
   let h = '<div class="comps-detail-head">' +
    '<div class="comps-detail-id"><span class="comps-detail-tk">' + esc(rec.ticker) + '</span>' +
    '<span class="comps-detail-name">' + esc(rec.name || "") + "</span></div>" +
@@ -11657,7 +11657,7 @@ route("alerts", function () {
    '<span class="comps-detail-mfair">fair ' + fair + '</span>' +
    '<span class="comps-detail-mvs" style="color:' + vs.color + ';">' + vs.text + "</span></div>";
   h += row("EV / Revenue", compsFmtMult(rec.ntmEvRevenue), compsFmtMult(rec.expectedEvRev), evVs, !usePE);
-  h += row("Forward P/E", peMissing ? "—" : compsFmtMult(rec.forwardPe), compsFmtMult(rec.expectedPe), peMissing ? {text: "no positive forward P/E", color: "#8d99aa"} : peVs, usePE);
+  h += row("Forward P/E", peMissing ? "—" : compsFmtMult(rec.forwardPe), compsFmtMult(rec.expectedPe), peMissing ? {text: "no positive forward P/E", color: "#a9b7c9"} : peVs, usePE);
   // Position honesty: a name pinned at an axis cap, or filtered out of
   // the P/E view entirely, must say so, or the plot position misleads.
   let note = "";
@@ -11752,7 +11752,7 @@ route("alerts", function () {
   if (!SEASON_HORIZONS.some((h) => h.id === window._seasonHorizon)) window._seasonHorizon = "20";
   const ticker = window._seasonTicker;
   const horizon = window._seasonHorizon;
-  const blurCard = (label) => '<div class="card"><div style="font-size:11px;letter-spacing:0.08em;color:#8d99aa;text-transform:uppercase;">' + label + '</div><div class="snap-blur" style="width:96px;height:30px;margin:8px 0;"></div><div class="snap-blur" style="width:70%;height:14px;"></div></div>';
+  const blurCard = (label) => '<div class="card"><div style="font-size:11px;letter-spacing:0.08em;color:#a9b7c9;text-transform:uppercase;">' + label + '</div><div class="snap-blur" style="width:96px;height:30px;margin:8px 0;"></div><div class="snap-blur" style="width:70%;height:14px;"></div></div>';
   let h = "<style>.snap-blur{background:linear-gradient(135deg,#243047,#1a2233);border-radius:6px;filter:blur(1.2px);opacity:0.95;}</style>" +
    '<div class="crumb">SEASONALITY</div><div id="seasonality-page">' +
    '<div class="hero"><div><h1 class="hero-h">Seasonality</h1>' +
@@ -11766,14 +11766,14 @@ route("alerts", function () {
    '<input type="text" id="season-search" class="comps-search" placeholder="Search any ticker for on demand lookup" autocomplete="off" spellcheck="false" style="min-width:240px;">' +
    '<button class="btn" id="season-search-btn" style="font-size:12px;">Look up</button>' +
    '<span style="display:flex;gap:4px;">' + SEASON_HORIZONS.map((hz) => '<button class="btn season-hz" data-hz="' + hz.id + '" style="font-size:12px;' + (hz.id === horizon ? "background:rgb(217,164,65);color:rgb(10,14,23);font-weight:700;" : "") + '">' + hz.label + "</button>").join("") + "</span></div>" +
-   '<div id="season-status" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div></div>';
+   '<div id="season-status" style="font-size:12px;color:#a9b7c9;margin-top:8px;"></div></div>';
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px;">' +
    blurCard("Strongest month") + blurCard("Weakest month") + blurCard("Highest win rate") + blurCard("This month") + blurCard("Next month") + "</div>";
   h += '<div class="section"><div class="section-title">' + esc(ticker) + " Seasonality " + PRO_BADGE + "</div>";
   h += '<div class="card" style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">AVERAGE MONTHLY RETURN AND WIN RATE</div>' +
    '<div class="snap-blur" style="height:280px;"></div>' +
    '<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:10px;">' +
-   SEASON_MONTHS.map((m) => '<div style="text-align:center;"><div style="font-size:10px;color:#8d99aa;">' + m + '</div><div class="snap-blur" style="height:16px;margin-top:4px;"></div></div>').join("") +
+   SEASON_MONTHS.map((m) => '<div style="text-align:center;"><div style="font-size:10px;color:#a9b7c9;">' + m + '</div><div class="snap-blur" style="height:16px;margin-top:4px;"></div></div>').join("") +
    "</div></div>";
   h += '<div class="card" style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">252 DAY COMPOSITE DRIFT PATH</div>' +
    '<div class="snap-blur" style="height:260px;"></div></div>';
@@ -11786,7 +11786,7 @@ route("alerts", function () {
     '<td style="padding:4px;"><div class="snap-blur" style="width:56px;height:16px;margin-left:auto;"></div></td></tr>';
   }
   h += "</tbody></table></div></div></div>";
-  h += '<div class="card" style="text-align:center;padding:24px;margin-top:16px;"><p style="color:#8d99aa;">Full seasonality readings are Pro.</p>' +
+  h += '<div class="card" style="text-align:center;padding:24px;margin-top:16px;"><p style="color:#a9b7c9;">Full seasonality readings are Pro.</p>' +
    '<button class="btn" id="teaser-pricing" style="font-size:13px;">See Pro Plans</button>' +
    '<div class="pro-price">Cascadia Analytics Pro, $19/month. Cancel anytime.</div></div>';
   h += "</div>";
@@ -11865,7 +11865,7 @@ route("alerts", function () {
     '<input type="text" id="season-search" class="comps-search" placeholder="Search any ticker for on demand lookup" autocomplete="off" spellcheck="false" style="min-width:240px;">' +
     '<button class="btn" id="season-search-btn" style="font-size:12px;">Look up</button>' +
     '<span style="display:flex;gap:4px;">' + SEASON_HORIZONS.map((hz) => '<button class="btn season-hz" data-hz="' + hz.id + '" style="font-size:12px;' + (hz.id === horizon ? "background:rgb(217,164,65);color:rgb(10,14,23);font-weight:700;" : "") + '">' + hz.label + "</button>").join("") + "</span></div>" +
-    '<div id="season-status" style="font-size:12px;color:#8d99aa;margin-top:8px;"></div></div>';
+    '<div id="season-status" style="font-size:12px;color:#a9b7c9;margin-top:8px;"></div></div>';
    if (!view) {
     h += '<div class="card"><p style="color:var(--muted)">Data is temporarily unavailable for ' + esc(ticker) + ". Please try again in a few minutes.</p></div></div>";
     app.innerHTML = h;
@@ -11876,7 +11876,7 @@ route("alerts", function () {
    const nowM = new Date().getMonth();
    const cur = view.months[nowM] || null;
    const nxt = view.months[(nowM + 1) % 12] || null;
-   const card = (label, big, sub) => '<div class="card"><div style="font-size:11px;letter-spacing:0.08em;color:#8d99aa;text-transform:uppercase;">' + label + '</div><div style="font-size:22px;font-weight:800;margin-top:4px;">' + big + '</div><div style="font-size:12px;color:#8d99aa;margin-top:2px;">' + sub + "</div></div>";
+   const card = (label, big, sub) => '<div class="card"><div style="font-size:11px;letter-spacing:0.08em;color:#a9b7c9;text-transform:uppercase;">' + label + '</div><div style="font-size:22px;font-weight:800;margin-top:4px;">' + big + '</div><div style="font-size:12px;color:#a9b7c9;margin-top:2px;">' + sub + "</div></div>";
    h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px;">';
    h += card("Strongest month", hl.best ? esc(hl.best.month) + " " + fmtPct(hl.best.avg, true) + " avg" : "n/a", hl.best ? "Win rate " + fmtWin(hl.best.win_rate) : "");
    h += card("Weakest month", hl.worst ? esc(hl.worst.month) + " " + fmtPct(hl.worst.avg, true) + " avg" : "n/a", hl.worst ? "Win rate " + fmtWin(hl.worst.win_rate) : "");
@@ -11885,16 +11885,16 @@ route("alerts", function () {
    h += card("Next month (" + SEASON_MONTHS[(nowM + 1) % 12] + ")", nxt ? fmtPct(nxt.avg, true) + " avg" : "n/a", nxt ? "Win rate " + fmtWin(nxt.win_rate) + " over " + nxt.samples + " years, median " + fmtPct(nxt.median, true) : "");
    h += "</div>";
    h += '<div class="section"><div class="section-title">' + esc(ticker) + " Seasonality " + PRO_BADGE +
-    (view.coverage ? "" : ' <span style="font-size:11px;color:#8d99aa;">On demand lookup, not in coverage</span>') +
-    ' <span style="font-size:11px;color:#8d99aa;">Last close ' + (view.price != null ? "$" + view.price.toFixed(2) : "n/a") + " as of " + esc(view.asOf || "") + ", history from " + (view.firstYear || "n/a") + "</span></div>";
+    (view.coverage ? "" : ' <span style="font-size:11px;color:#a9b7c9;">On demand lookup, not in coverage</span>') +
+    ' <span style="font-size:11px;color:#a9b7c9;">Last close ' + (view.price != null ? "$" + view.price.toFixed(2) : "n/a") + " as of " + esc(view.asOf || "") + ", history from " + (view.firstYear || "n/a") + "</span></div>";
    h += '<div class="card" style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">AVERAGE MONTHLY RETURN AND WIN RATE</div>' +
     '<div style="height:280px;"><canvas id="season-bar"></canvas></div>' +
     '<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-top:10px;text-align:center;">' +
-    view.months.map((st) => '<div style="background:#101620;border:1px solid #253142;border-radius:6px;padding:4px 2px;"><div style="font-size:10px;color:#8d99aa;">' + st.month + '</div><div style="font-size:11px;font-weight:700;color:' + (st.win_rate >= 60 ? "rgb(52,211,153)" : st.win_rate <= 45 ? "rgb(251,113,133)" : "rgb(219,229,241)") + ';">' + fmtWin(st.win_rate) + '</div><div style="font-size:9px;color:#647184;">win</div></div>').join("") +
+    view.months.map((st) => '<div style="background:#101620;border:1px solid #253142;border-radius:6px;padding:4px 2px;"><div style="font-size:10px;color:#a9b7c9;">' + st.month + '</div><div style="font-size:11px;font-weight:700;color:' + (st.win_rate >= 60 ? "rgb(52,211,153)" : st.win_rate <= 45 ? "rgb(251,113,133)" : "rgb(219,229,241)") + ';">' + fmtWin(st.win_rate) + '</div><div style="font-size:9px;color:#647184;">win</div></div>').join("") +
     "</div></div>";
    h += '<div class="card" style="margin-bottom:16px;"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">252 DAY COMPOSITE DRIFT PATH</div>' +
     '<div style="height:260px;"><canvas id="season-line"></canvas></div>' +
-    '<div style="font-size:12px;color:#8d99aa;margin-top:8px;">Average trajectory across the horizon years, indexed to 100 on trading day 1. Final value ' + (view.drift.length ? view.drift[view.drift.length - 1].toFixed(1) : "n/a") + ".</div></div>";
+    '<div style="font-size:12px;color:#a9b7c9;margin-top:8px;">Average trajectory across the horizon years, indexed to 100 on trading day 1. Final value ' + (view.drift.length ? view.drift[view.drift.length - 1].toFixed(1) : "n/a") + ".</div></div>";
    const years = seasonHeatYears(view, horizon);
    h += '<div class="card"><div style="font-size:12px;font-weight:700;color:#d9a441;margin-bottom:8px;">YEAR BY YEAR RETURN HEATMAP (' + years.length + " YEARS)</div>" +
     '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;text-align:center;"><thead><tr><th style="text-align:left;padding:6px;">Year</th>' +
@@ -12036,7 +12036,7 @@ route("alerts", function () {
     { label: "+1σ band", data: flat(mst.plus_1sigma), borderColor: "rgba(217,164,65,0)", borderWidth: 0, pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
     { label: "-1σ band", data: flat(mst.minus_1sigma), borderColor: "rgba(217,164,65,0.45)", backgroundColor: "rgba(217,164,65,0.10)", borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, fill: "-1", tension: 0 },
     { label: "Median " + multX(mst.median), data: flat(mst.median), borderColor: "#4dd2aa", borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
-    { label: "Mean " + multX(mst.mean), data: flat(mst.mean), borderColor: "#8d99aa", borderWidth: 1.5, borderDash: [2, 3], pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
+    { label: "Mean " + multX(mst.mean), data: flat(mst.mean), borderColor: "#a9b7c9", borderWidth: 1.5, borderDash: [2, 3], pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
     { label: ticker + " " + mlabel, data: pts.map((p) => p[metricKey]), borderColor: "#d9a441", borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, fill: false, tension: 0.1, spanGaps: true }
    ]},
    options: { animation: false, responsive: true, maintainAspectRatio: false,
@@ -12076,7 +12076,7 @@ route("alerts", function () {
   const meta = hm.metadata || {};
   let h = head;
   h += '<div class="section"><div class="section-title">Historical Multiples ' + PRO_BADGE +
-   (meta.as_of ? ' <span style="font-size:11px;color:#8d99aa;">data as of ' + esc(meta.as_of) + "</span>" : "") + "</div>";
+   (meta.as_of ? ' <span style="font-size:11px;color:#a9b7c9;">data as of ' + esc(meta.as_of) + "</span>" : "") + "</div>";
   h += '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;">';
   h += '<select id="mult-ticker" class="cov-select" aria-label="Select ticker">';
   symbols.forEach((s) => {
@@ -12096,9 +12096,9 @@ route("alerts", function () {
   h += "</span></div>";
   h += '<div id="mult-detail"></div></div>';
   const cell = (v) => '<td style="padding:8px;text-align:right;">' + multX(v) + "</td>";
-  const medCell = (v) => '<td style="padding:8px;text-align:right;color:#8d99aa;">' + multX(v) + "</td>";
+  const medCell = (v) => '<td style="padding:8px;text-align:right;color:#a9b7c9;">' + multX(v) + "</td>";
   h += '<div class="section"><div class="section-title">Coverage Universe, Current vs Own Historical Median</div>';
-  h += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;min-width:860px;"><thead><tr style="border-bottom:1px solid #253142;color:#8d99aa;text-align:left;">' +
+  h += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;min-width:860px;"><thead><tr style="border-bottom:1px solid #253142;color:#a9b7c9;text-align:left;">' +
    '<th style="padding:8px;">Ticker</th><th style="padding:8px;text-align:right;">Price</th>' +
    '<th style="padding:8px;text-align:right;">P/E</th><th style="padding:8px;text-align:right;">P/E Med</th><th style="padding:8px;text-align:right;">vs Med</th>' +
    '<th style="padding:8px;text-align:right;">EV/EBITDA</th><th style="padding:8px;text-align:right;">Med</th>' +
@@ -12109,7 +12109,7 @@ route("alerts", function () {
    const ss = t.stats || {};
    const pe = ss.pe || null;
    const prem = pe ? pe.premium_vs_median_pct : null;
-   const pc = prem == null ? "#8d99aa" : prem > 0 ? "#f37d83" : prem < 0 ? "#4dd2aa" : "#8d99aa";
+   const pc = prem == null ? "#a9b7c9" : prem > 0 ? "#f37d83" : prem < 0 ? "#4dd2aa" : "#a9b7c9";
    h += '<tr data-ticker="' + esc(s) + '" style="border-bottom:1px solid #101620;cursor:pointer;">' +
     '<td style="padding:8px;font-weight:700;color:#58a6ff;">' + esc(s) + "</td>" +
     '<td style="padding:8px;text-align:right;">' + (t.latest_price != null ? "$" + Number(t.latest_price).toFixed(2) : "—") + "</td>" +
@@ -12121,7 +12121,7 @@ route("alerts", function () {
     "</tr>";
   });
   h += "</tbody></table></div>";
-  h += '<p style="font-size:12px;color:#8d99aa;margin-top:8px;">Fundamentals from SEC EDGAR company filings on a trailing twelve month basis; prices are adjusted closes sampled every two weeks. Select any row to chart that name.</p></div>';
+  h += '<p style="font-size:12px;color:#a9b7c9;margin-top:8px;">Fundamentals from SEC EDGAR company filings on a trailing twelve month basis; prices are adjusted closes sampled every two weeks. Select any row to chart that name.</p></div>';
   app.innerHTML = h;
 
   function syncControls() {
@@ -12135,9 +12135,9 @@ route("alerts", function () {
   }
   function statCard(label, value, sub, color) {
    return '<div class="card" style="padding:12px;">' +
-    '<div style="font-size:11px;color:#8d99aa;text-transform:uppercase;letter-spacing:0.04em;">' + label + "</div>" +
+    '<div style="font-size:11px;color:#a9b7c9;text-transform:uppercase;letter-spacing:0.04em;">' + label + "</div>" +
     '<div style="font-size:20px;font-weight:800;color:' + (color || "#dbe5f1") + ';margin-top:4px;">' + value + "</div>" +
-    (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
+    (sub ? '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
   }
   function renderDetail() {
    const detail = document.getElementById("mult-detail");
@@ -12147,8 +12147,8 @@ route("alerts", function () {
    if (oldCv && typeof Chart !== "undefined") { const oc = Chart.getChart(oldCv); if (oc) oc.destroy(); }
    if (!t) { detail.innerHTML = ""; return; }
    if (!t.available) {
-    detail.innerHTML = '<div class="card"><div style="font-size:15px;font-weight:700;">' + esc(st.ticker) + ' <span style="color:#8d99aa;font-weight:400;">' + esc(t.name || "") + "</span></div>" +
-     '<p style="color:#8d99aa;margin-top:8px;">Historical multiples are unavailable for this name. ' + esc(multReason(t)) + "</p></div>";
+    detail.innerHTML = '<div class="card"><div style="font-size:15px;font-weight:700;">' + esc(st.ticker) + ' <span style="color:#a9b7c9;font-weight:400;">' + esc(t.name || "") + "</span></div>" +
+     '<p style="color:#a9b7c9;margin-top:8px;">Historical multiples are unavailable for this name. ' + esc(multReason(t)) + "</p></div>";
     syncControls();
     return;
    }
@@ -12189,14 +12189,14 @@ route("alerts", function () {
    d += "</div>";
    d += '<div class="card" style="padding:14px;">' +
     '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">' +
-    '<div style="font-size:13px;font-weight:700;">' + esc(st.ticker) + " " + esc(mlabel) + ' <span style="color:#8d99aa;font-weight:400;">' + esc(t.name || "") + "</span></div>" +
-    '<div style="font-size:11px;color:#8d99aa;">Horizon ' + esc(st.horizon) + " · statistics are full history" + (t.history_start ? " since " + esc(t.history_start) : "") + "</div></div>";
+    '<div style="font-size:13px;font-weight:700;">' + esc(st.ticker) + " " + esc(mlabel) + ' <span style="color:#a9b7c9;font-weight:400;">' + esc(t.name || "") + "</span></div>" +
+    '<div style="font-size:11px;color:#a9b7c9;">Horizon ' + esc(st.horizon) + " · statistics are full history" + (t.history_start ? " since " + esc(t.history_start) : "") + "</div></div>";
    if (mst && validPts.length >= 2) {
     d += '<div style="position:relative;height:340px;width:100%;"><canvas id="mult-chart"></canvas></div>';
    } else if (!mst) {
-    d += '<p style="color:#8d99aa;">' + esc(mlabel) + " is not meaningful for " + esc(st.ticker) + " across the available history (non-positive denominator), so no series is shown.</p>";
+    d += '<p style="color:#a9b7c9;">' + esc(mlabel) + " is not meaningful for " + esc(st.ticker) + " across the available history (non-positive denominator), so no series is shown.</p>";
    } else {
-    d += '<p style="color:#8d99aa;">No ' + esc(mlabel) + " observations fall inside the selected horizon for " + esc(st.ticker) + ". Widen the horizon to see the series.</p>";
+    d += '<p style="color:#a9b7c9;">No ' + esc(mlabel) + " observations fall inside the selected horizon for " + esc(st.ticker) + ". Widen the horizon to see the series.</p>";
    }
    d += "</div>";
    detail.innerHTML = d;
@@ -12251,14 +12251,14 @@ route("alerts", function () {
   h += '<div class="card" style="border:1px solid rgba(63,185,80,0.3);"><div style="font-size:12px;font-weight:700;color:#4dd2aa;margin-bottom:8px;">DISCOUNTED GROWTH</div>';
   discounts.forEach((d) => {
    h += '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #101620;">' +
-    '<span><b>' + esc(d.ticker) + '</b> <span style="color:#8d99aa;">' + esc(d.name) + '</span></span>' +
+    '<span><b>' + esc(d.ticker) + '</b> <span style="color:#a9b7c9;">' + esc(d.name) + '</span></span>' +
     '<span style="color:#4dd2aa;font-weight:700;">' + d.evRevDiscountPct + '%</span></div>';
   });
   h += '</div>';
   h += '<div class="card" style="border:1px solid rgba(248,81,73,0.3);"><div style="font-size:12px;font-weight:700;color:#f37d83;margin-bottom:8px;">PREMIUM MULTIPLES</div>';
   premiums.forEach((p) => {
    h += '<div style="display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid #101620;">' +
-    '<span><b>' + esc(p.ticker) + '</b> <span style="color:#8d99aa;">' + esc(p.name) + '</span></span>' +
+    '<span><b>' + esc(p.ticker) + '</b> <span style="color:#a9b7c9;">' + esc(p.name) + '</span></span>' +
     '<span style="color:#f37d83;font-weight:700;">+' + p.evRevDiscountPct + '%</span></div>';
   });
   h += '</div></div>';
@@ -12266,7 +12266,7 @@ route("alerts", function () {
   // radius) and pin the detail card below; zoom moved to an explicit
   // Expand button that rides the existing zoom-modal binding, since a
   // click anywhere on the plot can no longer mean two things.
-  h += '<div class="section"><div class="section-title">Growth vs Multiple ' + PRO_BADGE + ' <span style="font-size:11px;color:#8d99aa;">(bubble size = market cap)</span></div>';
+  h += '<div class="section"><div class="section-title">Growth vs Multiple ' + PRO_BADGE + ' <span style="font-size:11px;color:#a9b7c9;">(bubble size = market cap)</span></div>';
   h += '<div class="comps-controls"><button class="btn" id="comps-toggle" style="font-size:12px;">Switch to Forward P/E</button>' +
    '<button class="btn zoomable-chart" data-chart="comps" id="comps-expand" style="font-size:12px;">⛶ Expand</button>' +
    '<span class="comps-search-wrap"><input type="text" id="comps-search" class="comps-search" placeholder="Search ticker or company…" autocomplete="off" spellcheck="false">' +
@@ -12275,7 +12275,7 @@ route("alerts", function () {
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;pointer-events:none;">Tap a bubble for details</div></div>';
   h += '<div id="comps-detail" class="comps-detail" style="display:none;"></div>';
   h += '<div id="comps-legend" class="comps-legend"></div>';
-  h += '<div id="comps-cap-note" style="font-size:12px;color:#8d99aa;margin-top:8px;">Sector-relative regression: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axis caps are set from the names plotted on each view (98th percentile, rounded up) so the bulk of the universe stays legible; names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.</div></div>';
+  h += '<div id="comps-cap-note" style="font-size:12px;color:#a9b7c9;margin-top:8px;">Sector-relative regression: each dashed line is the fair-value frontier for that GICS sector. Discounts/premiums are measured against sector peers, not the broad market. Axis caps are set from the names plotted on each view (98th percentile, rounded up) so the bulk of the universe stays legible; names beyond a cap sit at the edge of the plot, and their tooltips and the table below show the true values.</div></div>';
   // Table. Every header is a sort control keyed to the raw record
   // values, never the formatted strings; missing values (no positive
   // forward P/E, absent fields) pin to the bottom in both directions.
@@ -12313,11 +12313,11 @@ route("alerts", function () {
   let compsSortState = {key: "evRevDiscountPct", dir: 1};
   let compsRowsCurrent = compsSortRows(recs, compsSortState.key, compsSortState.dir);
   function compsRowHtml(r) {
-   const dc = r.evRevDiscountPct < 0 ? "#4dd2aa" : r.evRevDiscountPct > 0 ? "#f37d83" : "#8d99aa";
-   const sc = r.status === "Discounted Growth" ? "#4dd2aa" : r.status === "Premium Multiple" ? "#f37d83" : "#8d99aa";
+   const dc = r.evRevDiscountPct < 0 ? "#4dd2aa" : r.evRevDiscountPct > 0 ? "#f37d83" : "#a9b7c9";
+   const sc = r.status === "Discounted Growth" ? "#4dd2aa" : r.status === "Premium Multiple" ? "#f37d83" : "#a9b7c9";
    return '<tr class="comps-row" id="comps-row-' + esc(r.ticker) + '" data-ticker="' + esc(r.ticker) + '" style="border-bottom:1px solid #101620;">' +
     '<td style="padding:8px;"><a href="' + (ORDER.indexOf(r.ticker) >= 0 ? "#/ticker/" : "#/research/") + esc(r.ticker) + '" style="color:#58a6ff;font-weight:700;">' + esc(r.ticker) + '</a></td>' +
-    '<td style="padding:8px;color:#8d99aa;">' + esc(r.sector) + '</td>' +
+    '<td style="padding:8px;color:#a9b7c9;">' + esc(r.sector) + '</td>' +
     '<td style="padding:8px;text-align:right;">' + r.ntmRevGrowth + '%</td>' +
     '<td style="padding:8px;text-align:right;">' + r.ntmEvRevenue + 'x</td>' +
     '<td style="padding:8px;text-align:right;color:' + dc + ';font-weight:700;">' + (r.evRevDiscountPct > 0 ? "+" : "") + r.evRevDiscountPct + '%</td>' +
@@ -12370,7 +12370,7 @@ route("alerts", function () {
   h += '<div class="section"><div class="section-title">Comps Table ' + PRO_BADGE + '</div>' +
    '<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="btn" id="comps-export" style="font-size:12px;">⬇ Export CSV</button></div>' +
    '<div class="card" style="overflow-x:auto;">';
-  h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead id="comps-thead"><tr style="border-bottom:1px solid #253142;color:#8d99aa;text-align:right;">' +
+  h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead id="comps-thead"><tr style="border-bottom:1px solid #253142;color:#a9b7c9;text-align:right;">' +
    COMPS_COLS.map((c) => '<th class="comps-th" data-sort="' + c.key + '" tabindex="0" role="button" aria-sort="none" title="Sort by ' + c.label + '" style="' + (c.left ? "text-align:left;" : "") + 'padding:8px;cursor:pointer;user-select:none;white-space:nowrap;">' + c.label + ' <span class="comps-arrow" style="font-size:9px;color:#f0bd56;"></span></th>').join("") +
    '</tr></thead><tbody id="comps-tbody"></tbody></table></div>';
   h += '<div class="panel-asof">Source: yfinance consensus estimates · Regression across coverage universe · Click a column header to sort · Export follows the current sort</div></div>';
@@ -12524,10 +12524,10 @@ route("alerts", function () {
   let h = '<div class="section"><div class="section-title">Liquidity Drain Model ' + PRO_BADGE + '</div>' +
    '<div class="section-sub">Net US liquidity, USD strength, and yield curve dynamics. Markets rarely crash when liquidity expands; they become vulnerable when it drains.</div>';
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score != null ? hv.score : L.totalScore) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score != null ? hv.score : L.totalScore) + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(hv.regime || L.regime || "") + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Net liquidity $' + (m.netLiquidityB != null ? m.netLiquidityB.toLocaleString() : "-") + "B" +
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">Net liquidity $' + (m.netLiquidityB != null ? m.netLiquidityB.toLocaleString() : "-") + "B" +
    (m.dxy != null ? " · DXY " + m.dxy : "") +
    (m.t10y2y != null ? " · 10Y-2Y " + m.t10y2y + "%" : "") + "</div></div></div>";
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
@@ -12536,7 +12536,7 @@ route("alerts", function () {
    h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
     '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.metric) + "</div>" +
     '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + "</div>" +
-    '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
+    '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
   });
   h += "</div>";
   // Chart: net liquidity vs SPY
@@ -12564,7 +12564,7 @@ route("alerts", function () {
 
   // What this means (for everyone)
   const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
    '<b style="color:#dbe5f1;">The simple version:</b> Markets go through calm stretches and stormy stretches. This model counts how long it has been since the last storm. The longer the calm lasts, the more likely a storm is coming, because big automated funds pile into stocks when things are quiet and are forced to sell when volatility spikes.<br><br>' +
    '<b style="color:#dbe5f1;">For long-term investors:</b> When the gauge reads OVERDUE, consider it a yellow light, not a sell signal. It is a good time to make sure your position sizes are comfortable and avoid adding leverage. When it reads RECENTLY UNWOUND, the mechanical selling pressure has passed.<br><br>' +
    '<b style="color:#dbe5f1;">For active traders:</b> An OVERDUE reading with VCF exposure above 80% has historically preceded pullbacks. The forward price action tables below show exactly what happened in the 15 trading days after each past signal: the hit rate, average decline, and worst case. Use these as a statistical roadmap, not a prediction.' +
@@ -12575,19 +12575,19 @@ route("alerts", function () {
   // native countdown status is only the fallback. Components below
   // (countdown stats, VCF exposure, forward tables) are unchanged.
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   (hv.score != null ? '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' : "") +
-   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">STATUS</div>' +
+   (hv.score != null ? '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' : "") +
+   '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">STATUS</div>' +
    '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(hv.regime || cd.statusLabel) + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:600px;">' + esc(cd.statusDesc) + "</div></div></div>";
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;max-width:600px;">' + esc(cd.statusDesc) + "</div></div></div>";
 
   // Countdown stats
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
   const statCard = (label, val, sub) =>
    '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
-   '<div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+   '<div style="font-size:11px;color:#a9b7c9;">' + label + '</div>' +
    '<div style="font-size:24px;font-weight:800;color:#dbe5f1;">' + val + '</div>' +
-   '<div style="font-size:11px;color:#8d99aa;">' + sub + '</div></div>';
+   '<div style="font-size:11px;color:#a9b7c9;">' + sub + '</div></div>';
   h += statCard("AVG TIME BETWEEN SHOCKS", cd.avgTimeBetweenTd + " td", "~" + cd.avgTimeBetweenCal + " calendar days");
   h += statCard("MEDIAN GAP", cd.medianGapTd + " td", "shortest " + cd.shortestGapTd + " / longest " + cd.longestGapTd);
   h += statCard("SINCE LAST SHOCK", cd.sinceLastSpikeTd + " td", "last: " + esc(cd.lastSpikeDate || ""));
@@ -12595,16 +12595,16 @@ route("alerts", function () {
 
   // VCF exposure bar
   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:4px;">Systematic fund exposure (the "spring tension")</div>' +
-   '<div style="font-size:12px;color:#8d99aa;margin-bottom:10px;">Volatility-control funds mechanically buy stocks when realized volatility is low and sell when it spikes. Low volatility = they are fully loaded = the spring is coiled tight.</div>' +
+   '<div style="font-size:12px;color:#a9b7c9;margin-bottom:10px;">Volatility-control funds mechanically buy stocks when realized volatility is low and sell when it spikes. Low volatility = they are fully loaded = the spring is coiled tight.</div>' +
    '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">' +
-   '<span style="font-size:12px;color:#8d99aa;">Estimated equity exposure</span>' +
+   '<span style="font-size:12px;color:#a9b7c9;">Estimated equity exposure</span>' +
    '<span style="font-size:28px;font-weight:800;color:' + vcfColor + ';">' + vcf + '%</span></div>' +
    '<div style="width:100%;background:#101620;height:10px;border-radius:5px;overflow:hidden;">' +
    '<div style="height:100%;width:' + vcf + '%;background:' + vcfColor + ';border-radius:5px;"></div></div>' +
    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;">' +
-   '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">10-day RV</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + (rv.rv10 != null ? rv.rv10 + "%" : "-") + '</div></div>' +
-   '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">20-day RV</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + (rv.rv20 != null ? rv.rv20 + "%" : "-") + '</div></div>' +
-   '<div style="text-align:center;"><div style="font-size:11px;color:#8d99aa;">60-day RV</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + (rv.rv60 != null ? rv.rv60 + "%" : "-") + '</div></div>' +
+   '<div style="text-align:center;"><div style="font-size:11px;color:#a9b7c9;">10-day RV</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + (rv.rv10 != null ? rv.rv10 + "%" : "-") + '</div></div>' +
+   '<div style="text-align:center;"><div style="font-size:11px;color:#a9b7c9;">20-day RV</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + (rv.rv20 != null ? rv.rv20 + "%" : "-") + '</div></div>' +
+   '<div style="text-align:center;"><div style="font-size:11px;color:#a9b7c9;">60-day RV</div><div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + (rv.rv60 != null ? rv.rv60 + "%" : "-") + '</div></div>' +
    "</div></div>";
 
   // Forward PA tables
@@ -12614,19 +12614,19 @@ route("alerts", function () {
    const rows = sig.rows || [];
    if (!sum.signalCount) return;
    h += '<div style="margin:16px 0;"><div style="font-size:14px;font-weight:700;color:#dbe5f1;margin-bottom:4px;">' + esc(sig.title || key) + '</div>' +
-    '<div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">What happened in the 15 trading days after each past signal. ' +
+    '<div style="font-size:12px;color:#a9b7c9;margin-bottom:8px;">What happened in the 15 trading days after each past signal. ' +
     '<b style="color:#4dd2aa;">Hit rate ' + (sum.hitRate != null ? sum.hitRate : "-") + '%</b> (' + esc(sum.hitFraction || "") + ') ' +
     'means that share of signals saw a peak decline worse than -1.5%. Avg peak decline <b style="color:#f37d83;">' + (sum.avgPeakDecline != null ? sum.avgPeakDecline : "-") + '%</b>, ' +
     'worst <b style="color:#f37d83;">' + (sum.worstDecline != null ? sum.worstDecline : "-") + '%</b>.</div>';
    h += '<div class="table-wrap" style="max-height:400px;overflow-y:auto;"><table class="coverage ma-table" style="color:#dbe5f1;font-size:11px;"><thead><tr>' +
-    '<th style="color:#8d99aa;position:sticky;top:0;background:#101620;">Date</th>';
-   for (let d = 1; d <= 15; d++) h += '<th style="color:#8d99aa;position:sticky;top:0;background:#101620;">D+' + d + "</th>";
-   h += '<th style="color:#8d99aa;position:sticky;top:0;background:#101620;">Max DD</th></tr></thead><tbody>';
+    '<th style="color:#a9b7c9;position:sticky;top:0;background:#101620;">Date</th>';
+   for (let d = 1; d <= 15; d++) h += '<th style="color:#a9b7c9;position:sticky;top:0;background:#101620;">D+' + d + "</th>";
+   h += '<th style="color:#a9b7c9;position:sticky;top:0;background:#101620;">Max DD</th></tr></thead><tbody>';
    rows.forEach((r) => {
     h += '<tr><td style="color:#dbe5f1;font-weight:600;white-space:nowrap;">' + esc(r.date) + "</td>";
     for (let d = 1; d <= 15; d++) {
      const v = (r.returns || {})["D+" + d];
-     const col = v == null ? "#8d99aa" : v < 0 ? "#f37d83" : "#4dd2aa";
+     const col = v == null ? "#a9b7c9" : v < 0 ? "#f37d83" : "#4dd2aa";
      h += '<td style="color:' + col + ';">' + (v == null ? "-" : (v > 0 ? "+" : "") + v + "%") + "</td>";
     }
     h += '<td style="color:#f37d83;font-weight:700;">' + (r.peakDecline != null ? r.peakDecline + "%" : "-") + "</td></tr>";
@@ -12636,7 +12636,7 @@ route("alerts", function () {
    h += '<tr style="background:rgba(217,164,65,0.08);font-weight:700;"><td style="color:#d9a441;">AVG</td>';
    for (let d = 1; d <= 15; d++) {
     const v = avg["D+" + d];
-    const col = v == null ? "#8d99aa" : v < 0 ? "#f37d83" : "#4dd2aa";
+    const col = v == null ? "#a9b7c9" : v < 0 ? "#f37d83" : "#4dd2aa";
     h += '<td style="color:' + col + ';">' + (v == null ? "-" : (v > 0 ? "+" : "") + v + "%") + "</td>";
    }
    h += '<td style="color:#d9a441;">' + (sum.avgPeakDecline != null ? sum.avgPeakDecline + "%" : "-") + "</td></tr>";
@@ -12662,29 +12662,29 @@ route("alerts", function () {
    '<div class="section-sub">Which sector is leading, how stretched it is, and whether the index can survive without it.</div>';
 
   const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
    '<b style="color:#dbe5f1;">The simple version:</b> The stock market is sometimes carried by one hot sector while everything else goes nowhere. This model finds which sector is leading right now, checks how stretched it is, and warns you when the market depends too much on that one area.<br><br>' +
    '<b style="color:#dbe5f1;">For long-term investors:</b> A high fragility score means your index fund is more concentrated than it looks. If the leading sector stumbles, the whole index drops with it even if most companies are fine. Consider whether you are comfortable with that.<br><br>' +
    '<b style="color:#dbe5f1;">For active traders:</b> When the leader detaches from the average stock (low correlation), leadership is fragile. Rotations out of the leading sector tend to be violent. Do not chase the leader into parabolic moves.' +
    '</div></div>';
 
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">STRUCTURAL FRAGILITY</div>' +
+   '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">STRUCTURAL FRAGILITY</div>' +
    '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(K.regime) + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:560px;">' + esc(K.description || "") + "</div></div>" +
-   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8d99aa;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + K.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div></div>';
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;max-width:560px;">' + esc(K.description || "") + "</div></div>" +
+   '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#a9b7c9;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + K.score + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div></div>';
 
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
-  h += '<div style="background:#101620;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#8d99aa;">CURRENT LEADER</div>' +
+  h += '<div style="background:#101620;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#a9b7c9;">CURRENT LEADER</div>' +
    '<div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + esc(leader.ticker || "-") + '</div>' +
-   '<div style="font-size:11px;color:#8d99aa;">' + esc(leader.name || "") + ' · +' + (leader.momentum90d != null ? leader.momentum90d : "-") + '% (90d)</div></div>';
-  h += '<div style="background:#101620;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#8d99aa;">LEADER VS 200-DAY AVG</div>' +
+   '<div style="font-size:11px;color:#a9b7c9;">' + esc(leader.name || "") + ' · +' + (leader.momentum90d != null ? leader.momentum90d : "-") + '% (90d)</div></div>';
+  h += '<div style="background:#101620;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#a9b7c9;">LEADER VS 200-DAY AVG</div>' +
    '<div style="font-size:18px;font-weight:800;color:#dbe5f1;">+' + (leader.extension200dma != null ? leader.extension200dma : "-") + '%</div>' +
-   '<div style="font-size:11px;color:#8d99aa;">Distance above long-term trend</div></div>';
-  h += '<div style="background:#101620;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#8d99aa;">SPY VS EQUAL-WEIGHT</div>' +
+   '<div style="font-size:11px;color:#a9b7c9;">Distance above long-term trend</div></div>';
+  h += '<div style="background:#101620;border-radius:10px;padding:12px;"><div style="font-size:11px;color:#a9b7c9;">SPY VS EQUAL-WEIGHT</div>' +
    '<div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + ((K.metrics || {}).capVsEqualSpread > 0 ? "+" : "") + ((K.metrics || {}).capVsEqualSpread != null ? (K.metrics || {}).capVsEqualSpread : "-") + '%</div>' +
-   '<div style="font-size:11px;color:#8d99aa;">60-day cap-weight lead</div></div>';
+   '<div style="font-size:11px;color:#a9b7c9;">60-day cap-weight lead</div></div>';
   h += "</div>";
 
   (K.scoreBreakdown || []).forEach((b) => {
@@ -12693,7 +12693,7 @@ route("alerts", function () {
     '<div style="display:flex;justify-content:space-between;align-items:center;">' +
     '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">' + esc(b.metric) + '</div></div>' +
     '<div style="font-size:13px;color:' + bc + ';font-weight:600;margin-top:2px;">' + esc(b.status) + '</div>' +
-    '<div style="font-size:12px;color:#8d99aa;margin-top:2px;">' + esc(b.value || "") + "</div>" +
+    '<div style="font-size:12px;color:#a9b7c9;margin-top:2px;">' + esc(b.value || "") + "</div>" +
     '<div style="font-size:11px;color:#647184;margin-top:4px;">' + esc(b.detail || "") + "</div></div>";
   });
 
@@ -12720,10 +12720,10 @@ route("alerts", function () {
 
   // Score banner
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(M.regime || "") + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Margin debt $' + (m.debtB != null ? m.debtB.toLocaleString() : "-") + "B" +
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">Margin debt $' + (m.debtB != null ? m.debtB.toLocaleString() : "-") + "B" +
    (m.marginYoY != null ? " · YoY " + (m.marginYoY >= 0 ? "+" : "") + m.marginYoY + "%" : "") +
    (m.zScore != null ? " · Leverage z-score " + (m.zScore >= 0 ? "+" : "") + m.zScore : "") + "</div>";
   if (M.capitulation) {
@@ -12741,7 +12741,7 @@ route("alerts", function () {
    h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
     '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + esc(b.metric) + "</div>" +
     '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' + esc(b.status) + "</div>" +
-    '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
+    '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + esc(b.value || "") + "</div></div>";
   });
   h += "</div>";
 
@@ -12752,7 +12752,7 @@ route("alerts", function () {
 
   // Explainer AFTER visuals (standing rule)
   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
    '<b style="color:#dbe5f1;">The simple version:</b> This tracks how much money stock traders are borrowing to buy shares. When borrowing explodes, it means euphoria: everyone is maxing out to chase the rally. When borrowing collapses, it means forced selling is over and leveraged positions have been flushed out. Sentiment surveys tell you how people feel; this tells you what they are doing with real money.<br><br>' +
    '<b style="color:#dbe5f1;">For long-term investors:</b> Ignore headlines about margin debt hitting "record highs": in dollar terms it almost always does during a bull market. What matters is the growth rate. When year-over-year growth passes 35%, the market has historically been close to a top. When it drops below negative 15%, forced liquidations are usually finished and that has marked major bottoms. This data updates monthly, so treat it as a slow background gauge, not a trading signal.<br><br>' +
    '<b style="color:#dbe5f1;">For active traders:</b> Watch for the divergence: the S&P making new highs while margin debt shrinks. That means the rally is running on multiple expansion rather than fresh leveraged capital, and it has preceded major tops by months. A z-score above 2 on the debt-to-market ratio means the market is structurally over-levered and vulnerable to a sharp flush on any catalyst.' +
@@ -12769,7 +12769,7 @@ route("alerts", function () {
     '<div class="card"><p style="color:var(--muted)">Sector rotation data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const hv = riskCardVal("sector_rotation");
-  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
   const c = colorMap[hv.color || S.color] || "#dbe5f1";
   const m = S.metrics || {};
   const r = S.ratios || {};
@@ -12780,10 +12780,10 @@ route("alerts", function () {
 
   // Score banner
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score != null ? hv.score : S.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score != null ? hv.score : S.score) + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(hv.regime || S.regime || "") + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">RSPD/RSPS ' + (m.rspdRsps != null ? m.rspdRsps : "-") +
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">RSPD/RSPS ' + (m.rspdRsps != null ? m.rspdRsps : "-") +
    " · XLY/XLP " + (m.xlyXlp != null ? m.xlyXlp : "-") + "</div>";
   if (S.dualBreakdown) {
    h += '<div style="margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(248,81,73,0.1);border:1px solid #f37d83;font-size:12px;color:#f37d83;font-weight:700;">DUAL BREAKDOWN: both ratios at 52-week lows. Institutions are sheltering across the entire consumer sector.</div>';
@@ -12795,13 +12795,13 @@ route("alerts", function () {
   [["rspd_rsps", "RSPD / RSPS", "Equal-weighted"], ["xly_xlp", "XLY / XLP", "Cap-weighted"]].forEach(([key, pair, wt]) => {
    const rr = r[key] || {};
    const pct = rr.rangePercentile != null ? rr.rangePercentile : null;
-   const bc = pct == null ? "#8d99aa" : pct <= 10 ? "#f37d83" : pct <= 30 ? "#e0aa46" : pct >= 70 ? "#4dd2aa" : "#8d99aa";
+   const bc = pct == null ? "#a9b7c9" : pct <= 10 ? "#f37d83" : pct <= 30 ? "#e0aa46" : pct >= 70 ? "#4dd2aa" : "#a9b7c9";
    h += '<div style="background:#101620;border-radius:10px;padding:12px;border-left:3px solid ' + bc + ';">' +
-    '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + pair + ' <span style="color:#8d99aa;font-weight:400;">(' + wt + ")</span></div>" +
+    '<div style="font-size:12px;font-weight:600;color:#dbe5f1;">' + pair + ' <span style="color:#a9b7c9;font-weight:400;">(' + wt + ")</span></div>" +
     '<div style="font-size:20px;font-weight:800;color:#dbe5f1;margin-top:4px;">' + (rr.current != null ? rr.current : "-") + "</div>" +
     '<div style="font-size:11px;color:' + bc + ';margin-top:2px;font-weight:600;">' +
     (rr.isAt52wLow ? "52-WEEK LOW" : pct != null ? pct + "% of 52w range" : "") + "</div>" +
-    '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">52w ' + (rr.low52w != null ? rr.low52w : "-") + " – " + (rr.high52w != null ? rr.high52w : "-") +
+    '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">52w ' + (rr.low52w != null ? rr.low52w : "-") + " – " + (rr.high52w != null ? rr.high52w : "-") +
     (rr.aboveSma200 != null ? (rr.aboveSma200 ? " · above 200-day avg" : " · below 200-day avg") : "") + "</div></div>";
   });
   h += "</div>";
@@ -12813,7 +12813,7 @@ route("alerts", function () {
 
   // Explainer AFTER visuals (standing rule)
   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
    '<b style="color:#dbe5f1;">The simple version:</b> This compares stocks people buy when they feel rich (restaurants, travel, cars) against stocks people buy no matter what (groceries, toothpaste). When money rotates into the boring stuff, big investors are bracing for trouble, even if the headline index still looks fine.<br><br>' +
    '<b style="color:#dbe5f1;">For long-term investors:</b> The equal-weighted line is the honest one. The cap-weighted version is dominated by Amazon and Tesla, so two stocks can mask what the other 98 are doing. When both lines break to 52-week lows together, the entire consumer sector is weakening, not just a mega-cap wobble. That has historically lined up with late-cycle caution, not a buying opportunity.<br><br>' +
    '<b style="color:#dbe5f1;">For active traders:</b> A high risk reading on this gauge while the S&P makes new highs is the classic hollow rally: the index is carried by a narrowing set of winners while institutions de-risk underneath. Use it as a regime filter. When this gauge reads extreme defensive, tighten stops and reduce cyclical exposure rather than chasing breakouts.' +
@@ -12829,7 +12829,7 @@ route("alerts", function () {
     '<div class="card"><p style="color:var(--muted)">Flow divergence data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const cur = F.current;
-  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
   const c = colorMap[cur.color] || "#dbe5f1";
 
   let h = '<div class="section"><div class="section-title">Institutional Flow Divergence ' + PRO_BADGE + '</div>' +
@@ -12837,7 +12837,7 @@ route("alerts", function () {
 
   // Plain-English explainer
   const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
    '<b style="color:#dbe5f1;">The simple version:</b> This model compares what everyday investors are feeling against what big institutions are actually doing. When the crowd is extremely optimistic but institutions are quietly hedging or selling, the market is vulnerable. When the crowd is fearful but institutions are buying, it is often a good time to be.<br><br>' +
    '<b style="color:#dbe5f1;">For long-term investors:</b> Extreme readings are rare and worth respecting. A HIGH VULNERABILITY reading means tops tend to form in this setup, so avoid adding aggressively. An INSTITUTIONAL ACCUMULATION reading means fear is high while institutional buyers step in, historically a good backdrop for long-term purchases.<br><br>' +
    '<b style="color:#dbe5f1;">For active traders:</b> The oscillator crossing +2.0 is the highest-conviction short-term risk signal on this page. Treat it like a storm warning: reduce leverage, tighten stops, and do not chase breakouts.' +
@@ -12847,27 +12847,27 @@ route("alerts", function () {
   // snapshot card; the raw oscillator stays visible as a labeled input.
   const hv = riskCardVal("flow_divergence");
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">FLOW REGIME</div>' +
+   '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">FLOW REGIME</div>' +
    '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(cur.status) + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:560px;">' + esc(cur.description || "") + "</div></div>" +
-   (hv.score != null ? '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8d99aa;">RISK SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' : "") +
-   '<div style="' + (hv.score != null ? "" : "margin-left:auto;") + 'text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#8d99aa;">OSCILLATOR (RAW INPUT)</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + (cur.oscillator > 0 ? "+" : "") + cur.oscillator + '<span style="font-size:16px;color:#8d99aa;">σ</span></div></div></div>';
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;max-width:560px;">' + esc(cur.description || "") + "</div></div>" +
+   (hv.score != null ? '<div style="margin-left:auto;text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#a9b7c9;">RISK SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' : "") +
+   '<div style="' + (hv.score != null ? "" : "margin-left:auto;") + 'text-align:right;flex-shrink:0;"><div style="font-size:11px;color:#a9b7c9;">OSCILLATOR (RAW INPUT)</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + (cur.oscillator > 0 ? "+" : "") + cur.oscillator + '<span style="font-size:16px;color:#a9b7c9;">σ</span></div></div></div>';
 
   // Component cards
   const ret = cur.retail || {}, inst = cur.institutional || {};
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
   h += '<div style="background:#101620;border-radius:10px;padding:12px;">' +
    '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">Retail Sentiment</div>' +
-   '<div style="font-size:11px;color:#8d99aa;margin:2px 0;">' + esc(ret.metric || "") + '</div>' +
+   '<div style="font-size:11px;color:#a9b7c9;margin:2px 0;">' + esc(ret.metric || "") + '</div>' +
    '<div style="font-size:20px;font-weight:800;color:#dbe5f1;">' + esc(ret.value || "-") + '</div>' +
-   '<div style="font-size:11px;color:#8d99aa;">Z-score ' + (ret.zScore > 0 ? "+" : "") + (ret.zScore != null ? ret.zScore : "-") + ' · ' + esc(ret.reading || "") + "</div>" +
+   '<div style="font-size:11px;color:#a9b7c9;">Z-score ' + (ret.zScore > 0 ? "+" : "") + (ret.zScore != null ? ret.zScore : "-") + ' · ' + esc(ret.reading || "") + "</div>" +
    '<div style="font-size:11px;color:#647184;margin-top:6px;">' + esc(ret.detail || "") + "</div></div>";
   h += '<div style="background:#101620;border-radius:10px;padding:12px;">' +
    '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">Institutional Positioning</div>' +
-   '<div style="font-size:11px;color:#8d99aa;margin:2px 0;">' + esc(inst.dixMetric || "") + ': <b style="color:#dbe5f1;">' + esc(inst.dixValue || "-") + '</b></div>' +
-   '<div style="font-size:11px;color:#8d99aa;margin:2px 0;">' + esc(inst.cotMetric || "") + ': <b style="color:#dbe5f1;">' + esc(inst.cotValue || "-") + '</b></div>' +
+   '<div style="font-size:11px;color:#a9b7c9;margin:2px 0;">' + esc(inst.dixMetric || "") + ': <b style="color:#dbe5f1;">' + esc(inst.dixValue || "-") + '</b></div>' +
+   '<div style="font-size:11px;color:#a9b7c9;margin:2px 0;">' + esc(inst.cotMetric || "") + ': <b style="color:#dbe5f1;">' + esc(inst.cotValue || "-") + '</b></div>' +
    '<div style="font-size:11px;color:#647184;margin-top:6px;">' + esc(inst.dixDetail || "") + " " + esc(inst.cotDetail || "") + "</div></div>";
   h += "</div>";
 
@@ -12900,10 +12900,10 @@ function oasDistressHtml() {
    '<div class="section-sub">Option-adjusted spreads across high-yield, investment-grade and CCC bonds, plus the speed spreads are moving. The score measures how unusual credit conditions are, not just how wide spreads are.</div>';
   // Score banner
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(headScore) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(headScore) + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(headRegime) + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">HY OAS ' + pct(O.hy_oas) +
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">HY OAS ' + pct(O.hy_oas) +
    " \u00B7 IG OAS " + pct(O.ig_oas) +
    " \u00B7 CCC OAS " + pct(IN.ccc_oas) +
    " \u00B7 Quality spread " + pct(O.quality_spread) +
@@ -12912,7 +12912,7 @@ function oasDistressHtml() {
   h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0;">';
   const mc = (label, val) =>
    '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
-   '<div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+   '<div style="font-size:11px;color:#a9b7c9;">' + label + '</div>' +
    '<div style="font-size:22px;font-weight:800;color:#dbe5f1;">' + val + "</div></div>";
   h += mc("HY OAS", pct(O.hy_oas));
   h += mc("IG OAS", pct(O.ig_oas));
@@ -12928,7 +12928,7 @@ function oasDistressHtml() {
   const compKeys = Object.keys(comps);
   if (compKeys.length) {
    h += '<div style="margin:12px 0;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-    '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;margin-bottom:10px;">COMPONENT READINGS</div>';
+    '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;margin-bottom:10px;">COMPONENT READINGS</div>';
    compKeys.forEach((k) => {
     const cp = comps[k];
     const val = cp.unit === "bp" ? sbp(cp.value) : pct(cp.value);
@@ -12937,7 +12937,7 @@ function oasDistressHtml() {
      '<div style="text-align:right;font-size:12px;color:#dbe5f1;font-weight:600;">' + val + '</div></div>';
    });
    if (IN.velocity_bp != null) {
-    h += '<div style="font-size:12px;color:#8d99aa;margin-top:10px;">Widening speed: HY spreads moved ' + sbp(IN.change_20d_bp) + " over 20 trading days and " + sbp(IN.change_60d_bp) + " over 60, a blended " + sbp(IN.velocity_bp) + ".</div>";
+    h += '<div style="font-size:12px;color:#a9b7c9;margin-top:10px;">Widening speed: HY spreads moved ' + sbp(IN.change_20d_bp) + " over 20 trading days and " + sbp(IN.change_60d_bp) + " over 60, a blended " + sbp(IN.velocity_bp) + ".</div>";
    }
    h += "</div>";
   }
@@ -12951,12 +12951,12 @@ function oasDistressHtml() {
   const sh = O.score_history || [];
   if (sh.length > 1) {
    h += '<div style="position:relative;height:200px;margin:12px 0;"><canvas id="oas-score-chart"></canvas></div>' +
-    '<div style="font-size:11px;color:#8d99aa;margin-top:-4px;">Credit Stress score, trailing year.</div>';
+    '<div style="font-size:11px;color:#a9b7c9;margin-top:-4px;">Credit Stress score, trailing year.</div>';
   }
   h += '<div class="panel-asof">As of ' + esc((O.as_of || "").slice(0, 10)) + "</div></div>";
   // Explainer AFTER the visuals
   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
    "An option-adjusted spread measures the extra yield investors demand to hold a corporate bond instead of a Treasury of the same maturity, after stripping out the value of embedded options such as call features. When spreads rise, investors are demanding more compensation for credit risk. When spreads fall, confidence is returning.<br><br>" +
    "High-yield spreads move with broad risk appetite and liquidity conditions. Investment-grade spreads move with those same forces but carry far less default risk. The gap between them, the quality spread, strips out what hits all bonds equally and leaves the part driven by fear of actual defaults. A widening quality spread means investors are repricing default risk in the weakest balance sheets, and that repricing has historically shown up in equities soon after.<br><br>" +
    "The score runs from 1 to 100 and blends five readings: the level of high-yield spreads, the speed they are widening or tightening, the quality spread, CCC spreads at the weakest end of the market, and the level of investment-grade spreads. The blend weighs the level of spreads alongside the speed they are moving, so a fast widening from tight levels registers even when the level still looks ordinary, and stress building in CCC names shows up even when headline high-yield spreads stay contained. Low readings mean credit conditions are calm. High readings mean several parts of the credit market are stressed at the same time. The model reads US corporate cash spreads only. It does not see European sovereign spreads, private credit, or equity volatility; those have their own gauges on this page. Credit markets turn before headlines do, so the gauge works best as a slow-moving backdrop rather than a timing signal." +
@@ -12971,8 +12971,8 @@ function oasDistressHtml() {
   const colorMap = { emerald: "#4dd2aa", yellow: "#d3c34c", amber: "#e0aa46", orange: "#e07f3e", rose: "#f37d83", red: "#e5484d" };
   const c = colorMap[O.color] || "#dbe5f1";
   return '<div id="risk-credit-stress" class="risk-anchor risk-snap-card" data-risk-card="risk-credit-stress" role="button" tabindex="0" title="Jump to Credit Stress" aria-label="Jump to Credit Stress" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
-   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">CREDIT STRESS</div>' +
-   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(O.score) + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
+   '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">CREDIT STRESS</div>' +
+   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(O.score) + '<span style="font-size:14px;color:#a9b7c9;">/100</span></div>' +
    '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(O.regime || "") + "</div></div>";
  }
 
@@ -12993,11 +12993,11 @@ function oasDistressHtml() {
     ]},
    options: { animation: false, responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+    plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
     scales: {
      x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
-     y: { title: { display: true, text: "bps", color: "#8d99aa" },
-          ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
+     y: { title: { display: true, text: "bps", color: "#a9b7c9" },
+          ticks: { color: "#a9b7c9" }, grid: { color: "rgba(42,46,57,0.4)" } },
     }},
   };
  }
@@ -13017,11 +13017,11 @@ function oasDistressHtml() {
     ]},
    options: { animation: false, responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+    plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
     scales: {
      x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
-     y: { min: 0, max: 100, title: { display: true, text: "score", color: "#8d99aa" },
-          ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
+     y: { min: 0, max: 100, title: { display: true, text: "score", color: "#a9b7c9" },
+          ticks: { color: "#a9b7c9" }, grid: { color: "rgba(42,46,57,0.4)" } },
     }},
   };
  }
@@ -13054,7 +13054,7 @@ function oasDistressHtml() {
 // Liquidity Stress Index (PRO): cross-asset deleveraging and carry
 // unwind monitor. Data: D.liquidity_stress (collector liquidity_stress.py).
 function liqColor(color) {
- return { emerald: "#3fb27f", amber: "#e8a33d", rose: "#e5534b" }[color] || "#8d99aa";
+ return { emerald: "#3fb27f", amber: "#e8a33d", rose: "#e5534b" }[color] || "#a9b7c9";
 }
 
 function liquidityStressHtml() {
@@ -13069,10 +13069,10 @@ function liquidityStressHtml() {
  const iv = lead.implied_vol || null;
  const rr = lead.risk_reversal || null;
  const fmtSignedInt = (v) => (v > 0 ? "+" : "") + Number(v).toLocaleString("en-US");
- const prevTxt = (txt) => txt != null ? '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">Prev ' + txt + '</div>' : "";
+ const prevTxt = (txt) => txt != null ? '<div style="font-size:11px;color:#a9b7c9;margin-top:4px;">Prev ' + txt + '</div>' : "";
  const leadCard = (label, big, sub, prev) =>
   '<div style="background:#101620;border:1px solid ' + c + '33;border-radius:10px;padding:14px;min-width:170px;flex:1;">' +
-  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + '</div>' +
+  '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">' + label + '</div>' +
   '<div style="font-size:30px;font-weight:800;color:#f5f7fa;font-family:monospace;">' + big + '</div>' +
   '<div style="font-size:12px;color:#dbe5f1;">' + sub + '</div>' + prev + '</div>';
  let h = '<div class="section"><div class="section-title">Liquidity Stress Index ' + PRO_BADGE + '</div>' +
@@ -13080,13 +13080,13 @@ function liquidityStressHtml() {
  // Regime banner
  h += '<div style="background:#101620;border-left:4px solid ' + c + ';border-radius:8px;padding:16px;margin-bottom:14px;">' +
   '<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;">' +
-  '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">LIQUIDITY STRESS SCORE</div>' +
-  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(L.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
-  '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">REGIME</div>' +
+  '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">LIQUIDITY STRESS SCORE</div>' +
+  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(L.score) + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
+  '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">REGIME</div>' +
   '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(L.regime || "") + '</div></div>' +
-  '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">COINCIDENT EXTREMES</div>' +
+  '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">COINCIDENT EXTREMES</div>' +
   '<div style="font-size:20px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + (L.extreme_count != null ? L.extreme_count : "N/A") + ' of 4</div></div>' +
-  '<div style="font-size:11px;color:#8d99aa;">As of ' + esc(L.as_of || "") + '</div></div></div>';
+  '<div style="font-size:11px;color:#a9b7c9;">As of ' + esc(L.as_of || "") + '</div></div></div>';
  // Leading indicator cards
  h += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">';
  h += leadCard("2Y UST VS 2Y JGB SPREAD",
@@ -13105,14 +13105,14 @@ function liquidityStressHtml() {
  // Plumbing charts (visuals before the explanation card)
  const plumb = L.plumbing || {};
  const corr = plumb.correlation || {};
- h += '<div style="font-size:12px;color:#8d99aa;margin:6px 0 2px;">USD/JPY vs Nasdaq correlation, current <b style="color:#f5f7fa;">' + (corr.current != null ? corr.current.toFixed(2) : "N/A") + '</b></div>';
+ h += '<div style="font-size:12px;color:#a9b7c9;margin:6px 0 2px;">USD/JPY vs Nasdaq correlation, current <b style="color:#f5f7fa;">' + (corr.current != null ? corr.current.toFixed(2) : "N/A") + '</b></div>';
  h += '<div class="zoomable-chart" data-chart="liquidity-stress-corr" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="liquidity-stress-corr-chart"></canvas>' +
   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#9974; click to zoom</div></div>';
  const pos = plumb.positioning || null;
  if (pos) {
   h += '<div class="zoomable-chart" data-chart="liquidity-stress-pos" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="liquidity-stress-pos-chart"></canvas>' +
    '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">&#9974; click to zoom</div></div>';
-  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0 10px;">Speculative net in CME yen futures ' + fmtSignedInt(pos.current_net) + ' contracts as of ' + esc(pos.as_of || "") + ', CFTC weekly.</div>';
+  h += '<div style="font-size:12px;color:#a9b7c9;margin:4px 0 10px;">Speculative net in CME yen futures ' + fmtSignedInt(pos.current_net) + ' contracts as of ' + esc(pos.as_of || "") + ', CFTC weekly.</div>';
  }
  // Coincident z-score board
  h += liqZBoardHtml(L.coincident || []);
@@ -13129,7 +13129,7 @@ function liqZBoardHtml(rows) {
  const X = (z) => cx + Math.max(-4.2, Math.min(4.2, z)) * scale;
  const barColor = (z) => z <= -2 ? "#e5534b" : z < 0 ? "#e8a33d" : z >= 2 ? "#3fb27f" : "#4dd2aa";
  let s = '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:14px;margin-top:12px;">' +
-  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;margin-bottom:6px;">COINCIDENT TRIGGERS, STANDARDIZED 20-DAY MOVES</div>' +
+  '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;margin-bottom:6px;">COINCIDENT TRIGGERS, STANDARDIZED 20-DAY MOVES</div>' +
   '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block;" role="img">';
  // reference lines at -3, -2, +2, +3 SD
  [-3, -2, 2, 3].forEach((lv) => {
@@ -13191,7 +13191,7 @@ function liqExplainHtml() {
   'Elevated Risk means at least one trigger is active, an extreme move, a locked correlation, or elevated vol, and leveraged positioning deserves a haircut. ' +
   'Cascade Liquidation means several assets are at statistical extremes at once, or extremes are running with the correlation locked and vol elevated, the combination seen in the August 2024 unwind. ' +
   'The index is a backdrop gauge, not a timing signal. It grades how much damage a yen shock would do today, given the positioning and correlations in place.');
- h += '<div style="font-size:11px;color:#8d99aa;margin-top:10px;">Data: FRED (DGS2), Japan Ministry of Finance, CFTC weekly positioning, listed options markets, daily market closes. Updated every trading morning.</div>';
+ h += '<div style="font-size:11px;color:#a9b7c9;margin-top:10px;">Data: FRED (DGS2), Japan Ministry of Finance, CFTC weekly positioning, listed options markets, daily market closes. Updated every trading morning.</div>';
  h += '</div>';
  return h;
 }
@@ -13207,10 +13207,10 @@ function liquidityStressCorrChartConfig() {
    { label: "Stress reference line", data: hist.map(() => 0.5), borderColor: "#e5534b", borderDash: [6, 4], fill: false, pointRadius: 0, pointHitRadius: 0, borderWidth: 1 },
   ]},
   options: { responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
-   plugins: { legend: { labels: { color: "#8d99aa" } }, title: { display: true, text: "USD/JPY vs Nasdaq, correlation of daily returns", color: "#dbe5f1", font: { size: 13 } } },
+   plugins: { legend: { labels: { color: "#a9b7c9" } }, title: { display: true, text: "USD/JPY vs Nasdaq, correlation of daily returns", color: "#dbe5f1", font: { size: 13 } } },
    scales: {
     x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
-    y: { min: -1, max: 1, ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
+    y: { min: -1, max: 1, ticks: { color: "#a9b7c9" }, grid: { color: "rgba(42,46,57,0.4)" } },
    }},
  };
 }
@@ -13227,10 +13227,10 @@ function liquidityStressPosChartConfig() {
      backgroundColor: hist.map((p) => p.net >= 0 ? "rgba(63,178,127,0.75)" : "rgba(229,83,75,0.75)"), borderWidth: 0 },
   ]},
   options: { responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
-   plugins: { legend: { labels: { color: "#8d99aa" } }, title: { display: true, text: "CFTC speculative net positioning, CME Japanese yen futures (weekly)", color: "#dbe5f1", font: { size: 13 } } },
+   plugins: { legend: { labels: { color: "#a9b7c9" } }, title: { display: true, text: "CFTC speculative net positioning, CME Japanese yen futures (weekly)", color: "#dbe5f1", font: { size: 13 } } },
    scales: {
     x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
-    y: { ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
+    y: { ticks: { color: "#a9b7c9" }, grid: { color: "rgba(42,46,57,0.4)" } },
    }},
  };
 }
@@ -13274,10 +13274,10 @@ function quadrantSectionHtml(M) {
   let h = "";
   // Dominant quadrant callout
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
-   '<div style="text-align:center;min-width:120px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">GROWTH Z / INFLATION Z</div>' +
-   '<div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + signed(Q.z_growth) + ' <span style="color:#8d99aa;">/</span> ' + signed(Q.z_inflation) + '</div></div>' +
+   '<div style="text-align:center;min-width:120px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">GROWTH Z / INFLATION Z</div>' +
+   '<div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + signed(Q.z_growth) + ' <span style="color:#a9b7c9;">/</span> ' + signed(Q.z_inflation) + '</div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + dc + ';">' + esc(Q.quadrant_label || "") + ' \u00B7 ' + esc(Q.dominant_name || "") + '</div>' +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">The dominant quadrant carries a ' + f1(P[Q.dominant]) + '% probability weight. The dashed path on the map traces the weekly position over the past 90 days, with each point computed only from data available on that date.</div></div></div>';
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">The dominant quadrant carries a ' + f1(P[Q.dominant]) + '% probability weight. The dashed path on the map traces the weekly position over the past 90 days, with each point computed only from data available on that date.</div></div></div>';
   // (1) 2D quadrant plot in SVG
   const W = 660, H = 436, x0 = 62, x1 = 618, y0 = 24, y1 = 376;
   const clamp = (z) => Math.max(-3, Math.min(3, z));
@@ -13291,10 +13291,10 @@ function quadrantSectionHtml(M) {
   svg += '<rect x="' + zx.toFixed(1) + '" y="' + zy.toFixed(1) + '" width="' + (x1 - zx).toFixed(1) + '" height="' + (y1 - zy).toFixed(1) + '" fill="' + quadFill.goldilocks + '"/>';
   [-3, -2, -1, 0, 1, 2, 3].forEach((t) => {
    const gx = px(t), gy = py(t), zero = t === 0;
-   svg += '<line x1="' + gx.toFixed(1) + '" y1="' + y0 + '" x2="' + gx.toFixed(1) + '" y2="' + y1 + '" stroke="' + (zero ? "#8d99aa" : "rgba(139,148,158,0.18)") + '" stroke-width="' + (zero ? 1.4 : 1) + '"/>';
-   svg += '<line x1="' + x0 + '" y1="' + gy.toFixed(1) + '" x2="' + x1 + '" y2="' + gy.toFixed(1) + '" stroke="' + (zero ? "#8d99aa" : "rgba(139,148,158,0.18)") + '" stroke-width="' + (zero ? 1.4 : 1) + '"/>';
-   svg += '<text x="' + gx.toFixed(1) + '" y="' + (y1 + 16) + '" fill="#8d99aa" font-size="10" text-anchor="middle">' + (t > 0 ? "+" + t : t) + '</text>';
-   svg += '<text x="' + (x0 - 8) + '" y="' + (gy + 3).toFixed(1) + '" fill="#8d99aa" font-size="10" text-anchor="end">' + (t > 0 ? "+" + t : t) + '</text>';
+   svg += '<line x1="' + gx.toFixed(1) + '" y1="' + y0 + '" x2="' + gx.toFixed(1) + '" y2="' + y1 + '" stroke="' + (zero ? "#a9b7c9" : "rgba(139,148,158,0.18)") + '" stroke-width="' + (zero ? 1.4 : 1) + '"/>';
+   svg += '<line x1="' + x0 + '" y1="' + gy.toFixed(1) + '" x2="' + x1 + '" y2="' + gy.toFixed(1) + '" stroke="' + (zero ? "#a9b7c9" : "rgba(139,148,158,0.18)") + '" stroke-width="' + (zero ? 1.4 : 1) + '"/>';
+   svg += '<text x="' + gx.toFixed(1) + '" y="' + (y1 + 16) + '" fill="#a9b7c9" font-size="10" text-anchor="middle">' + (t > 0 ? "+" + t : t) + '</text>';
+   svg += '<text x="' + (x0 - 8) + '" y="' + (gy + 3).toFixed(1) + '" fill="#a9b7c9" font-size="10" text-anchor="end">' + (t > 0 ? "+" + t : t) + '</text>';
   });
   const lbl = (k, x, y, anchor) => '<text x="' + x + '" y="' + y + '" fill="' + quadColors[k] + '" font-size="12" font-weight="700" text-anchor="' + anchor + '">' + quadNum[k] + ' \u00B7 ' + quadName[k].toUpperCase() + ' \u00B7 ' + f1(P[k]) + '%</text>';
   svg += lbl("stagflation", x0 + 10, y0 + 20, "start");
@@ -13307,16 +13307,16 @@ function quadrantSectionHtml(M) {
   }
   traj.forEach((p, i) => {
    if (i === traj.length - 1) return;
-   svg += '<circle cx="' + px(p.z_growth).toFixed(1) + '" cy="' + py(p.z_inflation).toFixed(1) + '" r="3.5" fill="#8d99aa"><title>' + esc(p.date) + ' \u00B7 Growth Z ' + f2(p.z_growth) + ' \u00B7 Inflation Z ' + f2(p.z_inflation) + '</title></circle>';
+   svg += '<circle cx="' + px(p.z_growth).toFixed(1) + '" cy="' + py(p.z_inflation).toFixed(1) + '" r="3.5" fill="#a9b7c9"><title>' + esc(p.date) + ' \u00B7 Growth Z ' + f2(p.z_growth) + ' \u00B7 Inflation Z ' + f2(p.z_inflation) + '</title></circle>';
   });
   svg += '<circle cx="' + px(Q.z_growth).toFixed(1) + '" cy="' + py(Q.z_inflation).toFixed(1) + '" r="8" fill="#e0aa46" stroke="#f5f7fa" stroke-width="2.5"><title>' + esc(Q.as_of || "") + ' \u00B7 Growth Z ' + f2(Q.z_growth) + ' \u00B7 Inflation Z ' + f2(Q.z_inflation) + '</title></circle>';
-  svg += '<text x="' + x0 + '" y="' + (H - 6) + '" fill="#8d99aa" font-size="10" text-anchor="start">\u2190 Growth contraction</text>';
+  svg += '<text x="' + x0 + '" y="' + (H - 6) + '" fill="#a9b7c9" font-size="10" text-anchor="start">\u2190 Growth contraction</text>';
   svg += '<text x="' + ((x0 + x1) / 2) + '" y="' + (H - 6) + '" fill="#dbe5f1" font-size="11" font-weight="700" text-anchor="middle">Growth momentum (Z)</text>';
-  svg += '<text x="' + x1 + '" y="' + (H - 6) + '" fill="#8d99aa" font-size="10" text-anchor="end">Growth acceleration \u2192</text>';
+  svg += '<text x="' + x1 + '" y="' + (H - 6) + '" fill="#a9b7c9" font-size="10" text-anchor="end">Growth acceleration \u2192</text>';
   svg += '<text transform="rotate(-90 16 ' + ((y0 + y1) / 2) + ')" x="16" y="' + ((y0 + y1) / 2) + '" fill="#dbe5f1" font-size="11" font-weight="700" text-anchor="middle">Inflation momentum (Z)</text>';
   svg += "</svg>";
   h += '<div class="card" style="padding:16px;margin:12px 0;">' + svg +
-   '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Reflation sits top right, goldilocks bottom right, deflation bottom left, and stagflation top left. Inflation momentum builds toward the top of the map while disinflation deepens toward the bottom.</div></div>';
+   '<div style="font-size:11px;color:#a9b7c9;margin-top:8px;">Reflation sits top right, goldilocks bottom right, deflation bottom left, and stagflation top left. Inflation momentum builds toward the top of the map while disinflation deepens toward the bottom.</div></div>';
   // (2) Quadrant probability cards
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin:12px 0;">';
   ["reflation", "goldilocks", "deflation", "stagflation"].forEach((k) => {
@@ -13326,7 +13326,7 @@ function quadrantSectionHtml(M) {
     '<div style="font-size:13px;font-weight:700;color:' + qc + ';">' + quadNum[k] + ' \u00B7 ' + quadName[k] + '</div>' +
     '<div style="font-size:18px;font-weight:800;color:' + qc + ';">' + f1(P[k]) + '%</div></div>' +
     '<div style="height:6px;background:#101620;border-radius:3px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + Math.min(100, P[k] || 0) + '%;background:' + qc + ';border-radius:3px;"></div></div>' +
-    '<div style="font-size:11px;color:#8d99aa;">' + quadDesc[k] + (dom ? ' \u00B7 <span style="color:' + qc + ';font-weight:700;">DOMINANT</span>' : "") + '</div></div>';
+    '<div style="font-size:11px;color:#a9b7c9;">' + quadDesc[k] + (dom ? ' \u00B7 <span style="color:' + qc + ';font-weight:700;">DOMINANT</span>' : "") + '</div></div>';
   });
   h += "</div>";
   // Axis components: named gauges with their current readings. The
@@ -13334,13 +13334,13 @@ function quadrantSectionHtml(M) {
   const gc = Q.growth_components || {}, ic = Q.inflation_components || {};
   const compNames = { copper_gold: "Copper/gold ratio", indpro_momentum: "Industrial production", curve: "Curve level", breakeven: "Breakeven inflation", cpi_momentum: "CPI momentum", oil: "Crude oil" };
   const compCell = (k, comps) =>
-   '<div style="flex:1;min-width:130px;"><div style="font-size:11px;color:#8d99aa;">' + compNames[k] + '</div>' +
+   '<div style="flex:1;min-width:130px;"><div style="font-size:11px;color:#a9b7c9;">' + compNames[k] + '</div>' +
    '<div style="font-size:16px;font-weight:700;color:#dbe5f1;">' + signed(comps[k]) + '</div></div>';
   const missing = Object.keys(compNames).filter((k) => (k in gc ? gc[k] : ic[k]) == null);
   h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What is driving the two axes</div>' +
-   '<div style="font-size:11px;color:#8d99aa;margin-bottom:6px;">GROWTH AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
+   '<div style="font-size:11px;color:#a9b7c9;margin-bottom:6px;">GROWTH AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
    ["copper_gold", "indpro_momentum", "curve"].map((k) => compCell(k, gc)).join("") + '</div>' +
-   '<div style="font-size:11px;color:#8d99aa;margin:10px 0 6px;">INFLATION AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
+   '<div style="font-size:11px;color:#a9b7c9;margin:10px 0 6px;">INFLATION AXIS</div><div style="display:flex;gap:12px;flex-wrap:wrap;">' +
    ["breakeven", "cpi_momentum", "oil"].map((k) => compCell(k, ic)).join("") + '</div>' +
    (missing.length ? '<div style="font-size:11px;color:#e0aa46;margin-top:8px;">Reduced coverage in this snapshot. ' + missing.map((k) => compNames[k]).join(", ") + ' could not be computed in this snapshot.</div>' : "") +
    '</div>';
@@ -13351,10 +13351,10 @@ function quadrantSectionHtml(M) {
     ["Equities", A.equities, "#58a6ff"],
     ["Fixed income and duration", A.fixed_income, "#4dd2aa"],
     ["Commodities and real assets", A.commodities, "#e0aa46"],
-    ["Cash and T-bills", A.cash, "#8d99aa"],
+    ["Cash and T-bills", A.cash, "#a9b7c9"],
    ];
    h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:4px;">Tactical allocation, blended by quadrant probabilities</div>' +
-    '<div style="font-size:12px;color:#8d99aa;margin-bottom:12px;">Target weights blend all four desk playbooks by their live probabilities and sum to 100%. The tilts and mandate come from the dominant quadrant, ' + esc(quadName[Q.dominant] || "") + '.</div>';
+    '<div style="font-size:12px;color:#a9b7c9;margin-bottom:12px;">Target weights blend all four desk playbooks by their live probabilities and sum to 100%. The tilts and mandate come from the dominant quadrant, ' + esc(quadName[Q.dominant] || "") + '.</div>';
    allocRows.forEach((r) => {
     h += '<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:#dbe5f1;">' + r[0] + '</span><span style="font-weight:700;color:#dbe5f1;">' + (r[1] != null ? f1(r[1]) + "%" : "N/A") + '</span></div>' +
      '<div style="height:8px;background:#101620;border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, r[1] || 0) + '%;background:' + r[2] + ';border-radius:4px;"></div></div></div>';
@@ -13362,15 +13362,15 @@ function quadrantSectionHtml(M) {
    const chip = (t, up) => '<span style="display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;margin:0 6px 6px 0;' + (up ? "background:rgba(63,185,80,0.12);border:1px solid rgba(63,185,80,0.45);color:#56d364;" : "background:rgba(248,81,73,0.10);border:1px solid rgba(248,81,73,0.45);color:#ff7b72;") + '">' + esc(t) + '</span>';
    h += '<div style="margin-top:12px;"><div style="font-size:11px;color:#56d364;font-weight:700;margin-bottom:6px;">TACTICAL OVERWEIGHTS</div><div>' + (A.overweight || []).map((t) => chip(t, true)).join("") + '</div>' +
     '<div style="font-size:11px;color:#ff7b72;font-weight:700;margin:6px 0;">TACTICAL UNDERWEIGHTS</div><div>' + (A.underweight || []).map((t) => chip(t, false)).join("") + '</div>' +
-    '<p style="font-size:13px;color:#8d99aa;line-height:1.6;margin:10px 0 0;">' + esc(A.mandate || "") + '</p></div></div>';
+    '<p style="font-size:13px;color:#a9b7c9;line-height:1.6;margin:10px 0 0;">' + esc(A.mandate || "") + '</p></div></div>';
   }
   // (4) Financial conditions and plumbing strip
   const PL = Q.plumbing || {};
   const nf = PL.nfci || {}, cs = PL.curve_slope || {}, tp = PL.term_premium || {}, rp = PL.real_policy || {};
   const pc = (label, val, sub) =>
-   '<div class="card"><div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+   '<div class="card"><div style="font-size:11px;color:#a9b7c9;">' + label + '</div>' +
    '<div style="font-size:24px;font-weight:800;color:#dbe5f1;">' + val + '</div>' +
-   (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">' + sub + "</div>" : "") + "</div>";
+   (sub ? '<div style="font-size:11px;color:#a9b7c9;margin-top:4px;">' + sub + "</div>" : "") + "</div>";
   const stanceTxt = rp.stance ? rp.stance.charAt(0).toUpperCase() + rp.stance.slice(1) : null;
   h += '<div style="font-size:13px;font-weight:700;color:#dbe5f1;margin:16px 0 4px;">Financial conditions and plumbing</div>' +
    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:8px 0 12px;">' +
@@ -13395,7 +13395,7 @@ function macroRegimeHtml() {
    return '<div class="section"><div class="section-title">Macro Regime Model ' + PRO_BADGE + '</div>' +
     '<div class="card"><p style="color:var(--muted)">Macro Regime data unavailable. Check back after the next refresh.</p></div></div>';
   }
-  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
   const c = colorMap[M.color] || "#dbe5f1";
   const f2 = (v) => v != null ? Number(v).toFixed(2) : "N/A";
   const f1 = (v) => v != null ? Number(v).toFixed(1) : "N/A";
@@ -13415,10 +13415,10 @@ function macroRegimeHtml() {
   // Score banner
   h += '<div style="font-size:13px;font-weight:700;color:#dbe5f1;margin:16px 0 4px;">Sovereign yield layer</div>' +
    '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">BLOWOUT RISK</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">BLOWOUT RISK</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + M.score + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(M.regime || "") + '</div>' +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Dominant regime carries a ' + pct((M.probabilities || {})[M.regime_key]) + ' probability weight' +
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">Dominant regime carries a ' + pct((M.probabilities || {})[M.regime_key]) + ' probability weight' +
    " \u00B7 Expected 10Y " + (M.expected_10y != null ? f2(M.expected_10y) + "%" : "N/A") +
    " \u00B7 US 10Y now " + ((M.yields || {}).us_10y != null ? f2(M.yields.us_10y) + "%" : "N/A") + "</div></div></div>";
   // (1) Regime probability bars
@@ -13432,15 +13432,15 @@ function macroRegimeHtml() {
     '<div style="font-size:13px;font-weight:700;color:#dbe5f1;">' + esc(sc.name) + (dom ? ' <span style="font-size:10px;font-weight:800;color:' + rc + ';letter-spacing:0.5px;">DOMINANT</span>' : "") + '</div>' +
     '<div style="font-size:18px;font-weight:800;color:' + rc + ';">' + pct(sc.prob) + '</div></div>' +
     '<div style="height:6px;background:#101620;border-radius:3px;overflow:hidden;margin:8px 0;"><div style="height:100%;width:' + Math.min(100, sc.prob || 0) + '%;background:' + rc + ';border-radius:3px;"></div></div>' +
-    '<div style="font-size:11px;color:#8d99aa;">US 10Y scenario range ' + f2(sc.range_low) + "% to " + f2(sc.range_high) + "%</div></div>";
+    '<div style="font-size:11px;color:#a9b7c9;">US 10Y scenario range ' + f2(sc.range_low) + "% to " + f2(sc.range_high) + "%</div></div>";
   });
   h += "</div>";
   // (2) Expected value and tails
   const mc = (label, val, sub) =>
    '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
-   '<div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+   '<div style="font-size:11px;color:#a9b7c9;">' + label + '</div>' +
    '<div style="font-size:22px;font-weight:800;color:#dbe5f1;">' + val + "</div>" +
-   (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
+   (sub ? '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0;">' +
    mc("EXPECTED 10Y (12M)", M.expected_10y != null ? f2(M.expected_10y) + "%" : "N/A", "probability-weighted across regimes") +
    mc("SIGMA BAND", M.sigma_bps != null ? "\u00B1" + f1(M.sigma_bps) + " bps" : "N/A", (M.band_low != null ? f2(M.band_low) + "% to " + f2(M.band_high) + "%" : "")) +
@@ -13461,13 +13461,13 @@ function macroRegimeHtml() {
    row("UK Gilt 10Y", (F.gilt || {}).current, monthLabel((F.gilt || {}).as_of), (F.gilt || {}).weighted) +
    row("Japan JGB 10Y", (F.jgb || {}).current, monthLabel((F.jgb || {}).as_of), (F.jgb || {}).weighted) +
    "</tbody></table></div></div>" +
-   '<div style="font-size:11px;color:#8d99aa;margin:-4px 0 12px;">Foreign yields are monthly OECD observations and lag the daily US data. The probability-weighted column blends the four regimes by their current probabilities.</div>';
+   '<div style="font-size:11px;color:#a9b7c9;margin:-4px 0 12px;">Foreign yields are monthly OECD observations and lag the daily US data. The probability-weighted column blends the four regimes by their current probabilities.</div>';
   // (4) Term premium and curve readouts
   const TP = M.term_premium || {};
   const rc2 = (label, val, sub) =>
-   '<div class="card"><div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+   '<div class="card"><div style="font-size:11px;color:#a9b7c9;">' + label + '</div>' +
    '<div style="font-size:24px;font-weight:800;color:#dbe5f1;">' + val + '</div>' +
-   (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">' + sub + "</div>" : "") + "</div>";
+   (sub ? '<div style="font-size:11px;color:#a9b7c9;margin-top:4px;">' + sub + "</div>" : "") + "</div>";
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:12px 0;">' +
    rc2("TERM PREMIUM (KIM-WRIGHT 10Y)", TP.level != null ? f2(TP.level) + "%" : "N/A",
      (TP.chg_20d_bps != null ? bp(TP.chg_20d_bps) + " over 20 sessions" : "20-session change N/A") + (TP.as_of ? " \u00B7 as of " + esc(String(TP.as_of).slice(0, 10)) : "")) +
@@ -13486,7 +13486,7 @@ function macroRegimeHtml() {
   const sigs = M.signals || [];
   if (sigs.length) {
    h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">Signals moving the probabilities today</div>' +
-    '<div style="font-size:13px;color:#8d99aa;line-height:1.7;">' +
+    '<div style="font-size:13px;color:#a9b7c9;line-height:1.7;">' +
     sigs.map((s) => "\u2022 " + esc(s)).join("<br>") + "</div></div>";
   }
   // (5) Probability history chart (drawn by drawMacroRegimeChart)
@@ -13498,7 +13498,7 @@ function macroRegimeHtml() {
   h += '<div class="panel-asof">As of ' + esc((M.as_of || "").slice(0, 10)) + "</div></div>";
   // (6) Explainer AFTER the visuals
   h += '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
    "The first layer reads the economy itself rather than bond prices. Every asset class ultimately prices two forces, growth and inflation, so the model standardizes each into a momentum score built from market and activity gauges, including the copper to gold ratio, industrial production, the curve, breakeven inflation, consumer prices, and crude oil. The position on the map selects one of four quadrants, and the model converts that position into probabilities instead of a single asserted regime. The allocation panel blends the four desk playbooks by those probabilities, so positioning migrates gradually as the economy moves rather than flipping on one data print.<br><br>" +
    "The plumbing strip tracks how tightly money is moving while that migration unfolds. The Chicago Fed conditions index summarizes credit availability across debt, equity, and shadow banking channels. The real policy rate strips core inflation out of the effective fed funds rate and compares the result with an assumed neutral band, which shows whether policy is adding restraint or quietly easing. Loose plumbing alongside building inflation momentum is the combination that tends to feed the blowout odds in the sovereign layer, because ample credit lets heavy Treasury supply clear at rising yields until demand finally balks.<br><br>" +
    "The sovereign layer frames the next 6 to 12 months for the US 10-year yield as a contest between four regimes. A fiscal blowout, where heavy Treasury supply and fading foreign demand push long yields materially higher. A higher-for-longer plateau, where sticky inflation and a heavy issuance calendar keep yields elevated without disorder. A growth deceleration, where a credit or labor slowdown restores the traditional duration bid. And a liquidity shock, where a funding fracture forces emergency easing. Probabilities shift every day with observable signals, so the mix reflects where the evidence is building rather than a fixed view.<br><br>" +
@@ -13530,11 +13530,11 @@ function macroRegimeHtml() {
     ]},
    options: { animation: false, responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
-    plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+    plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
     scales: {
      x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
-     y: { title: { display: true, text: "probability %", color: "#8d99aa" },
-          ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
+     y: { title: { display: true, text: "probability %", color: "#a9b7c9" },
+          ticks: { color: "#a9b7c9" }, grid: { color: "rgba(42,46,57,0.4)" } },
     }},
   };
  }
@@ -13556,7 +13556,7 @@ function macroRegimeHtml() {
 // momentum, Taylor policy gap, sovereign fragmentation. The nowcast
 // headline is a momentum score (high = strong economy); the Taylor
 // headline value is the raw policy gap in bps, not a 0-100 score.
-const GM_COLORS = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+const GM_COLORS = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
 const GM_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 function gmMonthLabel(d) {
  if (!d) return "";
@@ -13570,17 +13570,17 @@ function gmQuarterLabel(d) {
 }
 function gmCard(label, val, sub) {
  return '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
-  '<div style="font-size:11px;color:#8d99aa;">' + label + '</div>' +
+  '<div style="font-size:11px;color:#a9b7c9;">' + label + '</div>' +
   '<div style="font-size:22px;font-weight:800;color:#dbe5f1;">' + val + "</div>" +
-  (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
+  (sub ? '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
 }
 function gmBanner(label, big, unit, regime, color, sub) {
  const c = GM_COLORS[color] || "#dbe5f1";
  return '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
-  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + "</div>" +
-  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + big + (unit ? '<span style="font-size:16px;color:#8d99aa;">' + unit + "</span>" : "") + "</div></div>" +
+  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">' + label + "</div>" +
+  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + big + (unit ? '<span style="font-size:16px;color:#a9b7c9;">' + unit + "</span>" : "") + "</div></div>" +
   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div>" +
-  (sub ? '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">' + sub + "</div>" : "") + "</div></div>";
+  (sub ? '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">' + sub + "</div>" : "") + "</div></div>";
 }
 function gmChart(id, chartKey) {
  return '<div class="zoomable-chart" data-chart="' + chartKey + '" style="position:relative;height:280px;margin:12px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="' + id + '"></canvas>' +
@@ -13596,7 +13596,7 @@ function gmMissing(title) {
 }
 function gmExplainer(paras) {
  return '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' + paras + "</div></div>";
+  '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' + paras + "</div></div>";
 }
 function gmModels() { return (D.advanced_macro || {}).models || {}; }
 
@@ -13617,7 +13617,7 @@ function fiscalDominanceHtml() {
   gmCard("DEBT TO GDP", M.debt_gdp_pct != null ? f1(M.debt_gdp_pct) + "%" : "N/A", "total public debt" + (M.debt_gdp_as_of ? ", " + gmQuarterLabel(M.debt_gdp_as_of) : "")) +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Interest burden over the last 16 quarters.</div>';
+  h += '<div style="font-size:12px;color:#a9b7c9;margin:4px 0;">Interest burden over the last 16 quarters.</div>';
   h += gmChart("fiscal-dominance-chart", "fiscal-dominance");
  }
  h += gmAsof(M, gmQuarterLabel(M.as_of));
@@ -13644,7 +13644,7 @@ function eurodollarStressHtml() {
   gmCard("DOLLAR VELOCITY", sz(M.velocity_z), "recent change against its own distribution") +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Stress score over the last 120 trading days. Sustained elevated readings have accompanied offshore funding strains, and the highest readings mark an active squeeze.</div>';
+  h += '<div style="font-size:12px;color:#a9b7c9;margin:4px 0;">Stress score over the last 120 trading days. Sustained elevated readings have accompanied offshore funding strains, and the highest readings mark an active squeeze.</div>';
   h += gmChart("eurodollar-stress-chart", "eurodollar-stress");
  }
  h += gmAsof(M);
@@ -13673,7 +13673,7 @@ function economicNowcastHtml() {
   gmCard("INITIAL CLAIMS 4WK", M.claims_4wk != null ? Math.round(M.claims_4wk).toLocaleString() : "N/A", "52-week mean " + (M.claims_52wk != null ? Math.round(M.claims_52wk).toLocaleString() : "N/A")) +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Risk score over the last 52 weeks, the mirror of the underlying momentum gauge. The recessionary zone sits at 65 and above on this scale, and strong momentum at 35 and below.</div>';
+  h += '<div style="font-size:12px;color:#a9b7c9;margin:4px 0;">Risk score over the last 52 weeks, the mirror of the underlying momentum gauge. The recessionary zone sits at 65 and above on this scale, and strong momentum at 35 and below.</div>';
   h += gmChart("nowcast-momentum-chart", "nowcast-momentum");
  }
  h += gmAsof(M);
@@ -13707,7 +13707,7 @@ function taylorGapHtml() {
   gmCard("OUTPUT GAP", M.output_gap != null ? (M.output_gap > 0 ? "+" : "") + f2(M.output_gap) + "%" : "N/A", "from unemployment at " + (M.unrate != null ? f2(M.unrate) + "%" : "N/A")) +
   "</div>";
  if ((M.history || []).length) {
-  h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0;">Effective fed funds against the Taylor prescription over the last 24 months. Where the gold line runs above the purple line, policy is tighter than the rule prescribes.</div>';
+  h += '<div style="font-size:12px;color:#a9b7c9;margin:4px 0;">Effective fed funds against the Taylor prescription over the last 24 months. Where the gold line runs above the purple line, policy is tighter than the rule prescribes.</div>';
   h += gmChart("taylor-gap-chart", "taylor-gap");
  }
  h += gmAsof(M, gmMonthLabel(M.as_of));
@@ -13743,7 +13743,7 @@ function sovereignFragmentationHtml() {
    gmCard("FRANCE 10Y SPOT", M.spot_france_10y != null ? f2(M.spot_france_10y) + "%" : "N/A", "spot yield on " + spotLabel) +
    gmCard("GERMANY 10Y SPOT", M.spot_germany_10y != null ? f2(M.spot_germany_10y) + "%" : "N/A", "spot yield on " + spotLabel) +
    "</div>" +
-   '<div style="font-size:11px;color:#8d99aa;margin:-4px 0 12px;">The cards above are the latest monthly OECD prints. The spot marker is the live market spread on the date shown and refreshes daily, so stress building in French paper shows on this panel weeks before the monthly print can confirm it.</div>';
+   '<div style="font-size:11px;color:#a9b7c9;margin:-4px 0 12px;">The cards above are the latest monthly OECD prints. The spot marker is the live market spread on the date shown and refreshes daily, so stress building in French paper shows on this panel weeks before the monthly print can confirm it.</div>';
  }
  h += '<div class="card" style="padding:0;overflow:hidden;margin:12px 0;"><div class="table-wrap"><table class="coverage">' +
   "<thead><tr><th>Sovereign 10Y Benchmark</th><th>Yield</th><th>Basis</th></tr></thead><tbody>" +
@@ -13751,7 +13751,7 @@ function sovereignFragmentationHtml() {
   yrow("Germany Bund 10Y", M.germany_10y, "monthly, " + gmMonthLabel(M.as_of)) +
   yrow("France OAT 10Y", M.france_10y, "monthly, " + gmMonthLabel(M.as_of)) +
   "</tbody></table></div></div>" +
-  '<div style="font-size:11px;color:#8d99aa;margin:-4px 0 12px;">Spreads are computed on the latest month all three series share, because the Italian print lags the German and French releases. The Bund card above shows the newest German print on its own.</div>';
+  '<div style="font-size:11px;color:#a9b7c9;margin:-4px 0 12px;">Spreads are computed on the latest month all three series share, because the Italian print lags the German and French releases. The Bund card above shows the newest German print on its own.</div>';
  if ((M.history || []).length) {
   h += gmChart("fragmentation-chart", "fragmentation");
  }
@@ -13783,8 +13783,8 @@ function taylorGapFreeCard() {
  const c = GM_COLORS[T.color] || "#dbe5f1";
  const g = Math.round(T.score);
  return '<div id="risk-taylor-gap" class="risk-anchor risk-snap-card" data-risk-card="risk-taylor-gap" role="button" tabindex="0" title="Jump to Taylor Gap" aria-label="Jump to Taylor Gap" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
-  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">TAYLOR GAP</div>' +
-  '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + (g > 0 ? "+" : "") + g + '<span style="font-size:14px;color:#8d99aa;"> bps</span></div>' +
+  '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">TAYLOR GAP</div>' +
+  '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + (g > 0 ? "+" : "") + g + '<span style="font-size:14px;color:#a9b7c9;"> bps</span></div>' +
   '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(T.regime || "") + "</div></div>";
 }
 
@@ -13847,11 +13847,11 @@ function gmSeriesFor(kind) {
 function gmChartOptions(yTitle) {
  return { animation: false, responsive: true, maintainAspectRatio: false,
   interaction: { mode: "index", intersect: false },
-  plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+  plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
   scales: {
    x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
-   y: { title: { display: true, text: yTitle, color: "#8d99aa" },
-        ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" } },
+   y: { title: { display: true, text: yTitle, color: "#a9b7c9" },
+        ticks: { color: "#a9b7c9" }, grid: { color: "rgba(42,46,57,0.4)" } },
   }};
 }
 function gmHistoryChartConfig(kind) {
@@ -13895,10 +13895,10 @@ function realYieldShockHtml() {
    h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
     '<div style="font-size:13px;font-weight:800;padding:6px 14px;border-radius:20px;background:' + c + '22;color:' + c + ';border:1px solid ' + c + ';">' + esc(R.regime || "N/A") + "</div>" +
     '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:1;min-width:260px;">' +
-    '<div><div style="font-size:11px;color:#8d99aa;">SHOCK SCORE</div><div style="font-size:26px;font-weight:800;color:' + c + ';">' + (riskCardVal("real_yield_shock").score != null ? fmtScore(riskCardVal("real_yield_shock").score) + '<span style="font-size:13px;color:#8d99aa;">/100</span>' : "N/A") + "</div></div>" +
-    '<div><div style="font-size:11px;color:#8d99aa;">10Y REAL YIELD</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.tips_10y != null ? f2(R.tips_10y) + "%" : "N/A") + "</div></div>" +
-    '<div><div style="font-size:11px;color:#8d99aa;">FAIR P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.fair_pe != null ? f1(R.fair_pe) + "x" : "N/A") + "</div></div>" +
-    '<div><div style="font-size:11px;color:#8d99aa;">BENCHMARK P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.benchmark_pe != null ? f1(R.benchmark_pe) + "x" : "N/A") + "</div></div>" +
+    '<div><div style="font-size:11px;color:#a9b7c9;">SHOCK SCORE</div><div style="font-size:26px;font-weight:800;color:' + c + ';">' + (riskCardVal("real_yield_shock").score != null ? fmtScore(riskCardVal("real_yield_shock").score) + '<span style="font-size:13px;color:#a9b7c9;">/100</span>' : "N/A") + "</div></div>" +
+    '<div><div style="font-size:11px;color:#a9b7c9;">10Y REAL YIELD</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.tips_10y != null ? f2(R.tips_10y) + "%" : "N/A") + "</div></div>" +
+    '<div><div style="font-size:11px;color:#a9b7c9;">FAIR P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.fair_pe != null ? f1(R.fair_pe) + "x" : "N/A") + "</div></div>" +
+    '<div><div style="font-size:11px;color:#a9b7c9;">BENCHMARK P/E</div><div style="font-size:26px;font-weight:800;color:#dbe5f1;">' + (R.benchmark_pe != null ? f1(R.benchmark_pe) + "x" : "N/A") + "</div></div>" +
     "</div></div>";
   } else {
    // Blurred gauge for free users: structure only, readings withheld.
@@ -13906,22 +13906,22 @@ function realYieldShockHtml() {
     '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;flex-wrap:wrap;">' +
     '<div class="snap-blur" style="width:140px;height:32px;border-radius:16px;"></div>' +
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-width:260px;">' +
-    '<div><div style="font-size:11px;color:#8d99aa;">10Y REAL YIELD</div><div class="snap-blur" style="width:110px;height:32px;margin-top:4px;"></div></div>' +
-    '<div><div style="font-size:11px;color:#8d99aa;">SHOCK SCORE</div><div class="snap-blur" style="width:110px;height:32px;margin-top:4px;"></div></div>' +
+    '<div><div style="font-size:11px;color:#a9b7c9;">10Y REAL YIELD</div><div class="snap-blur" style="width:110px;height:32px;margin-top:4px;"></div></div>' +
+    '<div><div style="font-size:11px;color:#a9b7c9;">SHOCK SCORE</div><div class="snap-blur" style="width:110px;height:32px;margin-top:4px;"></div></div>' +
     "</div></div>";
   }
   if (isProUser) {
    // Pro details: implied compression + real yield z-score
    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">' +
-    '<div class="card"><div style="font-size:11px;color:#8d99aa;">IMPLIED MULTIPLE COMPRESSION</div>' +
+    '<div class="card"><div style="font-size:11px;color:#a9b7c9;">IMPLIED MULTIPLE COMPRESSION</div>' +
     '<div style="font-size:24px;font-weight:800;color:' + c + ';">' + (R.compression_pct != null ? f1(R.compression_pct) + "%" : "N/A") + '</div>' +
-    '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">The gap between the benchmark multiple and the fair multiple implied by current real yields.</div></div>' +
-    '<div class="card"><div style="font-size:11px;color:#8d99aa;">REAL YIELD Z-SCORE</div>' +
+    '<div style="font-size:11px;color:#a9b7c9;margin-top:4px;">The gap between the benchmark multiple and the fair multiple implied by current real yields.</div></div>' +
+    '<div class="card"><div style="font-size:11px;color:#a9b7c9;">REAL YIELD Z-SCORE</div>' +
     '<div style="font-size:24px;font-weight:800;color:#dbe5f1;">' + (R.tips_z != null ? f2(R.tips_z) : "N/A") + '</div>' +
-    '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">Where the current real yield sits against its own history.</div></div></div>';
+    '<div style="font-size:11px;color:#a9b7c9;margin-top:4px;">Where the current real yield sits against its own history.</div></div></div>';
    // Explainer AFTER the visuals
    h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-    '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+    '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
     "The 10-year TIPS yield measures the real return investors can lock in by holding risk-free bonds for a decade. It is the hurdle rate that competes directly with equities for capital, and every valuation multiple is priced against it.<br><br>" +
     "The fair P/E comes from that relationship. When real yields climb, each dollar of future earnings is worth less in present terms, so the fair multiple falls. The gauge compares that fair multiple with the market\u2019s actual multiple to estimate how much compression is needed for valuations to reconcile with the current cost of capital.<br><br>" +
     "The z-score puts the current real yield in historical context. Readings near zero mean yields are ordinary, while readings beyond two standard deviations mean yields are unusually high relative to recent history, and that is when multiple compression pressure has historically been most acute." +
@@ -13944,7 +13944,7 @@ function peadScreenerHtml() {
  };
  const fmtSue = (v) => (v == null || v === "" || isNaN(+v)) ? "N/A" : (+v).toFixed(2);
  const badge = (label, colorKey) => {
-  const col = colorMap[colorKey] || "#8d99aa";
+  const col = colorMap[colorKey] || "#a9b7c9";
   return '<span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:' +
    col + '22;color:' + col + ';">' + esc(label || "N/A") + "</span>";
  };
@@ -13963,17 +13963,17 @@ function peadScreenerHtml() {
  // Headline score banner, aligned to the Daily Snapshot card.
  const hv = riskCardVal("pead_screener");
  if (hv.score != null) {
-  const hc = colorMap[hv.color] || "#8d99aa";
+  const hc = colorMap[hv.color] || "#a9b7c9";
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + hc + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + hc + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + hc + ';">' + esc(hv.regime || "") + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Share of this earnings season\u2019s reporters whose post-earnings drift has already faded, matching the Daily Snapshot card.</div></div></div>';
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">Share of this earnings season\u2019s reporters whose post-earnings drift has already faded, matching the Daily Snapshot card.</div></div></div>';
  }
 
  // Summary line: count of candidates in active accumulation drift
  const active = cands.filter((c) => /accumulation drift/i.test(String(c.status || ""))).length;
- h += '<p style="font-size:13px;color:#8d99aa;margin:0 0 12px;"><b style="color:#dbe5f1;">' + active + "</b> of " + cands.length +
+ h += '<p style="font-size:13px;color:#a9b7c9;margin:0 0 12px;"><b style="color:#dbe5f1;">' + active + "</b> of " + cands.length +
   (active === 1 ? " candidate" : " candidates") + " in active accumulation drift.</p>";
 
  h += '<div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table class="coverage">' +
@@ -13993,7 +13993,7 @@ function peadScreenerHtml() {
 
  // Plain-English explainer, after the visual
  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
   "Post-earnings announcement drift is the tendency for a stock to keep moving in the direction of its earnings surprise for weeks after the report. The initial reaction captures only part of the repricing, and the rest leaks in gradually as the market digests the print.<br><br>" +
   "The drift exists largely because large institutions rarely buy or sell their full position at once. They scale in over days and weeks to avoid moving the price against themselves, and that steady flow of orders extends the move well beyond the first session. Research desks also take time to update models and recommendations, which adds a second wave of demand after strong reports and persistent selling after weak ones. The screener separates fresh surprises from stale ones so the drift still has room to run.<br><br>" +
   "SUE, or standardized unexpected earnings, scales the surprise by the stock's own history of forecast error. A 10 percent beat means little for a company that routinely beats by 12 percent, while a 5 percent beat is large for one that usually lands within 2 percent. Higher SUE values mark surprises that are genuinely unusual for that name, and those are the ones where drift has historically been strongest." +
@@ -14019,7 +14019,7 @@ function squeezeRadarHtml() {
  const fmtNum = (v) => (v == null || v === "" || isNaN(+v)) ? "N/A" : (+v).toFixed(1);
  const fmtScore = (v) => (v == null || v === "" || isNaN(+v)) ? "N/A" : (+v).toFixed(1).replace(/\.0$/, "");
  const badge = (label, colorKey) => {
-  const col = colorMap[colorKey] || "#8d99aa";
+  const col = colorMap[colorKey] || "#a9b7c9";
   return '<span style="display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:' +
    col + '22;color:' + col + ';">' + esc(label || "N/A") + "</span>";
  };
@@ -14038,12 +14038,12 @@ function squeezeRadarHtml() {
  // Headline score banner, aligned to the Daily Snapshot card.
  const hv = riskCardVal("squeeze_radar");
  if (hv.score != null) {
-  const hc = colorMap[hv.color] || "#8d99aa";
+  const hc = colorMap[hv.color] || "#a9b7c9";
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + hc + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+   '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + hc + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
    '<div><div style="font-size:14px;font-weight:700;color:' + hc + ';">' + esc(hv.regime || "") + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Share of tracked names in an elevated or alert squeeze state, matching the Daily Snapshot card.</div></div></div>';
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">Share of tracked names in an elevated or alert squeeze state, matching the Daily Snapshot card.</div></div></div>';
  }
 
  h += '<div class="card" style="padding:0;overflow:hidden;"><div class="table-wrap"><table class="coverage">' +
@@ -14064,7 +14064,7 @@ function squeezeRadarHtml() {
 
  // Plain-English explainer, after the visual
  const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
   "Days to cover estimates how long it would take short sellers to buy back every share they have borrowed, based on average daily trading volume. A reading of three means roughly three days of normal volume must be purchased to unwind the entire short position. When that number is high, exits are orderly in theory but crowded in practice, because every short seller is heading for the same narrow exit.<br><br>" +
   "Borrow exhaustion is the point where the supply of shares available to short runs out. New shorts can no longer be opened easily, and existing shorts face rising borrow fees and recall risk. At that point any buying, from a strong earnings report or a technical breakout, forces shorts to compete for the same limited float, and the covering itself becomes the catalyst for further upside.<br><br>" +
   "The squeeze score blends short interest, days to cover, the velocity of short interest change, and related positioning signals into a single gauge. Higher scores flag names where positioning is most crowded and most vulnerable to a sharp reversal, not names that are fundamentally sound. The radar is a positioning tool rather than a quality screen, and elevated scores warrant tighter risk management rather than larger positions." +
@@ -14089,7 +14089,7 @@ function treasurySlrBlurCard() {
   '<div style="display:flex;align-items:center;gap:16px;margin:8px 0;">' +
   '<div class="snap-blur" style="width:110px;height:40px;border-radius:8px;"></div>' +
   '<div><div class="snap-blur" style="width:170px;height:16px;border-radius:6px;"></div>' +
-  '<div style="font-size:11px;color:#8d99aa;margin-top:6px;">Dealer balance-sheet capacity. The reading is Pro.</div></div></div>' +
+  '<div style="font-size:11px;color:#a9b7c9;margin-top:6px;">Dealer balance-sheet capacity. The reading is Pro.</div></div></div>' +
   '<div class="panel-asof">As of ' + esc(asOf) + "</div></div>";
 }
 
@@ -14110,18 +14110,18 @@ function treasurySlrHtml() {
  // Risk score banner (score/100 + status), aligned to the snapshot card:
  // higher scores mean the constraint binds harder.
  h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score != null ? hv.score : S.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SCORE</div>' +
+  '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + fmtScore(hv.score != null ? hv.score : S.score) + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
   '<div><div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(hv.regime || S.status || "") + "</div>" +
-  '<div style="font-size:12px;color:#8d99aa;margin-top:4px;max-width:620px;">Higher scores mean dealer balance-sheet room is scarce and the leverage constraint binds harder, so auctions need more concession to clear. Low scores mean dealers have ample room to intermediate Treasury supply.</div></div></div>';
+  '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;max-width:620px;">Higher scores mean dealer balance-sheet room is scarce and the leverage constraint binds harder, so auctions need more concession to clear. Low scores mean dealers have ample room to intermediate Treasury supply.</div></div></div>';
 
  // 4 metric cards: reserves, TGA, RRP, reserve buffer
  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;">';
  const card4 = (label, val, sub) =>
   '<div style="background:#101620;border-radius:10px;padding:12px;">' +
-  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + "</div>" +
+  '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">' + label + "</div>" +
   '<div style="font-size:24px;font-weight:800;color:#dbe5f1;margin:2px 0;">' + val + "</div>" +
-  '<div style="font-size:11px;color:#8d99aa;">' + sub + "</div></div>";
+  '<div style="font-size:11px;color:#a9b7c9;">' + sub + "</div></div>";
  h += card4("BANK RESERVES", fmtB(S.reserves_b), "Cash banks hold at the Fed, the raw material of dealer balance-sheet capacity");
  h += card4("TREASURY GENERAL ACCOUNT", fmtB(S.tga_b), "Treasury cash at the Fed, every dollar here is a dollar drained from reserves");
  h += card4("REVERSE REPO FACILITY", fmtB(S.rrp_b), "Cash parked by money funds at the Fed, outside the banking system");
@@ -14130,7 +14130,7 @@ function treasurySlrHtml() {
 
  // Explainer AFTER the visuals
  h += '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">How the SLR works.</b> The Supplementary Leverage Ratio is a post-2008 backstop that forces large US banks to hold Tier 1 capital against total leverage exposure, with no credit for the safety of the asset. Treasuries and reserves count the same as risky loans, so the ratio penalizes banks for holding exactly the assets that make markets function.</p>' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Why reserves versus TGA and RRP matter.</b> Bank reserves are the cash balances banks keep at the Federal Reserve, and they are the funding base that lets dealers finance Treasury inventories. When the Treasury rebuilds its General Account after a debt-ceiling standoff, or when money market funds flood the reverse repo facility, cash leaves the banking system and reserves fall. The deficit itself may be unchanged, yet dealer balance-sheet room has quietly tightened.</p>' +
   '<p style="margin:0;"><b style="color:#dbe5f1;">What a binding constraint means.</b> When the SLR binds, banks pull back from market making and auction participation because adding Treasuries would breach the ratio. Auction tails widen, bid-ask spreads stretch, and the Treasury has to pay higher yields to clear supply. Regulators temporarily excluded Treasuries and reserves from the SLR in 2020 for exactly this reason, a binding ratio can turn an ordinary funding squeeze into a market event.</p>' +
@@ -14157,8 +14157,8 @@ function gammaFlipHtml() {
    const c = colorMap[L.color] || "#dbe5f1";
    body = '<div style="margin:12px 0;padding:16px;border:1px solid #253142;border-radius:8px;">' +
     '<div style="font-size:14px;font-weight:700;color:' + c + ';">' + esc(L.regime || "") + "</div>" +
-    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">' + esc(L.regime_detail || "") + "</div>" +
-    '<div style="font-size:11px;color:#8d99aa;margin-top:8px;font-style:italic;">No clean gamma flip within observable strikes. ' + esc(L.note || "") + "</div></div>";
+    '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">' + esc(L.regime_detail || "") + "</div>" +
+    '<div style="font-size:11px;color:#a9b7c9;margin-top:8px;font-style:italic;">No clean gamma flip within observable strikes. ' + esc(L.note || "") + "</div></div>";
   } else {
    const c = colorMap[L.color] || "#dbe5f1";
    const spot = Number(L.spot), flip = Number(L.flip_strike), dist = Number(L.distance_pct);
@@ -14168,14 +14168,14 @@ function gammaFlipHtml() {
    const sideColor = dist >= 0 ? "#4dd2aa" : "#f37d83";
    const stat = (label, val, sub) =>
     '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
-    '<div style="font-size:11px;color:#8d99aa;">' + label + "</div>" +
+    '<div style="font-size:11px;color:#a9b7c9;">' + label + "</div>" +
     '<div style="font-size:22px;font-weight:800;color:#dbe5f1;">' + val + "</div>" +
-    '<div style="font-size:11px;color:#8d99aa;">' + sub + "</div></div>";
+    '<div style="font-size:11px;color:#a9b7c9;">' + sub + "</div></div>";
    body =
     '<div style="display:flex;align-items:baseline;gap:10px;margin:10px 0 4px;">' +
     '<span style="font-size:28px;font-weight:800;color:#dbe5f1;">$' + spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</span>" +
     '<span style="font-size:11px;font-weight:700;color:#f5f7fa;background:' + c + ';padding:3px 10px;border-radius:12px;">' + esc(L.regime || "") + "</span></div>" +
-    (L.regime_detail ? '<div style="font-size:12px;color:#8d99aa;margin-bottom:10px;">' + esc(L.regime_detail) + "</div>" : "") +
+    (L.regime_detail ? '<div style="font-size:12px;color:#a9b7c9;margin-bottom:10px;">' + esc(L.regime_detail) + "</div>" : "") +
     // Spot vs flip position bar (pure divs, no chart library)
     '<div style="margin:12px 0;">' +
     '<div style="position:relative;height:52px;border-radius:8px;overflow:hidden;display:flex;border:1px solid #253142;">' +
@@ -14183,7 +14183,7 @@ function gammaFlipHtml() {
     '<div style="flex:1;background:rgba(63,185,80,0.10);"></div>' +
     '<div title="Gamma flip $' + flip.toLocaleString() + '" style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:#d9a441;"></div>' +
     '<div title="Spot $' + spot.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '" style="position:absolute;left:calc(' + pos.toFixed(1) + '% - 7px);top:19px;width:14px;height:14px;border-radius:50%;background:' + sideColor + ';border:2px solid #fff;"></div></div>' +
-    '<div style="display:flex;justify-content:space-between;font-size:10px;color:#8d99aa;margin-top:4px;">' +
+    '<div style="display:flex;justify-content:space-between;font-size:10px;color:#a9b7c9;margin-top:4px;">' +
     '<span>Below flip · hedging amplifies moves</span>' +
     '<span style="color:#d9a441;font-weight:700;">Flip $' + flip.toLocaleString() + "</span>" +
     '<span>Above flip · hedging dampens moves</span></div>' +
@@ -14202,10 +14202,10 @@ function gammaFlipHtml() {
  const hvC = colorMap[hv.color] || "#dbe5f1";
  const hBanner = hv.score != null ?
   '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SCORE</div>' +
-  '<div style="font-size:36px;font-weight:800;color:' + hvC + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div>' +
+  '<div style="text-align:center;min-width:90px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SCORE</div>' +
+  '<div style="font-size:36px;font-weight:800;color:' + hvC + ';">' + fmtScore(hv.score) + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div>' +
   '<div><div style="font-size:14px;font-weight:700;color:' + hvC + ';">' + esc(hv.regime || "") + "</div>" +
-  '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">Market-wide dealer gamma regime across SPY and QQQ, matching the Daily Snapshot card. Higher scores mean dealer hedging amplifies moves rather than absorbing them.</div></div></div>' : "";
+  '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">Market-wide dealer gamma regime across SPY and QQQ, matching the Daily Snapshot card. Higher scores mean dealer hedging amplifies moves rather than absorbing them.</div></div></div>' : "";
 
  const h =
   '<div class="section"><div class="section-title">Dealer Gamma Flip Barometer ' + PRO_BADGE + "</div>" +
@@ -14216,7 +14216,7 @@ function gammaFlipHtml() {
   "</div>" +
   // Explainer AFTER the visuals
   '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this barometer tells you</div>' +
-  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">How the gamma flip works.</b> Option dealers hedge the options they sell by trading the underlying, and the direction of that hedging depends on their aggregate gamma. The gamma flip is the index level where total dealer gamma changes sign, estimated from the full options chain by weighting gamma exposure across strikes. It moves as the chain changes, so it is a living level, not a fixed line in the sand.</p>' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Why dealers hedge differently above and below it.</b> Above the flip, dealers are net long gamma and their hedging is stabilizing. They buy into weakness and sell into strength, which absorbs intraday moves and compresses realized volatility. Below the flip, dealers are net short gamma and hedging turns destabilizing. They sell into weakness and buy into strength, which feeds momentum and can turn an ordinary down day into an accelerated selloff.</p>' +
   '<p style="margin:0;"><b style="color:#dbe5f1;">What OPEX charm means.</b> As options approach expiration their gamma first rises and then collapses at expiry, while charm measures how fast their delta decays with the passage of time. Into monthly expiration, large gamma positions rolling off can shift the flip level and release the hedging pressure that had been pinning price in place, which is why ranges often expand in the sessions right after expiration.</p>' +
@@ -14245,12 +14245,12 @@ function canaryRsChartConfig() {
    ]},
   options: { animation: false, responsive: true, maintainAspectRatio: false,
    interaction: { mode: "index", intersect: false },
-   plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } },
+   plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } },
     tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12 } },
    scales: {
     x: { ticks: { color: "#647184", maxTicksLimit: 10 }, grid: { display: false } },
-    y: { ticks: { color: "#8d99aa" }, grid: { color: "rgba(42,46,57,0.4)" },
-     title: { display: true, text: "Relative strength, indexed to 100", color: "#8d99aa" } },
+    y: { ticks: { color: "#a9b7c9" }, grid: { color: "rgba(42,46,57,0.4)" },
+     title: { display: true, text: "Relative strength, indexed to 100", color: "#a9b7c9" } },
    }},
  };
 }
@@ -14263,7 +14263,7 @@ function canaryRsHtml() {
   return '<div class="section"><div class="section-title">Industry Leadership & Relative Strength Tracker ' + PRO_BADGE + "</div>" +
    '<div class="card"><p style="color:var(--muted)">Leadership data is not available yet. The tracker refreshes every trading morning.</p></div></div>';
  }
- const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
  const oc = colorMap[O.color] || "#dbe5f1";
  const cc = colorMap[CN.color] || "#dbe5f1";
  const sgn = (v) => (v == null ? "N/A" : (v > 0 ? "+" : "") + Number(v).toFixed(2) + "%");
@@ -14276,9 +14276,9 @@ function canaryRsHtml() {
  // Canary spotlight metric tiles
  const tile = (label, value, sub, col) =>
   '<div style="background:#101620;border-radius:10px;padding:12px;text-align:center;">' +
-  '<div style="font-size:11px;color:#8d99aa;">' + label + "</div>" +
+  '<div style="font-size:11px;color:#a9b7c9;">' + label + "</div>" +
   '<div style="font-size:19px;font-weight:800;color:' + (col || "#dbe5f1") + ';">' + value + "</div>" +
-  '<div style="font-size:11px;color:#8d99aa;">' + sub + "</div></div>";
+  '<div style="font-size:11px;color:#a9b7c9;">' + sub + "</div></div>";
  const emaTxt = P.aboveEma21 ? "HELD (BULL)" : "BROKEN (BEAR)";
  const emaCol = P.aboveEma21 ? "#4dd2aa" : "#f37d83";
  const divTxt = P.negativeDivergence ? "ACTIVE (FLAG)" : "NONE (ALIGNED)";
@@ -14301,9 +14301,9 @@ function canaryRsHtml() {
    : (i === 1 ? ' <span style="font-size:10px;font-weight:700;color:#dbe5f1;background:#253142;padding:2px 7px;border-radius:10px;">CHALLENGER</span>' : "");
   const rsC = (v) => v >= 0 ? "#4dd2aa" : "#f37d83";
   return '<tr style="border-bottom:1px solid #1c2434;' + (i === 0 ? "background:rgba(217,164,65,0.07);" : "") + '">' +
-   '<td style="padding:8px 10px;color:#8d99aa;">#' + (i + 1) + "</td>" +
+   '<td style="padding:8px 10px;color:#a9b7c9;">#' + (i + 1) + "</td>" +
    '<td style="padding:8px 10px;font-weight:700;color:#dbe5f1;">' + esc(s.ticker) + tag +
-   '<div style="font-size:11px;font-weight:400;color:#8d99aa;">' + esc(s.name) + " · " + esc(s.type) + "</div></td>" +
+   '<div style="font-size:11px;font-weight:400;color:#a9b7c9;">' + esc(s.name) + " · " + esc(s.type) + "</div></td>" +
    '<td style="padding:8px 10px;text-align:right;color:#dbe5f1;">' + money(s.price) + "</td>" +
    '<td style="padding:8px 10px;text-align:right;font-weight:600;color:' + rsC(s.rs20d) + ';">' + sgn(s.rs20d) + "</td>" +
    '<td style="padding:8px 10px;text-align:right;color:' + rsC(s.rs60d) + ';">' + sgn(s.rs60d) + "</td>" +
@@ -14313,7 +14313,7 @@ function canaryRsHtml() {
 
  // Constituent roster rows
  const statusCol = (s) => s === "ACTIVE CANARY" ? "#d9a441" : s === "ROTATING IN" ? "#4dd2aa" :
-  s === "DIVERGING" || s === "LAGGING" ? "#f37d83" : "#8d99aa";
+  s === "DIVERGING" || s === "LAGGING" ? "#f37d83" : "#a9b7c9";
  const rosRows = (CN.allConstituents || []).map((r) => {
   const isCan = r.ticker === P.ticker;
   const flags = [];
@@ -14339,41 +14339,41 @@ function canaryRsHtml() {
   '<div class="section-sub">Which sector leads the market, which high-beta name leads that sector, and whether the leadership is holding. Ranked fresh from price data every trading morning, with nothing about the answer assumed in advance.</div>' +
   // Macro regime banner
   '<div style="margin:12px 0;padding:18px;border:1px solid #253142;border-left:4px solid ' + oc + ';border-radius:10px;background:#101620;">' +
-  '<div style="font-size:11px;color:#8d99aa;letter-spacing:1px;">SECTOR ROTATION & LEADERSHIP REGIME</div>' +
+  '<div style="font-size:11px;color:#a9b7c9;letter-spacing:1px;">SECTOR ROTATION & LEADERSHIP REGIME</div>' +
   '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;">' +
   '<div style="flex:1;min-width:260px;"><div style="font-size:24px;font-weight:800;color:' + oc + ';">' + esc(O.status) + "</div>" +
   '<p style="font-size:13px;color:#dbe5f1;line-height:1.6;margin:6px 0 0;">' + esc(O.description) + "</p></div>" +
   '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
   '<div style="background:#0d131d;border:1px solid #253142;border-radius:10px;padding:12px;text-align:center;min-width:150px;">' +
-  '<div style="font-size:11px;color:#8d99aa;">CURRENT #1 LEADER</div>' +
+  '<div style="font-size:11px;color:#a9b7c9;">CURRENT #1 LEADER</div>' +
   '<div style="font-size:19px;font-weight:800;color:#d9a441;">' + esc(L.ticker || "") + '</div>' +
-  '<div style="font-size:11px;color:#8d99aa;">' + esc(L.name || "") + "</div></div>" +
+  '<div style="font-size:11px;color:#a9b7c9;">' + esc(L.name || "") + "</div></div>" +
   '<div style="background:#0d131d;border:1px solid #253142;border-radius:10px;padding:12px;text-align:center;min-width:150px;">' +
-  '<div style="font-size:11px;color:#8d99aa;">#2 CHALLENGER</div>' +
+  '<div style="font-size:11px;color:#a9b7c9;">#2 CHALLENGER</div>' +
   '<div style="font-size:19px;font-weight:800;color:#dbe5f1;">' + esc(CH.ticker || "") + '</div>' +
-  '<div style="font-size:11px;color:#8d99aa;">' + esc(CH.name || "") + "</div></div>" +
+  '<div style="font-size:11px;color:#a9b7c9;">' + esc(CH.name || "") + "</div></div>" +
   "</div></div></div>" +
   // Canary spotlight
   '<div class="card" style="margin:12px 0;"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">' +
   '<div><div style="font-size:11px;color:#d9a441;font-weight:700;letter-spacing:1px;">ACTIVE CANARY SPOTLIGHT, INSIDE ' + esc(CN.sector || "") + "</div>" +
   '<div style="display:flex;align-items:baseline;gap:10px;margin-top:4px;">' +
   '<span style="font-size:32px;font-weight:800;color:#f5f7fa;">' + tkLink(P.ticker) + "</span>" +
-  '<span style="font-size:14px;color:#8d99aa;">' + money(P.price) + "</span>" +
+  '<span style="font-size:14px;color:#a9b7c9;">' + money(P.price) + "</span>" +
   '<span style="font-size:11px;font-weight:700;color:#f5f7fa;background:' + cc + ';padding:3px 10px;border-radius:12px;">' + esc(CN.status) + "</span></div></div>" +
-  '<div style="text-align:right;"><div style="font-size:11px;color:#8d99aa;">CANARY POWER SCORE</div>' +
+  '<div style="text-align:right;"><div style="font-size:11px;color:#a9b7c9;">CANARY POWER SCORE</div>' +
   '<div style="font-size:28px;font-weight:800;color:#f5f7fa;">' + Number(P.canaryScore).toFixed(2) + "</div></div></div>" +
   '<div style="margin:12px 0;padding:12px 14px;background:#0d131d;border:1px solid #253142;border-radius:8px;font-size:13px;color:#dbe5f1;line-height:1.6;">' +
   '<b style="color:#d9a441;">Diagnostic.</b> ' + esc(CN.diagnostic) + "</div>" +
   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;">' + tiles + "</div></div>" +
   // Dual RS trajectory chart
   '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:4px;">90-Day Relative Strength Trajectory</div>' +
-  '<div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">The canary against its sector, and the sector against SPY, both indexed to 100. When the canary line turns down while the sector line still advances, non-confirmation is building.</div>' +
+  '<div style="font-size:12px;color:#a9b7c9;margin-bottom:8px;">The canary against its sector, and the sector against SPY, both indexed to 100. When the canary line turns down while the sector line still advances, non-confirmation is building.</div>' +
   '<div class="zoomable-chart" data-chart="canary-rs" style="position:relative;height:280px;margin:8px 0;cursor:zoom-in;" title="Click to zoom"><canvas id="canary-rs-chart"></canvas>' +
   '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div></div>' +
   // Sector leaderboard
   '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">Sector & Industry Leaderboard, Ranked Against SPY</div>' +
   '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;">' +
-  "<thead><tr style=\"border-bottom:1px solid #253142;color:#8d99aa;font-size:11px;text-align:left;\">" +
+  "<thead><tr style=\"border-bottom:1px solid #253142;color:#a9b7c9;font-size:11px;text-align:left;\">" +
   "<th style=\"padding:8px 10px;\">RANK</th><th style=\"padding:8px 10px;\">BENCHMARK</th>" +
   "<th style=\"padding:8px 10px;text-align:right;\">PRICE</th><th style=\"padding:8px 10px;text-align:right;\">20D RS</th>" +
   "<th style=\"padding:8px 10px;text-align:right;\">60D RS</th><th style=\"padding:8px 10px;text-align:right;\">VS 50-SMA</th>" +
@@ -14381,7 +14381,7 @@ function canaryRsHtml() {
   // Constituent roster
   '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">Constituent Roster Inside ' + esc(CN.sector || "") + ", Scanning for the Baton Hand-Off</div>" +
   '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;">' +
-  "<thead><tr style=\"border-bottom:1px solid #253142;color:#8d99aa;font-size:11px;text-align:left;\">" +
+  "<thead><tr style=\"border-bottom:1px solid #253142;color:#a9b7c9;font-size:11px;text-align:left;\">" +
   "<th style=\"padding:8px 10px;\">TICKER</th><th style=\"padding:8px 10px;text-align:right;\">PRICE</th>" +
   "<th style=\"padding:8px 10px;text-align:right;\">20D RS SLOPE</th><th style=\"padding:8px 10px;text-align:right;\">ABSORPTION</th>" +
   "<th style=\"padding:8px 10px;text-align:right;\">U/D VOL</th><th style=\"padding:8px 10px;text-align:center;\">21-EMA</th>" +
@@ -14389,7 +14389,7 @@ function canaryRsHtml() {
   "<th style=\"padding:8px 10px;text-align:center;\">STATUS</th><th style=\"padding:8px 10px;text-align:right;\">SCORE</th></tr></thead><tbody>" + rosRows + "</tbody></table></div></div>" +
   // Explainer AFTER the visuals
   '<div class="card" style="margin:12px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this tracker tells you</div>' +
-  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">How leadership forms.</b> Capital does not enter a sector evenly. Institutional buyers move first into the highest-conviction, highest-beta names in a complex, and only later rotate down into the large index heavyweights. The stock absorbing that first wave is the canary, and its behavior tends to precede the sector benchmark, which the lead-lag reading in the spotlight quantifies over a rolling 60-session window of cross-correlation.</p>' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Why down days matter most.</b> Almost any stock can rise on a green day. The absorption score measures what the canary does when its sector falls, averaging the stock\u2019s return edge over the sector across the sector\u2019s down days in the last 60 sessions. A persistently positive score means buyers are soaking up sell orders into weakness, the signature of sponsorship rather than speculation.</p>' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">How leadership cracks.</b> The warning sequence is consistent. First the sector prints a fresh high while the canary stalls below its own, the non-confirmation divergence flagged in the roster. Then the volume signature inverts, with down days drawing heavier volume than up days and the U/D volume ratio sliding under one. Finally the canary loses its 21-day moving average and fails to reclaim it, at which point it turns from a source of strength into a source of funds.</p>' +
@@ -14403,13 +14403,13 @@ function canaryRsHtml() {
 let _volSortKey = "ticker";
 let _volSortDir = 1;
 function volSurfaceRowsHtml(rows) {
- const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
  const sgn = (v, d) => (v == null ? "N/A" : (v > 0 ? "+" : "") + Number(v).toFixed(d == null ? 2 : d));
  return rows.map((r) => {
   if (!r.e || !r.e.available) {
    return '<tr style="border-bottom:1px solid #1c2434;">' +
-    '<td style="padding:8px 10px;font-weight:700;color:#dbe5f1;">' + esc(r.tk) + (INDEX_COUNTRY[r.tk] ? ' <span style="font-size:11px;color:#8d99aa;font-weight:400;">' + esc(INDEX_COUNTRY[r.tk]) + '</span>' : '') + '</td>' +
-    '<td colspan="7" style="padding:8px 10px;color:#8d99aa;">N/A, options data unavailable</td></tr>';
+    '<td style="padding:8px 10px;font-weight:700;color:#dbe5f1;">' + esc(r.tk) + (INDEX_COUNTRY[r.tk] ? ' <span style="font-size:11px;color:#a9b7c9;font-weight:400;">' + esc(INDEX_COUNTRY[r.tk]) + '</span>' : '') + '</td>' +
+    '<td colspan="7" style="padding:8px 10px;color:#a9b7c9;">N/A, options data unavailable</td></tr>';
   }
   const e = r.e;
   const spreadC = e.term_spread > 0 ? "#f37d83" : "#4dd2aa";
@@ -14417,7 +14417,7 @@ function volSurfaceRowsHtml(rows) {
   const sentC = colorMap[e.skew_color] || "#dbe5f1";
   return '<tr style="border-bottom:1px solid #1c2434;">' +
    '<td style="padding:8px 10px;font-weight:700;color:#dbe5f1;">' + esc(r.tk) +
-   (INDEX_COUNTRY[r.tk] ? ' <span style="font-size:11px;color:#8d99aa;font-weight:400;">' + esc(INDEX_COUNTRY[r.tk]) + '</span>' : '') +
+   (INDEX_COUNTRY[r.tk] ? ' <span style="font-size:11px;color:#a9b7c9;font-weight:400;">' + esc(INDEX_COUNTRY[r.tk]) + '</span>' : '') +
    (e.stale ? ' <span style="font-size:10px;color:#e0aa46;">STALE</span>' : "") + '</td>' +
    '<td style="padding:8px 10px;color:#dbe5f1;">$' + Number(e.spot).toFixed(2) + '</td>' +
    '<td style="padding:8px 10px;color:#dbe5f1;">' + Number(e.atm_iv_30d).toFixed(1) + '%</td>' +
@@ -14459,7 +14459,7 @@ function volSurfaceHtml() {
   return '<div class="section"><div class="section-title">Volatility Surface ' + PRO_BADGE + '</div>' +
    '<div class="card"><p style="color:var(--muted)">Volatility surface data unavailable. Check back after the next refresh.</p></div></div>';
  }
- const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+ const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
  const frontC = colorMap[M.vix_vix3m_color] || "#dbe5f1";
  const skewIdxC = M.skew_index > 140 ? "#f37d83" : (M.skew_index < 120 ? "#4dd2aa" : "#e0aa46");
 
@@ -14469,9 +14469,9 @@ function volSurfaceHtml() {
  // Macro term structure index cards
  const idxCard = (label, val, sub, c) =>
   '<div style="background:#101620;border:1px solid #253142;border-radius:10px;padding:14px;">' +
-  '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + '</div>' +
+  '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">' + label + '</div>' +
   '<div style="font-size:26px;font-weight:800;color:' + (c || "#dbe5f1") + ';margin:2px 0;">' + val + '</div>' +
-  '<div style="font-size:11px;color:#8d99aa;">' + sub + '</div></div>';
+  '<div style="font-size:11px;color:#a9b7c9;">' + sub + '</div></div>';
  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0;">' +
   idxCard("VIX9D (9-DAY)", Number(M.vix9d).toFixed(2), "Front of the curve, immediate event risk") +
   idxCard("VIX (30-DAY)", Number(M.vix).toFixed(2), "The market standard vol gauge") +
@@ -14487,13 +14487,13 @@ function volSurfaceHtml() {
    '<div style="position:absolute;left:0;top:0;height:100%;width:' + pos + '%;background:' + c + ';border-radius:5px;"></div>';
   (marks || []).forEach((mk) => {
    const mp = (mk.v - lo) / (hi - lo) * 100;
-   bars += '<div style="position:absolute;left:' + mp + '%;top:-3px;width:2px;height:16px;background:#8d99aa;"></div>' +
-    '<div style="position:absolute;left:' + mp + '%;top:14px;transform:translateX(-50%);font-size:10px;color:#8d99aa;white-space:nowrap;">' + mk.label + '</div>';
+   bars += '<div style="position:absolute;left:' + mp + '%;top:-3px;width:2px;height:16px;background:#a9b7c9;"></div>' +
+    '<div style="position:absolute;left:' + mp + '%;top:14px;transform:translateX(-50%);font-size:10px;color:#a9b7c9;white-space:nowrap;">' + mk.label + '</div>';
   });
   bars += '</div><div style="height:14px;"></div>';
   return '<div style="background:#101620;border:1px solid #253142;border-radius:10px;padding:14px;">' +
    '<div style="display:flex;justify-content:space-between;align-items:baseline;">' +
-   '<span style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + label + '</span>' +
+   '<span style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">' + label + '</span>' +
    '<span style="font-size:20px;font-weight:800;color:' + c + ';">' + (ratio == null ? "N/A" : Number(ratio).toFixed(3)) + '</span></div>' +
    bars +
    '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + '</div></div>';
@@ -14513,11 +14513,11 @@ function volSurfaceHtml() {
    ? "background:rgba(217,164,65,0.13);border:2px solid #d9a441;"
    : "background:#12161f;border:1px solid #232b3d;";
   return '<div style="' + style + 'border-radius:10px;padding:14px;">' +
-   '<div style="font-size:11px;color:' + (active ? "#d9a441" : "#8d99aa") + ';font-weight:700;letter-spacing:0.5px;">QUADRANT ' + id + (active ? " · CURRENT" : "") + '</div>' +
+   '<div style="font-size:11px;color:' + (active ? "#d9a441" : "#a9b7c9") + ';font-weight:700;letter-spacing:0.5px;">QUADRANT ' + id + (active ? " · CURRENT" : "") + '</div>' +
    '<div style="font-size:15px;font-weight:700;color:#dbe5f1;margin:3px 0;">' + name + '</div>' +
-   '<div style="font-size:12px;color:#8d99aa;">' + desc + '</div></div>';
+   '<div style="font-size:12px;color:#a9b7c9;">' + desc + '</div></div>';
  };
- h += '<div style="font-size:12px;color:#8d99aa;margin:4px 0 8px;">Surface matrix. Vertical axis is the term structure, backwardation on top. Horizontal axis is skew, flat or inverted on the left, steep downside skew on the right.</div>' +
+ h += '<div style="font-size:12px;color:#a9b7c9;margin:4px 0 8px;">Surface matrix. Vertical axis is the term structure, backwardation on top. Horizontal axis is skew, flat or inverted on the left, steep downside skew on the right.</div>' +
   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
   quadCell("I", "Parabolic Speculation", "Call squeeze regime. Calls bid over puts into a backwardated curve.") +
   quadCell("II", "Systemic Crisis", "Forced liquidation. Puts heavily bid and the front end inverted.") +
@@ -14533,17 +14533,17 @@ function volSurfaceHtml() {
  ["SPY", "QQQ", "IWM", "DIA", "EWZ", "EEM", "EFA", "FXI", "EWJ", "EWU", "EWG", "EWY", "EWT", "INDA"].forEach((tk) => { if (V.indices && V.indices[tk]) rows.push({ tk: tk, e: V.indices[tk] }); });
  Object.keys(V.tickers || {}).sort().forEach((tk) => rows.push({ tk: tk, e: V.tickers[tk] }));
  window._volSurfaceRows = rows;
- const th = (label, key) => '<th data-vsort="' + key + '" style="padding:9px 10px;text-align:left;font-size:11px;color:#8d99aa;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;">' + label + ' &#8597;</th>';
+ const th = (label, key) => '<th data-vsort="' + key + '" style="padding:9px 10px;text-align:left;font-size:11px;color:#a9b7c9;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;">' + label + ' &#8597;</th>';
  h += '<div style="overflow-x:auto;margin-top:14px;"><table style="width:100%;border-collapse:collapse;min-width:760px;">' +
   '<thead><tr style="border-bottom:2px solid #253142;">' +
   th("TICKER", "ticker") + th("SPOT", "spot") + th("30D ATM IV", "atm_iv_30d") + th("90D ATM IV", "atm_iv_90d") +
   th("TERM SPREAD", "term_spread") + th("25D RISK REVERSAL", "risk_reversal_25d") + th("SKEW RATIO", "skew_ratio") +
-  '<th style="padding:9px 10px;text-align:left;font-size:11px;color:#8d99aa;letter-spacing:0.5px;">SKEW SENTIMENT</th>' +
+  '<th style="padding:9px 10px;text-align:left;font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">SKEW SENTIMENT</th>' +
   '</tr></thead><tbody id="vol-surface-tbody">' + volSurfaceRowsHtml(rows) + '</tbody></table></div>';
 
  // Explainer after the visuals
  h += '<div class="card" style="margin:14px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Term structure.</b> In calm markets the vol curve slopes upward, back-month implied vol above front-month, because longer horizons carry more uncertainty. When the VIX to VIX3M ratio pushes above 1.00 the curve has flipped into backwardation, front-month event risk is dominating, and that configuration has historically accompanied forced liquidation rather than orderly selling.</p>' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Skew and the risk reversal.</b> The 25-delta risk reversal compares the implied vol of an out-of-the-money call against an out-of-the-money put on the same expiry. Equity skew normally runs negative, puts richer than calls, because institutions perpetually buy downside insurance. Readings below minus 8 vol points mark saturated tail hedging, while a reading at or above zero means calls are bid over puts, the signature of speculative upside chasing. The skew ratio divides that gap by at-the-money vol so readings stay comparable across vol regimes.</p>' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Single-name term spreads.</b> A name whose 30-day ATM vol sits well above its 90-day vol is pricing a near-term catalyst, most often earnings. A spread beyond plus 5 points is a severe inversion and usually collapses right after the event prints. Names in healthy contango, spread below minus 3, carry no acute front-month pricing.</p>' +
@@ -14558,7 +14558,7 @@ function volSurfaceHtml() {
   ratioExample = '<p style="margin:0 0 10px;">Today, EWZ (' + esc(INDEX_COUNTRY["EWZ"] || "") + ') shows a put call gap of ' + ewzGap.toFixed(2) + ' vol points on an at the money vol of ' + Number(ewz.atm_iv_30d).toFixed(2) + ' percent, a ratio of ' + Number(ewz.skew_ratio).toFixed(3) + ', while SPY (' + esc(INDEX_COUNTRY["SPY"] || "") + ') shows a gap of ' + spyGap.toFixed(2) + ' vol points on an at the money vol of ' + Number(spy.atm_iv_30d).toFixed(2) + ' percent, a ratio of ' + Number(spy.skew_ratio).toFixed(3) + '. The raw gaps look similar, but measured against each market\'s own vol level, SPY\'s smile is far more lopsided than EWZ\'s.</p>';
  }
  h += '<div class="card" style="margin:14px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">Reading the skew ratio</div>' +
-  '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+  '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
   '<p style="margin:0 0 10px;">The skew ratio is built from the 30 day chain. It takes the implied vol of puts struck 5 percent below spot, subtracts the implied vol of calls struck 5 percent above spot, and divides by the at the money vol for the same expiry. Those strikes approximate the 25 delta wings. The result has no units, and it answers one question, which is how much of a market\'s own vol level is priced as downside protection. A reading of 0.145 means the put call gap equals 14.5 percent of that market\'s vol.</p>' +
   '<p style="margin:0 0 10px;">The division is the whole point. Vol can only be compared relative to its own level. A market trading at 50 percent vol and a market trading at 15 percent vol live in different regimes, so a gap of 7 vol points means something very different in each. Dividing by at the money vol strips out the regime and leaves the shape of the smile, which is what can actually be compared across markets.</p>' +
   ratioExample +
@@ -14575,7 +14575,7 @@ function volSurfaceHtml() {
     '<div class="card"><p style="color:var(--muted)">Contagion data unavailable. Check back after the next refresh.</p></div></div>';
   }
   const comp = C.composite, pillars = C.pillars || {};
-  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
   const c = colorMap[comp.threatColor] || "#dbe5f1";
 
   let h = '<div class="section"><div class="section-title">Cross-Asset Contagion Tracker ' + PRO_BADGE + '</div>' +
@@ -14583,7 +14583,7 @@ function volSurfaceHtml() {
 
   // Plain-English explainer
   const explainerHtml = '<div class="card" style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
-   '<div style="font-size:13px;color:#8d99aa;line-height:1.6;">' +
+   '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
    '<b style="color:#dbe5f1;">The simple version:</b> Sometimes trouble starts outside the stock market, in currencies, bonds, or commodities, and spills over later. This model watches those three areas and warns you when they are flashing red while stocks still look calm.<br><br>' +
    '<b style="color:#dbe5f1;">For long-term investors:</b> A CRITICAL or ELEVATED reading means the odds of a market drawdown driven by outside forces are higher than normal. It is not a sell signal, but a good time to check that you are comfortable with your risk level.<br><br>' +
    '<b style="color:#dbe5f1;">For active traders:</b> The divergence warning is the highest-value signal here. When stocks are calm (VIX under 20) but this model is flashing, history says the calm is often false. Tighten stops and reduce size into strength.' +
@@ -14591,11 +14591,11 @@ function volSurfaceHtml() {
 
   // Threat banner
   h += '<div style="display:flex;align-items:center;gap:16px;margin:12px 0;padding:16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">THREAT LEVEL</div>' +
+   '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">THREAT LEVEL</div>' +
    '<div style="font-size:20px;font-weight:800;color:' + c + ';">' + esc(comp.threatLevel) + '</div>' +
-   '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(comp.threatBadge || "") + "</div></div>" +
-   '<div style="margin-left:auto;text-align:right;"><div style="font-size:11px;color:#8d99aa;">SCORE</div>' +
-   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:16px;color:#8d99aa;">/100</span></div></div></div>';
+   '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + esc(comp.threatBadge || "") + "</div></div>" +
+   '<div style="margin-left:auto;text-align:right;"><div style="font-size:11px;color:#a9b7c9;">SCORE</div>' +
+   '<div style="font-size:36px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:16px;color:#a9b7c9;">/100</span></div></div></div>';
 
   // Divergence warning
   if (comp.divergenceActive) {
@@ -14611,12 +14611,12 @@ function volSurfaceHtml() {
    const pc = (p.score || 0) >= 50 ? "#f37d83" : (p.score || 0) >= 30 ? "#e0aa46" : "#4dd2aa";
    h += '<div style="background:#101620;border-radius:10px;padding:12px;border-top:3px solid ' + pc + ';">' +
     '<div style="font-size:12px;font-weight:700;color:#dbe5f1;">' + esc(p.title || key) + '</div>' +
-    '<div style="font-size:11px;color:#8d99aa;margin:2px 0;">' + esc(p.status || "") + "</div>" +
-    '<div style="font-size:20px;font-weight:800;color:' + pc + ';">' + (p.score != null ? p.score : "-") + '<span style="font-size:12px;color:#8d99aa;">/100</span></div>';
+    '<div style="font-size:11px;color:#a9b7c9;margin:2px 0;">' + esc(p.status || "") + "</div>" +
+    '<div style="font-size:20px;font-weight:800;color:' + pc + ';">' + (p.score != null ? p.score : "-") + '<span style="font-size:12px;color:#a9b7c9;">/100</span></div>';
    (p.metrics || []).forEach((m) => {
     h += '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #101620;">' +
      '<div style="font-size:11px;color:#dbe5f1;font-weight:600;">' + esc(m.label) + (m.stress ? ' <span style="color:#f37d83;">●</span>' : "") + "</div>" +
-     '<div style="font-size:12px;color:' + (m.stress ? "#f37d83" : "#8d99aa") + ';font-weight:600;">' + esc(m.value) + "</div>" +
+     '<div style="font-size:12px;color:' + (m.stress ? "#f37d83" : "#a9b7c9") + ';font-weight:600;">' + esc(m.value) + "</div>" +
      '<div style="font-size:11px;color:#647184;margin-top:2px;">' + esc(m.detail || "") + "</div></div>";
    });
    h += "</div>";
@@ -14643,16 +14643,16 @@ function volSurfaceHtml() {
   // the section banner can never diverge from the Daily Snapshot card.
   const score = hv.score != null ? hv.score : cr.totalRiskScore;
   const regime = hv.regime || cr.regime || "";
-  const colorMap = {emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f43f5e", slate: "#8d99aa"};
-  const rc = colorMap[hv.color || cr.color] || "#8d99aa";
+  const colorMap = {emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f43f5e", slate: "#a9b7c9"};
+  const rc = colorMap[hv.color || cr.color] || "#a9b7c9";
   let h = '<div class="section" style="max-width:none;"><div class="section-title">Correction Risk Model ' + PRO_BADGE + '</div>';
   h += '<div class="section-sub">Multi-factor risk score combining price extension, volatility trend, credit stress, and market breadth. Signals when a market top is forming. Updated ' + esc((cr.as_of || "").slice(0, 10)) + '.</div>';
   // Regime banner
   h += '<div class="card" style="border:1px solid ' + rc + '55;padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">';
-  h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:1.5px;">CURRENT REGIME</div>' +
+  h += '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:1.5px;">CURRENT REGIME</div>' +
    '<div style="font-size:28px;font-weight:800;color:' + rc + ';">' + esc(regime) + '</div></div>';
-  h += '<div style="text-align:right;"><div style="font-size:48px;font-weight:800;color:' + rc + ';line-height:1;">' + fmtScore(score) + '<span style="font-size:20px;color:#8d99aa;">/100</span></div>' +
-   '<div style="font-size:11px;color:#8d99aa;">' + esc(regime) + '</div></div></div>';
+  h += '<div style="text-align:right;"><div style="font-size:48px;font-weight:800;color:' + rc + ';line-height:1;">' + fmtScore(score) + '<span style="font-size:20px;color:#a9b7c9;">/100</span></div>' +
+   '<div style="font-size:11px;color:#a9b7c9;">' + esc(regime) + '</div></div></div>';
   // Breakdown cards
   const bd = cr.scoreBreakdown || [];
   if (bd.length) {
@@ -14661,7 +14661,7 @@ function volSurfaceHtml() {
     const bc = b.tone === "bad" ? "#f43f5e" : "#4dd2aa";
     h += '<div class="card" style="padding:14px;"><div style="font-size:11px;color:#c99a6b;font-weight:700;letter-spacing:0.5px;">' + esc(b.metric).toUpperCase() + '</div>' +
      '<div style="font-size:14px;font-weight:700;color:' + bc + ';margin:4px 0;">' + esc(b.status) + '</div>' +
-     '<div style="font-size:12px;color:#8d99aa;">' + esc(b.value) + '</div></div>';
+     '<div style="font-size:12px;color:#a9b7c9;">' + esc(b.value) + '</div></div>';
    });
    h += '</div>';
   }
@@ -14678,11 +14678,11 @@ function volSurfaceHtml() {
  function compositeBlurBanner(modelCount) {
   const n = modelCount || 22;
   return '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
+   '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
    '<div class="snap-blur" style="width:110px;height:52px;margin:8px auto 6px;"></div>' +
    '<div class="snap-blur" style="width:84px;height:16px;margin:0 auto;"></div>' +
-   '<div style="font-size:11px;color:#8d99aa;margin-top:6px;font-style:italic;">Algorithmic synthesis across ' + n + ' independent quantitative models.</div></div>' +
-   '<div style="flex:1;"><div style="font-size:13px;color:#8d99aa;margin-bottom:10px;">What is driving this reading? The four-pillar attribution, primary driver, and top risk contributors are Pro.</div>' +
+   '<div style="font-size:11px;color:#a9b7c9;margin-top:6px;font-style:italic;">Algorithmic synthesis across ' + n + ' independent quantitative models.</div></div>' +
+   '<div style="flex:1;"><div style="font-size:13px;color:#a9b7c9;margin-bottom:10px;">What is driving this reading? The four-pillar attribution, primary driver, and top risk contributors are Pro.</div>' +
    '<button class="btn" id="teaser-pricing" style="font-size:13px;">See Pro Plans</button></div></div>';
  }
  // Composite risk banner for the daily snapshot: overall assessment
@@ -14693,7 +14693,7 @@ function volSurfaceHtml() {
   if (!pro) return compositeBlurBanner((rh.models || []).length || 22);
   const comp = rh.composite || {};
   if (comp.score == null) return "";
-  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#8d99aa" };
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
   const c = colorMap[comp.color] || "#dbe5f1";
   const comps = comp.components || [];
   const pillars = comp.pillars || [];
@@ -14709,33 +14709,33 @@ function volSurfaceHtml() {
    taylor_gap: "Taylor Gap", sovereign_fragmentation: "Fragment.", liquidity_stress: "Liq. Stress",
    mcclellan_breadth: "McClellan" };
   let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0 4px;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
-   '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#8d99aa;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
-   '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#8d99aa;">/100</span></div>' +
+   '<div style="text-align:center;min-width:110px;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:1px;">CASCADIA COMPOSITE<br>RISK INDEX</div>' +
+   '<div style="font-size:44px;font-weight:800;color:' + c + ';">' + comp.score + '<span style="font-size:18px;color:#a9b7c9;">/100</span></div>' +
    '<div style="font-size:13px;font-weight:700;color:' + c + ';">' + esc(comp.regime || "") + "</div>" +
-   '<div style="font-size:11px;color:#8d99aa;margin-top:6px;font-style:italic;">Algorithmic synthesis across ' + (comp.model_count || comps.length) + ' independent quantitative models.</div></div>';
+   '<div style="font-size:11px;color:#a9b7c9;margin-top:6px;font-style:italic;">Algorithmic synthesis across ' + (comp.model_count || comps.length) + ' independent quantitative models.</div></div>';
   if (typeof isPro === "function" && isPro()) {
-   h += '<div style="flex:1;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models' +
+   h += '<div style="flex:1;"><div style="font-size:12px;color:#a9b7c9;margin-bottom:8px;">Composite of ' + (comp.model_count || comps.length) + ' models' +
     (comp.primary_driver ? ' · Primary driver: <span style="color:#dbe5f1;font-weight:600;">' + esc(comp.primary_driver) + "</span>" : "") + "</div>";
    // Pillar bars
    if (pillars.length) {
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">';
     pillars.forEach((p) => {
-     const pc = p.score >= 65 ? "#f37d83" : p.score >= 45 ? "#e0aa46" : p.score >= 25 ? "#8d99aa" : "#4dd2aa";
+     const pc = p.score >= 65 ? "#f37d83" : p.score >= 45 ? "#e0aa46" : p.score >= 25 ? "#a9b7c9" : "#4dd2aa";
      h += '<div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;">' +
-      '<span style="color:#8d99aa;">' + esc(p.pillar) + '</span><span style="color:' + pc + ';font-weight:700;">' + p.score + "</span></div>" +
+      '<span style="color:#a9b7c9;">' + esc(p.pillar) + '</span><span style="color:' + pc + ';font-weight:700;">' + p.score + "</span></div>" +
       '<div style="height:4px;background:#101620;border-radius:2px;overflow:hidden;"><div style="height:100%;width:' + Math.min(100, p.score) + '%;background:' + pc + ';border-radius:2px;"></div></div></div>';
     });
     h += "</div>";
    }
    h += '<div style="display:flex;gap:12px;flex-wrap:wrap;">';
    top.forEach((t) => {
-    const tc = t.risk >= 70 ? "#f37d83" : t.risk >= 50 ? "#e0aa46" : "#8d99aa";
-    h += '<div style="font-size:12px;"><span style="color:#8d99aa;">' + esc(nameMap[t.model] || t.model) + '</span> ' +
+    const tc = t.risk >= 70 ? "#f37d83" : t.risk >= 50 ? "#e0aa46" : "#a9b7c9";
+    h += '<div style="font-size:12px;"><span style="color:#a9b7c9;">' + esc(nameMap[t.model] || t.model) + '</span> ' +
      '<span style="color:' + tc + ';font-weight:700;">' + t.risk + "</span></div>";
    });
-   h += '</div><div style="font-size:11px;color:#8d99aa;margin-top:8px;">Highest risk contributors right now</div></div>';
+   h += '</div><div style="font-size:11px;color:#a9b7c9;margin-top:8px;">Highest risk contributors right now</div></div>';
   } else {
-   h += '<div style="flex:1;"><div style="font-size:13px;color:#8d99aa;margin-bottom:10px;">What is driving this reading? The four-pillar attribution, primary driver, and top risk contributors are Pro.</div>' +
+   h += '<div style="flex:1;"><div style="font-size:13px;color:#a9b7c9;margin-bottom:10px;">What is driving this reading? The four-pillar attribution, primary driver, and top risk contributors are Pro.</div>' +
     '<button class="btn" id="teaser-pricing" style="font-size:13px;">See Pro Plans</button></div>';
   }
   h += "</div>";
@@ -14748,20 +14748,20 @@ function volSurfaceHtml() {
  function riskBlurCard(name, anchorId) {
   const aid = anchorId || ("risk-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
   return '<div id="' + aid + '-snap" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
-   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
+   '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
    '<div class="snap-blur" style="width:96px;height:34px;margin:8px 0;"></div>' +
    '<div class="snap-blur" style="width:70%;height:15px;"></div></div>';
  }
  function riskValueCard(name, score, regime, color, anchorId, note) {
   if (score == null) return "";
-  const colorMap = { emerald: "#4dd2aa", yellow: "#d3c34c", amber: "#e0aa46", orange: "#e07f3e", rose: "#f37d83", red: "#e5484d", slate: "#8d99aa" };
+  const colorMap = { emerald: "#4dd2aa", yellow: "#d3c34c", amber: "#e0aa46", orange: "#e07f3e", rose: "#f37d83", red: "#e5484d", slate: "#a9b7c9" };
   const c = colorMap[color] || "#dbe5f1";
   const aid = anchorId || ("risk-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""));
   return '<div id="' + aid + '-snap" class="risk-anchor risk-snap-card" data-risk-card="' + aid + '" role="button" tabindex="0" title="Jump to ' + esc(name) + '" aria-label="Jump to ' + esc(name) + '" style="background:#101620;border-radius:10px;padding:14px;min-width:160px;flex:1;">' +
-   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
-   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(score) + '<span style="font-size:14px;color:#8d99aa;">/100</span></div>' +
+   '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">' + esc(name.toUpperCase()) + "</div>" +
+   '<div style="font-size:28px;font-weight:800;color:' + c + ';">' + fmtScore(score) + '<span style="font-size:14px;color:#a9b7c9;">/100</span></div>' +
    '<div style="font-size:12px;font-weight:700;color:' + c + ';">' + esc(regime || "") + "</div>" +
-   (note ? '<div style="font-size:10px;color:#8d99aa;margin-top:4px;">' + esc(note) + "</div>" : "") + "</div>";
+   (note ? '<div style="font-size:10px;color:#a9b7c9;margin-top:4px;">' + esc(note) + "</div>" : "") + "</div>";
  }
  function snapshotCardsHtml(blurred) {
   const rh = D.risk_headlines || {};
@@ -14783,7 +14783,7 @@ function volSurfaceHtml() {
   const rh = D.risk_headlines || {};
   const n = (rh.models || []).length || 22;
   const h = '<div class="section"><div class="section-title">Daily Snapshot' + (blurred ? " " + PRO_BADGE : "") +
-   ' <span style="font-size:11px;color:#8d99aa;font-weight:400;">as of ' + esc((rh.as_of || (D.generated_at || "").slice(0, 10))) + '</span></div>' +
+   ' <span style="font-size:11px;color:#a9b7c9;font-weight:400;">as of ' + esc((rh.as_of || (D.generated_at || "").slice(0, 10))) + '</span></div>' +
    '<div class="section-sub">' + (blurred
      ? "The full dashboard is visible to everyone. The readings &mdash; every score, every regime, and the composite &mdash; are Pro."
      : "Current readings across " + n + " independent quantitative models.") + "</div>" +
@@ -14834,9 +14834,9 @@ function volSurfaceHtml() {
  function qualityCard(title, value, sub, good) {
   const vc = good === true ? "#4dd2aa" : good === false ? "#f37d83" : "#dbe5f1";
   return '<div style="background:#101620;border-radius:10px;padding:12px;">' +
-   '<div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">' + esc(title) + "</div>" +
+   '<div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">' + esc(title) + "</div>" +
    '<div style="font-size:22px;font-weight:800;color:' + vc + ';margin-top:4px;">' + value + "</div>" +
-   (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + esc(sub) + "</div>" : "") + "</div>";
+   (sub ? '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">' + esc(sub) + "</div>" : "") + "</div>";
  }
  function renderQualityResult(q) {
   const el = document.getElementById("quality-result");
@@ -14852,9 +14852,9 @@ function volSurfaceHtml() {
   const fmtMoney = (v) => (v === null || v === undefined ? "N/A" : "$" + Math.round(v).toLocaleString());
   let h = '<div style="display:flex;align-items:center;gap:20px;margin:12px 0;padding:20px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid #253142;">' +
    '<div><div style="font-size:28px;font-weight:800;color:#dbe5f1;">' + esc(q.ticker) + "</div>" +
-   '<div style="font-size:12px;color:#8d99aa;">' + esc(q.sector || "") + " · " + esc(q.industry || "") + "</div></div>" +
-   '<div style="margin-left:auto;text-align:center;"><div style="font-size:11px;color:#8d99aa;letter-spacing:1px;">QUALITY SCORE</div>' +
-   '<div style="font-size:44px;font-weight:800;color:' + qc + ';">' + qs + '<span style="font-size:18px;color:#8d99aa;">/100</span></div></div></div>';
+   '<div style="font-size:12px;color:#a9b7c9;">' + esc(q.sector || "") + " · " + esc(q.industry || "") + "</div></div>" +
+   '<div style="margin-left:auto;text-align:center;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:1px;">QUALITY SCORE</div>' +
+   '<div style="font-size:44px;font-weight:800;color:' + qc + ';">' + qs + '<span style="font-size:18px;color:#a9b7c9;">/100</span></div></div></div>';
   h += '<div class="section-title" style="margin-top:16px;">Capital Returns</div>' +
    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:8px 0;">' +
    qualityCard("ROIC", fmtPct(cr.roic), "Return on invested capital", cr.roic !== null && cr.roic > 15) +
@@ -14871,7 +14871,7 @@ function volSurfaceHtml() {
    qualityCard("Rule of 40", ge.ruleOf40 !== null ? ge.ruleOf40 : "N/A", "Revenue growth + FCF margin", ge.ruleOf40 !== null && ge.ruleOf40 >= 40) +
    qualityCard("Revenue Growth", fmtPct(ge.revGrowth), "Year over year", ge.revGrowth !== null && ge.revGrowth > 20) +
    qualityCard("FCF Margin", fmtPct(ge.fcfMargin), "Free cash flow / revenue", ge.fcfMargin !== null && ge.fcfMargin > 20) + "</div>";
-  h += '<div class="card" style="margin-top:12px;"><div style="font-size:12px;color:#8d99aa;line-height:1.6;">A simplified on-demand screen. For DCF-covered names, the full Investment Scorecard and valuation work remain the deeper read.</div></div>';
+  h += '<div class="card" style="margin-top:12px;"><div style="font-size:12px;color:#a9b7c9;line-height:1.6;">A simplified on-demand screen. For DCF-covered names, the full Investment Scorecard and valuation work remain the deeper read.</div></div>';
   el.innerHTML = h;
  }
  async function runQualitySearch() {
@@ -14880,7 +14880,7 @@ function volSurfaceHtml() {
   if (!inp || !el) return;
   const tk = inp.value.toUpperCase().trim();
   if (!tk) return;
-  el.innerHTML = '<div class="card"><p style="color:#8d99aa;">Analyzing ' + esc(tk) + "...</p></div>";
+  el.innerHTML = '<div class="card"><p style="color:#a9b7c9;">Analyzing ' + esc(tk) + "...</p></div>";
   const q = await fetchQuality(tk);
   renderQualityResult(q);
  }
@@ -14927,7 +14927,7 @@ function volSurfaceHtml() {
    '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(42,52,72,0.6);padding-bottom:10px;margin-bottom:12px;">' +
    '<span style="font-size:11px;font-weight:700;letter-spacing:1px;color:' + accent + ';">' + esc(label).toUpperCase() + '</span>' +
    '<span style="font-size:' + (elevated ? "28px" : "20px") + ';font-weight:800;color:' + accent + ';">' + esc(prob) + "</span></div>" +
-   '<div style="font-size:10px;color:#8d99aa;letter-spacing:1px;margin-bottom:4px;">TARGET PRICE</div>' +
+   '<div style="font-size:10px;color:#a9b7c9;letter-spacing:1px;margin-bottom:4px;">TARGET PRICE</div>' +
    '<div style="font-size:' + (elevated ? "32px" : "24px") + ';font-weight:800;color:#f5f7fa;margin-bottom:14px;">' + esc(s.priceTarget || "N/A") + "</div>" +
    '<div style="font-size:10px;font-weight:700;letter-spacing:1px;color:' + accent + ';margin-bottom:4px;">FUNDAMENTAL TRIGGER</div>' +
    '<p style="font-size:13px;color:#dbe5f1;line-height:1.6;margin:0 0 12px;">' + esc(s.trigger || "N/A") + "</p>" +
@@ -14957,7 +14957,7 @@ function volSurfaceHtml() {
    '<option value="' + e.ts + '"' + (e.ts === selExp ? " selected" : "") + ">" + esc(expLabel(e)) + "</option>"
   ).join("");
   const expSelHtml = exps.length > 1
-   ? '<div style="margin-top:10px;"><span style="font-size:10px;color:#8d99aa;letter-spacing:1px;">IMPLIED MOVE EXPIRY</span>' +
+   ? '<div style="margin-top:10px;"><span style="font-size:10px;color:#a9b7c9;letter-spacing:1px;">IMPLIED MOVE EXPIRY</span>' +
      '<select id="' + elId + '-expiry" style="background:#0d131d;color:#dbe5f1;border:1px solid #253142;border-radius:6px;padding:5px 8px;font-size:12px;cursor:pointer;margin-left:8px;max-width:200px;">' +
      expOpts + "</select></div>"
    : "";
@@ -14966,20 +14966,20 @@ function volSurfaceHtml() {
   let h = '<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;margin:12px 0;">' +
    '<div style="flex:1;min-width:220px;background:#101620;border:1px solid #253142;border-radius:12px;padding:18px;">' +
    '<div style="font-size:24px;font-weight:800;color:#f5f7fa;">' + esc(d.ticker) + '</div>' +
-   '<div style="font-size:12px;color:#8d99aa;margin-top:2px;">' + esc(d.companyName || "") + " · " + esc(d.sector || "") + "</div>" +
-   '<div style="font-size:13px;color:#8d99aa;margin-top:8px;">Spot <span style="color:#f5f7fa;font-weight:700;">$' + esc(String(d.price)) + "</span>" +
+   '<div style="font-size:12px;color:#a9b7c9;margin-top:2px;">' + esc(d.companyName || "") + " · " + esc(d.sector || "") + "</div>" +
+   '<div style="font-size:13px;color:#a9b7c9;margin-top:8px;">Spot <span style="color:#f5f7fa;font-weight:700;">$' + esc(String(d.price)) + "</span>" +
    ' · Earnings <span style="color:#f5f7fa;font-weight:700;">' + esc(d.earningsDate || "TBD") + "</span></div>" + expSelHtml + "</div>" +
    '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:18px;text-align:right;min-width:150px;">' +
-   '<div style="font-size:10px;color:#8d99aa;letter-spacing:1px;">IMPLIED MOVE' + esc(expTag) + "</div>" +
+   '<div style="font-size:10px;color:#a9b7c9;letter-spacing:1px;">IMPLIED MOVE' + esc(expTag) + "</div>" +
    '<div style="font-size:26px;font-weight:800;color:#58a6ff;margin-top:4px;">' + esc(im) + "</div>" +
-   '<div style="font-size:10px;color:#8d99aa;margin-top:4px;">' + expSub + "</div></div>" +
+   '<div style="font-size:10px;color:#a9b7c9;margin-top:4px;">' + expSub + "</div></div>" +
    '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:18px;text-align:right;min-width:150px;">' +
-   '<div style="font-size:10px;color:#8d99aa;letter-spacing:1px;">PUT/CALL OI</div>' +
+   '<div style="font-size:10px;color:#a9b7c9;letter-spacing:1px;">PUT/CALL OI</div>' +
    '<div style="font-size:26px;font-weight:800;color:#d9a441;margin-top:4px;">' + esc(String(pcr)) + "</div>" +
-   '<div style="font-size:10px;color:#8d99aa;margin-top:4px;">open interest ratio</div></div></div>';
+   '<div style="font-size:10px;color:#a9b7c9;margin-top:4px;">open interest ratio</div></div></div>';
   // Probabilistic Scenario Matrix: Bear | Base (elevated) | Bull
   h += '<div style="margin:20px 0 8px;"><div style="font-size:13px;font-weight:700;letter-spacing:1px;color:#f5f7fa;">PROBABILISTIC SCENARIO MATRIX</div>' +
-   '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">Targets are options-implied ±1σ bounds; probabilities reflect the fundamental setup.</div></div>';
+   '<div style="font-size:11px;color:#a9b7c9;margin-top:2px;">Targets are options-implied ±1σ bounds; probabilities reflect the fundamental setup.</div></div>';
   h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:12px 0;align-items:start;">' +
    e360ScenarioCard("bear", "Bear Scenario (-1σ)", sc.bear || {}, "#f37d83", false) +
    e360ScenarioCard("base", "Base Scenario", sc.base || {}, "#d9a441", true) +
@@ -14989,14 +14989,14 @@ function volSurfaceHtml() {
    e360Pillar("02", "Micro Fundamentals", a.microFundamentals || "N/A", "#58a6ff") + "</div>";
   h += '<div style="margin:12px 0;">' + e360Pillar("03", "Management Tone, Last Four Quarters", a.historicalCommentary || "N/A", "#4dd2aa") + "</div>";
   h += '<div style="margin:12px 0;">' + e360Pillar("04", "Options Mechanics", a.optionsMechanics || "N/A", "#a371f7") + "</div>";
-  h += '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div>';
+  h += '<div style="font-size:11px;color:#a9b7c9;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div>';
   el.innerHTML = h;
   // Wire the expiry selector: re-fetch the matrix for the chosen expiry.
   const expSel = document.getElementById(elId + "-expiry");
   if (expSel) {
    expSel.addEventListener("change", async () => {
     const tk = d.ticker;
-    el.innerHTML = '<div class="card"><p style="color:#8d99aa;">Recomputing for the selected expiry...</p></div>';
+    el.innerHTML = '<div class="card"><p style="color:#a9b7c9;">Recomputing for the selected expiry...</p></div>';
     const nd = await fetchEarnings360(tk, expSel.value);
     renderEarnings360(nd, elId);
    });
@@ -15011,7 +15011,7 @@ function volSurfaceHtml() {
   if (!tk) return;
   const originalLabel = btn ? btn.textContent : "";
   if (btn) { btn.disabled = true; btn.textContent = "GENERATING..."; }
-  el.innerHTML = '<div class="card"><p style="color:#8d99aa;">Running quantitative models and AI synthesis for ' + esc(tk) + ". This usually takes 20-30 seconds.</p></div>";
+  el.innerHTML = '<div class="card"><p style="color:#a9b7c9;">Running quantitative models and AI synthesis for ' + esc(tk) + ". This usually takes 20-30 seconds.</p></div>";
   const d = await fetchEarnings360(tk);
   renderEarnings360(d, resultId);
   if (btn) { btn.disabled = false; btn.textContent = originalLabel || "ANALYZE"; }
@@ -15069,15 +15069,15 @@ function volSurfaceHtml() {
   }
   const rows = Object.entries(data.metrics || {}).map(([k, v]) =>
    '<tr style="border-bottom:1px solid #1f293d;">' +
-   '<td style="padding:8px 12px;color:#8d99aa;font-weight:600;">' + esc(k) + "</td>" +
+   '<td style="padding:8px 12px;color:#a9b7c9;font-weight:600;">' + esc(k) + "</td>" +
    '<td style="padding:8px 12px;text-align:right;font-weight:700;color:#f5f7fa;font-family:monospace;">' + fmtMetric(k, v) + "</td></tr>"
   ).join("");
   el.innerHTML =
    '<div style="background:#0d131d;border:1px solid #253142;border-radius:12px;overflow:hidden;">' +
    '<div style="padding:12px 16px;background:#101620;border-bottom:1px solid #253142;display:flex;justify-content:space-between;align-items:center;">' +
    '<span style="font-weight:800;font-size:16px;color:#f5f7fa;">' + esc(data.ticker) +
-   ' <span style="font-size:12px;font-weight:400;color:#8d99aa;">' + esc(data.companyName || "") + "</span></span>" +
-   '<span style="font-size:11px;color:#8d99aa;font-family:monospace;">56 METRICS</span></div>' +
+   ' <span style="font-size:12px;font-weight:400;color:#a9b7c9;">' + esc(data.companyName || "") + "</span></span>" +
+   '<span style="font-size:11px;color:#a9b7c9;font-family:monospace;">56 METRICS</span></div>' +
    '<div style="max-height:560px;overflow-y:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><tbody>' +
    rows + "</tbody></table></div></div>";
  }
@@ -15087,7 +15087,7 @@ function volSurfaceHtml() {
   if (!inp || !el) return;
   const tk = inp.value.toUpperCase().trim();
   if (!tk) return;
-  el.innerHTML = '<div class="card"><p style="color:#8d99aa;">Loading 56 metrics for ' + esc(tk) + "...</p></div>";
+  el.innerHTML = '<div class="card"><p style="color:#a9b7c9;">Loading 56 metrics for ' + esc(tk) + "...</p></div>";
   const m = await fetchMetrics(tk);
   renderMetricsTable(m, resultId);
  }
@@ -15140,21 +15140,21 @@ function volSurfaceHtml() {
   if (!el) return;
   const a = await fetchAgencyRisk(ticker);
   if (a.error) {
-   el.innerHTML = '<div class="card"><p style="color:#8d99aa;">' + esc(a.error) + '</p></div>';
+   el.innerHTML = '<div class="card"><p style="color:#a9b7c9;">' + esc(a.error) + '</p></div>';
    return;
   }
   const s = a.scores;
   const regimeColor = a.regimeColor === "rose" ? "#f37d83" : a.regimeColor === "emerald" ? "#4dd2aa" : "#e0aa46";
   let h = '<div class="card" style="border-left:4px solid ' + regimeColor + ';">';
   h += '<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;margin-bottom:12px;">';
-  h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">ALIGNMENT SCORE</div>';
-  h += '<div style="font-size:36px;font-weight:700;color:' + regimeColor + ';font-family:monospace;">' + a.alignmentScore + '<span style="font-size:18px;color:#8d99aa;">/100</span></div></div>';
-  h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">REGIME</div>';
+  h += '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">ALIGNMENT SCORE</div>';
+  h += '<div style="font-size:36px;font-weight:700;color:' + regimeColor + ';font-family:monospace;">' + a.alignmentScore + '<span style="font-size:18px;color:#a9b7c9;">/100</span></div></div>';
+  h += '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">REGIME</div>';
   h += '<div style="font-size:16px;font-weight:700;color:' + regimeColor + ';">' + esc(a.regime) + '</div></div>';
-  h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">INSIDER OWNERSHIP</div>';
+  h += '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">INSIDER OWNERSHIP</div>';
   h += '<div style="font-size:20px;font-weight:700;color:#f5f7fa;font-family:monospace;">' + s.skinInTheGame.insiderPercent + '%</div></div>';
-  h += '<div><div style="font-size:11px;color:#8d99aa;letter-spacing:0.5px;">6M NET FLOW</div>';
-  const flowCls = s.convictionFlow.netFlowDollars > 0 ? "#4dd2aa" : s.convictionFlow.netFlowDollars < 0 ? "#f37d83" : "#8d99aa";
+  h += '<div><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;">6M NET FLOW</div>';
+  const flowCls = s.convictionFlow.netFlowDollars > 0 ? "#4dd2aa" : s.convictionFlow.netFlowDollars < 0 ? "#f37d83" : "#a9b7c9";
   h += '<div style="font-size:20px;font-weight:700;color:' + flowCls + ';font-family:monospace;">' + fmtMoney(s.convictionFlow.netFlowDollars) + '</div></div>';
   h += '</div>';
 
@@ -15169,7 +15169,7 @@ function volSurfaceHtml() {
   h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:12px;">';
   h += '<div style="font-size:11px;color:#4dd2aa;font-weight:700;">PAY-FOR-PERF ' + s.compensation.score + '/' + s.compensation.max + '</div>';
   h += '<div style="font-size:13px;color:#dbe5f1;margin-top:4px;">' + esc(s.compensation.badge) + '</div>';
-  h += '<div style="font-size:11px;color:#8d99aa;">1Y TSR ' + (s.compensation.tsr1y >= 0 ? '+' : '') + s.compensation.tsr1y + '% · ' + esc(s.compensation.ceoName) + '</div></div>';
+  h += '<div style="font-size:11px;color:#a9b7c9;">1Y TSR ' + (s.compensation.tsr1y >= 0 ? '+' : '') + s.compensation.tsr1y + '% · ' + esc(s.compensation.ceoName) + '</div></div>';
   h += '</div>';
 
   // Flow chart
@@ -15182,7 +15182,7 @@ function volSurfaceHtml() {
   if (a.recentFilings && a.recentFilings.length) {
    h += '<div style="font-size:12px;font-weight:700;color:#f5f7fa;margin:12px 0 8px;">Recent Form 4 Filings</div>';
    h += '<div style="overflow-x:auto;"><table style="width:100%;font-size:12px;color:#dbe5f1;">';
-   h += '<tr style="color:#8d99aa;text-align:left;"><th style="padding:6px;">Date</th><th style="padding:6px;">Filer</th><th style="padding:6px;">Type</th><th style="padding:6px;text-align:right;">Shares</th><th style="padding:6px;text-align:right;">Value</th></tr>';
+   h += '<tr style="color:#a9b7c9;text-align:left;"><th style="padding:6px;">Date</th><th style="padding:6px;">Filer</th><th style="padding:6px;">Type</th><th style="padding:6px;text-align:right;">Shares</th><th style="padding:6px;text-align:right;">Value</th></tr>';
    a.recentFilings.forEach(function(tx) {
     const tc = tx.type === "BUY" ? "#4dd2aa" : "#f37d83";
     h += '<tr style="border-top:1px solid #253142;"><td style="padding:6px;">' + esc(tx.date) + '</td><td style="padding:6px;">' + esc(tx.filer) + '</td><td style="padding:6px;color:' + tc + ';font-weight:700;">' + tx.type + '</td><td style="padding:6px;text-align:right;">' + tx.shares.toLocaleString() + '</td><td style="padding:6px;text-align:right;">' + fmtMoney(tx.value) + '</td></tr>';
@@ -15198,16 +15198,16 @@ function volSurfaceHtml() {
    const chgTxt = (proxy.compPercentageChange > 0 ? "+" : "") + proxy.compPercentageChange + "%";
    h += '<div style="background:#101620;border:1px solid #253142;border-radius:8px;padding:16px;margin-top:12px;">';
    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
-   h += '<div style="font-size:13px;font-weight:700;color:#f5f7fa;">SEC Proxy Audit <span style="font-size:11px;color:#8d99aa;font-weight:400;">DEF 14A ' + esc(proxy.filingDate || "") + '</span></div>';
+   h += '<div style="font-size:13px;font-weight:700;color:#f5f7fa;">SEC Proxy Audit <span style="font-size:11px;color:#a9b7c9;font-weight:400;">DEF 14A ' + esc(proxy.filingDate || "") + '</span></div>';
    h += '<div style="font-size:24px;font-weight:700;color:' + gradeColor + ';font-family:monospace;">' + esc(proxy.alignmentGrade || "") + '</div></div>';
    h += '<div style="font-size:14px;font-weight:700;color:' + chgCls + ';margin-bottom:8px;">' + esc(proxy.verdictTitle || "") + '</div>';
-   h += '<div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">' + esc(proxy.ceoName || "") + ' · FY' + esc(proxy.fiscalYearAnalyzed || "") + ' vs FY' + esc(proxy.priorFiscalYear || "") + ' · YoY ' + chgTxt + '</div>';
+   h += '<div style="font-size:12px;color:#a9b7c9;margin-bottom:8px;">' + esc(proxy.ceoName || "") + ' · FY' + esc(proxy.fiscalYearAnalyzed || "") + ' vs FY' + esc(proxy.priorFiscalYear || "") + ' · YoY ' + chgTxt + '</div>';
    if (proxy.payBreakdown) {
     h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:8px;">';
-    h += '<div><div style="font-size:10px;color:#8d99aa;">BASE SALARY</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.baseSalary || "N/A") + '</div></div>';
-    h += '<div><div style="font-size:10px;color:#8d99aa;">STOCK AWARDS</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.stockAwards || "N/A") + '</div></div>';
-    h += '<div><div style="font-size:10px;color:#8d99aa;">BONUS</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.nonEquityIncentiveBonus || "N/A") + '</div></div>';
-    h += '<div><div style="font-size:10px;color:#8d99aa;">OTHER</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.otherComp || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#a9b7c9;">BASE SALARY</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.baseSalary || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#a9b7c9;">STOCK AWARDS</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.stockAwards || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#a9b7c9;">BONUS</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.nonEquityIncentiveBonus || "N/A") + '</div></div>';
+    h += '<div><div style="font-size:10px;color:#a9b7c9;">OTHER</div><div style="font-size:12px;color:#dbe5f1;">' + esc(proxy.payBreakdown.otherComp || "N/A") + '</div></div>';
     h += '</div>';
    }
    if (proxy.founderModeFlag) {
@@ -15217,7 +15217,7 @@ function volSurfaceHtml() {
     h += '<div style="font-size:11px;color:#f37d83;background:rgba(248,81,73,0.1);border:1px solid #f37d83;padding:6px 10px;border-radius:4px;margin-bottom:8px;">LOOTING FLAG: pay up sharply while shareholders lost money</div>';
    }
    h += '<div style="font-size:13px;color:#dbe5f1;line-height:1.6;margin-bottom:8px;">' + esc(proxy.forensicTakeaway || "") + '</div>';
-   h += '<div style="font-size:11px;color:#8d99aa;"><a href="' + esc(proxy.proxyUrl || "#") + '" target="_blank" style="color:#58a6ff;">View DEF 14A on SEC EDGAR</a> · Audited ' + esc((proxy.auditedAt || "").slice(0, 10)) + '</div>';
+   h += '<div style="font-size:11px;color:#a9b7c9;"><a href="' + esc(proxy.proxyUrl || "#") + '" target="_blank" style="color:#58a6ff;">View DEF 14A on SEC EDGAR</a> · Audited ' + esc((proxy.auditedAt || "").slice(0, 10)) + '</div>';
    h += '</div>';
   }
 
@@ -15229,7 +15229,7 @@ function volSurfaceHtml() {
   h += 'High insider ownership means executives feel the same pain as investors. ';
   h += 'Open-market buying (not option grants) signals genuine conviction. ';
   h += 'When executives draw large pay packages while the stock drops, that is the classic agency problem: management gets paid regardless of performance.</div>';
-  h += '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">Source: Yahoo Finance (SEC Form 4, insider holdings, executive compensation), updated on demand.</div></div>';
+  h += '<div style="font-size:11px;color:#a9b7c9;margin-top:8px;">Source: Yahoo Finance (SEC Form 4, insider holdings, executive compensation), updated on demand.</div></div>';
   h += '</div>';
 
   el.innerHTML = h;
@@ -15252,7 +15252,7 @@ function volSurfaceHtml() {
      },
      options: {
       animation: false, responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: "#8d99aa", font: { size: 10 } } } },
+      plugins: { legend: { labels: { color: "#a9b7c9", font: { size: 10 } } } },
       scales: {
        x: { ticks: { color: "#647184", font: { size: 10 } }, grid: { display: false } },
        y: { ticks: { color: "#647184", font: { size: 10 } }, grid: { color: "rgba(42,46,57,0.4)" } }
@@ -15386,7 +15386,7 @@ function volSurfaceHtml() {
     : ' style="opacity:0.55"';
    const badge = open
     ? ' <span style="font-size:9px;font-weight:700;letter-spacing:0.04em;padding:1px 5px;border-radius:4px;background:' + (isBuy ? "#14532d" : "#5b2121") + ";color:" + (isBuy ? "#4ade80" : "#fca5a5") + ';">OPEN MARKET</span>'
-    : ' <span style="font-size:11px;color:#8d99aa;">(' + esc(x.code_label || "") + ")</span>";
+    : ' <span style="font-size:11px;color:#a9b7c9;">(' + esc(x.code_label || "") + ")</span>";
    return "<tr" + rowStyle + "><td>" + esc(x.date || "") + "</td><td>" + esc(x.insider || "") +
     (x.title ? ' <span style="color:var(--muted);font-size:11px;">' + esc(x.title) + "</span>" : "") + "</td>" +
     '<td class="' + (isBuy ? "pos" : "neg") + '">' + (isBuy ? "Buy" : "Sell") + badge + "</td>" +
@@ -15641,14 +15641,14 @@ function volSurfaceHtml() {
   if (clusters.length) {
    const c = clusters[0];
    h += '<div style="background:#1a2233;border:1px solid #d9a441;border-radius:10px;padding:12px 14px;margin-bottom:14px;"><div style="font-size:13px;font-weight:700;color:#d9a441;">Cluster buying: ' + c.distinct_insiders_count + ' insiders · ' + flowMoney(c.total_capital_deployed) + ' · latest ' + esc(c.latest_trade_date || "") + '</div>' +
-    '<div style="font-size:12px;color:#8d99aa;margin-top:4px;">' + (c.insider_list || []).map((n) => esc(n)).join(", ") + '</div></div>';
+    '<div style="font-size:12px;color:#a9b7c9;margin-top:4px;">' + (c.insider_list || []).map((n) => esc(n)).join(", ") + '</div></div>';
   }
   h += '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin-bottom:8px;">Insider Form 4 Purchases</div>';
   const itrades = ((ins.by_ticker || {})[tk] || []).slice(0, 10);
   if (!ins.available) {
-   h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">Insider data unavailable: ' + esc(ins.status || "No insider records are available.") + '</p>';
+   h += '<p style="font-size:13px;color:#a9b7c9;line-height:1.6;">Insider data unavailable: ' + esc(ins.status || "No insider records are available.") + '</p>';
   } else if (!itrades.length) {
-   h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">No open-market insider purchases for ' + esc(tk) + ' in the current 45 day window.</p>';
+   h += '<p style="font-size:13px;color:#a9b7c9;line-height:1.6;">No open-market insider purchases for ' + esc(tk) + ' in the current 45 day window.</p>';
   } else {
    h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Insider</th><th>Title</th><th>Shares</th><th>Price</th><th>Value</th><th>Trade Date</th></tr></thead><tbody>';
    h += itrades.map((t) =>
@@ -15659,9 +15659,9 @@ function volSurfaceHtml() {
   h += '<div style="font-size:13px;font-weight:700;color:#f5f7fa;margin:16px 0 8px;">Congressional Trades</div>';
   const ctrades = ((ct.by_ticker || {})[tk] || []).slice(0, 10);
   if (!ct.available) {
-   h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">Congressional data unavailable: ' + esc(ct.status || "No congressional records are available.") + '</p>';
+   h += '<p style="font-size:13px;color:#a9b7c9;line-height:1.6;">Congressional data unavailable: ' + esc(ct.status || "No congressional records are available.") + '</p>';
   } else if (!ctrades.length) {
-   h += '<p style="font-size:13px;color:#8d99aa;line-height:1.6;">No disclosed congressional trades for ' + esc(tk) + ' in the current tracker data.</p>';
+   h += '<p style="font-size:13px;color:#a9b7c9;line-height:1.6;">No disclosed congressional trades for ' + esc(tk) + ' in the current tracker data.</p>';
   } else {
    h += '<div class="table-wrap"><table class="coverage"><thead><tr><th>Filer</th><th>Chamber</th><th>Party</th><th>Type</th><th>Amount Range</th><th>Transaction Date</th></tr></thead><tbody>';
    h += ctrades.map((t) =>
@@ -15700,7 +15700,7 @@ function volSurfaceHtml() {
   let h = '<div class="card"><ul style="list-style:none;margin:0;padding:0;">';
   h += items.map((n) =>
    '<li style="padding:10px 0;border-bottom:1px solid #1c2735;"><a href="' + esc(n.url) + '" target="_blank" rel="noopener" style="color:#dbe5f1;font-size:14px;font-weight:600;text-decoration:none;">' + esc(n.title) + '</a>' +
-   '<div style="font-size:11px;color:#8d99aa;margin-top:4px;">' + esc(n.publisher || "") + (n.published ? " · " + esc(n.published) : "") + "</div></li>"
+   '<div style="font-size:11px;color:#a9b7c9;margin-top:4px;">' + esc(n.publisher || "") + (n.published ? " · " + esc(n.published) : "") + "</div></li>"
   ).join("");
   return h + "</ul></div>";
  }
@@ -15849,7 +15849,7 @@ function volSurfaceHtml() {
    console.error("Research financials render failed", tk, e);
    html = researchUnavailable(tk);
   }
-  if (d.source) html += '<p style="font-size:11px;color:#8d99aa;margin-top:8px;">Figures drawn from ' + esc(d.source) + ". Items a filer does not report show as N/A.</p>";
+  if (d.source) html += '<p style="font-size:11px;color:#a9b7c9;margin-top:8px;">Figures drawn from ' + esc(d.source) + ". Items a filer does not report show as N/A.</p>";
   setResearchHtml("research-financials", html);
   const tabs = document.getElementById("fin-" + tk + "-tabs");
   if (tabs) {
@@ -15876,7 +15876,7 @@ function volSurfaceHtml() {
   h += researchTimeframeHtml("Daily", tf.daily, d.dist200);
   h += researchTimeframeHtml("Weekly", tf.weekly, null);
   h += researchTimeframeHtml("Monthly", tf.monthly, null);
-  h += '<p style="font-size:11px;color:#8d99aa;">Price history as of ' + esc(d.asOf || "") + ". Gauges follow the same formulas as the coverage trend engine.</p>";
+  h += '<p style="font-size:11px;color:#a9b7c9;">Price history as of ' + esc(d.asOf || "") + ". Gauges follow the same formulas as the coverage trend engine.</p>";
   setResearchHtml("research-technicals", h);
   drawResearchTechCharts(d);
   setResearchHtml("research-seasonality", researchSeasonalityHtml(d.seasonality));
@@ -16107,7 +16107,7 @@ function volSurfaceHtml() {
    'style="flex:1;background:#101620;border:1px solid #253142;border-radius:8px;padding:10px 12px;color:#dbe5f1;font-size:14px;text-transform:uppercase;" />' +
    '<button id="e360-btn" type="submit" style="background:#d9a441;color:#0a0e17;font-weight:700;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;">Analyze</button></form>' +
    '<div id="e360-result"></div>' +
-   '<div style="font-size:11px;color:#8d99aa;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div></div>';
+   '<div style="font-size:11px;color:#a9b7c9;margin-top:8px;">AI-generated analysis for informational purposes only. Not investment advice.</div></div>';
   const e360Form = document.getElementById("e360-form");
   if (e360Form) {
    e360Form.addEventListener("submit", (e) => {
@@ -16134,7 +16134,7 @@ function volSurfaceHtml() {
   if (memo) {
    // Single memo view - Pro gate if memo.pro
    if (memo.pro && !isPro()) {
-    let h = '<div class="crumb"><a href="#/memos" style="color:#8d99aa;">CASCADIA MEMOS</a></div>';
+    let h = '<div class="crumb"><a href="#/memos" style="color:#a9b7c9;">CASCADIA MEMOS</a></div>';
     h += '<div class="hero"><div><h1 class="hero-h">' + esc(memo.title) + '</h1>';
     h += '<p class="hero-sub">' + esc(memo.date) + ' &middot; <span style="color:#d9a441;">PRO</span></p></div></div>';
     h += '<div class="section" style="max-width:800px;margin:0 auto;">';
@@ -16143,12 +16143,12 @@ function volSurfaceHtml() {
       '<div style="font-size:16px;font-weight:700;color:#d9a441;margin-bottom:8px;">Pro members read the full Week Ahead</div>' +
       '<div style="font-size:14px;color:#dbe5f1;margin-bottom:16px;">Company news, macro, Fed, positioning, and risk model readings for the coming week.</div>' +
       '<button class="btn" id="teaser-pricing">See Pro Plans</button></div>');
-    h += '<div style="font-size:11px;color:#8d99aa;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
+    h += '<div style="font-size:11px;color:#a9b7c9;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
     h += '</div>';
     app.innerHTML = h;
     return;
    }
-   let h = '<div class="crumb"><a href="#/memos" style="color:#8d99aa;">CASCADIA MEMOS</a></div>';
+   let h = '<div class="crumb"><a href="#/memos" style="color:#a9b7c9;">CASCADIA MEMOS</a></div>';
    h += '<div class="hero"><div><h1 class="hero-h">' + esc(memo.title) + '</h1>';
    h += '<p class="hero-sub">' + esc(memo.date) + '</p></div></div>';
    h += '<div class="section" style="max-width:800px;margin:0 auto;">';
@@ -16157,11 +16157,11 @@ function volSurfaceHtml() {
      h += '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:24px;margin:24px 0;">';
      h += '<div style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:16px;">THE SCARCITY PREMIUM</div>';
      h += '<div style="display:flex;gap:16px;flex-wrap:wrap;">';
-     h += '<div style="flex:1;min-width:200px;background:#0d131d;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">MORATORIUMS</div><div style="font-size:28px;font-weight:800;color:#f37d83;">Supply ↓</div><div style="font-size:13px;color:#dbe5f1;margin-top:8px;">New builds paused</div></div>';
-     h += '<div style="flex:1;min-width:200px;background:#0d131d;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">AI DEMAND</div><div style="font-size:28px;font-weight:800;color:#4dd2aa;">Demand ↑</div><div style="font-size:13px;color:#dbe5f1;margin-top:8px;">Inelastic compute needs</div></div>';
-     h += '<div style="flex:1;min-width:200px;background:#0d131d;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">RESULT</div><div style="font-size:28px;font-weight:800;color:#d9a441;">Pricing ↑</div><div style="font-size:13px;color:#dbe5f1;margin-top:8px;">Margin expansion</div></div>';
+     h += '<div style="flex:1;min-width:200px;background:#0d131d;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#a9b7c9;margin-bottom:8px;">MORATORIUMS</div><div style="font-size:28px;font-weight:800;color:#f37d83;">Supply ↓</div><div style="font-size:13px;color:#dbe5f1;margin-top:8px;">New builds paused</div></div>';
+     h += '<div style="flex:1;min-width:200px;background:#0d131d;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#a9b7c9;margin-bottom:8px;">AI DEMAND</div><div style="font-size:28px;font-weight:800;color:#4dd2aa;">Demand ↑</div><div style="font-size:13px;color:#dbe5f1;margin-top:8px;">Inelastic compute needs</div></div>';
+     h += '<div style="flex:1;min-width:200px;background:#0d131d;border-radius:8px;padding:16px;"><div style="font-size:12px;color:#a9b7c9;margin-bottom:8px;">RESULT</div><div style="font-size:28px;font-weight:800;color:#d9a441;">Pricing ↑</div><div style="font-size:13px;color:#dbe5f1;margin-top:8px;">Margin expansion</div></div>';
      h += '</div>';
-     h += '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #253142;"><div style="font-size:12px;color:#8d99aa;margin-bottom:8px;">KEY BENEFICIARIES</div><div style="display:flex;gap:8px;flex-wrap:wrap;">';
+     h += '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #253142;"><div style="font-size:12px;color:#a9b7c9;margin-bottom:8px;">KEY BENEFICIARIES</div><div style="display:flex;gap:8px;flex-wrap:wrap;">';
      h += '<span style="background:#101620;padding:6px 12px;border-radius:6px;font-size:13px;color:#f5f7fa;font-weight:600;">DLR</span>';
      h += '<span style="background:#101620;padding:6px 12px;border-radius:6px;font-size:13px;color:#f5f7fa;font-weight:600;">EQIX</span>';
      h += '<span style="background:#101620;padding:6px 12px;border-radius:6px;font-size:13px;color:#f5f7fa;font-weight:600;">IRM</span>';
@@ -16174,23 +16174,23 @@ function volSurfaceHtml() {
     if (s.visual === "axon-sotp") {
      h += '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:24px;margin:24px 0;">';
      h += '<div style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:16px;">AXON SUM-OF-THE-PARTS: 2036 REVENUE</div>';
-     const segs = [["Evidence.com", 18.5, "#d9a441"], ["TASER", 4.0, "#4dd2aa"], ["Dedrone", 3.47, "#5b8dd9"], ["Bodycams", 2.3, "#8d99aa"], ["ALPR/RTCC", 1.28, "#f37d83"]];
+     const segs = [["Evidence.com", 18.5, "#d9a441"], ["TASER", 4.0, "#4dd2aa"], ["Dedrone", 3.47, "#5b8dd9"], ["Bodycams", 2.3, "#a9b7c9"], ["ALPR/RTCC", 1.28, "#f37d83"]];
      const total = 29.55;
      segs.forEach((sg) => {
       const pct = (sg[1] / total * 100).toFixed(1);
-      h += '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:#dbe5f1;">' + sg[0] + '</span><span style="color:#8d99aa;">$' + sg[1] + 'B (' + pct + '%)</span></div>';
+      h += '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:#dbe5f1;">' + sg[0] + '</span><span style="color:#a9b7c9;">$' + sg[1] + 'B (' + pct + '%)</span></div>';
       h += '<div style="background:#0d131d;border-radius:4px;height:24px;overflow:hidden;"><div style="width:' + pct + '%;height:100%;background:' + sg[2] + ';"></div></div></div>';
      });
      h += '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #253142;display:flex;justify-content:space-between;align-items:center;">';
-     h += '<div><div style="font-size:12px;color:#8d99aa;">SOTP TOTAL</div><div style="font-size:24px;font-weight:800;color:#f5f7fa;">$29.55B</div></div>';
-     h += '<div style="text-align:right;"><div style="font-size:12px;color:#8d99aa;">FLOCK BACKLASH HAIRCUT</div><div style="font-size:24px;font-weight:800;color:#f37d83;">-$732M</div><div style="font-size:11px;color:#8d99aa;">2.4% of terminal</div></div>';
+     h += '<div><div style="font-size:12px;color:#a9b7c9;">SOTP TOTAL</div><div style="font-size:24px;font-weight:800;color:#f5f7fa;">$29.55B</div></div>';
+     h += '<div style="text-align:right;"><div style="font-size:12px;color:#a9b7c9;">FLOCK BACKLASH HAIRCUT</div><div style="font-size:24px;font-weight:800;color:#f37d83;">-$732M</div><div style="font-size:11px;color:#a9b7c9;">2.4% of terminal</div></div>';
      h += '</div></div>';
      return;
     }
     if (s.image) {
      h += '<figure style="margin:24px 0;">';
      h += '<img src="' + esc(s.image) + '" alt="' + esc(s.alt || s.caption || "") + '" loading="lazy" style="width:100%;height:auto;display:block;border:1px solid #253142;border-radius:12px;">';
-     if (s.caption) h += '<figcaption style="font-size:12px;color:#8d99aa;margin-top:8px;text-align:center;">' + esc(s.caption) + '</figcaption>';
+     if (s.caption) h += '<figcaption style="font-size:12px;color:#a9b7c9;margin-top:8px;text-align:center;">' + esc(s.caption) + '</figcaption>';
      h += '</figure>';
      return;
     }
@@ -16223,7 +16223,7 @@ function volSurfaceHtml() {
     });
     h += '</div></div>';
    }
-   h += '<div style="font-size:11px;color:#8d99aa;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
+   h += '<div style="font-size:11px;color:#a9b7c9;margin-top:16px;text-align:center;">Not investment advice. For informational purposes only.</div>';
    h += '</div>';
    app.innerHTML = h;
    return;
@@ -16236,7 +16236,7 @@ function volSurfaceHtml() {
   h += '<div class="section" style="max-width:800px;margin:0 auto;">';
   h += '<nav class="tk-toc" id="memo-toc" aria-label="On this page"></nav>';
   if (!allMemos.length) {
-   h += '<div class="card"><p style="color:#8d99aa;">No memos yet.</p></div>';
+   h += '<div class="card"><p style="color:#a9b7c9;">No memos yet.</p></div>';
   } else {
    const geoMemos = allMemos.filter((m) => m.section === "Geopolitics").reverse();
    const macroMemos = allMemos.filter((m) => m.section === "Macro Analysis").reverse();
@@ -16244,9 +16244,9 @@ function volSurfaceHtml() {
    const memoCard = (m) => {
     let c = '<a href="#/memos/' + esc(m.id) + '" style="text-decoration:none;">';
     c += '<div class="card" style="margin-bottom:16px;cursor:pointer;">';
-    c += '<div style="font-size:11px;color:#8d99aa;">' + esc(m.date) + (m.pro ? ' &nbsp;<span style="color:#d9a441;font-weight:700;">PRO</span>' : '') + '</div>';
+    c += '<div style="font-size:11px;color:#a9b7c9;">' + esc(m.date) + (m.pro ? ' &nbsp;<span style="color:#d9a441;font-weight:700;">PRO</span>' : '') + '</div>';
     c += '<div style="font-size:20px;font-weight:700;color:#f5f7fa;margin:8px 0;">' + esc(m.title) + '</div>';
-    c += '<div style="font-size:14px;color:#8d99aa;line-height:1.6;">' + esc(m.excerpt) + '</div>';
+    c += '<div style="font-size:14px;color:#a9b7c9;line-height:1.6;">' + esc(m.excerpt) + '</div>';
     c += '<div style="font-size:13px;color:#d9a441;margin-top:8px;">Read memo →</div>';
     c += '</div></a>';
     return c;
@@ -16264,8 +16264,8 @@ function volSurfaceHtml() {
     const fmtBn = (v) => v == null ? "" : "$" + Number(v).toFixed(2) + "B";
     const fmtEps = (v) => v == null ? "" : "$" + Number(v).toFixed(2);
     let b = '<div id="memo-sec-bellwether" data-toc="Bellwether Earnings" style="background:#101620;border:1px solid #253142;border-radius:12px;padding:16px 20px;margin-bottom:16px;">';
-    b += '<div style="font-size:12px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:6px;">BELLWETHER EARNINGS' + (bb.updated ? ' &nbsp;<span style="color:#8d99aa;font-weight:400;letter-spacing:0;">Updated ' + esc(bb.updated) + '</span>' : '') + '</div>';
-    b += '<div style="font-size:13px;color:#8d99aa;margin-bottom:12px;">Sixteen companies whose quarterly reports read the US economy, tracked report by report.</div>';
+    b += '<div style="font-size:12px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:6px;">BELLWETHER EARNINGS' + (bb.updated ? ' &nbsp;<span style="color:#a9b7c9;font-weight:400;letter-spacing:0;">Updated ' + esc(bb.updated) + '</span>' : '') + '</div>';
+    b += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:12px;">Sixteen companies whose quarterly reports read the US economy, tracked report by report.</div>';
     if (t.reported) {
      b += '<div style="font-size:13px;color:#dbe5f1;margin-bottom:4px;">' + esc(bb.season_label || "This season") + ': <b style="color:#f5f7fa;">' + t.reported + ' of ' + t.companies_total + ' reported</b>'
       + ' &nbsp;·&nbsp; EPS beats ' + t.eps_beats + ', misses ' + t.eps_misses + (t.eps_inline ? ', in line ' + t.eps_inline : '')
@@ -16280,9 +16280,9 @@ function volSurfaceHtml() {
       const L = c.latest;
       b += '<div style="border-top:1px solid #1d2735;padding:10px 0;">';
       b += '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;"><span style="font-size:14px;font-weight:700;color:#f5f7fa;">' + esc(c.name) + ' <span style="color:#d9a441;font-weight:600;">' + esc(c.ticker) + '</span></span>'
-       + (L ? '<span style="font-size:12px;color:#8d99aa;">' + esc(L.quarter || "") + (L.report_date ? ' · ' + esc(L.report_date) : '') + (bb.season_start && L.report_date && L.report_date < bb.season_start ? ' · <span style="color:#d9a441;">pre-season print</span>' : '') + (L.next_report ? ' · Next report ' + esc(L.next_report) : '') + '</span>' : '<span style="font-size:12px;color:#8d99aa;">No verified report on file yet</span>')
+       + (L ? '<span style="font-size:12px;color:#a9b7c9;">' + esc(L.quarter || "") + (L.report_date ? ' · ' + esc(L.report_date) : '') + (bb.season_start && L.report_date && L.report_date < bb.season_start ? ' · <span style="color:#d9a441;">pre-season print</span>' : '') + (L.next_report ? ' · Next report ' + esc(L.next_report) : '') + '</span>' : '<span style="font-size:12px;color:#a9b7c9;">No verified report on file yet</span>')
        + '</div>';
-      b += '<div style="font-size:12px;color:#8d99aa;margin:2px 0 6px;">' + esc(c.measures || "") + '</div>';
+      b += '<div style="font-size:12px;color:#a9b7c9;margin:2px 0 6px;">' + esc(c.measures || "") + '</div>';
       if (L) {
        const rv = vs(L.revenue_actual_bn, L.revenue_consensus_bn);
        const ev = vs(L.eps_actual, L.eps_consensus);
@@ -16295,13 +16295,13 @@ function volSurfaceHtml() {
        b += '</div>';
        if (L.guidance && L.guidance !== "none") {
         const gcol = L.guidance === "raised" ? "#4dd2aa" : (L.guidance === "cut" ? "#f37d83" : "#dbe5f1");
-        b += '<div style="font-size:13px;color:#dbe5f1;margin-top:4px;">Guidance <span style="color:' + gcol + ';font-weight:700;">' + esc(L.guidance) + '</span>' + (L.guidance_note ? ' &nbsp;<span style="color:#8d99aa;">' + esc(L.guidance_note) + '</span>' : '') + '</div>';
+        b += '<div style="font-size:13px;color:#dbe5f1;margin-top:4px;">Guidance <span style="color:' + gcol + ';font-weight:700;">' + esc(L.guidance) + '</span>' + (L.guidance_note ? ' &nbsp;<span style="color:#a9b7c9;">' + esc(L.guidance_note) + '</span>' : '') + '</div>';
        } else if (L.guidance_note) {
-        b += '<div style="font-size:13px;color:#8d99aa;margin-top:4px;">' + esc(L.guidance_note) + '</div>';
+        b += '<div style="font-size:13px;color:#a9b7c9;margin-top:4px;">' + esc(L.guidance_note) + '</div>';
        }
        (L.takeaways || []).forEach((tk) => { b += '<div style="font-size:13px;color:#dbe5f1;margin-top:3px;">• ' + esc(tk) + '</div>'; });
        if (L.sources && L.sources.length) {
-        b += '<div style="font-size:11px;margin-top:5px;">' + L.sources.map((s, i) => '<a href="' + esc(s) + '" target="_blank" rel="noopener" style="color:#8d99aa;text-decoration:underline;">Source ' + (i + 1) + '</a>').join(' &nbsp;') + '</div>';
+        b += '<div style="font-size:11px;margin-top:5px;">' + L.sources.map((s, i) => '<a href="' + esc(s) + '" target="_blank" rel="noopener" style="color:#a9b7c9;text-decoration:underline;">Source ' + (i + 1) + '</a>').join(' &nbsp;') + '</div>';
        }
       }
       b += '</div>';
@@ -16312,11 +16312,11 @@ function volSurfaceHtml() {
    };
    if (geoMemos.length) {
     h += '<div id="memo-sec-geopolitics" data-toc="Geopolitics" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">GEOPOLITICS</div>';
-    h += '<div style="font-size:13px;color:#8d99aa;margin-bottom:16px;">Politics that move markets: energy shocks, elections, unrest, and great-power friction.</div>';
+    h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Politics that move markets: energy shocks, elections, unrest, and great-power friction.</div>';
     const wl = D.geopolitics_watchlist;
     if (wl && wl.areas && wl.areas.length) {
      h += '<div id="memo-sec-watchlist" data-toc="What We Track" style="background:#101620;border:1px solid #253142;border-radius:12px;padding:16px 20px;margin-bottom:16px;">';
-     h += '<div style="font-size:12px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:12px;">WHAT WE TRACK' + (wl.updated ? ' &nbsp;<span style="color:#8d99aa;font-weight:400;letter-spacing:0;">Updated ' + esc(wl.updated) + '</span>' : '') + '</div>';
+     h += '<div style="font-size:12px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:12px;">WHAT WE TRACK' + (wl.updated ? ' &nbsp;<span style="color:#a9b7c9;font-weight:400;letter-spacing:0;">Updated ' + esc(wl.updated) + '</span>' : '') + '</div>';
      wl.areas.forEach((a) => {
       h += '<div style="margin-bottom:10px;"><span style="font-size:13px;font-weight:700;color:#f5f7fa;">' + esc(a.area) + '</span><span style="font-size:13px;color:#dbe5f1;">: ' + esc(a.status) + '</span>' + (a.post ? ' <a href="#/memos/' + esc(a.post) + '" style="font-size:13px;color:#d9a441;">Latest post \u2192</a>' : '') + '</div>';
      });
@@ -16326,13 +16326,13 @@ function volSurfaceHtml() {
    }
    if (macroMemos.length || bwBoardHtml()) {
     h += '<div id="memo-sec-macro" data-toc="Macro Analysis" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">MACRO ANALYSIS</div>';
-    h += '<div style="font-size:13px;color:#8d99aa;margin-bottom:16px;">Data, policy, and the bellwether earnings that read the economy.</div>';
+    h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Data, policy, and the bellwether earnings that read the economy.</div>';
     h += bwBoardHtml();
     macroMemos.forEach((m) => { h += memoCard(m); });
    }
    if (restMemos.length) {
     h += '<div id="memo-sec-research" data-toc="Research Memos" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">RESEARCH MEMOS</div>';
-    h += '<div style="font-size:13px;color:#8d99aa;margin-bottom:16px;">Company research, trade ideas, and valuation notes.</div>';
+    h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Company research, trade ideas, and valuation notes.</div>';
     restMemos.forEach((m) => { h += memoCard(m); });
    }
   }
@@ -16393,7 +16393,7 @@ function volSurfaceHtml() {
   ".risk-toc{background:#0a0e17;border:1px solid #253142;border-radius:12px;padding:18px;margin:14px 0 6px;}" +
   ".risk-toc-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}" +
   ".risk-toc-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#d9a441;}" +
-  ".risk-toc-meta{font-size:12px;color:#8d99aa;}" +
+  ".risk-toc-meta{font-size:12px;color:#a9b7c9;}" +
   ".risk-toc-btns{display:flex;gap:10px;flex-wrap:wrap;}" +
   ".risk-toc-cat{position:relative;flex:1 1 200px;min-width:180px;}" +
   ".risk-toc-cat.open{z-index:60;}" +
@@ -16402,7 +16402,7 @@ function volSurfaceHtml() {
   ".risk-toc-cat.open .risk-toc-btn{border-color:#d9a441;border-left-color:#d9a441;box-shadow:inset 0 -2px 0 #d9a441;}" +
   ".risk-toc-num{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;color:#d9a441;}" +
   ".risk-toc-btnname{font-size:13px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap;}" +
-  ".risk-toc-count{margin-left:auto;font-size:11px;color:#8d99aa;white-space:nowrap;}" +
+  ".risk-toc-count{margin-left:auto;font-size:11px;color:#a9b7c9;white-space:nowrap;}" +
   ".risk-toc-chev{display:inline-block;color:#d9a441;font-size:12px;line-height:1;transition:transform .25s ease;}" +
   ".risk-toc-cat.open .risk-toc-chev{transform:rotate(180deg);}" +
   ".risk-toc-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0a0e17;border:1px solid #253142;border-top:2px solid #d9a441;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,0.5);max-height:0;opacity:0;overflow:hidden;pointer-events:none;transform:translateY(-4px);transition:max-height .3s ease,opacity .25s ease,transform .25s ease;}" +
@@ -16413,7 +16413,7 @@ function volSurfaceHtml() {
   ".risk-cat-band{display:flex;align-items:center;gap:14px;background:#0a0e17;border:1px solid #253142;border-left:3px solid #d9a441;border-radius:10px;padding:16px 18px;margin:42px 0 2px;}" +
   ".risk-cat-num{font-family:var(--mono);font-size:22px;font-weight:800;color:#d9a441;line-height:1;}" +
   ".risk-cat-name{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#f5f7fa;}" +
-  ".risk-cat-sub{font-size:12.5px;color:#8d99aa;margin-top:3px;line-height:1.45;}" +
+  ".risk-cat-sub{font-size:12.5px;color:#a9b7c9;margin-top:3px;line-height:1.45;}" +
   ".risk-cat-count{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#d9a441;white-space:nowrap;}" +
   "@media (max-width:640px){.risk-toc-btns{flex-direction:column;}.risk-toc-cat{flex:1 1 auto;width:100%;min-width:0;}.risk-cat-band{flex-wrap:wrap;}.risk-cat-count{margin-left:0;}}";
  // Blurred placeholder blocks for withheld snapshot readings: neutral tones
@@ -16603,7 +16603,7 @@ function volSurfaceHtml() {
      scales: {
       x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
       yPrice: {position: "left", ticks: {color: "#c99a6b"}, grid: {color: "rgba(42,46,57,0.4)"}},
-      yScore: {position: "right", min: 0, max: 100, ticks: {color: "#8d99aa", stepSize: 25}, grid: {display: false}},
+      yScore: {position: "right", min: 0, max: 100, ticks: {color: "#a9b7c9", stepSize: 25}, grid: {display: false}},
      }},
    });
   }
@@ -16625,7 +16625,7 @@ function volSurfaceHtml() {
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
      scales: {
       x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
       yLiq: {position: "left", ticks: {color: "#d9a441"}, grid: {color: "rgba(42,46,57,0.4)"}},
@@ -16656,7 +16656,7 @@ function volSurfaceHtml() {
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
      scales: {
       x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
       yScore: {position: "left", min: 0, max: 100, ticks: {color: "#e0aa46"}, grid: {color: "rgba(42,46,57,0.4)"}},
@@ -16683,7 +16683,7 @@ function volSurfaceHtml() {
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
      scales: {
       x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
       yOsc: {position: "left", min: -3, max: 3, ticks: {color: "#f37d83"}, grid: {color: "rgba(42,46,57,0.4)"}},
@@ -16709,14 +16709,14 @@ function volSurfaceHtml() {
       { type: "line", label: "SPY", data: kcHist.map((r) => r.spy),
         borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
       { type: "line", label: "RSP", data: kcHist.map((r) => r.rsp),
-        borderColor: "#8d99aa", borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.2 },
+        borderColor: "#a9b7c9", borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.2 },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
      scales: {
       x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
-      y: {ticks: {color: "#8d99aa"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      y: {ticks: {color: "#a9b7c9"}, grid: {color: "rgba(42,46,57,0.4)"}},
      }},
    });
   }
@@ -16738,10 +16738,10 @@ function volSurfaceHtml() {
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
      scales: {
       x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
-      y: {ticks: {color: "#8d99aa", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      y: {ticks: {color: "#a9b7c9", callback: (v) => v + "%"}, grid: {color: "rgba(42,46,57,0.4)"}},
      }},
    });
   }
@@ -16763,10 +16763,10 @@ function volSurfaceHtml() {
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
-     plugins: { legend: { labels: { color: "#8d99aa", boxWidth: 12 } } },
+     plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
      scales: {
       x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
-      y: {ticks: {color: "#8d99aa"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      y: {ticks: {color: "#a9b7c9"}, grid: {color: "rgba(42,46,57,0.4)"}},
      }},
    });
   }
@@ -17039,7 +17039,7 @@ initBackToTop();
 //     (String(d.signal || "").toLowerCase().includes("buy") ? "bullish" : String(d.signal || "").toLowerCase().includes("sell") ? "bearish" : "neutral") +
 //     '">' + esc(d.signal || "") + "</span></h3>" +
 //     '<div id="' + cid + '" style="height:420px;width:100%;margin-bottom:12px;"></div>' +
-//     '<div style="font-size:12px;color:#8d99aa;margin-bottom:10px;">Overlays: <b style="color:#dbe5f1;">SMA 10</b> · <b style="color:#dbe5f1;">SMA 20</b> · <b style="color:#dbe5f1;">SMA 50</b> · <b style="color:#dbe5f1;">SMA 200</b> (simple moving averages)</div>' +
+//     '<div style="font-size:12px;color:#a9b7c9;margin-bottom:10px;">Overlays: <b style="color:#dbe5f1;">SMA 10</b> · <b style="color:#dbe5f1;">SMA 20</b> · <b style="color:#dbe5f1;">SMA 50</b> · <b style="color:#dbe5f1;">SMA 200</b> (simple moving averages)</div>' +
 //     '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
 //     ["10", "20", "30", "50", "100", "200"].map((p) =>
 //      "<tr><td>" + p + "-MA</td><td>" + fmt$((d.sma || {})[p]) + "</td><td>" + fmt$((d.ema || {})[p]) + "</td></tr>"
