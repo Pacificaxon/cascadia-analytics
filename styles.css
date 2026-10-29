@@ -68,7 +68,7 @@ a:hover { text-decoration: underline; }
   color: var(--gold-bright); padding: 8px 10px; border-radius: 6px; font-weight: 500;
 }
 .topnav a:hover { color: var(--text); }
-.topnav a.active { color: var(--gold-bright); background: var(--gold-dim); font-weight: 700; }
+.topnav a.active { color: var(--text); background: var(--gold-dim); font-weight: 700; }
 .topbar-title {
   font-family: var(--mono); font-weight: 600; font-size: 16px; letter-spacing: 0.12em; color: var(--text);
   cursor: pointer; text-align: center; white-space: nowrap; text-transform: uppercase;
