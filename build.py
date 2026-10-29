@@ -776,6 +776,14 @@ def main():
         except Exception:
             pass
     pro_sections["detailed_breakdowns"] = breakdown_detail
+    # Historical valuation multiples (Pro only): per-ticker current versus
+    # own-history stats and biweekly timeseries for P/E, P/OCF, EV/Sales,
+    # EV/EBITDA, P/FCF and P/B, from the multiples collector store. The
+    # free bundle carries none of it; the #/multiples page reads
+    # PRO_DATA.historical_multiples.
+    _hm_path = os.path.join(MR, "historical_multiples.json")
+    _hm = load(_hm_path) if os.path.exists(_hm_path) else {}
+    pro_sections["historical_multiples"] = _hm if isinstance(_hm, dict) else {}
     # Competitive Moat cross-check detail (Pro only): justified multiple
     # ranges and multiple-implied values with their base and gap verdict.
     # The free bundle carries the moat note itself, never this detail.

@@ -285,6 +285,7 @@ function proDataStale() {
    if (sections.insider_screener) flat.insider_screener = sections.insider_screener;
    if (sections.whale_13f) flat.whale_13f = sections.whale_13f;
    if (sections.detailed_breakdowns) flat.detailed_breakdowns = sections.detailed_breakdowns;
+   if (sections.historical_multiples) flat.historical_multiples = sections.historical_multiples;
    if (sections.sotp) flat._sotp = sections.sotp;
    if (sections.sensitivity) flat._sensitivity = sections.sensitivity;
    if (sections.moat_detail) flat.moat_detail = sections.moat_detail;
@@ -11877,6 +11878,232 @@ route("alerts", function () {
   seasonRender();
  });
 
+ /* ---------- Historical valuation multiples (Pro) ---------- */
+ const MULT_METRICS = [
+  {key: "pe", label: "P/E"},
+  {key: "p_ocf", label: "P/OCF"},
+  {key: "ev_sales", label: "EV/Sales"},
+  {key: "ev_ebitda", label: "EV/EBITDA"},
+  {key: "p_fcf", label: "P/FCF"},
+  {key: "pb", label: "P/B"}
+ ];
+ const MULT_HORIZONS = [
+  {key: "1Y", years: 1},
+  {key: "3Y", years: 3},
+  {key: "5Y", years: 5},
+  {key: "ALL", years: 0}
+ ];
+ function multState() {
+  if (!window._multState) window._multState = {ticker: "AXON", metric: "pe", horizon: "5Y"};
+  return window._multState;
+ }
+ function multX(v) { return v == null || !isFinite(v) ? "N/M" : Number(v).toFixed(2) + "x"; }
+ function multPct(v) { return v == null || !isFinite(v) ? "N/M" : (v > 0 ? "+" : "") + Number(v).toFixed(1) + "%"; }
+ function multReason(t) {
+  const notes = (t && t.notes) || [];
+  for (let i = 0; i < notes.length; i++) {
+   if (typeof notes[i] === "string" && notes[i].indexOf("unavailable:") === 0) return notes[i].replace(/^unavailable:\s*/, "");
+  }
+  return "Historical multiples are not available for this ticker.";
+ }
+ function multChipStyle(on) {
+  return "font-size:12px;padding:6px 12px;border-radius:6px;cursor:pointer;border:1px solid " + (on ? "#d9a441" : "#253142") + ";background:" + (on ? "rgba(217,164,65,0.15)" : "#101620") + ";color:" + (on ? "#d9a441" : "#dbe5f1") + ";font-weight:" + (on ? "700" : "400") + ";";
+ }
+ function multiplesChartConfig(pts, metricKey, mst, ticker) {
+  const mlabel = (MULT_METRICS.find((m) => m.key === metricKey) || {}).label || metricKey;
+  const flat = (v) => pts.map(() => v);
+  return {
+   type: "line",
+   data: { labels: pts.map((p) => p.date), datasets: [
+    { label: "+1σ band", data: flat(mst.plus_1sigma), borderColor: "rgba(217,164,65,0)", borderWidth: 0, pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
+    { label: "-1σ band", data: flat(mst.minus_1sigma), borderColor: "rgba(217,164,65,0.45)", backgroundColor: "rgba(217,164,65,0.10)", borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, fill: "-1", tension: 0 },
+    { label: "Median " + multX(mst.median), data: flat(mst.median), borderColor: "#4dd2aa", borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
+    { label: "Mean " + multX(mst.mean), data: flat(mst.mean), borderColor: "#8d99aa", borderWidth: 1.5, borderDash: [2, 3], pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
+    { label: ticker + " " + mlabel, data: pts.map((p) => p[metricKey]), borderColor: "#d9a441", borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, fill: false, tension: 0.1, spanGaps: true }
+   ]},
+   options: { animation: false, responsive: true, maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { labels: { color: "#dbe5f1" } },
+     tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12,
+      callbacks: { label: (c) => " " + c.dataset.label + ": " + (c.parsed.y == null ? "n/a" : c.parsed.y.toFixed(2) + "x") } } },
+    scales: {
+     x: { type: "category", ticks: { color: "#647184", maxTicksLimit: 8, maxRotation: 0 }, grid: { display: false } },
+     y: { type: "linear", position: "right", ticks: { color: "#647184", callback: (v) => v + "x" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
+  };
+ }
+ route("multiples", async function () {
+  const mySeq = window._renderSeq || 0;
+  await ensureProData();
+  if (mySeq !== (window._renderSeq || 0)) return; // superseded render, abort
+  const head = '<div class="crumb">VALUATION HISTORY</div>' +
+   '<div class="hero"><div><h1 class="hero-h">Valuation History</h1>' +
+   "<p class='hero-sub'>Every coverage name against its own history: trailing twelve month multiples plotted against the historical mean, median, and one standard deviation band.</p></div></div>";
+  if (!isPro()) {
+   app.innerHTML = head +
+    '<div class="section"><div class="section-title">Historical Multiples ' + PRO_BADGE + '</div>' +
+    proTeaser("Valuation History, Pro", "Up to ten years of P/E, P/OCF, EV/Sales, EV/EBITDA, P/FCF, and P/B for every coverage name, each against its own historical mean, median, and standard deviation band, with the current premium or discount to the median and the percentile rank.") + "</div>";
+   return;
+  }
+  const hm = (PRO_DATA && PRO_DATA.historical_multiples) || null;
+  if (!hm || !hm.tickers || !Object.keys(hm.tickers).length) {
+   app.innerHTML = head + '<div class="card"><p style="color:var(--muted)">Historical multiples data is not available right now. Please refresh the page.</p></div>';
+   return;
+  }
+  const tickers = hm.tickers;
+  const symbols = Object.keys(tickers).sort();
+  const st = multState();
+  if (!tickers[st.ticker]) {
+   st.ticker = symbols.find((s) => tickers[s].available) || symbols[0];
+  }
+  const meta = hm.metadata || {};
+  let h = head;
+  h += '<div class="section"><div class="section-title">Historical Multiples ' + PRO_BADGE +
+   (meta.as_of ? ' <span style="font-size:11px;color:#8d99aa;">data as of ' + esc(meta.as_of) + "</span>" : "") + "</div>";
+  h += '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;">';
+  h += '<select id="mult-ticker" class="cov-select" aria-label="Select ticker">';
+  symbols.forEach((s) => {
+   const t = tickers[s];
+   h += '<option value="' + esc(s) + '"' + (s === st.ticker ? " selected" : "") + ">" + esc(s) + " — " + esc(t.name || s) + (t.available ? "" : " (unavailable)") + "</option>";
+  });
+  h += "</select>";
+  h += '<span style="display:inline-flex;flex-wrap:wrap;gap:6px;" role="group" aria-label="Multiple">';
+  MULT_METRICS.forEach((m) => {
+   h += '<button type="button" data-mult-metric="' + m.key + '" style="' + multChipStyle(st.metric === m.key) + '">' + m.label + "</button>";
+  });
+  h += "</span>";
+  h += '<span style="display:inline-flex;flex-wrap:wrap;gap:6px;" role="group" aria-label="Horizon">';
+  MULT_HORIZONS.forEach((hz) => {
+   h += '<button type="button" data-mult-horizon="' + hz.key + '" style="' + multChipStyle(st.horizon === hz.key) + '">' + hz.key + "</button>";
+  });
+  h += "</span></div>";
+  h += '<div id="mult-detail"></div></div>';
+  const cell = (v) => '<td style="padding:8px;text-align:right;">' + multX(v) + "</td>";
+  const medCell = (v) => '<td style="padding:8px;text-align:right;color:#8d99aa;">' + multX(v) + "</td>";
+  h += '<div class="section"><div class="section-title">Coverage Universe, Current vs Own Historical Median</div>';
+  h += '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;min-width:860px;"><thead><tr style="border-bottom:1px solid #253142;color:#8d99aa;text-align:left;">' +
+   '<th style="padding:8px;">Ticker</th><th style="padding:8px;text-align:right;">Price</th>' +
+   '<th style="padding:8px;text-align:right;">P/E</th><th style="padding:8px;text-align:right;">P/E Med</th><th style="padding:8px;text-align:right;">vs Med</th>' +
+   '<th style="padding:8px;text-align:right;">EV/EBITDA</th><th style="padding:8px;text-align:right;">Med</th>' +
+   '<th style="padding:8px;text-align:right;">EV/Sales</th><th style="padding:8px;text-align:right;">Med</th>' +
+   '<th style="padding:8px;text-align:right;">P/OCF</th><th style="padding:8px;text-align:right;">Med</th></tr></thead><tbody id="mult-tbody">';
+  symbols.filter((s) => tickers[s].available).forEach((s) => {
+   const t = tickers[s];
+   const ss = t.stats || {};
+   const pe = ss.pe || null;
+   const prem = pe ? pe.premium_vs_median_pct : null;
+   const pc = prem == null ? "#8d99aa" : prem > 0 ? "#f37d83" : prem < 0 ? "#4dd2aa" : "#8d99aa";
+   h += '<tr data-ticker="' + esc(s) + '" style="border-bottom:1px solid #101620;cursor:pointer;">' +
+    '<td style="padding:8px;font-weight:700;color:#58a6ff;">' + esc(s) + "</td>" +
+    '<td style="padding:8px;text-align:right;">' + (t.latest_price != null ? "$" + Number(t.latest_price).toFixed(2) : "—") + "</td>" +
+    cell(pe ? pe.current : null) + medCell(pe ? pe.median : null) +
+    '<td style="padding:8px;text-align:right;color:' + pc + ';font-weight:700;">' + multPct(prem) + "</td>" +
+    cell(ss.ev_ebitda ? ss.ev_ebitda.current : null) + medCell(ss.ev_ebitda ? ss.ev_ebitda.median : null) +
+    cell(ss.ev_sales ? ss.ev_sales.current : null) + medCell(ss.ev_sales ? ss.ev_sales.median : null) +
+    cell(ss.p_ocf ? ss.p_ocf.current : null) + medCell(ss.p_ocf ? ss.p_ocf.median : null) +
+    "</tr>";
+  });
+  h += "</tbody></table></div>";
+  h += '<p style="font-size:12px;color:#8d99aa;margin-top:8px;">Fundamentals from SEC EDGAR company filings on a trailing twelve month basis; prices are adjusted closes sampled every two weeks. Select any row to chart that name.</p></div>';
+  app.innerHTML = h;
+
+  function syncControls() {
+   const sel = document.getElementById("mult-ticker");
+   if (sel) sel.value = st.ticker;
+   document.querySelectorAll("[data-mult-metric]").forEach((b) => b.setAttribute("style", multChipStyle(b.dataset.multMetric === st.metric)));
+   document.querySelectorAll("[data-mult-horizon]").forEach((b) => b.setAttribute("style", multChipStyle(b.dataset.multHorizon === st.horizon)));
+   document.querySelectorAll("#mult-tbody tr[data-ticker]").forEach((tr) => {
+    tr.style.background = tr.dataset.ticker === st.ticker ? "rgba(217,164,65,0.08)" : "";
+   });
+  }
+  function statCard(label, value, sub, color) {
+   return '<div class="card" style="padding:12px;">' +
+    '<div style="font-size:11px;color:#8d99aa;text-transform:uppercase;letter-spacing:0.04em;">' + label + "</div>" +
+    '<div style="font-size:20px;font-weight:800;color:' + (color || "#dbe5f1") + ';margin-top:4px;">' + value + "</div>" +
+    (sub ? '<div style="font-size:11px;color:#8d99aa;margin-top:2px;">' + sub + "</div>" : "") + "</div>";
+  }
+  function renderDetail() {
+   const detail = document.getElementById("mult-detail");
+   if (!detail) return;
+   const t = tickers[st.ticker];
+   const oldCv = document.getElementById("mult-chart");
+   if (oldCv && typeof Chart !== "undefined") { const oc = Chart.getChart(oldCv); if (oc) oc.destroy(); }
+   if (!t) { detail.innerHTML = ""; return; }
+   if (!t.available) {
+    detail.innerHTML = '<div class="card"><div style="font-size:15px;font-weight:700;">' + esc(st.ticker) + ' <span style="color:#8d99aa;font-weight:400;">' + esc(t.name || "") + "</span></div>" +
+     '<p style="color:#8d99aa;margin-top:8px;">Historical multiples are unavailable for this name. ' + esc(multReason(t)) + "</p></div>";
+    syncControls();
+    return;
+   }
+   const mlabel = (MULT_METRICS.find((m) => m.key === st.metric) || {}).label || st.metric;
+   const mst = (t.stats || {})[st.metric] || null;
+   const ts = t.timeseries || [];
+   const hz = MULT_HORIZONS.find((x) => x.key === st.horizon) || MULT_HORIZONS[3];
+   let pts = ts;
+   if (hz.years && ts.length) {
+    const cut = new Date(ts[ts.length - 1].date + "T00:00:00Z");
+    cut.setUTCFullYear(cut.getUTCFullYear() - hz.years);
+    const cutStr = cut.toISOString().slice(0, 10);
+    pts = ts.filter((p) => p.date >= cutStr);
+   }
+   const validPts = pts.filter((p) => p[st.metric] != null && isFinite(p[st.metric]));
+   let d = "";
+   d += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px;">';
+   if (mst) {
+    const prem = mst.premium_vs_median_pct;
+    const pc = prem == null ? "#dbe5f1" : prem > 0 ? "#f37d83" : prem < 0 ? "#4dd2aa" : "#dbe5f1";
+    d += statCard(mlabel + " Current", multX(mst.current), "Latest observation");
+    d += statCard("Historical Median", multX(mst.median), "Full history");
+    d += statCard("Historical Mean", multX(mst.mean), "Full history");
+    d += statCard("vs Median", multPct(prem), prem != null && prem > 0 ? "Premium to median" : prem != null && prem < 0 ? "Discount to median" : "At the median", pc);
+    d += statCard("Percentile Rank", mst.percentile_rank != null ? Number(mst.percentile_rank).toFixed(1) + "%" : "N/M", "Share of history below current");
+    d += statCard("±1σ Band", multX(mst.minus_1sigma) + " – " + multX(mst.plus_1sigma), "Mean ± one std. dev.");
+    d += statCard("Observations", mst.observations != null ? String(mst.observations) : "N/M", "Since " + (t.history_start || "n/a"));
+   } else {
+    d += statCard(mlabel + " Current", "N/M", "Not meaningful for this name");
+    d += statCard("Historical Median", "N/M", "");
+    d += statCard("Historical Mean", "N/M", "");
+    d += statCard("vs Median", "N/M", "");
+    d += statCard("Percentile Rank", "N/M", "");
+    d += statCard("±1σ Band", "N/M", "");
+    d += statCard("Observations", "0", "Since " + (t.history_start || "n/a"));
+   }
+   d += statCard("Current PEG", t.peg_current != null && isFinite(t.peg_current) ? Number(t.peg_current).toFixed(2) + "x" : "N/M", "Forward basis (NTM), current only", "#d9a441");
+   d += "</div>";
+   d += '<div class="card" style="padding:14px;">' +
+    '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">' +
+    '<div style="font-size:13px;font-weight:700;">' + esc(st.ticker) + " " + esc(mlabel) + ' <span style="color:#8d99aa;font-weight:400;">' + esc(t.name || "") + "</span></div>" +
+    '<div style="font-size:11px;color:#8d99aa;">Horizon ' + esc(st.horizon) + " · statistics are full history" + (t.history_start ? " since " + esc(t.history_start) : "") + "</div></div>";
+   if (mst && validPts.length >= 2) {
+    d += '<div style="position:relative;height:340px;width:100%;"><canvas id="mult-chart"></canvas></div>';
+   } else if (!mst) {
+    d += '<p style="color:#8d99aa;">' + esc(mlabel) + " is not meaningful for " + esc(st.ticker) + " across the available history (non-positive denominator), so no series is shown.</p>";
+   } else {
+    d += '<p style="color:#8d99aa;">No ' + esc(mlabel) + " observations fall inside the selected horizon for " + esc(st.ticker) + ". Widen the horizon to see the series.</p>";
+   }
+   d += "</div>";
+   detail.innerHTML = d;
+   if (mst && validPts.length >= 2) {
+    const cv = document.getElementById("mult-chart");
+    if (cv && typeof Chart !== "undefined") {
+     try { new Chart(cv, multiplesChartConfig(validPts, st.metric, mst, st.ticker)); }
+     catch (e) { console.error("Multiples chart error:", e); }
+    }
+   }
+   syncControls();
+  }
+  document.getElementById("mult-ticker").addEventListener("change", function () { st.ticker = this.value; renderDetail(); });
+  document.querySelectorAll("[data-mult-metric]").forEach((b) => b.addEventListener("click", () => { st.metric = b.dataset.multMetric; renderDetail(); }));
+  document.querySelectorAll("[data-mult-horizon]").forEach((b) => b.addEventListener("click", () => { st.horizon = b.dataset.multHorizon; renderDetail(); }));
+  const tbody = document.getElementById("mult-tbody");
+  if (tbody) tbody.addEventListener("click", (e) => {
+   const tr = e.target && e.target.closest ? e.target.closest("tr[data-ticker]") : null;
+   if (!tr) return;
+   st.ticker = tr.dataset.ticker;
+   renderDetail();
+   window.scrollTo({top: 0, behavior: "smooth"});
+  });
+  renderDetail();
+ });
  route("comps", async function () {
   const mySeq = window._renderSeq || 0;
   await ensureProData();
