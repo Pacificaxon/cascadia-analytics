@@ -1637,6 +1637,7 @@ function bindZoomHandlers() {
   if (typeof cleanupTickerToc === "function") cleanupTickerToc();
   if (typeof cleanupScreenerToc === "function") cleanupScreenerToc();
   if (typeof cleanupMemosToc === "function") cleanupMemosToc();
+  if (typeof cleanupRiskSumbar === "function") cleanupRiskSumbar();
   // Destroy existing Chart.js instances before re-rendering (prevents "canvas already in use")
   // Uses Chart.getChart() official API to find charts by canvas element
   try {
@@ -14779,6 +14780,49 @@ function volSurfaceHtml() {
   h += "</div>";
   return h;
  }
+ // Pinned summary bar for the Risk Models page (Pro only): the composite
+ // score, its regime, and the as-of date ride under the topbar while the
+ // reader scrolls the model sections, mirroring the ticker summary strip.
+ // Values come from the same risk_headlines composite the Daily Snapshot
+ // banner renders; when the composite is absent the bar renders nothing.
+ // Free users never get this bar (their readings are withheld entirely).
+ function riskSumbarHtml() {
+  const rh = D.risk_headlines || {};
+  const comp = rh.composite || {};
+  if (comp.score == null) return "";
+  const colorMap = { emerald: "#4dd2aa", amber: "#e0aa46", rose: "#f37d83", slate: "#a9b7c9" };
+  const c = colorMap[comp.color] || "#dbe5f1";
+  const asOf = rh.as_of || (D.generated_at || "").slice(0, 10);
+  return '<div class="risk-sumbar" id="risk-sumbar">' +
+   '<span class="risk-sum-k">CASCADIA COMPOSITE RISK INDEX</span>' +
+   '<span class="risk-sum-v" style="color:' + c + '">' + comp.score + '<span class="risk-sum-den">/100</span></span>' +
+   (comp.regime ? '<span class="risk-sum-regime" style="color:' + c + '">' + esc(comp.regime) + '</span>' : '') +
+   '<span class="risk-sum-meta">' + (comp.model_count || riskModelCount()) + ' models' + (asOf ? ' · as of ' + esc(asOf) : '') + '</span>' +
+   '</div>';
+ }
+ let riskSumResize = null;
+ function cleanupRiskSumbar() {
+  if (riskSumResize) { try { window.removeEventListener("resize", riskSumResize); } catch (e) {} riskSumResize = null; }
+ }
+ function initRiskSumbar() {
+  cleanupRiskSumbar();
+  const bar = document.getElementById("risk-sumbar");
+  if (!bar) return;
+  // The bar is a plain sticky div (not a scroll container), so sticky
+  // positioning is reliable; only its top offset and the section anchors'
+  // scroll margin need live measurement, since the topbar height changes
+  // when the header wraps to two rows.
+  const apply = () => {
+   const topbar = document.querySelector(".topbar");
+   const topH = topbar ? topbar.offsetHeight : 0;
+   bar.style.top = topH + "px";
+   const barH = bar.offsetHeight || 0;
+   document.querySelectorAll(".risk-anchor").forEach((s) => { s.style.scrollMarginTop = (topH + barH + 14) + "px"; });
+  };
+  apply();
+  riskSumResize = apply;
+  window.addEventListener("resize", riskSumResize);
+ }
  function snapshotSectionHtml(blurred) {
   const rh = D.risk_headlines || {};
   const n = (rh.models || []).length || 22;
@@ -16552,6 +16596,7 @@ function volSurfaceHtml() {
   let h = '<div class="crumb">RISK MODELS</div>' +
    '<div class="hero"><div><h1 class="hero-h">Risk Models</h1>' +
    "<p class='hero-sub'>Quantitative gauges of market fear, correction risk, volatility regimes, and credit stress.</p></div></div>";
+  h += riskSumbarHtml();
   h += snapshotSectionHtml(false);
   RISK_CATEGORIES.forEach((cat) => {
    h += riskCatBandHtml(cat);
@@ -16559,6 +16604,7 @@ function volSurfaceHtml() {
   });
   app.innerHTML = h;
   bindRiskToc();
+  initRiskSumbar();
   bindRiskSnapshotCards();
   bindZoomHandlers();
   // Draw Fear Index 30-day history chart (data stashed by fearIndexHtml)
