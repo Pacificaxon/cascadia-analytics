@@ -16120,7 +16120,8 @@ function volSurfaceHtml() {
    h += '<div class="card"><p style="color:#8d99aa;">No memos yet.</p></div>';
   } else {
    const geoMemos = allMemos.filter((m) => m.section === "Geopolitics").reverse();
-   const restMemos = allMemos.filter((m) => m.section !== "Geopolitics").reverse();
+   const macroMemos = allMemos.filter((m) => m.section === "Macro Analysis").reverse();
+   const restMemos = allMemos.filter((m) => m.section !== "Geopolitics" && m.section !== "Macro Analysis").reverse();
    const memoCard = (m) => {
     let c = '<a href="#/memos/' + esc(m.id) + '" style="text-decoration:none;">';
     c += '<div class="card" style="margin-bottom:16px;cursor:pointer;">';
@@ -16130,6 +16131,65 @@ function volSurfaceHtml() {
     c += '<div style="font-size:13px;color:#d9a441;margin-top:8px;">Read memo →</div>';
     c += '</div></a>';
     return c;
+   };
+   const bwBoardHtml = () => {
+    const bb = D.bellwether_board;
+    if (!bb || !bb.companies || !bb.companies.length) return "";
+    const t = bb.tally || {};
+    const vs = (a, c) => {
+     if (a == null || c == null) return null;
+     if (a > c * 1.005) return ["Beat", "#4dd2aa"];
+     if (a < c * 0.995) return ["Miss", "#f37d83"];
+     return ["In line", "#dbe5f1"];
+    };
+    const fmtBn = (v) => v == null ? "" : "$" + Number(v).toFixed(2) + "B";
+    const fmtEps = (v) => v == null ? "" : "$" + Number(v).toFixed(2);
+    let b = '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:16px 20px;margin-bottom:16px;">';
+    b += '<div style="font-size:12px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:6px;">BELLWETHER EARNINGS' + (bb.updated ? ' &nbsp;<span style="color:#8d99aa;font-weight:400;letter-spacing:0;">Updated ' + esc(bb.updated) + '</span>' : '') + '</div>';
+    b += '<div style="font-size:13px;color:#8d99aa;margin-bottom:12px;">Sixteen companies whose quarterly reports read the US economy, tracked report by report.</div>';
+    if (t.reported) {
+     b += '<div style="font-size:13px;color:#dbe5f1;margin-bottom:4px;">' + esc(bb.season_label || "This season") + ': <b style="color:#f5f7fa;">' + t.reported + ' of ' + t.companies_total + ' reported</b>'
+      + ' &nbsp;·&nbsp; EPS beats ' + t.eps_beats + ', misses ' + t.eps_misses + (t.eps_inline ? ', in line ' + t.eps_inline : '')
+      + ' &nbsp;·&nbsp; Revenue beats ' + t.rev_beats + ', misses ' + t.rev_misses + (t.rev_inline ? ', in line ' + t.rev_inline : '')
+      + ' &nbsp;·&nbsp; Guidance raised ' + t.guidance_raised + ', held ' + t.guidance_held + ', cut ' + t.guidance_cut + '</div>';
+    }
+    const channels = [];
+    bb.companies.forEach((c) => { if (!channels.includes(c.channel)) channels.push(c.channel); });
+    channels.forEach((ch) => {
+     b += '<div style="font-size:12px;font-weight:700;color:#f5f7fa;letter-spacing:1px;margin:18px 0 8px;">' + esc(ch).toUpperCase() + '</div>';
+     bb.companies.filter((c) => c.channel === ch).forEach((c) => {
+      const L = c.latest;
+      b += '<div style="border-top:1px solid #1d2735;padding:10px 0;">';
+      b += '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;"><span style="font-size:14px;font-weight:700;color:#f5f7fa;">' + esc(c.name) + ' <span style="color:#d9a441;font-weight:600;">' + esc(c.ticker) + '</span></span>'
+       + (L ? '<span style="font-size:12px;color:#8d99aa;">' + esc(L.quarter || "") + (L.report_date ? ' · ' + esc(L.report_date) : '') + (bb.season_start && L.report_date && L.report_date < bb.season_start ? ' · <span style="color:#d9a441;">pre-season print</span>' : '') + (L.next_report ? ' · Next report ' + esc(L.next_report) : '') + '</span>' : '<span style="font-size:12px;color:#8d99aa;">No verified report on file yet</span>')
+       + '</div>';
+      b += '<div style="font-size:12px;color:#8d99aa;margin:2px 0 6px;">' + esc(c.measures || "") + '</div>';
+      if (L) {
+       const rv = vs(L.revenue_actual_bn, L.revenue_consensus_bn);
+       const ev = vs(L.eps_actual, L.eps_consensus);
+       const cur = L.currency === "EUR" ? "\u20AC" : "$";
+       const fmtBnC = (v) => v == null ? "" : cur + Number(v).toFixed(2) + "B";
+       const fmtEpsC = (v) => v == null ? "" : cur + Number(v).toFixed(2);
+       b += '<div style="font-size:13px;color:#dbe5f1;">';
+       if (L.revenue_actual_bn != null) b += 'Revenue <b style="color:#f5f7fa;">' + fmtBnC(L.revenue_actual_bn) + '</b>' + (L.revenue_consensus_bn != null ? ' against ' + fmtBnC(L.revenue_consensus_bn) + ' expected' : '') + (rv ? ' &nbsp;<span style="color:' + rv[1] + ';font-weight:700;">' + rv[0] + '</span>' : '');
+       if (L.eps_actual != null) b += (L.revenue_actual_bn != null ? ' &nbsp;·&nbsp; ' : '') + esc(L.eps_basis || "EPS") + ' <b style="color:#f5f7fa;">' + fmtEpsC(L.eps_actual) + '</b>' + (L.eps_consensus != null ? ' against ' + fmtEpsC(L.eps_consensus) + ' expected' : '') + (ev ? ' &nbsp;<span style="color:' + ev[1] + ';font-weight:700;">' + ev[0] + '</span>' : '');
+       b += '</div>';
+       if (L.guidance && L.guidance !== "none") {
+        const gcol = L.guidance === "raised" ? "#4dd2aa" : (L.guidance === "cut" ? "#f37d83" : "#dbe5f1");
+        b += '<div style="font-size:13px;color:#dbe5f1;margin-top:4px;">Guidance <span style="color:' + gcol + ';font-weight:700;">' + esc(L.guidance) + '</span>' + (L.guidance_note ? ' &nbsp;<span style="color:#8d99aa;">' + esc(L.guidance_note) + '</span>' : '') + '</div>';
+       } else if (L.guidance_note) {
+        b += '<div style="font-size:13px;color:#8d99aa;margin-top:4px;">' + esc(L.guidance_note) + '</div>';
+       }
+       (L.takeaways || []).forEach((tk) => { b += '<div style="font-size:13px;color:#dbe5f1;margin-top:3px;">• ' + esc(tk) + '</div>'; });
+       if (L.sources && L.sources.length) {
+        b += '<div style="font-size:11px;margin-top:5px;">' + L.sources.map((s, i) => '<a href="' + esc(s) + '" target="_blank" rel="noopener" style="color:#8d99aa;text-decoration:underline;">Source ' + (i + 1) + '</a>').join(' &nbsp;') + '</div>';
+       }
+      }
+      b += '</div>';
+     });
+    });
+    b += '</div>';
+    return b;
    };
    if (geoMemos.length) {
     h += '<div id="memo-sec-geopolitics" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">GEOPOLITICS</div>';
@@ -16144,6 +16204,12 @@ function volSurfaceHtml() {
      h += '</div>';
     }
     geoMemos.forEach((m) => { h += memoCard(m); });
+   }
+   if (macroMemos.length || bwBoardHtml()) {
+    h += '<div id="memo-sec-macro" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">MACRO ANALYSIS</div>';
+    h += '<div style="font-size:13px;color:#8d99aa;margin-bottom:16px;">Data, policy, and the bellwether earnings that read the economy.</div>';
+    h += bwBoardHtml();
+    macroMemos.forEach((m) => { h += memoCard(m); });
    }
    restMemos.forEach((m) => { h += memoCard(m); });
   }

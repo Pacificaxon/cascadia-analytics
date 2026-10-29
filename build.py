@@ -225,6 +225,42 @@ def main():
     except FileNotFoundError:
         geopolitics_watchlist = {"updated": "", "areas": []}
     try:
+        bellwether_board = load(os.path.join(MR, "bellwether_board.json"))
+    except FileNotFoundError:
+        bellwether_board = {"season_label": "", "season_start": "", "updated": "", "companies": []}
+    # Season tally for the Bellwether Earnings board, computed from the
+    # stored report records (never a hard-coded read): counts of reporters
+    # since season_start, EPS and revenue beats/misses/inline against the
+    # recorded consensus (0.5% inline band), and guidance direction counts.
+    def _bw_vs(actual, consensus):
+        if actual is None or consensus is None:
+            return None
+        if actual > consensus * 1.005:
+            return "beat"
+        if actual < consensus * 0.995:
+            return "miss"
+        return "inline"
+    _bw_start = bellwether_board.get("season_start") or ""
+    _bw_season = []
+    for _c in bellwether_board.get("companies") or []:
+        _lat = _c.get("latest") or {}
+        if _lat.get("report_date") and _lat["report_date"] >= _bw_start:
+            _bw_season.append(_lat)
+    _bw_tally = {
+        "companies_total": len(bellwether_board.get("companies") or []),
+        "reported": len(_bw_season),
+        "eps_beats": sum(1 for r in _bw_season if _bw_vs(r.get("eps_actual"), r.get("eps_consensus")) == "beat"),
+        "eps_misses": sum(1 for r in _bw_season if _bw_vs(r.get("eps_actual"), r.get("eps_consensus")) == "miss"),
+        "eps_inline": sum(1 for r in _bw_season if _bw_vs(r.get("eps_actual"), r.get("eps_consensus")) == "inline"),
+        "rev_beats": sum(1 for r in _bw_season if _bw_vs(r.get("revenue_actual_bn"), r.get("revenue_consensus_bn")) == "beat"),
+        "rev_misses": sum(1 for r in _bw_season if _bw_vs(r.get("revenue_actual_bn"), r.get("revenue_consensus_bn")) == "miss"),
+        "rev_inline": sum(1 for r in _bw_season if _bw_vs(r.get("revenue_actual_bn"), r.get("revenue_consensus_bn")) == "inline"),
+        "guidance_raised": sum(1 for r in _bw_season if r.get("guidance") == "raised"),
+        "guidance_held": sum(1 for r in _bw_season if r.get("guidance") == "held"),
+        "guidance_cut": sum(1 for r in _bw_season if r.get("guidance") == "cut"),
+    }
+    bellwether_board["tally"] = _bw_tally
+    try:
         market_analysis_report = load(os.path.join(MR, "market_analysis_report.json"))
     except FileNotFoundError:
         market_analysis_report = {}
@@ -673,6 +709,7 @@ def main():
         "ceo_compensation": ceo_compensation,
         "memos": memos,
         "geopolitics_watchlist": geopolitics_watchlist,
+        "bellwether_board": bellwether_board,
         "market_analysis_report": market_analysis_report,
         "leadership": leadership,
         "ticker_gex": ticker_gex,
