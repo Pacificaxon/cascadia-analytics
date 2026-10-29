@@ -687,7 +687,11 @@ def main():
         "ticker_trends": ticker_trends,
         "aaii_sentiment": aaii_sentiment,
         "cot_data": cot_data,
-        "ticker_options": {k: v[:10] for k, v in ticker_options.items()},
+        # Collector lists are date-ascending; emit the 10 NEWEST prints per
+        # ticker, newest first (stable sort keeps the collector's intra-day
+        # premium-descending order). A plain v[:10] here froze every ticker
+        # page on the oldest day of the window (found 2026-10-29, MRVL).
+        "ticker_options": {k: sorted(v, key=lambda p: p.get("date") or "", reverse=True)[:10] for k, v in ticker_options.items()},
         "flow_scoreboard": flow_scoreboard,
         "axon_digest_flow": axon_digest_flow,
         "readthroughs": readthroughs,
