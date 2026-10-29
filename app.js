@@ -10941,7 +10941,7 @@ route("alerts", function () {
    '<select id="f-upside"><option value="">Any upside</option><option value="20">Upside 20%+</option><option value="0">Positive upside</option><option value="-20">Upside &gt; -20%</option></select>' +
    '<button class="btn secondary" id="f-export">Export CSV</button>' +
    "</div>" +
-   '<div class="table-wrap"><table class="coverage"><thead><tr>' +
+   '<div class="table-wrap sticky-wrap"><table class="coverage"><thead><tr>' +
    "<th>Ticker</th><th>Cascadia Score</th><th>Growth &amp; Value Index</th><th>Price</th><th>Base</th><th>Upside</th><th>Rating</th>" +
    "</tr></thead><tbody id='scr-body'></tbody></table></div></div></div>";
   app.innerHTML = h;
@@ -12370,7 +12370,7 @@ route("alerts", function () {
   }
   h += '<div class="section"><div class="section-title">Comps Table ' + PRO_BADGE + '</div>' +
    '<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="btn" id="comps-export" style="font-size:12px;">⬇ Export CSV</button></div>' +
-   '<div class="card" style="overflow-x:auto;">';
+   '<div class="card comps-table-wrap" style="overflow:auto;">';
   h += '<table style="width:100%;font-size:12px;border-collapse:collapse;"><thead id="comps-thead"><tr style="border-bottom:1px solid #253142;color:#a9b7c9;text-align:right;">' +
    COMPS_COLS.map((c) => '<th class="comps-th" data-sort="' + c.key + '" tabindex="0" role="button" aria-sort="none" title="Sort by ' + c.label + '" style="' + (c.left ? "text-align:left;" : "") + 'padding:8px;cursor:pointer;user-select:none;white-space:nowrap;">' + c.label + ' <span class="comps-arrow" style="font-size:9px;color:#f0bd56;"></span></th>').join("") +
    '</tr></thead><tbody id="comps-tbody"></tbody></table></div>';
