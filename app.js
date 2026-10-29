@@ -2745,6 +2745,25 @@ function bindZoomHandlers() {
    '<button class="btn-gold" id="btn-browse">Browse ticker coverage ↓</button>' +
    '<a href="#/monitor" class="btn-gold" id="btn-internals" style="text-decoration:none;display:inline-block;">Open Market Internals ↓</a></div>';
 
+  // Market strip: the index level and the 10 year from the same daily
+  // implied-ERP file the ERP tracker renders, plus the VIX spot reading
+  // from the Fear Index feed when it is in the bundle (Pro payload). Each
+  // item renders only when its value exists; the strip is absent when
+  // none do. No values are computed or carried over from anywhere else.
+  const erpD = D.implied_erp || {};
+  const vixRaw = (((D.fear_index || {}).indicators || {}).vix_spot || {}).raw_value;
+  const stripItems = [];
+  if (erpD.spx != null) stripItems.push('<span class="mstrip-item"><span class="mstrip-k">S&P 500</span><span class="mstrip-v">' + Number(erpD.spx).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "</span></span>");
+  if (vixRaw != null) stripItems.push('<span class="mstrip-item"><span class="mstrip-k">VIX</span><span class="mstrip-v">' + Number(vixRaw).toFixed(2) + "</span></span>");
+  if (erpD.ten_y != null) stripItems.push('<span class="mstrip-item"><span class="mstrip-k">10Y UST</span><span class="mstrip-v">' + (Number(erpD.ten_y) * 100).toFixed(2) + "%</span></span>");
+  if (stripItems.length) {
+   const mNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+   const ap = /^(\d{4})-(\d{2})-(\d{2})/.exec(erpD.as_of || "");
+   const asOfTxt = ap ? mNames[Number(ap[2]) - 1] + " " + Number(ap[3]) + ", " + ap[1] : "";
+   h += '<div class="mstrip">' + stripItems.join('<span class="mstrip-sep"></span>') +
+    (asOfTxt ? '<span class="mstrip-asof">AS OF ' + asOfTxt + "</span>" : "") + "</div>";
+  }
+
   // company news, artifact layout
   h += newsSection("cn-sec", "SINGLE-COMPANY WIRE", "Company News", "Offerings · Regulation · Contracts",
    news.length ? news.map((m) => newsRow({

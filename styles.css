@@ -713,6 +713,18 @@ table.fin-table tr:last-child td { border-bottom: none; }
 .tk-toc-chip:hover { color: #f0bd56; border-color: var(--gold); }
 .tk-toc-chip.active { color: #0a0e17; background: var(--gold); border-color: var(--gold); }
 .tk-toc.is-fixed { position: fixed; margin: 0; z-index: 45; }
+/* Homepage market strip under the hero: index level, VIX, 10 year, as-of.
+   Rendered by the home route only when the daily files carry the values. */
+.mstrip {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  margin: 18px 0 6px; padding: 11px 16px;
+  background: #101620; border: 1px solid #253142; border-radius: 10px;
+}
+.mstrip-item { display: flex; align-items: baseline; gap: 8px; }
+.mstrip-k { font-family: var(--mono); font-size: 10px; letter-spacing: 1.6px; color: var(--muted); }
+.mstrip-v { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--text); }
+.mstrip-sep { width: 1px; height: 16px; background: #253142; }
+.mstrip-asof { margin-left: auto; font-family: var(--mono); font-size: 10px; letter-spacing: 1.2px; color: var(--muted); }
 /* Summary strip inside the ticker TOC bar (symbol, spot, blended target
    with upside, rating), rendered by the ticker route from the hero fields
    and preserved by initTickerToc. It sticks to the left edge of the bar's
