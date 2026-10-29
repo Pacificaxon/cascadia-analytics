@@ -7704,7 +7704,20 @@ route("alerts", function () {
   // Table of contents bar: populated by initTickerToc() after render by
   // scanning the page for [data-toc] sections (see the TOC convention note
   // above initTickerToc). Empty until then; hidden if no sections qualify.
-  h += '<nav class="tk-toc" id="tk-toc" aria-label="On this page"></nav>';
+  // The bar also carries a summary strip (symbol, spot price, blended
+  // target with upside, rating) built here from the same hero fields, so
+  // the key numbers stay visible in the pinned bar down the page. Built
+  // only when price and blended both exist; never a placeholder.
+  let tocSum = "";
+  if (t.price != null && t.blended != null) {
+   tocSum = '<div class="tk-toc-sum"><span class="tk-sum-sym">' + esc(tk) + '</span>' +
+    '<span class="tk-sum-price">' + fmt$(t.price) + '</span>' +
+    '<span class="tk-sum-item"><span class="tk-sum-k">BLENDED</span> <span class="tk-sum-blend">' + fmt$(t.blended, 2) + '</span>' +
+    (blendUp != null ? ' <span class="' + cls(blendUp) + '">' + fmtPct(blendUp) + '</span>' : '') + '</span>' +
+    (ratingLabel(t.rating) ? '<span class="tk-sum-rating ' + ratingCls(t.rating) + '">' + esc(ratingLabel(t.rating)) + '</span>' : '') +
+    '</div>';
+  }
+  h += '<nav class="tk-toc" id="tk-toc" aria-label="On this page">' + tocSum + '</nav>';
 
   // DCF valuation path, with the artifact section treatment (kicker + large
   // heading): price history followed by the Bear/Base/Bull fair value paths
@@ -8087,7 +8100,11 @@ route("alerts", function () {
   if (!bar) return;
   const secs = Array.prototype.slice.call(document.querySelectorAll(".tk-page [data-toc]"));
   if (!secs.length) { bar.style.display = "none"; return; }
-  bar.innerHTML = '<span class="tk-toc-label">On this page</span>' + secs.map((s, i) =>
+  // Preserve the summary strip the ticker route rendered inside the bar;
+  // it is not a section chip and must survive the chip rebuild.
+  const sumEl = bar.querySelector(".tk-toc-sum");
+  const sumHtml = sumEl ? sumEl.outerHTML : "";
+  bar.innerHTML = sumHtml + '<span class="tk-toc-label">On this page</span>' + secs.map((s, i) =>
    '<button type="button" class="tk-toc-chip" data-toc-idx="' + i + '">' + esc(s.getAttribute("data-toc") || "") + "</button>"
   ).join("");
   const chips = Array.prototype.slice.call(bar.querySelectorAll(".tk-toc-chip"));

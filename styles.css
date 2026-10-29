@@ -681,6 +681,26 @@ table.fin-table tr:last-child td { border-bottom: none; }
 .tk-toc-chip:hover { color: #f0bd56; border-color: var(--gold); }
 .tk-toc-chip.active { color: #0a0e17; background: var(--gold); border-color: var(--gold); }
 .tk-toc.is-fixed { position: fixed; margin: 0; z-index: 45; }
+/* Summary strip inside the ticker TOC bar (symbol, spot, blended target
+   with upside, rating), rendered by the ticker route from the hero fields
+   and preserved by initTickerToc. It sticks to the left edge of the bar's
+   own horizontal scroll area so it stays visible while the section chips
+   scroll beneath it on narrow screens. */
+.tk-toc-sum {
+  position: sticky; left: 0; z-index: 2; flex: none;
+  display: flex; align-items: center; gap: 9px;
+  background: #101620; padding: 5px 12px 5px 4px; margin-right: 2px;
+  border-right: 1px solid #253142;
+  font-family: var(--mono); font-size: 11.5px; color: var(--text); white-space: nowrap;
+}
+.tk-sum-sym { font-weight: 700; letter-spacing: 0.06em; }
+.tk-sum-k { color: var(--muted); font-size: 9.5px; letter-spacing: 1px; }
+.tk-sum-blend { color: var(--gold-bright); font-weight: 700; }
+.tk-sum-rating { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; }
+@media (max-width: 640px) {
+  .tk-toc-sum { gap: 7px; font-size: 11px; }
+  .tk-sum-k, .tk-sum-rating { display: none; }
+}
 .tk-page [data-toc] { scroll-margin-top: 150px; }
 /* Floating return shortcut on ticker pages: created by initTickerToc,
    shown only once the reader has scrolled well past the hero, and it
