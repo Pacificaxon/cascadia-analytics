@@ -1636,6 +1636,7 @@ function bindZoomHandlers() {
   // Tear down the ticker-page TOC scrollspy/listeners from the prior page
   if (typeof cleanupTickerToc === "function") cleanupTickerToc();
   if (typeof cleanupScreenerToc === "function") cleanupScreenerToc();
+  if (typeof cleanupMemosToc === "function") cleanupMemosToc();
   // Destroy existing Chart.js instances before re-rendering (prevents "canvas already in use")
   // Uses Chart.getChart() official API to find charts by canvas element
   try {
@@ -11148,6 +11149,106 @@ route("alerts", function () {
   };
  }
 
+ /* ================= MEMOS TABLE OF CONTENTS =================
+    The memos index stacks its groups (Geopolitics, What We Track,
+    Macro Analysis, Bellwether Earnings, Research Memos) in one long
+    column; this bar gives it the same section navigation the ticker
+    and screener pages have. Chips are built at render time by scanning
+    the rendered page for [data-toc] section roots, never from a
+    hardcoded list, so a group that is not rendered for this visitor
+    produces no entry. Pinning mirrors the ticker bar: position fixed
+    beneath the site topbar with an in-flow spacer holding the layout
+    slot, because WebKit does not reliably pin a sticky element that is
+    also a horizontal scroll container. Styles reuse the tk-toc classes. */
+ let memoTocCleanup = null;
+ function cleanupMemosToc() {
+  if (memoTocCleanup) { try { memoTocCleanup(); } catch (e) {} memoTocCleanup = null; }
+  ["memo-toc-spacer", "memo-top-btn"].forEach((id) => {
+   const n = document.getElementById(id);
+   if (n && n.parentNode) n.parentNode.removeChild(n);
+  });
+  const bar = document.getElementById("memo-toc");
+  if (bar) { bar.classList.remove("is-fixed"); bar.style.left = ""; bar.style.width = ""; bar.style.top = ""; }
+ }
+ function initMemosToc() {
+  cleanupMemosToc();
+  const bar = document.getElementById("memo-toc");
+  if (!bar) return;
+  const secs = Array.prototype.slice.call(document.querySelectorAll("#app [data-toc]"));
+  if (secs.length < 2) { bar.style.display = "none"; return; }
+  bar.innerHTML = '<span class="tk-toc-label">On this page</span>' + secs.map((s, i) =>
+   '<button type="button" class="tk-toc-chip" data-memo-idx="' + i + '">' + esc(s.getAttribute("data-toc") || "") + "</button>"
+  ).join("");
+  const chips = Array.prototype.slice.call(bar.querySelectorAll(".tk-toc-chip"));
+  const barCS = getComputedStyle(bar);
+  const spacer = document.createElement("div");
+  spacer.id = "memo-toc-spacer";
+  spacer.setAttribute("aria-hidden", "true");
+  spacer.style.height = (bar.offsetHeight || 0) + "px";
+  spacer.style.marginTop = barCS.marginTop;
+  spacer.style.marginBottom = barCS.marginBottom;
+  bar.parentNode.insertBefore(spacer, bar);
+  bar.classList.add("is-fixed");
+  const topBtn = document.createElement("button");
+  topBtn.type = "button";
+  topBtn.id = "memo-top-btn";
+  topBtn.className = "tk-top-btn";
+  topBtn.textContent = "↑ Sections";
+  topBtn.setAttribute("aria-label", "Back to the sections menu at the top of this page");
+  bar.parentNode.appendChild(topBtn);
+  const onTopBtn = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
+  topBtn.addEventListener("click", onTopBtn);
+  const applyOffsets = () => {
+   const topbar = document.querySelector(".topbar");
+   const topH = topbar ? topbar.offsetHeight : 0;
+   bar.style.top = topH + "px";
+   const barH = bar.offsetHeight || 0;
+   const sr = spacer.getBoundingClientRect();
+   bar.style.left = sr.left + "px";
+   bar.style.width = sr.width + "px";
+   spacer.style.height = barH + "px";
+   secs.forEach((s) => { s.style.scrollMarginTop = (topH + barH + 14) + "px"; });
+  };
+  applyOffsets();
+  const onChip = (ev) => {
+   const chip = ev.target && ev.target.closest ? ev.target.closest(".tk-toc-chip") : null;
+   if (!chip) return;
+   const target = secs[Number(chip.getAttribute("data-memo-idx"))];
+   if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  bar.addEventListener("click", onChip);
+  let activeIdx = -1;
+  const setActive = (idx) => {
+   if (idx === activeIdx) return;
+   activeIdx = idx;
+   chips.forEach((c, i) => c.classList.toggle("active", i === idx));
+  };
+  let ticking = false;
+  const onScroll = () => {
+   if (ticking) return;
+   ticking = true;
+   requestAnimationFrame(() => {
+    ticking = false;
+    const topbar = document.querySelector(".topbar");
+    const line = (topbar ? topbar.offsetHeight : 0) + (bar.offsetHeight || 0) + 14;
+    let idx = 0;
+    secs.forEach((s, i) => { if (s.getBoundingClientRect().top <= line + 2) idx = i; });
+    setActive(idx);
+    const past = window.scrollY > 400 && spacer.getBoundingClientRect().top < 0;
+    topBtn.classList.toggle("show", past);
+   });
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", applyOffsets);
+  onScroll();
+  memoTocCleanup = () => {
+   bar.removeEventListener("click", onChip);
+   topBtn.removeEventListener("click", onTopBtn);
+   window.removeEventListener("scroll", onScroll);
+   window.removeEventListener("resize", applyOffsets);
+  };
+ }
+
  /* ================= EARNINGS DASHBOARD (Pro) ================= */
  route("earnings", async function () {
   const mySeq = window._renderSeq || 0;
@@ -16116,6 +16217,7 @@ function volSurfaceHtml() {
   h += '<div class="hero"><div><h1 class="hero-h">Cascadia Memos</h1>';
   h += '<p class="hero-sub">Market analysis and investment perspectives from Cascadia Analytics.</p></div></div>';
   h += '<div class="section" style="max-width:800px;margin:0 auto;">';
+  h += '<nav class="tk-toc" id="memo-toc" aria-label="On this page"></nav>';
   if (!allMemos.length) {
    h += '<div class="card"><p style="color:#8d99aa;">No memos yet.</p></div>';
   } else {
@@ -16144,7 +16246,7 @@ function volSurfaceHtml() {
     };
     const fmtBn = (v) => v == null ? "" : "$" + Number(v).toFixed(2) + "B";
     const fmtEps = (v) => v == null ? "" : "$" + Number(v).toFixed(2);
-    let b = '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:16px 20px;margin-bottom:16px;">';
+    let b = '<div id="memo-sec-bellwether" data-toc="Bellwether Earnings" style="background:#101620;border:1px solid #253142;border-radius:12px;padding:16px 20px;margin-bottom:16px;">';
     b += '<div style="font-size:12px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:6px;">BELLWETHER EARNINGS' + (bb.updated ? ' &nbsp;<span style="color:#8d99aa;font-weight:400;letter-spacing:0;">Updated ' + esc(bb.updated) + '</span>' : '') + '</div>';
     b += '<div style="font-size:13px;color:#8d99aa;margin-bottom:12px;">Sixteen companies whose quarterly reports read the US economy, tracked report by report.</div>';
     if (t.reported) {
@@ -16192,11 +16294,11 @@ function volSurfaceHtml() {
     return b;
    };
    if (geoMemos.length) {
-    h += '<div id="memo-sec-geopolitics" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">GEOPOLITICS</div>';
+    h += '<div id="memo-sec-geopolitics" data-toc="Geopolitics" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">GEOPOLITICS</div>';
     h += '<div style="font-size:13px;color:#8d99aa;margin-bottom:16px;">Politics that move markets: energy shocks, elections, unrest, and great-power friction.</div>';
     const wl = D.geopolitics_watchlist;
     if (wl && wl.areas && wl.areas.length) {
-     h += '<div style="background:#101620;border:1px solid #253142;border-radius:12px;padding:16px 20px;margin-bottom:16px;">';
+     h += '<div id="memo-sec-watchlist" data-toc="What We Track" style="background:#101620;border:1px solid #253142;border-radius:12px;padding:16px 20px;margin-bottom:16px;">';
      h += '<div style="font-size:12px;font-weight:700;color:#d9a441;letter-spacing:1px;margin-bottom:12px;">WHAT WE TRACK' + (wl.updated ? ' &nbsp;<span style="color:#8d99aa;font-weight:400;letter-spacing:0;">Updated ' + esc(wl.updated) + '</span>' : '') + '</div>';
      wl.areas.forEach((a) => {
       h += '<div style="margin-bottom:10px;"><span style="font-size:13px;font-weight:700;color:#f5f7fa;">' + esc(a.area) + '</span><span style="font-size:13px;color:#dbe5f1;">: ' + esc(a.status) + '</span>' + (a.post ? ' <a href="#/memos/' + esc(a.post) + '" style="font-size:13px;color:#d9a441;">Latest post \u2192</a>' : '') + '</div>';
@@ -16206,15 +16308,20 @@ function volSurfaceHtml() {
     geoMemos.forEach((m) => { h += memoCard(m); });
    }
    if (macroMemos.length || bwBoardHtml()) {
-    h += '<div id="memo-sec-macro" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">MACRO ANALYSIS</div>';
+    h += '<div id="memo-sec-macro" data-toc="Macro Analysis" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">MACRO ANALYSIS</div>';
     h += '<div style="font-size:13px;color:#8d99aa;margin-bottom:16px;">Data, policy, and the bellwether earnings that read the economy.</div>';
     h += bwBoardHtml();
     macroMemos.forEach((m) => { h += memoCard(m); });
    }
-   restMemos.forEach((m) => { h += memoCard(m); });
+   if (restMemos.length) {
+    h += '<div id="memo-sec-research" data-toc="Research Memos" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">RESEARCH MEMOS</div>';
+    h += '<div style="font-size:13px;color:#8d99aa;margin-bottom:16px;">Company research, trade ideas, and valuation notes.</div>';
+    restMemos.forEach((m) => { h += memoCard(m); });
+   }
   }
   h += '</div>';
   app.innerHTML = h;
+  initMemosToc();
  });
 
  /* ================= RISK MODELS: CATEGORIES, INDEX, ANCHORS ================= */
