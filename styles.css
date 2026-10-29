@@ -254,7 +254,7 @@ a:hover { text-decoration: underline; }
 .section-sub { color: var(--muted); font-size: 13.5px; margin-bottom: 16px; }
 .card {
   background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 22px; margin-bottom: 14px;
+  border-radius: var(--radius); padding: 24px; margin-bottom: 14px;
   box-shadow: var(--shadow);
 }
 .card h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
@@ -618,7 +618,7 @@ table.fin-table tr:last-child td { border-bottom: none; }
    route via the .tk-page wrapper so no other route shifts. Deep-navy
    panels, hairline borders, 14px radius, mono kickers, tabular numerals. */
 .tk-page { --tkx-panel: #101620; --tkx-line: #253142; }
-.tk-page .card { border-radius: 10px; padding: 24px; }
+.tk-page .card { border-radius: 10px; }
 .tk-page .locked-teaser { border-radius: 10px; }
 .tkx-topbar {
   display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px 16px;
@@ -677,6 +677,7 @@ table.fin-table tr:last-child td { border-bottom: none; }
   .tkx-cp-meta { justify-content: flex-start; }
   .tkx-secdesc { text-align: left; }
   .tk-page .card { padding: 20px; }
+  .card { padding: 20px; }
 }
 
 /* ---------- ticker page table of contents (tk-toc) ----------
