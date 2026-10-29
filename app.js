@@ -21,6 +21,15 @@
  };
  const fmtPct = (n, d) => (n == null || isNaN(n)) ? " - " : (n >= 0 ? "+" : "") + Number(n).toFixed(d != null ? d : 1) + "%";
  const cls = (n) => (n == null || isNaN(n)) ? "" : (n >= 0 ? "pos" : "neg");
+ // Chart house style: one axis tone, one gridline tone, one label font for
+ // every chart that does not explicitly override them, so charts read as
+ // one product across pages. Explicit per-chart colors still win.
+ if (window.Chart) {
+  Chart.defaults.color = "#a9b7c9";
+  Chart.defaults.borderColor = "#1d2938";
+  Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+  Chart.defaults.font.size = 10;
+ }
  // PRO badge (gold); free is the default and carries no badge
  const INDEX_COUNTRY = { SPY: "United States", QQQ: "United States", IWM: "United States", DIA: "United States", SPX: "United States", EWZ: "Brazil", EEM: "Emerging Markets", EFA: "Developed Markets ex-US", FXI: "China", EWJ: "Japan", EWU: "United Kingdom", EWG: "Germany", EWY: "South Korea", EWT: "Taiwan", INDA: "India" };
  const PRO_BADGE = '<span style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;color:#0a0e17;background:linear-gradient(135deg,#d9a441,#d9a441 55%,#a8823d);padding:3px 11px;border-radius:20px;vertical-align:middle;box-shadow:0 1px 8px rgba(217,164,65,0.35);white-space:nowrap;">Pro</span>';
@@ -16622,8 +16631,8 @@ function volSurfaceHtml() {
       responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
       plugins: { legend: { display: false }, tooltip: { callbacks: { title: function (items) { return fh.tooltips[items[0].dataIndex]; } } },
        zoom: { zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: "x" }, pan: { enabled: true, mode: "x" } } },
-      scales: { x: { grid: { display: false }, ticks: { color: "#525252", font: { size: 9 } } },
-       y: { min: 0, max: 100, grid: { color: "#1a1a1a" }, ticks: { color: "#525252", font: { size: 9 }, stepSize: 25 } } }
+      scales: { x: { grid: { display: false }, ticks: { color: "#a9b7c9", font: { size: 9 } } },
+       y: { min: 0, max: 100, grid: { color: "#1d2938" }, ticks: { color: "#a9b7c9", font: { size: 9 }, stepSize: 25 } } }
      }
     });
    }

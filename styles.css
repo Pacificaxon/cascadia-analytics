@@ -399,6 +399,18 @@ table.earn-cal td:nth-child(2) { text-align: left; }
 
 /* charts */
 .chart-box { position: relative; height: 280px; margin: 12px 0; }
+/* Click-to-zoom charts carry a visible hint chip; many readers never
+   discovered the feature from the cursor and title text alone. Buttons
+   that are themselves the expand control already label themselves, so
+   the chip is limited to chart containers. */
+.zoomable-chart { position: relative; }
+.zoomable-chart:not(button)::after {
+  content: "CLICK TO EXPAND";
+  position: absolute; top: 8px; right: 8px; z-index: 3; pointer-events: none;
+  font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 1.2px;
+  color: var(--gold-bright); background: rgba(10, 14, 23, 0.85);
+  border: 1px solid #253142; border-radius: 999px; padding: 4px 8px;
+}
 @media (min-width: 768px) { .chart-box { height: 340px; } }
 .chart-box.tall { height: 320px; }
 @media (min-width: 768px) { .chart-box.tall { height: 400px; } }
