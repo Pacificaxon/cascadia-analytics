@@ -840,3 +840,22 @@ body[data-route="monitor"] .card .card, body[data-route="analysis"] .card .card,
 #comps-tbody tr.comps-row-selected td { background: var(--gold-dim, rgba(217, 164, 65, .12)); }
 #comps-tbody tr.comps-row-flash td { animation: compsRowFlash 1.9s ease-out; }
 @keyframes compsRowFlash { 0%, 55% { background: rgba(217, 164, 65, .38); } 100% { background: transparent; } }
+
+/* ---------- section headers in the menu gradient ----------
+   Every section header that used plain white text now carries the same
+   pine-to-gold gradient as the Pro page links in the main menu: page
+   section titles, card headings (the ticker pages' card headers
+   included), the ticker pages' large section headings, and the homepage
+   news section titles. Page hero titles are not section headers and keep
+   their own treatment. Descendants of a header keep their own colors:
+   the gradient is clipped to the header's text as a whole, and any child
+   that carries its own color (the Pro badge pill, an as-of span, a
+   colored value) paints in that color, not in the gradient. */
+.section-title, .card h3, .tkx-h2, .news-sec-title {
+  background-image: linear-gradient(90deg, #6a9a6a 0%, #c9a961 60%, #f0bd56 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+.section-title *, .card h3 *, .tkx-h2 *, .news-sec-title * {
+  -webkit-text-fill-color: currentColor;
+}
