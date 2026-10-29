@@ -65,10 +65,10 @@ a:hover { text-decoration: underline; }
 .topnav a {
   background: none; border: none; cursor: pointer; text-decoration: none;
   font-family: var(--mono); font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--price); padding: 8px 10px; border-radius: 6px; font-weight: 500;
+  color: #6a9a6a; padding: 8px 10px; border-radius: 6px; font-weight: 600;
 }
 .topnav a:hover { color: var(--gold-bright); }
-.topnav a.active { color: var(--text); background: var(--gold-dim); font-weight: 700; }
+.topnav a.active { color: var(--text); background: rgba(106, 154, 106, 0.16); font-weight: 700; }
 .topbar-title {
   font-family: var(--mono); font-weight: 600; font-size: 16px; letter-spacing: 0.12em; color: var(--text);
   cursor: pointer; text-align: center; white-space: nowrap; text-transform: uppercase;
