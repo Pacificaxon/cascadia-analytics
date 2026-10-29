@@ -561,7 +561,7 @@ table.fin-table tr:last-child td { border-bottom: none; }
     -webkit-overflow-scrolling: touch; scrollbar-width: none;
   }
   .topnav::-webkit-scrollbar { display: none; }
-  .topnav a { white-space: nowrap; }
+  .topnav a { white-space: nowrap; padding-top: 10px; padding-bottom: 10px; }
   .topnav.right { grid-area: actions; justify-self: end; overflow: visible; }
 }
 
@@ -579,7 +579,7 @@ table.fin-table tr:last-child td { border-bottom: none; }
   .topbar-title .brand-icon { width: 28px; height: 28px; }
   .pro-btn { padding: 8px 11px !important; }
   .auth-btn { padding: 8px 11px !important; max-width: 118px; }
-  .topnav a { font-size: 10px; padding: 7px 7px; }
+  .topnav a { font-size: 10px; padding: 11px 8px; }
   .news-row { grid-template-columns: 70px 1fr; padding: 15px 16px; }
   .news-ts { grid-column: 2; text-align: left; }
   .hero-right { grid-template-columns: 1fr 1fr; }
