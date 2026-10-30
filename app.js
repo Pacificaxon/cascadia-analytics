@@ -9337,9 +9337,9 @@ route("alerts", function () {
  function toneHtml(tk, d) {
   if (!d || d.confidenceScore == null) return '<div class="card"><p style="color:var(--muted)">No transcript analysis available yet for this ticker.</p></div>';
   const toneCls = d.netToneScore > 40 ? "#4dd2aa" : d.netToneScore >= 0 ? "#e0aa46" : "#f37d83";
-  const delta = d.toneShiftDelta || 0;
-  const deltaCls = delta >= 0 ? "#4dd2aa" : "#f37d83";
-  const deltaTxt = (delta >= 0 ? "▲ +" : "▼ ") + delta + " pts";
+  const delta = (d.toneShiftDelta === null || d.toneShiftDelta === undefined) ? null : d.toneShiftDelta;
+  const deltaCls = delta === null ? "#a9b7c9" : delta >= 0 ? "#4dd2aa" : "#f37d83";
+  const deltaTxt = delta === null ? "n/a" : (delta >= 0 ? "▲ +" : "▼ ") + delta + " pts";
   const pillars = d.pillarBreakdown || {};
   const pillarNames = { demandEnvironment: "Demand Environment", pricingPower: "Pricing Power", marginOutlook: "Margin Outlook", capexAndAi: "CapEx & AI" };
   let pillarHtml = "";
@@ -14508,6 +14508,11 @@ function volSurfaceHtml() {
   idxCard("VIX3M (90-DAY)", Number(M.vix3m).toFixed(2), "Back end of the front curve") +
   idxCard("VIX6M (180-DAY)", Number(M.vix6m).toFixed(2), "Structural uncertainty horizon") +
   idxCard("CBOE SKEW", Number(M.skew_index).toFixed(1), esc(M.skew_regime || ""), skewIdxC) +
+  (M.vvix == null
+   ? idxCard("VVIX (VOL OF VOL)", "N/A", "Volatility of the VIX itself, unavailable this refresh")
+   : idxCard("VVIX (VOL OF VOL)", Number(M.vvix).toFixed(2),
+     esc(M.vvix_regime || "") + (M.vvix_percentile_1y == null ? "" : " · " + Number(M.vvix_percentile_1y).toFixed(0) + "th percentile, 1Y"),
+     colorMap[M.vvix_color] || "#dbe5f1")) +
   "</div>";
 
  // Ratio gauges
@@ -14575,6 +14580,7 @@ function volSurfaceHtml() {
  h += '<div class="card" style="margin:14px 0;"><div style="font-size:13px;font-weight:700;color:#dbe5f1;margin-bottom:8px;">What this model tells you</div>' +
   '<div style="font-size:13px;color:#a9b7c9;line-height:1.6;">' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Term structure.</b> In calm markets the vol curve slopes upward, back-month implied vol above front-month, because longer horizons carry more uncertainty. When the VIX to VIX3M ratio pushes above 1.00 the curve has flipped into backwardation, front-month event risk is dominating, and that configuration has historically accompanied forced liquidation rather than orderly selling.</p>' +
+  '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Vol of vol (VVIX).</b> The VVIX is the implied volatility of VIX options, a measure of how unstable the market expects volatility itself to be. A calm VIX beside a rising VVIX means traders are paying up for protection on the vol gauge, often the first sign that a quiet surface is about to move. Sustained readings above 120 have historically accompanied stressed, jumpy vol regimes, while readings under 80 mark settled vol expectations. The card carries the level, its regime, and where the level sits against its own past year.</p>' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Skew and the risk reversal.</b> The 25-delta risk reversal compares the implied vol of an out-of-the-money call against an out-of-the-money put on the same expiry. Equity skew normally runs negative, puts richer than calls, because institutions perpetually buy downside insurance. Readings below minus 8 vol points mark saturated tail hedging, while a reading at or above zero means calls are bid over puts, the signature of speculative upside chasing. The skew ratio divides that gap by at-the-money vol so readings stay comparable across vol regimes.</p>' +
   '<p style="margin:0 0 10px;"><b style="color:#dbe5f1;">Single-name term spreads.</b> A name whose 30-day ATM vol sits well above its 90-day vol is pricing a near-term catalyst, most often earnings. A spread beyond plus 5 points is a severe inversion and usually collapses right after the event prints. Names in healthy contango, spread below minus 3, carry no acute front-month pricing.</p>' +
   '<p style="margin:0;"><b style="color:#dbe5f1;">How we calculate it.</b> Macro readings come from the Cboe volatility indices. Per-ticker figures come from CBOE delayed options chains, using the expiries nearest 30 and 90 days out, the at-the-money strike, and strikes near 1.05 times spot for the call and 0.95 times spot for the put as the 25-delta approximation. Strikes with no valid implied vol are skipped, never interpolated.</p>' +
