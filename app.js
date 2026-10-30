@@ -16426,9 +16426,10 @@ function volSurfaceHtml() {
    h += '<div class="card"><p style="color:#a9b7c9;">No memos yet.</p></div>';
   } else {
    const isGeoMemo = (m) => m.section === "Geopolitics" || (m.id || "").startsWith("geopolitics-");
-   const geoMemos = allMemos.filter((m) => isGeoMemo(m)).reverse();
-   const macroMemos = allMemos.filter((m) => !isGeoMemo(m) && m.section === "Macro Analysis").reverse();
-   const restMemos = allMemos.filter((m) => !isGeoMemo(m) && m.section !== "Macro Analysis").reverse();
+   const byDateDesc = (a, b) => String(b.date || "").localeCompare(String(a.date || ""));
+   const geoMemos = allMemos.filter((m) => isGeoMemo(m)).sort(byDateDesc);
+   const macroMemos = allMemos.filter((m) => !isGeoMemo(m) && m.section === "Macro Analysis").sort(byDateDesc);
+   const restMemos = allMemos.filter((m) => !isGeoMemo(m) && m.section !== "Macro Analysis").sort(byDateDesc);
    const memoCard = (m) => {
     let c = '<a href="#/memos/' + esc(m.id) + '" style="text-decoration:none;">';
     c += '<div class="card" style="margin-bottom:16px;cursor:pointer;">';
