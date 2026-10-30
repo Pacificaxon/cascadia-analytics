@@ -3946,6 +3946,12 @@ function mcclellanBreadthHtml() {
   /* ---------- Macroeconomic Analysis HTML (Pro-gated) ---------- */
   function macroAnalysisHtml(d) {
    const hist = d.history || [];
+   if (!hist.length && !(d.report_history || []).length) {
+    return '<div style="background:#101620;border-radius:12px;padding:20px;">' +
+     '<div style="font-size:14px;font-weight:700;color:#f5f7fa;margin-bottom:6px;">Macro data did not load</div>' +
+     '<div style="font-size:13px;color:#dbe5f1;opacity:0.8;line-height:1.6;">The indicator history and the analyst report archive are part of the Pro data feed. ' +
+     'Reload the page to try again; if it stays empty, sign out and sign back in to refresh your session.</div></div>';
+   }
    const first = hist[0] || {};
    const latest = hist[hist.length - 1] || {};
    // Metric cards (latest print values)
@@ -3996,10 +4002,11 @@ function mcclellanBreadthHtml() {
     '<div style="background:#101620;border-radius:12px;padding:20px;display:flex;flex-direction:column;max-height:640px;">' +    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
     '<span style="font-size:14px;">📊</span>' +
     '<span style="font-size:15px;font-weight:700;color:#f5f7fa;">Macro Analyst Report</span></div>' +
+    (reportHistory.length ?
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
     '<span style="font-size:12px;color:#dbe5f1;opacity:0.7;">Report date:</span>' +
     '<select id="macro-report-date" style="background:#0d131d;color:#dbe5f1;border:1px solid #253142;border-radius:6px;' +
-    'padding:4px 8px;font-size:12px;cursor:pointer;max-width:200px;">' + reportOpts + "</select></div>" +
+    'padding:4px 8px;font-size:12px;cursor:pointer;max-width:200px;">' + reportOpts + "</select></div>" : "") +
     '<div id="macro-report-body" style="overflow-y:auto;flex:1;padding-right:6px;">' +
     '<div id="macro-report-date-label" style="font-size:11px;color:#dbe5f1;opacity:0.6;margin-bottom:12px;">' +
     esc(latestReport.date || "") + (latestReport.data_through ? ", " + esc(latestReport.data_through) : "") + "</div>" +
