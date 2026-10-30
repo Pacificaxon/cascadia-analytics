@@ -16503,6 +16503,17 @@ function volSurfaceHtml() {
     h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Company research, trade ideas, and valuation notes.</div>';
     restMemos.forEach((m) => { h += memoCard(m); });
    }
+   const bwHtml = bwBoardHtml();
+   if (bwHtml) {
+    h += '<div style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">BELLWETHER EARNINGS</div>';
+    h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">The bellwether earnings that read the economy.</div>';
+    h += bwHtml;
+   }
+   if (macroMemos.length) {
+    h += '<div id="memo-sec-macro" data-toc="Macro Analysis" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">MACRO ANALYSIS</div>';
+    h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Data and policy reads on the economy.</div>';
+    macroMemos.forEach((m) => { h += memoCard(m); });
+   }
    if (geoMemos.length) {
     h += '<div id="memo-sec-geopolitics" data-toc="Geopolitics" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">GEOPOLITICS</div>';
     h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Politics that move markets: energy shocks, elections, unrest, and great-power friction.</div>';
@@ -16516,12 +16527,6 @@ function volSurfaceHtml() {
      h += '</div>';
     }
     geoMemos.forEach((m) => { h += memoCard(m); });
-   }
-   if (macroMemos.length || bwBoardHtml()) {
-    h += '<div id="memo-sec-macro" data-toc="Macro Analysis" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">MACRO ANALYSIS</div>';
-    h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Data, policy, and the bellwether earnings that read the economy.</div>';
-    h += bwBoardHtml();
-    macroMemos.forEach((m) => { h += memoCard(m); });
    }
   }
   h += '</div>';
