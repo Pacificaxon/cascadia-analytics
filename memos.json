@@ -2,6 +2,54 @@
  "memos": [
   {
    "date": "2026-10-30",
+   "excerpt": "ExxonMobil beat on refining margins, not oil prices, with adjusted earnings per share of $4.23 against a $3.90 consensus and Energy Products earnings more than doubling from the second quarter.",
+   "id": "bellwether-xom-2026-10-30",
+   "sections": [
+    {
+     "body": "ExxonMobil reported third-quarter 2026 adjusted earnings per share of $4.23 on October 30, beating the Zacks consensus estimate of $3.90, with GAAP earnings per share of $3.72. Revenue of $113.16 billion topped the $103 billion consensus and rose 32.7 percent from a year earlier, and earnings of $15.4 billion roughly doubled the year-ago $7.5 billion. Operating cash flow reached $25.7 billion and free cash flow $19.1 billion, funding $9.4 billion returned to shareholders, $4.3 billion in dividends and $5.1 billion in buybacks. Energy Products adjusted earnings of $9.05 billion more than doubled the second quarter's $4.10 billion, while adjusted upstream earnings fell to $7.31 billion from $9.19 billion as lower prices offset production of 4,496 thousand barrels of oil equivalent a day. The company also declared a fourth-quarter dividend of $1.07 per share, payable December 10, 2026.",
+     "heading": "The print"
+    },
+    {
+     "body": "We read this as a refining margin story first and an oil price story second. The company flagged about $4.5 billion of higher refining margins against a $1.3 billion drag from lower oil prices, and the Gulf Coast 3-2-1 crack spread peaked at an all-time high of $72.64 on September 22. That spread is a tax on every mile of freight and every gallon at the pump, so the same margin windfall that doubles an integrated major's quarter also raises costs for households and shippers. The offsetting signal is on the demand side. ExxonMobil ran its US Gulf Coast crude units at 100 percent utilization and posted its second-highest Gulf Coast diesel production on record, and distillate output is up about 40 percent since 2019 on the Beaumont expansion. Diesel is the fuel of trucking, farming, and industry, and record diesel runs point to a goods economy that is still moving, not one stalling into the holidays.",
+     "heading": "What it says about the economy"
+    },
+    {
+     "body": "We watch whether refining margins hold into the fourth quarter as crack spreads come off their September peak, because the refining contribution is doing work that crude prices are not. We watch upstream volumes in Guyana and the Permian against the Middle East impacts that have trimmed recent quarters, and we watch whether the $9.4 billion quarterly payout pace holds now that net debt is down to $22.1 billion and the balance sheet has room to absorb a softer margin quarter.",
+     "heading": "What we watch"
+    }
+   ],
+   "tickers": [
+    "XOM"
+   ],
+   "title": "ExxonMobil Q3: Refining Carries the Quarter as Crude Cools",
+   "section": "Macro Analysis"
+  },
+  {
+   "date": "2026-10-30",
+   "excerpt": "Chevron's adjusted earnings per share of $5.28 beat the $4.78 consensus as downstream earnings rose to $4.9 billion from $1.1 billion a year earlier and US refineries set a throughput record.",
+   "id": "bellwether-cvx-2026-10-30",
+   "sections": [
+    {
+     "body": "Chevron reported third-quarter 2026 adjusted earnings per share of $5.28 on October 30, beating the Zacks consensus estimate of $4.78, with GAAP earnings per share of $5.06. Earnings of $9.9 billion rose from $3.5 billion a year earlier and adjusted earnings of $10.4 billion rose from $3.6 billion. Total revenues and other income of $67.8 billion topped the $60.5 billion consensus and rose 36.3 percent year over year. Operating cash flow reached $16.0 billion, free cash flow $12.0 billion, and adjusted free cash flow $14.2 billion, while capital spending fell 9.7 percent to $4.0 billion. Worldwide production averaged 3,980 thousand barrels of oil equivalent a day, down 2.6 percent from a year earlier, but US production topped 2 million barrels a day for a fifth straight quarter and US refineries set a crude throughput record of 1.09 million barrels a day at near 98 percent utilization. The company declared a quarterly dividend of $1.78 per share, payable December 10, 2026.",
+     "heading": "The print"
+    },
+    {
+     "body": "We read the same two forces here as at ExxonMobil, and the match between the two majors is the signal. Downstream earnings of $4.9 billion against $1.1 billion a year earlier confirm the refining margin surge was industry-wide rather than one company's optimization, driven by higher diesel prices and refinery outages in Russia and the Middle East. For the consumer that is a cost, not a windfall, since refined product prices feed directly into transport and heating bills. On the supply side, the discipline is striking. Chevron cut capital spending nearly 10 percent, concentrated in the Permian, while still holding US production above 2 million barrels a day and doubling its cash pile to $12.8 billion from $6.3 billion at the end of 2025. The majors are harvesting the margin cycle rather than drilling into it, which keeps supply tight enough to support prices but leaves little cushion if demand softens.",
+     "heading": "What it says about the economy"
+    },
+    {
+     "body": "We watch whether downstream margins stay elevated as outages ease and seasonal demand cools, since downstream is now carrying a larger share of the profit pool than it has in years. We watch Permian spending discipline against the production decline, because a 2.6 percent output slip alongside falling capex tests how long volumes hold without new investment. And we watch the cash balance, because a $12.8 billion pile after a $4.0 billion capex quarter gives Chevron room to sustain the dividend and buybacks through a softer fourth quarter.",
+     "heading": "What we watch"
+    }
+   ],
+   "tickers": [
+    "CVX"
+   ],
+   "title": "Chevron Q3: Record Refinery Runs Power a Near Tripling of Profit",
+   "section": "Macro Analysis"
+  },
+  {
+   "date": "2026-10-30",
    "excerpt": "The bull market is rotating, not ending. Semiconductors and cybersecurity are handing leadership to biotechnology and defense and aerospace, and the canary, the rotation map, and the relative strength ranks all say the same thing.",
    "id": "the-baton-pass-2026-10-30",
    "sections": [
