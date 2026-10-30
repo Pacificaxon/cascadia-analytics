@@ -84,6 +84,11 @@
      "heading": "Executive Summary"
     },
     {
+     "image": "memo-images/scarcity-premium-data-centers-1.png",
+     "alt": "Card listing the memo's named beneficiaries of data center scarcity: Digital Realty, Equinix, and Iron Mountain among public colocation REITs, and Microsoft, Amazon, and Alphabet among hyperscalers, with the memo's description of each company.",
+     "caption": "The operators the memo names as beneficiaries of regulatory scarcity, with the memo's own description of each."
+    },
+    {
      "body": "",
      "heading": "",
      "visual": "scarcity-premium"
@@ -97,8 +102,18 @@
      "heading": "2. The Scarcity Premium: Margin Expansion on Existing Compute"
     },
     {
+     "image": "memo-images/scarcity-premium-data-centers-2.png",
+     "alt": "Line chart of indexed closing prices for Digital Realty, Equinix, and Iron Mountain from April 16, 2026 to October 16, 2026, indexed to 100 at the start. Over the window Iron Mountain fell 3.0 percent, Equinix fell 7.0 percent, and Digital Realty fell 10.4 percent.",
+     "caption": "Colocation REIT share prices in the six months before the memo, indexed to 100 on April 16, 2026 and ending at the October 16, 2026 close."
+    },
+    {
      "body": "This regulatory-driven scarcity premium directly benefits two distinct segments of the digital infrastructure landscape:\n\nPublic Colocation REITs\n\nDigital Realty (DLR): As the largest pure-play wholesale REIT, DLR is the most direct beneficiary of broad capacity scarcity. With a massive footprint in highly constrained tier-one markets (such as Northern Virginia), DLR can aggressively mark-to-market expiring leases, driving immediate same-store Net Operating Income (NOI) growth.\n\nEquinix (EQIX): While Equinix leans into retail colocation and interconnection, scarcity plays directly into its moat. Their facilities act as critical internet exchange points. As power constraints make building competing hubs virtually impossible, Equinix's existing campuses become indispensable, allowing for immense pricing power on cross-connects and cabinet space.\n\nIron Mountain (IRM): IRM's aggressively expanding data center portfolio operates from a smaller base than its peers. Consequently, scarcity pricing on newly stabilized assets and existing inventory will disproportionately boost their margin profile and accelerate their digital transition narrative.\n\nHyperscalers (Cloud Providers)\n\nMicrosoft (Azure) and Amazon (AWS): The massive capital requirements to bypass grid constraints mean these hyperscalers are effectively creating their own primary power markets (evidenced by legacy moves like Microsoft's nuclear PPA at Three Mile Island and Amazon's Talen Energy deal). By locking up multi-gigawatt, multi-decade power sources, they widen the moat against \"tier-two\" cloud competitors who cannot afford billions in upfront energy infrastructure.\n\nAlphabet (Google Cloud): Alongside MSFT and AMZN, Google possesses the balance sheet to unilaterally fund off-site renewables, localized grid upgrades, and direct utility partnerships.",
      "heading": "Equity Implications and Strategic Beneficiaries"
+    },
+    {
+     "image": "memo-images/scarcity-premium-data-centers-3.png",
+     "alt": "Line chart of indexed closing prices for Microsoft, Amazon, and Alphabet from April 16, 2026 to October 16, 2026, indexed to 100 at the start. Over the window Microsoft rose 26.4 percent, Alphabet rose 1.5 percent, and Amazon rose 0.1 percent.",
+     "caption": "Hyperscaler share prices in the six months before the memo, indexed to 100 on April 16, 2026 and ending at the October 16, 2026 close."
     },
     {
      "body": "Regulatory moratoriums do not pose the structural threat the market fears. The risk is overstated. Investors should view regulatory bottlenecks not as a reason to underweight digital infrastructure, but as a manageable friction that incumbents are well-equipped to navigate.",
@@ -129,8 +144,18 @@
      "heading": "The Framework"
     },
     {
+     "image": "memo-images/axon-flock-backlash-sotp-1.png",
+     "alt": "Card describing the five segments in the memo's Axon model: Evidence.com and Cloud SaaS as the core compounder, TASER as a razor-and-blades model, Dedrone as the highest growth segment through 2030, Bodycams and Sensors as a replacement-cycle business, and ALPR, RTCC and Fusus as the segment where the Flock backlash lands, at under 5 percent of 2036 revenue.",
+     "caption": "The five segments in the bottom-up Axon build and the role the memo assigns to each."
+    },
+    {
      "body": "Evidence.com / Cloud SaaS is the core compounder, the largest business today, and it grows to a clear majority of the company by 2036. TASER is a classic razor-and-blades model. Dedrone (counter-drone) is the highest growth segment through 2030. Bodycams / Sensors are a mature replacement-cycle business feeding the Evidence.com flywheel. ALPR / RTCC / Fusus is where the Flock backlash lands, representing under 5% of total 2036 revenue. Total revenue goes from $3.7B to $29.5B, generating $11.2B in EBITDA (37.8% margin) and $7.2B in unlevered FCF by 2036.",
      "heading": "The Five Segments"
+    },
+    {
+     "image": "memo-images/axon-flock-backlash-sotp-2.png",
+     "alt": "Bar chart of the memo's Axon build: revenue of $3.7B in 2026 and $29.5B in 2036, with 2036 EBITDA of $11.2B and 2036 unlevered free cash flow of $7.2B.",
+     "caption": "The eleven year build in the memo: revenue grows from $3.7B to $29.5B, generating $11.2B of EBITDA at a 37.8 percent margin and $7.2B of unlevered free cash flow by 2036."
     },
     {
      "body": "On quantifying the backlash, the direct revenue at risk is relatively small. The more critical dynamic is the cross-selling impact, which is where the primary risk lies. The $732M hit captures ecosystem effects well beyond direct ALPR revenue, since slower fixed-sensor deployments inherently make drones, Evidence.com, and Fusus incrementally less valuable.",
@@ -139,6 +164,11 @@
     {
      "body": "Regarding the valuation bridge, the $732M revenue hit equates to $8 to $9 per share in present value, about 1.3% of the $638.14 base target. Because this is a 2036 figure being discounted over a decade, the actual impact in present value terms is smaller than the 2.4% headline revenue hit suggests. It is a real, quantifiable impact, but it does not alter the broader investment case. It creates a more attractive entry point. The valuation works out to Bear $224.18, Base $638.14, Bull $861.69, with a Buy rating.",
      "heading": "The Valuation Bridge"
+    },
+    {
+     "image": "memo-images/axon-flock-backlash-sotp-3.png",
+     "alt": "Card with the memo's October 14, 2026 Axon target set: Bear $224.18, Base $638.14, Bull $861.69, rated Buy. The card also shows the priced Flock backlash: a $732M terminal revenue hit worth $8 to $9 per share in present value, about 1.3 percent of the Base target, and a dilution sensitivity putting Base near $535 at the full historical dilution pace.",
+     "caption": "The target set as published on October 14, 2026, and what the memo says the Flock backlash costs in present value."
     },
     {
      "body": "On the share count, the per-share targets rest on normalized long-term SBC and dilution assumptions for a mature business, well below the levels of the hypergrowth years. A company generating $29.5B in revenue with 37.8% EBITDA margins should not need to dilute at startup rates to retain talent. That said, it remains a judgment call worth sensitivity-testing. If dilution ran at the full historical pace for the entire forecast, the base target would be around $535 instead of $638.14. For SBC-heavy names, enterprise value means nothing without the share count trajectory alongside it.",
@@ -168,8 +198,18 @@
      "heading": "The Current Macro Regime: Fiscal Dominance Meets Structural CapEx"
     },
     {
+     "image": "memo-images/regime-shift-fiscal-dominance-1.png",
+     "alt": "Line chart of the 10-year minus 2-year Treasury spread from 2021 to October 20, 2026, showing the inversion trough of minus 1.08 in July 2023 and a reading of plus 0.33 on October 20, 2026",
+     "caption": "The 10-year minus 2-year spread (FRED T10Y2Y) un-inverted after the long inversion and stood at plus 0.33 on October 20, 2026."
+    },
+    {
      "body": "To contextualize the current environment, we triangulate between two primary historical analogs. The present regime is not a carbon copy of either, but a hybrid of their distinct mechanics.\n\nThe 1998\u20131999 Analog: Narrow Breadth & Contagion Ignored\n\nMuch like the late 1990s, we are witnessing a secular technology boom that commands premium multiples regardless of standard valuation metrics. In 1998, the Asian Financial Crisis and the Russian default sent shockwaves through global currency markets, yet U.S. mega-cap tech continued to decouple and grind higher. Today, we see similar dynamics with the unwinding of the JPY carry trade and localized sovereign stress. The market is rewarding the \"inevitability\" of a single sector, heavily penalizing capital parked in defensive or value-oriented cyclical names.\n\nThe 1968 Analog: Guns, Butter, and Sticky Inflation\n\nThe structural floor under current inflation echoes the late 1960s. Today, supply-chain re-shoring, continuous defense spending, and sticky services inflation mirror the \"guns and butter\" fiscal policies of the Johnson era. In 1968, the Federal Reserve attempted to ease prematurely, resulting in secondary waves of inflation that ultimately compressed equity multiples for a decade. Our current 5Y5Y forward inflation expectations reveal that the market does not believe central banks can return to the 2.0% pre-2020 baseline without inducing a severe recession.",
      "heading": "Historical Analogs: Synthesizing 1998 and 1968"
+    },
+    {
+     "image": "memo-images/regime-shift-fiscal-dominance-2.png",
+     "alt": "Line chart of federal debt as a share of GDP from 2019 to Q2 2026, rising from 104.3 percent in Q1 2019 to 121.2 percent in Q2 2026, with a 2020 spike to 132.7 percent",
+     "caption": "Federal debt as a share of GDP (FRED GFDEGDQ188S): 104.3 percent in Q1 2019 and 121.2 percent in Q2 2026."
     },
     {
      "body": "Given the asymmetric risk profile, we are shifting portfolio construction to prioritize capital preservation over benchmark-hugging beta exposure. We are actively reducing allocation to market-cap-weighted indices heavily exposed to multiple contraction, pivoting toward equal-weighted implementations and hard assets.",
@@ -212,6 +252,11 @@
     {
      "body": "The current levitation in risk assets requires deep structural participation to be sustainable. Until we see the equal-weighted indices confirm the breakouts of the market-cap leaders, and until the cross-asset volatility in currency and bond markets subsides, aggressive long exposure carries negative expected value. We will continue to harvest elevated option premiums via delta-neutral structures while waiting for the inevitable volatility expansion to clear the excessive leverage from the system.",
      "heading": ""
+    },
+    {
+     "image": "memo-images/regime-shift-fiscal-dominance-3.png",
+     "alt": "Regime playbook card: composite read of Elevated Vulnerability, with positioning to reduce cap-weighted beta, rotate to equal-weight and hard assets, and harvest option premium on a delta-neutral basis",
+     "caption": "The regime playbook from the memo: capital preservation over benchmark-hugging beta while breadth stays narrow and the curve bear-steepens."
     }
    ],
    "tickers": [],
@@ -225,6 +270,11 @@
     {
      "body": "We initiate this comparison with a simple observation. Sea Limited in Southeast Asia and MercadoLibre in Latin America are running the same business design at continental scale, a marketplace that pulls in traffic, a payments and credit arm that monetizes that traffic, and a third engine that funds the system, gaming cash flow at Sea and advertising plus logistics services at MercadoLibre. Both reported second quarter 2026 results within a week of each other in August, and both grew revenue by roughly half year over year, with Sea at $7.8 billion, up 48.1 percent, and MercadoLibre at $10.2 billion, up 50 percent.\n\nThe resemblance ends at the risk budget. Sea has finished its pivot from growth at any cost to disciplined profitability and carries a loan book with a non-performing ratio of 1.0 percent on loans past due more than 90 days. MercadoLibre is deliberately compressing its operating margin to 6.7 percent to fund free shipping, credit cards, and logistics density, and its portfolio non-performing ratio sits at 7.0 percent on a 15 to 90 day measure. Our discounted cash flow work rates both stocks Buy, with base case upside of 44.2 percent for Sea and 50.2 percent for MercadoLibre. The verdict of this memo follows the evidence through both cases. MercadoLibre is the stronger long-term compounder for aggressive capital, and Sea is the more conservative, risk-adjusted way to own the same theme.",
      "heading": "Executive Summary"
+    },
+    {
+     "image": "memo-images/se-vs-meli-emerging-market-ecosystems-1.png",
+     "alt": "Comparison table of Sea Limited and MercadoLibre second quarter 2026 figures from the memo: revenue of $7.8B against $10.2B, revenue growth of 48.1 percent against 50 percent, operating income of $650M against $683M, operating margin of 8.3 percent against 6.7 percent, marketplace GMV of $38.3B against $21.9B, MercadoLibre payments volume of $101.0B, credit books of $11.1B against $16.4B, and non-performing loan ratios of 1.0 percent against 7.0 percent on different delinquency definitions.",
+     "caption": "Second quarter 2026 as reported for both companies, lined up on the memo's verified figures."
     },
     {
      "body": "Sea organizes itself around Shopee in e-commerce, Monee in digital financial services, and Garena in digital entertainment. Shopee generated $38.3 billion of gross merchandise volume in the second quarter of 2026, up 28.4 percent year over year, on 4.2 billion gross orders. Monee has become the profit engine inside financial services, and Garena, built on Free Fire, remains the cash engine that funded the group through its investment years.\n\nMercadoLibre organizes itself around its commerce marketplace, Mercado Pago in fintech, and a logistics network, Mercado Envios, that has no equivalent at Sea. Its marketplace produced $21.9 billion of gross merchandise volume in the same quarter, up 44 percent in dollar terms, while Mercado Pago processed $101.0 billion of total payment volume, up 56 percent. Sea moves more merchandise value through Shopee than MercadoLibre moves through its marketplace, and MercadoLibre moves a far larger river of payments. The blueprints rhyme, and the centers of gravity differ.",
@@ -306,12 +356,22 @@
      "heading": "Valuation, What Our Models Say"
     },
     {
+     "image": "memo-images/se-vs-meli-emerging-market-ecosystems-2.png",
+     "alt": "Two horizontal bar charts of the memo's DCF targets as published on October 20, 2026. Sea Limited: Bear $60.01, Base $117.05, Blended $129.23, Bull $222.82, against a spot price of $81.16. MercadoLibre: Bear $1,279.91, Base $2,799.63, Blended $3,011.09, Bull $5,165.20, against a spot price near $1,862. Both names are rated Buy.",
+     "caption": "The memo's DCF target sets for both names, with spot prices marked and Base case upside of 44.2 percent for Sea and 50.2 percent for MercadoLibre."
+    },
+    {
      "body": "The credit comparison needs one definitional caution before it is used. Sea reports loans past due more than 90 days, the late-stage bucket, at 1.0 percent. MercadoLibre reports the broader 15 to 90 day bucket at 7.0 percent for the portfolio and 4.6 percent for cards. The buckets are not identical, and the honest conclusion is directional rather than precise. Sea underwrites tighter and grows credit more slowly relative to its ecosystem, and MercadoLibre accepts materially wider early-stage delinquency as the price of building a card franchise at speed.\n\nBeyond credit, the risk shapes differ. Sea carries competitive risk in Southeast Asia, where well-funded rivals contest the marketplace, and concentration risk in Garena, where a single title still anchors entertainment cash flow. MercadoLibre carries macroeconomic and currency risk across Latin America, where its largest markets have a long history of inflation and devaluation cycles, plus the execution risk that subsidized shipping and negative-margin cards must eventually convert into durable margin. Sea has already banked its margin conversion, with operating margin at 8.3 percent and rising. The MercadoLibre margin conversion is still a promise, scheduled for later.",
      "heading": "The Risk Contrast"
     },
     {
      "body": "We hold Buy ratings on both names, and forced to rank them for long-term compounding, we rank MercadoLibre first. The reasoning is structural. A physical logistics network that delivers 77 percent of fast shipments inside 48 hours across Latin America is the hardest asset in either story to replicate, payment volume above $100 billion a quarter creates a data and distribution advantage that widens with scale, and ecosystemic user growth of 37 percent shows the subsidy spending converting into locked-in behavior rather than evaporating. A company growing revenue at 50 percent with that moat profile earns the benefit of the doubt on a 6.7 percent operating margin that management chose, not one the market imposed.\n\nSea is the better risk-adjusted holding, and for many portfolios it will be the better fit. It pairs 48.1 percent revenue growth with an 8.3 percent operating margin, a 1.0 percent late-stage delinquency ratio on a fast-growing loan book, and a market price that implies less growth than our bear case assumes. The aggressive compounder buys MercadoLibre and underwrites Latin American macro risk and a credit book run at negative card margins. The conservative compounder buys Sea and underwrites Southeast Asian competition at a valuation that already assumes disappointment. Both are legitimate positions, and the models say both are undervalued. The choice is a risk budget decision, not a quality decision.",
      "heading": "Verdict"
+    },
+    {
+     "image": "memo-images/se-vs-meli-emerging-market-ecosystems-3.png",
+     "alt": "Line chart of indexed closing prices for Sea Limited and MercadoLibre from April 20, 2026 to October 20, 2026, indexed to 100 at the start. Over the window Sea fell 10.0 percent and MercadoLibre rose 0.5 percent.",
+     "caption": "How the two stocks traded in the six months before the memo, indexed to 100 on April 20, 2026 and ending at the October 20, 2026 close."
     },
     {
      "body": "We also value Sea segment by segment, applying Bear, Base, and Bull multiples to each operating base and bridging through net cash. The restated build, as of October 24, 2026, produces $51.98 per share in the Bear case, $67.14 in the Base case, and $97.36 in the Bull case, against a $74.63 spot reference on 638.2 million diluted shares. The Base case sums to $42.85 billion of equity value and sits $12.11, or 15.3 percent, below our $79.25 DCF Base target. Shopee is valued on profitability rather than volume, at 19.15 times trailing adjusted EBITDA of $867.105 million in the Base case, from a peer median that replaces the old volume multiple. SeaMoney earns 0.32 times its on-book loan portfolio of $10.0 billion, excluding $1.1 billion of off-book loans, and Garena is held at 9.73 times trailing adjusted EBITDA of $1,833.057 million, measured on the definition in effect through the second quarter. A corporate deduction of $1.67 billion covers the trailing drag from Other Services and unallocated costs. The table below shows the Base case build.",
@@ -459,6 +519,11 @@
      "heading": "2. What Happened This Week"
     },
     {
+     "image": "memo-images/week-ahead-2026-10-21-1.png",
+     "alt": "Line chart of S&P 500 daily closes from September 21 to October 20, 2026, ending at a close of 7,712.57",
+     "caption": "S&P 500 daily closes into the data week (Yahoo Finance ^GSPC), through October 20, 2026."
+    },
+    {
      "body": "Semiconductor & AI: CoreWeave\nCredit Event: CoreWeave\u2019s 5.5% senior secured notes due 2029 traded at 98.5% of par (up from 97.5% last week), with spreads tightening to 275bps over Treasuries. The issuer\u2019s 10-year bond yield fell to 6.8% from 7.0%, reflecting improved liquidity in the AI infrastructure space. However, margin pressure persists, with CoreWeave\u2019s cloud revenue growth slowing to 12% YoY (vs. 18% in Q2 2026) due to customer pushback on pricing. Analysts note that while demand for GPU capacity remains strong, refinancing risks remain elevated if the company fails to secure new debt facilities by year-end.\nRegulatory: The U.S. Commerce Department extended its export controls on advanced semiconductor equipment to include CoreWeave\u2019s high-performance computing clients, citing national security concerns. The move has not yet impacted CoreWeave\u2019s near-term operations but adds operational uncertainty.\n\nEnergy: Marathon Oil\nEarnings: Marathon Oil reported Q3 2026 results on October 15, beating consensus on adjusted EPS ($1.25 vs. $1.18 expected) but missing on revenue ($10.2B vs. $10.5B). The company guided Q4 2026 production at 1.51\u20131.53 million boe/d, down from prior guidance of 1.53\u20131.55, citing \"unexpected maintenance\" at Permian Basin wells. Shareholders approved a $1.2B share repurchase program, but the stock (-2.1% on the day) underperformed peers due to concerns over capital discipline.\nM&A: Marathon Oil entered into a non-binding LOI to acquire a 40% stake in a Permian Basin shale asset from a private equity-backed driller for $1.8B. The deal, pending regulatory approval, would increase Marathon\u2019s Permian exposure by 15% but requires $1.2B in financing, raising leverage questions.\n\nFinancials: JPMorgan Chase\nGuidance: JPMorgan raised its 2026 net interest margin (NIM) guidance to 3.30%\u20133.40% from 3.20%\u20133.30%, citing stronger loan demand in commercial real estate. However, the bank cut its 2027 NIM outlook to 3.00%\u20133.10%, reflecting expectations of Fed rate cuts in H2 2026. The stock (JPM) held steady near $175, but analysts note that the revised guidance may limit upside ahead of the Fed\u2019s November meeting.\n\nRegulatory: CFTC & Commodities\nThe CFTC\u2019s Commitments of Traders (COT) report showed speculative net long positions in WTI crude rose to 1.23 million contracts (vs. 1.18 million the prior week), while net long positions in RBOB gasoline fell to 1.02 million from 1.08 million. The shift suggests increased bearish sentiment on refined products, which could exacerbate margin compression if crude remains elevated.",
      "heading": "3. Major Company News"
     },
@@ -467,12 +532,22 @@
      "heading": "4. Macro & Fed"
     },
     {
+     "image": "memo-images/week-ahead-2026-10-21-2.png",
+     "alt": "Schedule card for the week of October 21, 2026: October PPI on Tuesday, October CPI on Wednesday, FOMC minutes and a Powell speech on Thursday, and jobless claims on Friday, with the expected readings from the memo",
+     "caption": "The week's schedule and expectations as stated in the memo: PPI expected at plus 6.2 percent year over year, CPI at plus 3.6 percent, and jobless claims at 195,000."
+    },
+    {
      "body": "Sector Leadership Changes\nDefensive Rotation Continues: The extreme defensive rotation score (7.0) persists, with utilities (+2.1% WTD), healthcare (+1.8%), and consumer staples (+1.5%) leading. Financials (-0.5%) and industrials (-1.2%) lagged, reflecting cautious positioning ahead of macro data.\nInstitutional Flow: Hedge funds increased net long positions in defensive sectors (utilities, healthcare) by $1.2B last week, while reducing exposure to technology (-$850M) and small-cap stocks (-$600M). Retail investors, meanwhile, remain heavily concentrated in growth stocks (Nasdaq 100 ETFs saw $4.1B inflows).\nMargin Leverage: The margin leverage regime remains stable (score: 35), but dynamic concentration risks (score: 65, \"elevated vulnerability\") suggest that a sudden market stress could lead to forced liquidations in overleveraged positions.\n\nSentiment Extremes\nPut/Call Ratio: The CBOE Put/Call ratio (1.02) remains near historical highs, signaling cautious sentiment. However, the VIX (18.5) has not spiked, suggesting traders are pricing in volatility rather than panic.\nShort Interest: Technology and small-cap stocks (e.g., ARK Innovation ETF) saw short interest rise to 12\u201315% of float, the highest since Q1 2023, as investors hedge against valuation risks.",
      "heading": "5. Positioning & Rotation"
     },
     {
      "body": "The quantitative risk models paint a mixed but cautious picture for the week ahead:\n\nCorrection Risk (as of 2026-10-20): score N/A, regime Neutral / Chop. No imminent correction signal, but volatility remains elevated.\nLiquidity Drain (as of 2026-10-14): score N/A, regime Liquidity Draining (Headwind). Dry conditions persist; forced selling could emerge if macro data disappoints.\nDynamic Concentration (as of 2026-10-19): score 65, regime Elevated Vulnerability. Overconcentration in a few sectors/ETFs raises tail-risk exposure.\nMargin Leverage (as of 2026-09-01): score 35, regime Stable. Leverage levels are sustainable, but margin calls could accelerate in a downturn.\nSector Rotation (as of 2026-10-19): score 7.0, regime Extreme Defensive Rotation. Investors remain heavily skewed toward low-beta, low-growth sectors.\n\nSynthesis:\nThe primary risk is a liquidity-driven correction if October\u2019s CPI/PPI miss expectations on the downside (e.g., headline inflation prints above 3.8%) or if energy prices spike further. The elevated concentration risk suggests that a sharp move in defensive stocks (e.g., utilities) could trigger cascading liquidations in overleveraged positions. Meanwhile, the stable margin regime provides a buffer, but the liquidity drain indicates that a sustained sell-off could exhaust dry powder quickly.",
      "heading": "6. Risk Model Readings"
+    },
+    {
+     "image": "memo-images/week-ahead-2026-10-21-3.png",
+     "alt": "Key levels card as of October 21, 2026: December cut odds of 60 percent, WTI crude at $99.02 per barrel, retail gasoline at $4.74 per gallon, the 10-year Treasury at 4.12 percent, the VIX at 18.5, and a concentration score of 65",
+     "caption": "Key levels and probabilities from the memo, October 21, 2026."
     },
     {
      "body": "1. October CPI (October 23):\nKey Thresholds: Headline CPI above 3.8% or core CPI above 3.4% would reinforce Fed hawkishness and delay rate cuts. Conversely, a print below 3.6% (headline) or 3.2% (core) could spark a rally in long-duration assets.\nWatch: Gasoline and diesel components\u2014if retail prices rise despite crude\u2019s recent decline, it could signal margin exhaustion.\n\n2. October PPI (October 22) & Refinery Margins:\nCritical Spreads: The RBOB gasoline crack spread (currently ~$33/bbl) and diesel crack spread (~$99/bbl) will determine whether refiners pass through crude costs. A sustained widening could feed into next month\u2019s CPI.\n\n3. Fed Minutes (October 24):\nFocus Areas:\nLabor Market: Any mention of \"softening\" in job market conditions could embolden dovish traders.\nInflation Expectations: Powell may highlight the Michigan Sentiment report (due October 28) as a key gauge of consumer inflation expectations.\nRate Cut Timing: Watch for references to \"additional evidence\" needed\u2014any mention of \"summer 2027\" would be bearish for rates.\n\n4. Saudi Aramco Capacity Cuts (October 21 Announcement):\nSaudi Arabia announced a voluntary production cut of 1 million bbl/d (effective November 1) to stabilize oil markets. The move could push WTI toward $105\u2013$110/bbl by year-end, with implications for:\nEnergy sector earnings (Marathon Oil, ExxonMobil).\nRefinery margins (if cuts persist, crack spreads may tighten further).\nInflation expectations (if crude stays elevated, CPI could re-accelerate).\n\n5. CoreWeave Debt Maturity (November 15):\nCoreWeave\u2019s $250M senior secured notes mature in November. While refinancing appears likely, any delay could pressure the stock and widen credit spreads in the AI infrastructure space.\n\nFinal Note: The week\u2019s biggest catalyst will be the CPI/PPI prints, but the Saudi production cuts and CoreWeave\u2019s debt dynamics could introduce volatility in energy and tech sectors. Investors should monitor refinery margins closely\u2014if they remain compressed, the near-term inflation relief may be temporary.",
@@ -620,6 +695,11 @@
      "body": "The cross-checks discipline the same point from the other side. The Axon model values the terminal year on the growth formula and tests it against an exit multiple of 18 times terminal earnings before interest, taxes, depreciation, and amortization. At today's spread, that multiple implies a perpetual growth rate of 4.4%, against the 3.0% the growth formula is permitted to use. The multiple consistent with 3.0% growth at the current discount rate is 12.9 times. Exit multiples quoted in deal commentary carry growth assumptions inside them exactly as surely as the growth formula does, and the implied figure is rarely printed next to them."
     },
     {
+     "image": "memo-images/terminal-spread-3.png",
+     "alt": "Exit multiple cross-check card: the quoted 18.0 times exit multiple implies 4.4 percent perpetual growth, while the multiple consistent with the 3.0 percent growth cap is 12.9 times",
+     "caption": "The exit multiple cross-check: at the current discount rate, 18.0 times terminal EBITDA implies 4.4 percent perpetual growth, above the 3.0 percent cap the growth formula is allowed to use."
+    },
+    {
      "body": "Ask what the spread is. Any discounted cash flow that does not disclose its terminal discount rate and its terminal growth rate side by side is asking to be trusted on the one number that matters most, and the two figures belong in the first table of the document, not in footnotes.",
      "heading": "How to Audit Any Valuation in Five Questions"
     },
@@ -654,6 +734,11 @@
      "heading": "The Update"
     },
     {
+     "image": "memo-images/axon-price-target-update-2026-10-24-1.png",
+     "alt": "Grouped bar chart comparing Axon's October memo target vintage, Bear $288.89, Base $638.14, and Bull $779.28, with the October 24, 2026 update, Bear $230.18, Base $688.19, and Bull $845.36. The memo's spot reference of $421.20 is marked as a horizontal line.",
+     "caption": "What changed in the update: Bear fell $58.71 while Base rose $50.05 and Bull rose $66.08 against the October vintage. Updated Blended is $612.98 with a Buy rating."
+    },
+    {
      "body": "The segment build did not change, and neither did the $732M terminal revenue hit from the Flock backlash. What changed is the present value of that hit. A 2036 figure is worth more today when discount rates are lower, so the same $732M now equates to $13 to $14 per share in present value, up from $8 to $9 in the October memo. As a share of the Base target, the cost rose from about 1.3% to about 2.0%. The direction of the conclusion is unchanged. The backlash is real, it is quantifiable, and it remains a low-single-digit percent of value.",
      "heading": "What Changed Since October"
     },
@@ -666,12 +751,22 @@
      "heading": "The Valuation Bridge"
     },
     {
+     "image": "memo-images/axon-price-target-update-2026-10-24-2.png",
+     "alt": "Line chart of Axon's closing price from April 23, 2026 through the October 23, 2026 close of $420.37, with the memo's Base target of $688.19 and its spot reference of $421.20 marked as horizontal lines.",
+     "caption": "Axon price action into the October 24 update, drawn against the memo's own Base target and spot reference levels."
+    },
+    {
      "body": "The per-share targets rest on normalized long-term assumptions for a mature business, well below the levels of the hypergrowth years. A company generating $29.5B in revenue with 37.8% EBITDA margins should not need to dilute at startup rates to retain talent. That said, it remains a judgment call worth sensitivity-testing. If dilution ran at the full historical pace for the entire forecast, the Base target would be around $577 instead of $688.19. For SBC-heavy names, enterprise value means nothing without the share count trajectory alongside it.",
      "heading": "Dilution Sensitivity"
     },
     {
      "body": "The key risks to the thesis start with privacy restrictions broadening from ALPR to drones, or beginning to impair renewal economics on the Evidence.com installed base. In that scenario the damage would compound significantly, and the $230.18 bear case is explicitly calibrated to it. This near-term versus long-term tension is crucial. Flock's current troubles serve as a vendor-consolidation tailwind for Axon, as municipalities switch providers. The model treats this as a near-term share gain nested within a broader, long-term ecosystem risk. If Flock resolves its privacy issues and reaccelerates, that tailwind will fade. Other key risks include Evidence.com net revenue retention dropping below 110%, or integration stumbles with the Dedrone acquisition.",
      "heading": "What Would Change Our Mind"
+    },
+    {
+     "image": "memo-images/axon-price-target-update-2026-10-24-3.png",
+     "alt": "Card summarizing the update. The $732M Flock backlash terminal revenue hit is unchanged but re-priced to $13 to $14 per share in present value, about 2.0 percent of the Base target, with 2036 revenue of $29.55B after the haircut against $30.28B without it. The card also shows the memo's Q3 2026 ARR forecast of $1,753M, range $1,708M to $1,785M, against $1,252M reported in Q3 2025.",
+     "caption": "The backlash cost at current discount rates, and the ARR forecast the memo published ahead of the November 5 report."
     },
     {
      "body": "We forecast Axon's ARR at $1,753M in Q3 2026, with a sensitivity range of $1,708M to $1,785M, ahead of the company's Q3 report on November 5. That is approximately 40% year-over-year growth against the $1,252M reported in Q3 2025. The projection comes from our alternative data models.",
@@ -925,6 +1020,11 @@
      "heading": "2. What Happened This Week"
     },
     {
+     "image": "memo-images/week-ahead-2026-10-25-1.png",
+     "alt": "Line chart of VIX daily closes from September 28 to October 23, 2026, rising from 16.68 on October 21 to 19.45 on October 23",
+     "caption": "VIX daily closes (Yahoo Finance ^VIX) through October 23, 2026, the Friday before the memo."
+    },
+    {
      "body": "Semiconductors & AI Infrastructure\nCoreWeave (CRWE) \u2013 The AI infrastructure provider\u2019s $1.2B bond offering (5.75% 2029) priced at a 200bps spread to Treasuries, widening from the prior week\u2019s 180bps as investors reassessed leverage risk. The bond\u2019s $500M revolving credit facility was also tapped, raising concerns about liquidity amid margin calls in AI-related equities. CoreWeave\u2019s server utilization metrics (reportedly down 12% MoM) suggest demand softening, though the company cited \"seasonal inventory adjustments\" in a filer. Analysts note the spread widening aligns with the broader AI hardware selloff, where NVIDIA (NVDA) and AMD (AMD) have underperformed utilities by 15%+ over the past month.\nSuper Micro Computer (SMCI) \u2013 Reported Q3 revenue growth of 12% YoY (vs. consensus 8%), but AI-related server shipments declined 5% MoM, reflecting client pullback. The company\u2019s $1.5B share repurchase program remains on track, though margin pressure from commodity costs (copper up 8% MoM) is limiting earnings upside. SMCI\u2019s cash flow conversion (65%) is below peers, raising questions about sustainability.\nASML (ASML) \u2013 The Dutch lithography giant\u2019s Q3 guidance was affirmed, but the $12B backlog grew 15% YoY, driven by semiconductor foundry capex. Analysts highlight the $500M+ order from TSMC as a tailwind, though the $2.5B fine from the U.S. for export violations may delay some Chinese business. ASML\u2019s P/E (50x) remains elevated, but the yield (0.8%) is now 10bps above its 5-year average, signaling some valuation rebalancing.\n\nEnergy & Industrials\nExxonMobil (XOM) \u2013 Reaffirmed 2026 guidance despite $2.1B Q3 profit decline (YoY), citing \"higher refining margins\" offsetting lower crude output. The company\u2019s Permian Basin production grew 5% MoM, but liquids-rich drilling activity has slowed as operators prioritize efficiency. XOM\u2019s $1.5T market cap remains the highest in the S&P 500, though the 10.5x P/E is 20% above its 5-year median.\nValero Energy (VLO) \u2013 Acquired a 40% stake in a $1.2B Texas refinery for $600M, expanding its Gulf Coast footprint. The deal comes as refining margins (cracks) have widened to $15/bbl, up from $10/bbl in September, but diesel crack volatility (now $106/bbl) may limit upside. VLO\u2019s debt-to-EBITDA (2.1x) is below peers, but shareholder returns (buybacks + dividends) now exceed 10% of market cap.\nCore Laboratories (CLB) \u2013 Down 8% on the week after reporting Q3 EPS miss (-12% vs. consensus), citing \"lower energy services spend\" in the Permian. The company\u2019s $500M credit facility was drawn upon, and margin leverage (35.7%) is now at its highest since 2022. CLB\u2019s P/E (12x) is 25% below its 5-year average, reflecting concerns about cyclicality.\n\nRegulatory & Credit Events\nSEC Proposes Rule on ESG Disclosures \u2013 The agency\u2019s final rule on climate-related financial risk (due November 1) will require public companies to disclose Scope 1-3 emissions, transition plans, and climate-related financial impacts. ExxonMobil, Chevron, and Shell have lobbied against mandatory disclosures, arguing they create \"burdensome compliance costs.\" Analysts note the rule could increase volatility for energy stocks as companies adjust disclosures.\nChina\u2019s EV Subsidy Cut \u2013 The $20B/year EV tax credit was reduced by 30%, effective October 1. BYD (BYDDY) and NIO (NIO) have delisted from U.S. exchanges, but Tesla (TSLA) remains exposed via China sales (20% of revenue). The cut may accelerate consolidation in the sector, with local players focusing on battery tech rather than subsidies.",
      "heading": "3. Major Company News"
     },
@@ -933,12 +1033,22 @@
      "heading": "4. Macro & Fed"
     },
     {
+     "image": "memo-images/week-ahead-2026-10-25-2.png",
+     "alt": "Schedule card for the week of October 26, 2026: October CPI on Tuesday, PPI and EIA crude inventories on Wednesday, NVIDIA guidance on Thursday, and retail sales on Friday, with the expected readings from the memo",
+     "caption": "The week's schedule and expectations as stated in the memo: CPI expected at 3.7 percent year over year, core at 3.5 percent, and retail sales at plus 0.6 percent month over month."
+    },
+    {
      "body": "Sector Leadership & Flow\nDefensive Sectors Dominate: Utilities (+2.1% WoW), healthcare (+1.5%), and consumer staples (+1.2%) have led for five consecutive weeks, while technology (-2.3%) and financials (-1.9%) trail. The S&P 500 defensive factor (0.85) is at its highest since 2022, reflecting margin pressure in growth stocks.\nAI Hardware Under Pressure: NVIDIA (-4.2%), AMD (-5.5%), and Super Micro (-6.8%) have underperformed the S&P 500 by 15%+ over the past month. Short interest in NVDA (12%) is 20bps above its 5-year average, suggesting some hedge-fund hedging.\nEnergy Sector Rotation: Oil & gas (+1.8%) has outperformed refining (+0.5%), but integrated energy (Exxon, Chevron) is lagging due to valuation concerns. Short interest in XOM (5%) is 10bps below its 5-year average, indicating limited hedging.\nFlow Data\nInstitutional buyers have reduced tech exposure by 12% MoM, shifting to defensives.\nRetail traders remain overweight small caps (+20% vs. institutional -15%), a historical outperformance signal.\nETF flows: SPDR S&P 500 ETF (SPY) saw $1.2B net inflows, while Invesco QQQ (QQQ) saw $400M outflows.\n\nMargin & Leverage\nBrokerage margin debt rose $1.2B MoM (to $1.1T), but margin leverage (35.7%) remains stable, with no extreme positioning.\nAI-related margin calls have accelerated, with NVDA\u2019s margin debt up 8% MoM, though cash collateral remains strong.\nShort interest in energy is flat YoY, but refining stocks (Valero, Marathon) have seen 5% MoM increases.",
      "heading": "5. Positioning & Rotation"
     },
     {
      "body": "The quantitative models paint a mixed but cautiously defensive picture, with sector rotation extremes and structural soundness in concentration offset by liquidity neutrality.\n\nCorrection Risk, N/A, DEFENSIVE, No imminent correction signal, but sector rotation extremes suggest caution.\nLiquidity Drain, N/A, LIQUIDITY NEUTRAL (CHOP), No major liquidity crunch, but margin pressure in tech could test stability.\nDynamic Concentration, 46.2, STRUCTURALLY SOUND, Top 10 holdings account for 40% of portfolio risk, but no extreme skew.\nMargin Leverage, 35.7, STABLE, Margin debt growth is moderate, but AI sector exposure is rising.\nSector Rotation, 0.5, EXTREME DEFENSIVE, Utilities (+2.1%), healthcare (+1.5%) dominate; tech (-2.3%) is lagging.\n\nSynthesis\nNo imminent systemic risk, but sector rotation is at extreme levels, suggesting limited upside in cyclicals.\nLiquidity remains neutral, but margin pressure in AI hardware could trigger selective pullbacks.\nCorrection risk is low, but the Fed\u2019s patience and sticky inflation may extend volatility.\nOverall risk assessment: DEFENSIVE WITH SELECTIVE OPPORTUNITIES IN ENERGY & UTILITIES.",
      "heading": "6. Risk Model Readings"
+    },
+    {
+     "image": "memo-images/week-ahead-2026-10-25-3.png",
+     "alt": "Key levels card as of October 25, 2026: terminal rate priced at 5.25 to 5.50 percent, first cut expected in March 2027, WTI crude at $103.27 per barrel, Brent at $116.72, and a gasoline retail to futures gap of $0.52 per gallon",
+     "caption": "Key levels and probabilities from the memo, October 25, 2026."
     },
     {
      "body": "1. October CPI (Tuesday, 10/26)\nGasoline component will determine whether headline inflation prints +0.4% MoM (hotter than expected).\nCore services ex-shelter (3.7%) is the key inflation gauge\u2014if it accelerates, the Fed\u2019s patience will be tested.\nMarket reaction: If CPI prints above 3.7% YoY, utilities and healthcare may sell off, while energy and commodities could rally.\n\n2. Fed\u2019s Powell Speech (IMF, Tuesday 10/26)\nWill he signal a December rate cut? The OIS market has shifted to 70% probability, but Powell may reaffirm \"data dependence.\"\nWatch for comments on labor market\u2014if he emphasizes \"resilient\" hiring, it could delay rate cuts.\n\n3. October PPI (Wednesday 10/27) & EIA Crude Inventories\nPPI refined petroleum (due mid-November) will be hotter than expected given recent crack widening.\nEIA inventories: If draws exceed 5M barrels, it could support crude prices, but OPEC+ compliance remains a wild card.\n\n4. NVIDIA\u2019s Q4 Guidance (Thursday 10/28)\nAnalysts expect revenue growth of 20% YoY, but margin pressure from AI hardware demand slowdown is a risk.\nIf guidance misses, AI-related stocks (AMD, Super Micro) could sell off further.\n\n5. China EV Subsidy Impact (Ongoing)\nBYD and NIO\u2019s delisting may acceler",
@@ -958,8 +1068,18 @@
      "heading": "The situation"
     },
     {
+     "image": "memo-images/geopolitics-hormuz-2026-10-26-1.png",
+     "alt": "Stat card titled Hormuz in Numbers listing 28 vessels attacked in the strait in October, at least 11 supertankers damaged, Gulf exports above 24 million barrels a day against a prewar level of 23.3 million, Hormuz flows near 14 million barrels a day at about 82 percent of prewar, and 40 percent of non-Iranian crude bypassing the strait in September against 17 percent before the war",
+     "caption": "The Strait of Hormuz is contested, not closed. Attacks hit 28 vessels in October, yet Gulf exports ran above prewar levels and flows through the strait held near 82 percent of prewar."
+    },
+    {
      "body": "Brent crude traded near $114.50 on Monday morning, down about 2 percent from a Friday close above $116 and below a Thursday print near $120. West Texas Intermediate traded near $101, down from $103.27 on Friday. The direction over the past month is unambiguous: Brent is up from $97.45 a month ago and roughly double its end of 2025 level near $60, while WTI is up from $91.38 a month ago. The Monday pullback came on two pieces of news: Qatari mediators were reported in Tehran on Sunday working on de-escalation, and President Trump said on Sunday that there would be no strikes that day, while also calling it decision time on a deal with Iran. That mix, mediation alongside escalation threats, is why the price path has been climbs interrupted by moderate declines rather than a straight spike.\n\nThree forces hold prices up. The first is physical risk: attacks have spread beyond Hormuz into the Gulf of Oman and now target loadings and ship-to-ship transfers, while Houthi attacks continue against Saudi oil facilities at Yanbu and Shaybah and against Saudi airports, and the United States has ordered diplomats and their families out of missions in the Kingdom. The second is refining strain: one report puts regional refining capacity down 3 million barrels a day, which tightens product markets even where crude still flows, and United States pump prices show it, with gasoline at $4.29 a gallon against $2.98 in February and diesel at $6.35 against $3.75, a diesel level corroborated by the retail diesel series near $6.28. The third is thin buffers: global inventories are thin, so any renewed fighting leaves little margin for error.\n\nThree forces push the other way. Alternative pipelines now carry a much larger share of Gulf crude. The United States is providing political risk insurance for tankers and has said the Navy will escort tankers if needed. And offset barrels are coming from Venezuela following the collapse of the Maduro regime and from a Russian diesel deal announced October 9. Al Jazeera also reports the United Arab Emirates has quit OPEC; if confirmed, that removes a Gulf producer from quota coordination and could loosen supply discipline further. Our view is that $114 Brent is a risk premium on a contested strait, not a shortage price. A ceasefire or a credible mediation outcome takes the premium off quickly. A renewed attack wave, a Saudi facility outage, or a Hormuz transit halt puts $120 back in play and beyond.",
      "heading": "Energy prices"
+    },
+    {
+     "image": "memo-images/geopolitics-hormuz-2026-10-26-2.png",
+     "alt": "Line chart of Brent and WTI daily closing prices from September 1 to October 26, 2026, with the October 23 closes marked at 116.72 dollars for Brent and 103.27 dollars for WTI",
+     "caption": "Brent and WTI daily closes through October 26. Brent closed Friday, October 23 at 116.72 dollars and WTI at 103.27 dollars, before Monday's pullback on mediation reports."
     },
     {
      "body": "Rates are being pulled in two directions, and the bond market is telling us which force is winning at the moment. The 10-year Treasury yield traded near 4.97 percent on Monday, with the 2-year near 4.67 percent and the 30-year near 5.30 percent. That 10-year level sits below its October 7 high of 5.37 percent, a 24-year high. The recent direction is down, driven by safe-haven demand as a tech-led selloff and French fiscal worries push money into Treasuries. That flow is running against the inflation logic of $114 oil, which argues for higher yields. Central banks are reluctant to respond directly to an energy price shock, since higher interest rates cannot produce more oil, and the question for the Federal Reserve is whether higher energy prices stay confined to headline inflation or begin influencing broader inflation dynamics. Markets price about a 90 percent chance the Fed leaves rates unchanged at its Wednesday decision, with one more increase in December still seen as possible by some forecasters before cuts resume late in 2027. Our read is that oil sets a floor under inflation expectations and complicates any near-term easing, while safe-haven flows cap how far yields rise while risk appetite stays weak. The December meeting is the hinge: a hot inflation print or a renewed oil spike argues for holding higher for longer, while a ceasefire removes the inflation overhang and lets the safe-haven rally run.",
@@ -968,6 +1088,11 @@
     {
      "body": "The economic cost of $114 oil lands first on consumers and importers, and last on producers. American drivers pay $4.29 a gallon for gasoline and $6.35 for diesel, against $2.98 and $3.75 in February. That is a direct tax on driving, freight, and heating that shows up in household budgets within weeks. Asia carries the largest exposure, since almost the entire Asia Pacific region depends on imported oil and much of it comes from the Middle East; the Asian Development Bank has already cut its regional growth forecast for this year from 5.1 percent to 4.7 percent. Importers such as India face a larger import bill, pressure on the rupee, and a harder inflation outlook, which limits room for monetary easing. The offset sits with producers: energy was the leading sector on Friday, up 2.60 percent while the broader market fell, and our own rotation data shows energy leading on momentum. Higher prices are a windfall for American producers and refiners even as they squeeze consumers, which is why the politics of this shock are divided. Shipping is the quieter channel. War-risk insurance, longer routes, and a tightening market for very large crude carriers raise freight costs that ultimately flow through to consumers at the pump and on shelves. With inventories thin, there is little cushion if any leg of this system breaks again.",
      "heading": "The economy"
+    },
+    {
+     "image": "memo-images/geopolitics-hormuz-2026-10-26-3.png",
+     "alt": "Stat card titled What 114 Dollar Oil Costs listing US gasoline at 4.29 dollars a gallon against 2.98 in February, diesel at 6.35 against 3.75, regional refining capacity down 3 million barrels a day, the energy sector up 2.60 percent on Friday, and the Asian Development Bank cutting its Asia growth forecast from 5.1 percent to 4.7 percent",
+     "caption": "The cost of the oil shock lands at the pump first. Gasoline is up 1.31 dollars a gallon since February and diesel is up 2.60 dollars, while forecasters trim Asian growth."
     },
     {
      "body": "Hormuz transit counts and any attack on a supertanker or Saudi facility, since those are the events that reprice risk fastest. The mediation track, with Qatari mediators reported in Tehran and the United States weighing a deal against escalation. Whether the reported United Arab Emirates departure from OPEC translates into higher Emirati output or simply removes a voice from coordination. Offset barrels from Venezuela and Russia and whether they arrive at scale. Inventory draws and product prices, which tell us whether the strain is crude supply or refining capacity. And the Federal Reserve decision on Wednesday and the December meeting after it, since those set how much of this oil shock the economy has to absorb through rates. A durable de-escalation takes much of the war premium off. A facility outage or a Hormuz halt puts $120 back in play.",
@@ -992,12 +1117,27 @@
      "heading": "The situation"
     },
     {
+     "image": "memo-images/geopolitics-france-unrest-2026-10-26-1.png",
+     "alt": "Stat card titled The Unrest in Numbers listing 550,000 demonstrators on October 17 by the Interior Ministry count and 800,000 by the organizers count, 1,500 businesses damaged, more than 2,000 arrested, about 2,500 in custody, 149 detained pending trial, and a government pledge of 3,000 teachers for 500 schools plus a 1.2 billion euro education budget increase",
+     "caption": "The scale of the French unrest on October 17, and the education concessions the Lecornu government offered in response."
+    },
+    {
      "body": "The market prices French political risk in sovereign debt first. Investors have been selling French debt, driving borrowing costs to their highest levels in more than two decades according to Reuters. The euro, by contrast, firmed slightly on Monday to 1.122 against the dollar, helped by relief that Moody's spared France a downgrade despite the unrest. That split tells us how the market reads the moment: no imminent French credit event, but a rising premium for holding French paper while the streets and the deficit both demand attention. Our own risk page still shows an August reading near 85 basis points for the 10-year French spread over German bonds, while market reporting puts the October level above 150 basis points, a level we treat as reported rather than verified since we have not pulled a first-party quote. The direction is what matters for positioning: French political risk now trades as a fiscal story, not just a street story.",
      "heading": "Markets"
     },
     {
+     "image": "memo-images/geopolitics-france-unrest-2026-10-26-2.png",
+     "alt": "Line chart of CAC 40 index daily closes from September 1 to October 26, 2026, falling from about 8,300 to the 7,800 area, with the October 23 close marked at 7,783 and the October 26 close at 7,847",
+     "caption": "The CAC 40 through the unrest. The index slid through September and October as protests widened, then steadied on Monday, October 26 after Moody's spared France a downgrade."
+    },
+    {
      "body": "French borrowing costs are the transmission channel. A government trying to cut its deficit from an estimated 5.4 percent of GDP in 2026 to 5.0 percent in 2027 must now do so while high energy prices and higher borrowing costs constrain its budget, and while protesters demand more spending on schools, wages, and services. That tension is why the unrest matters for rates beyond France: a French government that cannot consolidate adds supply to a bond market already charging more for French paper, and it narrows the room for European fiscal repair. Moody's decision to spare France a downgrade gave the euro relief, but it does not resolve the deficit path. Our read is that French rates stay elevated while the unrest continues, because the market charges for both the fiscal arithmetic and the political capacity to fix it.",
      "heading": "Rates"
+    },
+    {
+     "image": "memo-images/geopolitics-france-unrest-2026-10-26-3.png",
+     "alt": "Stat card titled The Fiscal Squeeze listing the French budget deficit at an estimated 5.4 percent of GDP in 2026 against a 5.0 percent target for 2027, the 10 year spread over German bonds near 85 basis points in August and reported above 150 basis points in October, the euro at 1.122, no Moody's downgrade, and a presidential election in May 2027",
+     "caption": "France must cut a 5.4 percent of GDP deficit while the market charges more for its debt. The spread over Bunds has roughly doubled since August on market reporting."
     },
     {
      "body": "The grievance at the center of the protests is purchasing power. Protesters blame President Emmanuel Macron for the rising cost of living and record-high oil prices, and the movement's demands run from smaller classes and more teachers to higher wages and pensions, lower prices, and protected public services. Prime Minister Lecornu described an atmosphere of perma-crisis, citing wars, inflation, and purchasing power, and that description fits the economics: households squeezed by prices and energy costs, a government squeezed by its deficit, and an election in May 2027 that turns every concession into a campaign issue. Macron's 10-year tenure ends in May, and the far-right National Rally leads in the polls ahead of the vote, with its leader Jordan Bardella warning of a day of chaos. Our read is that the economic cost is not the damaged storefronts, real as those are. It is a government with less room to consolidate, a consumer with less room to spend, and a political calendar that rewards promises over restraint.",
@@ -1026,12 +1166,27 @@
      "heading": "The situation"
     },
     {
+     "image": "memo-images/geopolitics-brazil-election-2026-10-26-1.png",
+     "alt": "Bar chart of the Brazilian presidential runoff result of October 25, 2026 showing Lula da Silva at 51.76 percent of the vote and Flavio Bolsonaro at 48.21 percent, with notes on the margin of more than 4.4 million votes, abstention falling to 19 percent from 21.08 percent, and the Minas Gerais swing of roughly 690,000 votes",
+     "caption": "The runoff result. Lula overturned a first round deficit and a polling gap on higher turnout, winning by more than 4.4 million votes."
+    },
+    {
      "body": "Markets had priced a Bolsonaro victory, and Monday repriced it. Banco Santander shares fell 5.3 percent to 10.90 euros in early European trading, a direct hit since Brazil is the bank's second-largest market, contributing 15 percent of 2025 earnings with 3.22 billion euros in pretax profit, and its Brazilian business is exposed to consumer credit and domestic interest rates. Currency futures and exchange-traded funds tracking Brazilian stocks also fell early on Monday. The market logic is straightforward: a Bolsonaro win had been viewed as the more market-friendly outcome on promises of fiscal consolidation, privatization, and pro-business reforms, while a Lula win preserves the incumbent government's spending and intervention stance. Our read is that the selloff is a repricing of the fiscal path, not a verdict on Brazil's economy, and its depth from here depends on Lula's cabinet and first fiscal signals rather than the vote count itself.",
      "heading": "Markets"
     },
     {
+     "image": "memo-images/geopolitics-brazil-election-2026-10-26-2.png",
+     "alt": "Brazil runoff repricing card: first-round lead, runoff margin, and the Santander decline",
+     "caption": "Priced for Bolsonaro, repriced Monday. Santander fell 5.3 percent in early European trading after the runoff result."
+    },
+    {
      "body": "Brazilian rates are where the election becomes a portfolio decision. Santander's exposure shows the channel: a bank earning 15 percent of its profit in Brazil lives or dies on local consumer credit and domestic interest rates, both of which move with the fiscal outlook. A government expected to consolidate supports lower rate expectations; a government expected to spend supports higher ones. We have no single clean rate print to anchor this memo, so we state the mechanism rather than a number: Lula's fiscal choices in his first months set the rate path that Brazilian assets trade on, and the market's Monday move was the opening bid in that repricing. Watch the fiscal signals, not the vote shares, for the rate call.",
      "heading": "Rates"
+    },
+    {
+     "image": "memo-images/geopolitics-brazil-election-2026-10-26-3.png",
+     "alt": "Stat card titled Santander: The Exposure listing Santander shares down 5.3 percent to 10.90 euros on Monday, Brazil as the bank's second largest market contributing 15 percent of 2025 earnings and 3.22 billion euros of pretax profit, with exposure running through consumer credit and domestic interest rates",
+     "caption": "Santander shows how the repricing travels. Brazil is 15 percent of group earnings, so the fiscal path Lula sets now prices the bank."
     },
     {
      "body": "Affordability and the relationship with the United States were the prominent issues in the campaign, and both now shape the economic path. Lula closed the campaign with concrete measures aimed at household budgets: a higher revenue threshold for individual microentrepreneurs, proposals to renegotiate consumer debt, and advocacy for ending online betting, whose expansion has contributed to household indebtedness. On the external side, Lula accused the American government of intervening to help his opponent, and his victory denies the United States a new partner in the Western Hemisphere at a moment when Washington has shifted resources to Caribbean boat strikes, military intervention in Venezuela, and a Shield of the Americas security umbrella. It also interrupts a string of right-wing victories across Latin America in Bolivia, Chile, Costa Rica, Colombia, Ecuador, Honduras, and Peru. For China, Brazil's main economic partner, the result preserves a counterweight to the American effort to sideline Beijing from Latin America, a doctrine Lula answered by declaring that Brazil is no one's backyard. Our read is that the economic stakes are fiscal credibility at home and alignment abroad, and Lula's fourth term will be judged on both.",
@@ -1121,6 +1276,11 @@
      "heading": "The situation"
     },
     {
+     "image": "memo-images/geopolitics-serbia-election-2026-10-26-1.png",
+     "alt": "Bar chart of seats in Serbia's 250 seat National Assembly from the October 25, 2026 snap election showing the Student List with 139 seats, the Vucic alliance with 97, and minority parties with 14, against a majority line of 126, with vote shares of 52.7 percent and 39.2 percent and turnout of about 68.8 percent",
+     "caption": "The near final seat count. The Student List holds a governing majority on its own, and the Vucic alliance finished below its election night projection."
+    },
+    {
      "body": "We found no clean Serbian asset print in major October 26 reporting, so we claim none. No dinar, Belgrade equity, or Serbian sovereign bond figure from a major wire on October 26 anchors this memo, and we do not substitute a figure from a low authority site for one. What major reporting does show is attention rather than a price. Reuters grouped Serbia with Brazil in its October 26 morning markets note as a bad start to the week for right leaning incumbents, and FXStreet wrote on October 26 that political developments in Serbia could attract considerable market attention. The broader Monday backdrop was calmer than the Serbian result alone might suggest. Brent crude traded near 114.51 dollars on October 26 according to Region Alert, against a Friday close of 116.72 dollars, and West Texas Intermediate traded near 101.04 dollars, against 103.27 dollars on Friday. Our read is that the market transmission here runs through reform credibility and foreign investment rather than through a single trading session. A government that delivers independent courts, transparent procurement, and credible fiscal oversight can lower the risk premium attached to Serbian assets over time. A government that stalls will leave that premium in place, and the absence of a sharp Monday market move is not evidence that the premium has gone.",
      "heading": "Markets"
     },
@@ -1129,8 +1289,18 @@
      "heading": "Rates"
     },
     {
+     "image": "memo-images/geopolitics-serbia-election-2026-10-26-2.png",
+     "alt": "Stat card titled Serbia's Rate Anchor listing the central bank benchmark rate at 5.75 percent held since 2024, inflation at 4.1 percent in September against 2.2 percent in August, the US 10 year Treasury near 4.965 percent, Brent at 114.51 dollars, and WTI at 101.04 dollars",
+     "caption": "Serbia's rate anchor. A 5.75 percent benchmark with inflation nearly doubling in a month leaves the new government little room to promise cheaper money."
+    },
+    {
      "body": "The economic stakes are growth, energy, and the European Union, in that order of immediacy. The International Monetary Fund has forecast Serbian growth at 3 percent in 2026 and 4 percent in 2027, according to the Reuters explainer published on October 26. The Student List platform shifts the growth model away from state backed infrastructure projects and cheap labour toward domestic market security and labour rights, with a campaign against retail monopolies to lower food prices, a tax overhaul that raises levies on wealthier citizens and cuts them for lower income groups, affordable housing for young couples, teachers, and healthcare staff, free school textbooks, and cheaper subsidised medication. Energy is the binding constraint. Russia's Gazprom supplies about 2.2 billion cubic meters of gas a year to Serbia at below market pricing, according to Reuters, and the Student List has described that reliance as an economic dependency rather than a geopolitical alignment. Serbia's only oil refinery is operated by NIS, and the new government would rely on United States sanctions waivers to maintain crude imports while it waits for the sale of Russia's stake in NIS to Hungary's MOL, according to the same Reuters explainer. The Student List has also said it has no plans to align with the European Union and impose sanctions on Moscow over its war in Ukraine, a position that limits how far the European welcome can go. On Kosovo, which declared independence from Belgrade in 2008, the Student List holds that Kosovo remains an integral part of Serbia and seeks reintegration through peaceful means, diplomacy, and dialogue, a position Reuters noted is at odds with European Union membership, which requires Belgrade to normalise relations with Pristina. Our read is that the new government inherits three tensions it cannot resolve at once. It wants European Union membership, it needs Russian gas and a NIS sale to keep fuel flowing, and it holds a Kosovo position that Brussels cannot accept as it stands. How it sequences those three will set Serbia's growth path.",
      "heading": "The economy"
+    },
+    {
+     "image": "memo-images/geopolitics-serbia-election-2026-10-26-3.png",
+     "alt": "Stat card titled The Economic Stakes listing IMF growth forecasts of 3 percent for 2026 and 4 percent for 2027, Gazprom supplying about 2.2 billion cubic meters of gas a year at below market pricing, NIS operating Serbia's only oil refinery, Vucic in power since 2014, and 16 people killed in the November 2024 Novi Sad collapse that began the protests",
+     "caption": "What the new government inherits: an IMF growth path, a below market Russian gas contract, a Russian linked refinery, and the grievance that started the movement."
     },
     {
      "body": "Who leads the new government, since the Student List leaders were still unnamed in Reuters reporting on October 26, and how quickly a cabinet forms. Whether the NIS stake sale to Hungary's MOL proceeds and whether United States sanctions waivers hold in the meantime. Whether European Union accession talks reopen in substance, with rule of law, media freedom, and anti corruption reforms verified, rather than in congratulations alone. How the new government handles Kosovo, where its stated position and the European Union normalisation requirement point in different directions. Whether the anti corruption program delivers verifiable changes, including the independent police unit, the ban on party loyalists in state companies, and the asset origin law described by Reuters, or whether it remains a campaign promise. Whether food prices, housing, and the tax overhaul move from platform to law, and whether growth holds near the International Monetary Fund forecast of 3 percent in 2026 and 4 percent in 2027. And the calendar around this result. Israel votes on October 27 on Prime Minister Benjamin Netanyahu's coalition, France faces planned demonstrations on October 31 that its interior minister has said he expects to be complicated, and Americans vote on November 3 on control of Congress. Serbia does not forecast any of those contests, but it shows that a protest movement can win a parliament outright when it stays organised for two years.",
@@ -1240,12 +1410,27 @@
      "heading": "The situation"
     },
     {
+     "image": "memo-images/geopolitics-israel-election-2026-10-28-1.png",
+     "alt": "Bar chart of projected seats in Israel's 120 seat Knesset after the October 27, 2026 election showing the Netanyahu bloc at 54 seats, the Eisenkot opposition at 47, and Arab parties at 19, against a majority line of 61, with turnout of 77.7 percent and Likud the largest single party at 26 seats",
+     "caption": "Projected Knesset seats with about 71 percent counted. No bloc reaches 61, so Netanyahu stays on as caretaker while coalition talks run."
+    },
+    {
      "body": "Israeli markets fell on October 28 as the count pointed to a fragile government rather than a change of government. The shekel weakened about 2 percent to 3.1185 to the dollar according to Reuters, on track for its worst day in 16 months, reversing gains made on October 27 when high turnout had raised the prospect of a change of government. Tel Aviv's benchmark TA125 index fell about 3 percent, with the market closed on October 27 for the election. Israel's longer dated international debt also came under slight pressure, with the 2054 bond slipping nearly 0.3 cents to 89.09 cents on the dollar according to Tradeweb data reported by Reuters. William Jackson, chief emerging markets economist at Capital Economics, told Reuters that Israel's financial markets reacted negatively to the result and that the next government will probably be fragile. The oil market moved the other way on October 28. Brent crude traded at 115 dollars a barrel as of 1100 GMT, up 1 percent according to Reuters, while December Brent futures rose 0.8 percent to 114.84 dollars and West Texas Intermediate December futures rose more than 1 percent to 101.13 dollars according to market reporting on October 28. Our read is that the two moves are linked through the Iran question. A caretaker Netanyahu government that speaks openly of renewed joint action against Iran keeps a war premium in oil, while the shekel and Tel Aviv equities price the domestic cost of a parliament that cannot produce a stable government.",
      "heading": "Markets"
     },
     {
+     "image": "memo-images/geopolitics-israel-election-2026-10-28-2.png",
+     "alt": "Stat card titled Market Reaction, Oct 28 listing the shekel at 3.1185 to the dollar down about 2 percent in its worst day in 16 months, the TA-125 index down about 3 percent, the Israel 2054 bond at 89.09 cents, Brent crude at 115 dollars, and WTI December futures at 101.13 dollars",
+     "caption": "Israeli markets fell on the fragile result while oil rose. The shekel had its worst day in 16 months and the TA-125 dropped about 3 percent."
+    },
+    {
      "body": "Israeli borrowing costs rose modestly on October 28. Yields on the benchmark domestic 10 year government bond rose nearly 5 basis points to 4.13 percent according to Reuters, a small move that fits a market pricing political uncertainty rather than a fiscal crisis. The global rate backdrop on October 28 was tight. The United States 10 year Treasury yield traded near 5.01 percent early on October 28 according to market reporting, with the Federal Reserve decision due at 2 p.m. Eastern the same day and a hold at 3.75 to 4.00 percent widely expected. Our read is that Israeli rates now carry two premiums at once. One is domestic, a fragile coalition outlook that makes fiscal consolidation harder. The other is imported, a United States yield above 5 percent and oil above 100 dollars that argue against easier money anywhere. Neither premium is large enough on its own to force a repricing, but together they leave little room for the next government to borrow its way out of either the war bill or the political stalemate.",
      "heading": "Rates"
+    },
+    {
+     "image": "memo-images/geopolitics-israel-election-2026-10-28-3.png",
+     "alt": "Stat card titled Two Premiums in Rates listing Israel's 10 year government yield at 4.13 percent after rising nearly 5 basis points, the US 10 year Treasury near 5.01 percent, the Federal Reserve decision due October 28 with a hold at 3.75 to 4.00 percent widely expected, and Brent crude above 100 dollars",
+     "caption": "Israeli yields carry two premiums at once: a domestic one for a fragile coalition outlook, and an imported one from US yields above 5 percent and oil above 100 dollars."
     },
     {
      "body": "The economic stakes run through war spending, the technology sector, and the credibility of the next government. Reuters noted on October 28 that Israeli markets have risen strongly despite three years of war and political turmoil, supported by the country's large technology sector, the artificial intelligence boom, and elevated defence spending. That resilience is the reason a 3 percent equity fall and a 2 percent currency fall read as a political repricing rather than an economic shock. The risk to growth sits in duration. A caretaker government can keep the war effort funded but struggles to pass budgets, reforms, or a credible fiscal path, and a fresh election in 2027 would extend that paralysis. The read through to the wider region runs through oil. Brent near 115 dollars is a tax on every oil importing economy and a windfall for producers, and it keeps inflation pressure alive into the Federal Reserve decision on October 28 and the December meeting after it. Our read is that Israel's economy can absorb a hung parliament, as it has absorbed three years of war, but it cannot absorb a hung parliament plus a renewed Iran campaign without a market cost, and the October 28 moves in the shekel, equities, and bonds are an early measure of that cost.",
@@ -1278,12 +1463,27 @@
      "heading": "Markets"
     },
     {
+     "image": "memo-images/fomc-decision-2026-10-28-1.png",
+     "alt": "FOMC decision card for October 28, 2026: target range held at 3.75 to 4.00 percent in a 10 to 2 vote, with December odds of 21.6 percent for a hold and 78.4 percent for one hike",
+     "caption": "The October 28 decision at a glance: a hold at 3.75 to 4.00 percent, two dissents for a hike, and futures leaning to one more hike in December."
+    },
+    {
      "body": "The 2-year yield fell 3.8 basis points to 4.70 percent, while the 10-year rose 5 basis points to 5.042 percent and the 30-year rose 6 basis points to 5.367 percent. The curve steepened after the press conference began, a twist steepening leaning bear: the front end rallied on the hold while the long end priced the inflation risk the statement kept emphasizing.",
      "heading": "Rates"
     },
     {
+     "image": "memo-images/fomc-decision-2026-10-28-2.png",
+     "alt": "Yield curve before and after the October 28, 2026 FOMC decision: the 2-year fell 3.8 basis points to 4.70 percent, the 10-year rose 5 basis points to 5.042 percent, and the 30-year rose 6 basis points to 5.367 percent",
+     "caption": "Twist steepening after the decision: the front end rallied on the hold while the long end priced the inflation risk."
+    },
+    {
      "body": "September CPI ran 3.7 percent year over year, up from 2.4 percent in February before the Iran war, with 0.3 percent monthly gains in both August and September. That path, if sustained, sits well above the 2 percent target, which is why the statement kept the elevated-inflation language even while upgrading growth. We see the September hike, the first since July 2023, plus this hold, as a Committee tightening slowly and waiting on data rather than committing to a path.",
      "heading": "The economy"
+    },
+    {
+     "image": "memo-images/fomc-decision-2026-10-28-3.png",
+     "alt": "Bar chart of CPI inflation: 2.4 percent year over year in February 2026 and 3.7 percent in September 2026, against the 2.0 percent Fed target",
+     "caption": "CPI rose from 2.4 percent in February to 3.7 percent in September, with monthly gains of 0.3 percent in both August and September."
     },
     {
      "body": "The December 8-9 meeting, which brings new economic projections; whether the two dissents grow into a bloc if inflation prints stay near 0.3 percent monthly; and the 10-year near 5 percent, where further rises tighten financial conditions without another vote.",
@@ -1420,8 +1620,18 @@
      "heading": "The situation"
     },
     {
+     "image": "memo-images/geopolitics-hormuz-attacks-2026-10-30-1.png",
+     "alt": "Stat card titled The Oct 29 Attacks listing UKMTO warning 187-26 for a hull explosive attack at 2212 UTC on October 29 about 25 nautical miles northeast of Khasab with two devices attached, warning 186-26 for a projectile strike at 1600 UTC, the 35th confirmed attack in a month per Tradewinds, the vessel identified by a single source as the Louise 1 at 159,092 deadweight tons, crews safe, no environmental impact, and CENTCOM calling the mine claims false",
+     "caption": "The verified attacks of October 29. A new hull explosive method on the protected route near Oman, confirmed by UKMTO, sits apart from the disputed mine claims."
+    },
+    {
      "body": "Brent crude for December delivery rose 1.20 dollars, or 1.04 percent, to $116.08 a barrel at 0323 GMT on October 30, according to Reuters, while the more actively traded January contract rose 1.39 dollars to $112.19 and West Texas Intermediate rose 1.37 dollars, or 1.34 percent, to $103.37. The Wall Street Journal reported December Brent at $116.53, up 1.4 percent, and December West Texas Intermediate at $103.34, up 1.3 percent, in its Friday edition. The two reports differ slightly because they were taken at different times in the morning, and we report both rather than blending them into one print. Thursday had closed lower, with Brent settling down 44 cents at $114.88 and West Texas Intermediate down 78 cents at $102, as hopes for renewed diplomacy eased supply worry. Friday reversed that move. For October as a whole, Brent is on course for a gain near 11 percent and West Texas Intermediate near 14 percent, a fourth consecutive monthly gain for both benchmarks, according to Reuters. The December Brent contract expires on Friday, October 30, so the headline Brent price from Monday will refer to the January contract, which trades about 4 dollars lower, and readers should not mistake that contract roll for a price fall. The physical flow story cuts against the price story. The Wall Street Journal reported that Gulf oil exports averaged 15.7 million barrels a day in the week through October 26, at times above prewar levels, even as shipping grows more dangerous and expensive, with higher insurance and freight costs adding to the cost of moving crude. Our read is that the market is paying more for the same barrels rather than losing the barrels, which is why the price impact stays contained near $116 instead of revisiting the near $120 print seen earlier in October. That containment lasts only while tankers keep moving, and a hull attack that disables a vessel in the transit lane tests that condition directly. Beyond Hormuz, Yemen Houthi militants claimed on October 29 that they had attacked several sites in Saudi Arabia, including the Ras Tanura and Rabigh refineries and a Saudi Aramco production facility at Abqaiq. The Wall Street Journal reported that those claims could not be independently verified and that Saudi Arabia had not immediately responded. The Saudi Press Agency said Saudi air defenses intercepted two ballistic missiles launched toward Riyadh on Thursday. We flag the Houthi facility claims as unverified, and we do not treat them as confirmed damage.",
      "heading": "Markets"
+    },
+    {
+     "image": "memo-images/geopolitics-hormuz-attacks-2026-10-30-2.png",
+     "alt": "Line chart of Brent and WTI daily closing prices from September 1 to October 30, 2026, with the October 29 settlements marked at 114.88 dollars for Brent and 102.00 dollars for WTI, and a note that the December Brent contract expired on October 30 and the front month rolls to January",
+     "caption": "Brent and WTI daily closes through October 30. Thursday settled lower on diplomacy hopes before Friday's attack headlines reversed the move, and readers should not mistake the Brent contract roll for a price fall."
     },
     {
      "body": "Rates moved the other way on Friday, and the driver was not Hormuz. The yield on the benchmark 10 year Treasury note fell to about 4.89 percent in Asian trade on October 30, a seven week low according to Tradeweb data reported by Dow Jones Newswires, after a selloff in technology and artificial intelligence shares pushed investors toward government bonds. Reuters reported a 10 year yield of 4.91 percent in Tokyo trade, down about 37 basis points through October, the largest one month drop since December 2023. The Federal Reserve left its benchmark rate unchanged on October 28, and markets still price a strong chance of a December increase, with the CME FedWatch Tool putting the probability near 75 percent according to TradingView. Our read is that bonds are caught between two forces, safe haven demand from the equity selloff pulling yields down, and oil driven inflation pressure pushing the other way. As long as the equity selloff dominates, yields can fall while oil rises, but a larger oil spike would test that pattern by forcing the inflation question back to the front.",
@@ -1430,6 +1640,11 @@
     {
      "body": "The growth and inflation data released around this episode point in opposite directions, which is why the policy path stays uncertain. The Commerce Department reported on October 29 that the Personal Consumption Expenditures price index rose 3.6 percent in the 12 months through September, and data reported on October 30 showed the index up 0.5 percent in September alone, its largest monthly gain since March. Growth looked stronger, with the economy expanding at a 3.4 percent annualized rate in the third quarter according to data reported on October 30. Our read is that an economy growing near 3.4 percent can absorb higher energy costs for a time, but a 3.6 percent annual inflation rate leaves the Federal Reserve little room to ease if oil holds above $116. The risk to households runs through fuel and transport costs first, and through the Fed reaction second, and both channels stay open while the Hormuz campaign continues.",
      "heading": "The economy"
+    },
+    {
+     "image": "memo-images/geopolitics-hormuz-attacks-2026-10-30-3.png",
+     "alt": "Stat card titled Rates and Data listing the US 10 year Treasury near 4.89 percent in Asian trade and 4.91 percent in Tokyo trade, down about 37 basis points through October in its biggest monthly drop since December 2023, CME FedWatch December hike odds near 75 percent, the Fed holding on October 28, PCE inflation at 3.6 percent over 12 months and 0.5 percent in September, and third quarter GDP growth of 3.4 percent annualized",
+     "caption": "Bonds rallied on the tech selloff while the data argued the other way. Growth at 3.4 percent can absorb the energy cost for a time, but 3.6 percent inflation leaves the Fed little room."
     },
     {
      "body": "We watch whether the hull explosive method is used again, because a repeat would confirm a new phase of the shipping campaign rather than a single incident. We watch whether United Kingdom Maritime Trade Operations confirms any of the mine claims or names additional vessels, and whether Central Command updates its position that the primary routes are cleared. We watch the Sunday, November 2 meeting of seven OPEC plus producers, which reviews market conditions and production policy, and the November 3 United States midterm elections, after which reports citing diplomatic sources say Washington could revisit military action against Iran. The Wall Street Journal reported that Central Command chief Admiral Brad Cooper briefed President Trump on military options concerning Iran at the White House on October 29, and reports citing diplomatic sources say President Trump has not made a final decision on new strikes. We also watch Saudi confirmation or denial of the Houthi facility claims, and any change in Gulf export flows from the 15.7 million barrels a day reported for the week through October 26.",
