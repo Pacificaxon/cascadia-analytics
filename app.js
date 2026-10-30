@@ -1480,7 +1480,7 @@ function bindZoomHandlers() {
         const series = [
          { key: "pmi", label: "Manufacturing PMI", color: "#a3e635" },
          { key: "ppi_yoy", label: "PPI (Producer Price)", color: "#a5b4fc" },
-         { key: "retail_mom", label: "Retail Sales", color: "#4dd2aa" },
+         { key: "retail_mom", label: "Retail Sales", color: "#4dd2aa", noIndex: true },
          { key: "cpi_yoy", label: "CPI (Consumer Price)", color: "#7dd3fc" },
          { key: "wti_crude", label: "WTI Crude ($)", color: "#e0aa46" },
          { key: "gasoline_retail", label: "Gasoline Retail ($/gal)", color: "#f37d83" },
@@ -5368,7 +5368,7 @@ function mcclellanBreadthHtml() {
      const series = [
       { key: "pmi", label: "Manufacturing PMI", color: "#a3e635" },
       { key: "ppi_yoy", label: "PPI (Producer Price)", color: "#a5b4fc" },
-      { key: "retail_mom", label: "Retail Sales", color: "#4dd2aa" },
+      { key: "retail_mom", label: "Retail Sales", color: "#4dd2aa", noIndex: true },
       { key: "cpi_yoy", label: "CPI (Consumer Price)", color: "#7dd3fc" },
       { key: "wti_crude", label: "WTI Crude ($)", color: "#e0aa46" },
       { key: "gasoline_retail", label: "Gasoline Retail ($/gal)", color: "#f37d83" },
@@ -5388,10 +5388,11 @@ function mcclellanBreadthHtml() {
       return vals.map((v) => v == null ? null : (v / first) * 100);
      };
      let normalizedMode = true;
-     const buildDatasets = () => series.map((s) => {
+     const buildDatasets = () => series.filter((s) => normalizedMode || !s.noIndex).map((s) => {
       const raw = hist.map((r) => r[s.key]);
       return {
        label: s.label,
+       skey: s.key,
        data: normalizedMode ? normalize(raw) : index100(raw),
        borderColor: s.color,
        backgroundColor: s.color,
@@ -5412,10 +5413,9 @@ function mcclellanBreadthHtml() {
          callbacks: {
           label: (c) => {
            if (normalizedMode) return " " + c.dataset.label + ": " + c.parsed.y.toFixed(0) + "%";
-           const s = series[c.datasetIndex];
-           const raw = hist[c.dataIndex][s.key];
+           const raw = hist[c.dataIndex][c.dataset.skey];
            return " " + c.dataset.label + ": " + (raw != null ? raw.toFixed(1) : " - ") +
-            (s.key === "pmi" ? "" : "%");
+            (c.dataset.skey === "pmi" ? "" : "%");
           }
          } }
        },
@@ -5445,6 +5445,14 @@ function mcclellanBreadthHtml() {
        ? { min: 0, max: 100, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
        : { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Indexed, first month = 100", color: "#dbe5f1", font: { size: 11 } } };
       chart.update();
+      const legendEl2 = document.getElementById("macro-legend");
+      if (legendEl2) {
+       legendEl2.innerHTML = chart.data.datasets.map((ds) =>
+        '<span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#dbe5f1;">' +
+        '<span style="width:14px;height:14px;border-radius:50%;background:' + ds.borderColor + ';display:inline-block;"></span>' +
+        esc(ds.label) + "</span>"
+       ).join("") + (norm ? "" : '<span style="font-size:11px;color:#a9b7c9;">Retail Sales is a monthly percent change that crosses zero, so it appears in the Normalized view only.</span>');
+      }
       if (normBtn && rawBtn) {
        normBtn.style.background = norm ? "#253142" : "transparent";
        normBtn.style.opacity = norm ? "1" : "0.6";
