@@ -8906,6 +8906,14 @@ route("alerts", function () {
    }
   };
   const fmtVol = (v) => v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? (v / 1e3).toFixed(0) + "K" : String(Math.round(v));
+  // The caption lists only the overlays this timeframe can actually draw
+  // (a 200-period average needs 200 bars; monthly history has about 120).
+  const capEl = document.getElementById("ma-overlays-" + tk + "-" + tf);
+  if (capEl) {
+   const cols = { 10: "#f37d83", 20: "#ff9800", 50: "#2962ff", 200: "#00bcd4" };
+   capEl.innerHTML = "Overlays: " + [10, 20, 50, 200].filter((n) => allCloses.length >= n)
+    .map((n) => '<b style="color:' + cols[n] + ';">SMA ' + n + "</b>").join(" · ") + " (simple moving averages)";
+  }
   return {
    type: "bar",
    data: { labels, datasets: [
@@ -8915,10 +8923,9 @@ route("alerts", function () {
     { label: "Volume", data: vols, type: "bar",
      backgroundColor: up.map((u) => u ? "rgba(38,166,154,0.45)" : "rgba(239,83,80,0.45)"),
      borderWidth: 0, order: 3, yAxisID: "y1", barPercentage: 0.65, categoryPercentage: 0.9 },
-    smaDs("SMA 10", sma(10), "#f37d83"),
-    smaDs("SMA 20", sma(20), "#ff9800"),
-    smaDs("SMA 50", sma(50), "#2962ff"),
-    ...(allCloses.length >= 200 ? [smaDs("SMA 200", sma(200), "#00bcd4")] : []),
+    ...[[10, "#f37d83"], [20, "#ff9800"], [50, "#2962ff"], [200, "#00bcd4"]]
+     .filter(([n]) => allCloses.length >= n)
+     .map(([n, col]) => smaDs("SMA " + n, sma(n), col)),
    ]},
    options: {
     responsive: true, maintainAspectRatio: false,
@@ -8966,7 +8973,7 @@ route("alerts", function () {
     '">' + esc(d.signal || "") + "</span></h3>" +
     '<div class="zoomable-chart" data-chart="ma" data-ticker="' + esc(tk) + '" data-tf="' + tf + '" style="position:relative;height:420px;margin-bottom:8px;background:#0d131d;border-radius:8px;cursor:zoom-in;" title="Click to zoom"><canvas id="' + cid + '"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">⛶ click to zoom</div></div>' +
-    '<div style="font-size:12px;color:#a9b7c9;margin-bottom:10px;">Overlays: ' +
+    '<div id="ma-overlays-' + tk + "-" + tf + '" style="font-size:12px;color:#a9b7c9;margin-bottom:10px;">Overlays: ' +
     '<b style="color:#f37d83;">SMA 10</b> · <b style="color:#ff9800;">SMA 20</b> · ' +
     '<b style="color:#2962ff;">SMA 50</b> · <b style="color:#00bcd4;">SMA 200</b> (simple moving averages)</div>' +
     '<div class="table-wrap"><table class="coverage ma-table"><thead><tr><th>Period</th><th>SMA</th><th>EMA</th></tr></thead><tbody>' +
