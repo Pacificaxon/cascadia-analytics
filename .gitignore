@@ -2,3 +2,12 @@ __pycache__/
 
 # Local Netlify folder
 .netlify
+
+# Defensive secret/credential ignores (security remediation 2026-10-29)
+.env
+.env.*
+*.env
+*secret*
+*credential*
+*.pem
+*.key
