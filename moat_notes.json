@@ -1175,6 +1175,16 @@
     "rechecked": true,
     "base_note": "This figure uses the normalized base from the October 27 recheck, not the original boom-year base."
    }
+  },
+  "LIFE": {
+   "moat": "Narrow",
+   "premium": "0%",
+   "structure": "Digital distribution challenger (life insurance)",
+   "reasons": [
+    "Digital funnel economics are filed, not asserted: 196,220 policies activated in H1 2026 (Q2 +133% YoY) at a 33% contribution margin (Q2 2026 release), with the Direct channel growing 131% at similar unit economics to the existing book.",
+    "The in-force book is a contracted cash asset: commissions receivable of $324.280M at 2026-06-30 (10-Q) represents future renewal commissions on policies already sold, which gives forward cash flow a contracted base most growth-stage distributors do not have.",
+    "No premium is awarded: Ethos owns distribution, not the customer relationship or the risk. Carrier concentration is severe (Carrier A 41% and Carrier B 38% of H1 2026 revenue, 10-Q), carriers can reprice or insource distribution, and third-party agent persistency already requires active termination discipline per the filing. Cross-check held at 0% (neutral); concentration carried as a risk ranking and a Bear-case driver, never netted into the target."
+   ]
   }
  }
 }

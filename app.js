@@ -56,6 +56,7 @@
   "ISRG": { domain: "intuitive.com", industry: "Medical Devices" },
   "KRMN": { domain: "karman-sd.com", industry: "Aerospace & Defense" },
   "LEU": { domain: "centrusenergy.com", industry: "Uranium" },
+  "LIFE": { domain: "ethos.com", industry: "Insurance" },
   "LITE": { domain: "lumentum.com", industry: "Optical Components" },
   "LRCX": { domain: "lamresearch.com", industry: "Semiconductor Equipment" },
   "MELI": { domain: "mercadolibre.com", industry: "E-commerce" },
@@ -552,7 +553,7 @@ function proDataStale() {
  // raw notes/ URL cache-first from the first copy ever fetched, so an
  // unversioned republication never reaches them; the versioned URL is a
  // fresh cache key that bypasses the stale copy everywhere.
- const NOTES_PDF_V = "20261030-98";
+ const NOTES_PDF_V = "20261030-99";
  async function openPdfModal(pdfUrl, title) {
   const root = document.getElementById("modal-root");
   // Notes and scorecards are file-gated server-side (Pro only), so the
