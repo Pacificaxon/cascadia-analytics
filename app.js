@@ -1573,7 +1573,7 @@ function bindZoomHandlers() {
            scales: {
             x: { ticks: { color: "#dbe5f1", maxTicksLimit: 8 }, grid: { color: "rgba(42,46,57,0.4)" } },
             yVol: { position: "left", ticks: { color: "#dbe5f1", callback: (v) => v === 0 ? "0" : (Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Shares", color: "#dbe5f1" } },
-            yIns: { display: false, grid: { display: false } },
+            yIns: { position: "right", ticks: { color: "#FF5000", callback: (v) => v === 0 ? "0" : (Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") }, grid: { display: false }, title: { display: true, text: "Insider shares", color: "#FF5000" } },
             yPrice: { position: "right", ticks: { color: "#2979FF", callback: (v) => "$" + v }, grid: { display: false }, title: { display: true, text: "Price", color: "#2979FF" } } } }
          });
         }
