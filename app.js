@@ -3805,40 +3805,59 @@ function mcclellanBreadthHtml() {
       "</div>";
     });
     h += "</div>";
-    // Combined history chart, inline SVG with three bank lines and the total
+    // Combined history chart: each balance sheet rebased to 100 at the
+    // first history point, so the chart compares percentage movement
+    // (expansion vs contraction) across banks of very different sizes.
+    // Dollar levels live on the cards above; a shared dollar axis would
+    // flatten every line and hide the moves.
     const gh = (G.history || []).filter((r) => r && r.global_usd_b != null);
     if (gh.length > 5) {
      const series = [
       { key: "global_usd_b", label: "Global total", color: "#4dd2aa", w: 2.5 },
-      { key: "fed_usd_b", label: "Fed", color: "#58a6ff", w: 1.5 },
-      { key: "ecb_usd_b", label: "ECB", color: "#e0aa46", w: 1.5 },
-      { key: "boj_usd_b", label: "BOJ", color: "#a371f7", w: 1.5 }
+      { key: "fed_usd_b", label: "Fed", color: "#58a6ff", w: 1.8 },
+      { key: "ecb_usd_b", label: "ECB", color: "#e0aa46", w: 1.8 },
+      { key: "boj_usd_b", label: "BOJ", color: "#a371f7", w: 1.8 }
      ];
+     series.forEach((s) => {
+      const first = gh.find((r) => r[s.key] != null);
+      s.base = first ? first[s.key] : null;
+      s.idx = gh.map((r) => (r[s.key] != null && s.base) ? (r[s.key] / s.base) * 100 : null);
+      for (let i = s.idx.length - 1; i >= 0; i--) { if (s.idx[i] != null) { s.last = s.idx[i]; break; } }
+     });
      let mn = Infinity, mx = -Infinity;
-     gh.forEach((r) => series.forEach((s) => { const v = r[s.key]; if (v != null) { if (v < mn) mn = v; if (v > mx) mx = v; } }));
-     const padV = (mx - mn) * 0.08 || 1; mn -= padV; mx += padV;
-     const W = 720, H = 190, PL = 58, PR = 10, PT = 12, PB = 22;
+     series.forEach((s) => s.idx.forEach((v) => { if (v != null) { if (v < mn) mn = v; if (v > mx) mx = v; } }));
+     if (mn > 100) mn = 100; if (mx < 100) mx = 100;
+     const padV = (mx - mn) * 0.1 || 1; mn -= padV; mx += padV;
+     const W = 720, H = 200, PL = 40, PR = 128, PT = 12, PB = 22;
      const X = (i) => PL + (W - PL - PR) * (i / (gh.length - 1));
      const Y = (v) => PT + (H - PT - PB) * (1 - (v - mn) / (mx - mn));
-     const fmtAxis = (v) => "$" + Math.round(v).toLocaleString() + "B";
+     const baseDate = fmtD(gh[0].date);
      let svg = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:auto;display:block;" role="img">';
-     svg += '<line x1="' + PL + '" y1="' + Y(mx - padV) + '" x2="' + (W - PR) + '" y2="' + Y(mx - padV) + '" stroke="#253142" stroke-width="1"/>';
-     svg += '<line x1="' + PL + '" y1="' + Y(mn + padV) + '" x2="' + (W - PR) + '" y2="' + Y(mn + padV) + '" stroke="#253142" stroke-width="1"/>';
-     svg += '<text x="2" y="' + (Y(mx - padV) + 4) + '" fill="#a9b7c9" font-size="11">' + fmtAxis(mx - padV) + "</text>";
-     svg += '<text x="2" y="' + (Y(mn + padV) + 4) + '" fill="#a9b7c9" font-size="11">' + fmtAxis(mn + padV) + "</text>";
+     const y100 = Y(100);
+     svg += '<line x1="' + PL + '" y1="' + y100.toFixed(1) + '" x2="' + (W - PR) + '" y2="' + y100.toFixed(1) + '" stroke="rgba(245,247,250,0.45)" stroke-width="1" stroke-dasharray="5 4"/>';
+     svg += '<line x1="' + PL + '" y1="' + Y(mx - padV).toFixed(1) + '" x2="' + (W - PR) + '" y2="' + Y(mx - padV).toFixed(1) + '" stroke="#253142" stroke-width="1"/>';
+     svg += '<line x1="' + PL + '" y1="' + Y(mn + padV).toFixed(1) + '" x2="' + (W - PR) + '" y2="' + Y(mn + padV).toFixed(1) + '" stroke="#253142" stroke-width="1"/>';
+     svg += '<text x="2" y="' + (Y(mx - padV) + 4) + '" fill="#a9b7c9" font-size="11">' + (mx - padV).toFixed(1) + "</text>";
+     svg += '<text x="2" y="' + (Y(mn + padV) + 4) + '" fill="#a9b7c9" font-size="11">' + (mn + padV).toFixed(1) + "</text>";
+     svg += '<text x="2" y="' + (y100 + 4) + '" fill="#a9b7c9" font-size="11">100</text>';
+     const labelYs = [];
      series.forEach((s) => {
       const pts = [];
-      gh.forEach((r, i) => { if (r[s.key] != null) pts.push(X(i).toFixed(1) + "," + Y(r[s.key]).toFixed(1)); });
+      s.idx.forEach((v, i) => { if (v != null) pts.push(X(i).toFixed(1) + "," + Y(v).toFixed(1)); });
       if (pts.length > 1) svg += '<polyline fill="none" stroke="' + s.color + '" stroke-width="' + s.w + '" points="' + pts.join(" ") + '"/>';
+      if (s.last != null) labelYs.push({ y: Y(s.last), color: s.color, text: s.label + " " + s.last.toFixed(1) });
+     });
+     labelYs.sort((a, b) => a.y - b.y);
+     for (let k = 1; k < labelYs.length; k++) { if (labelYs[k].y - labelYs[k - 1].y < 13) labelYs[k].y = labelYs[k - 1].y + 13; }
+     labelYs.forEach((L2) => {
+      svg += '<text x="' + (W - PR + 8) + '" y="' + (L2.y + 4).toFixed(1) + '" fill="' + L2.color + '" font-size="11.5" font-weight="700">' + esc(L2.text) + "</text>";
      });
      const fd = gh[0].date.split("-"), ld = gh[gh.length - 1].date.split("-");
      svg += '<text x="' + PL + '" y="' + (H - 6) + '" fill="#a9b7c9" font-size="11">' + MONTHS_L[Number(fd[1]) - 1] + " " + Number(fd[2]) + "</text>";
      svg += '<text x="' + (W - PR) + '" y="' + (H - 6) + '" fill="#a9b7c9" font-size="11" text-anchor="end">' + MONTHS_L[Number(ld[1]) - 1] + " " + Number(ld[2]) + "</text>";
      svg += "</svg>";
-     h += '<div style="margin:12px 0;"><div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;">' +
-      series.map((s) => '<span style="font-size:11px;color:#a9b7c9;"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:' + s.color + ';margin-right:5px;"></span>' + s.label + "</span>").join("") +
-      '</div><div style="background:#0d1420;border:1px solid #253142;border-radius:10px;padding:8px;">' + svg + "</div>" +
-      '<div style="font-size:11px;color:#a9b7c9;margin-top:6px;">The Bank of Japan prints monthly, so its line steps between release dates and every point carries the print in effect, most recently ' + fmtD(gh[gh.length - 1].boj_obs_date) + '. The Fed and ECB print weekly. Dollar totals move with exchange rates as well as with the balance sheets themselves.</div></div>';
+     h += '<div style="margin:12px 0;"><div style="font-size:11px;color:#a9b7c9;letter-spacing:0.5px;margin-bottom:6px;">BALANCE SHEETS INDEXED, ' + esc(baseDate.toUpperCase()) + ' = 100 (DOLLAR TERMS)</div><div style="background:#0d1420;border:1px solid #253142;border-radius:10px;padding:8px;">' + svg + "</div>" +
+      '<div style="font-size:11px;color:#a9b7c9;margin-top:6px;">Each line is rebased to 100 at the start of the window so the chart compares the percentage change in each balance sheet; the dollar levels are on the cards above. A line above 100 has grown since ' + esc(baseDate) + ', below 100 it has shrunk. The Bank of Japan prints monthly, so its line steps between release dates and every point carries the print in effect, most recently ' + fmtD(gh[gh.length - 1].boj_obs_date) + '. The Fed and ECB print weekly. Dollar totals move with exchange rates as well as with the balance sheets themselves.</div></div>';
     }
    }
    // Net liquidity history chart (simple bars)
