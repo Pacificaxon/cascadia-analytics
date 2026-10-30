@@ -979,21 +979,19 @@ function bindZoomHandlers() {
            y1: { position: "right", ticks: { color: "#4dd2aa" }, grid: { display: false }, title: { display: true, text: "Fwd EPS ($)", color: "#4dd2aa" } } } }
         });
        } else if (kind === "voldiv") {
-        const hist = D.vol_div_history.history;
+        const parts = volDivParts(D.vol_div_history.history);
         new Chart(zc, {
          type: "line",
-         data: { labels: hist.map((r) => r.date), datasets: [
-          { label: "Divergence (MOVE z − VIX z)", data: hist.map((r) => r.divergence), borderColor: "#f37d83", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
-          { label: "MOVE z-score", data: hist.map((r) => r.move_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-          { label: "VIX z-score", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-         ]},
+         data: { labels: parts.labels, datasets: parts.datasets },
+         plugins: parts.plugins,
          options: { responsive: true, maintainAspectRatio: false,
+          layout: { padding: { right: 64 } },
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#dbe5f1" } },
+          plugins: { legend: { display: false },
            tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12 } },
           scales: {
            x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#dbe5f1" } } } }
+           y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score (trailing 1Y)", color: "#dbe5f1" } } } }
         });
        } else if (kind === "themerot") {
         const trh = D.theme_rot_history;
@@ -1038,21 +1036,19 @@ function bindZoomHandlers() {
            y: { ticks: { color: "#dbe5f1", callback: (v) => v.toFixed(0) + "%" }, grid: { color: "rgba(42,46,57,0.4)" } } } }
         });
        } else if (kind === "creditvol") {
-        const hist = D.credit_vol_history.history;
+        const parts = creditVolParts(D.credit_vol_history.history);
         new Chart(zc, {
          type: "line",
-         data: { labels: hist.map((r) => r.date), datasets: [
-          { label: "Spread − VIX z-diff", data: hist.map((r) => r.diff), borderColor: "#f37d83", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
-          { label: "Spread z", data: hist.map((r) => r.spread_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-          { label: "VIX z", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-         ]},
+         data: { labels: parts.labels, datasets: parts.datasets },
+         plugins: parts.plugins,
          options: { responsive: true, maintainAspectRatio: false,
+          layout: { padding: { right: 104 } },
           interaction: { mode: "index", intersect: false },
-          plugins: { legend: { labels: { color: "#dbe5f1" } },
+          plugins: { legend: { display: false },
            tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 12 } },
           scales: {
            x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#dbe5f1" } } } }
+           y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score (trailing 1Y)", color: "#dbe5f1" } } } }
         });
        } else if (kind === "breadth") {
         const hist = D.breadth_history.history;
@@ -1060,8 +1056,8 @@ function bindZoomHandlers() {
          type: "line",
          data: { labels: hist.map((r) => r.date), datasets: [
           { label: "Breadth spread (pp)", data: hist.map((r) => r.breadth_spread), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
-          { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
-          { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#e0aa46", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+          { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 2.2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
+          { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#e0aa46", borderWidth: 2.2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
@@ -1096,7 +1092,7 @@ function bindZoomHandlers() {
          type: "line",
          data: { labels: hist.map((r) => r.week_ending), datasets: [
           { label: "Bullish %", data: hist.map((r) => r.bullish), borderColor: "#4dd2aa", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
-          { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#dbe5f1", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+          { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#dbe5f1", borderWidth: 2, pointRadius: 0, tension: 0.1 },
           { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f37d83", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
@@ -1394,7 +1390,7 @@ function bindZoomHandlers() {
          data: { labels: hist.map((r) => r.report_date), datasets: [
           { label: "Commercials net", data: hist.map((r) => (r.markets[mkey] || {}).commercials?.net), borderColor: "#58a6ff", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
           { label: "Large Specs net", data: hist.map((r) => (r.markets[mkey] || {}).large_specs?.net), borderColor: "#c678dd", borderWidth: 2.5, pointRadius: 0, tension: 0.1 },
-          { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#e0aa46", borderWidth: 2, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+          { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#e0aa46", borderWidth: 2, pointRadius: 0, tension: 0.1 },
          ]},
          options: { responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
@@ -4610,10 +4606,10 @@ function mcclellanBreadthHtml() {
     return wrap(
      "<p><b>What am I looking at?</b> This chart compares fear in two different markets: stocks (VIX) and bonds (MOVE). " +
      "Both are converted to z-scores, how unusual today's reading is versus the last year, so they can be compared apples-to-apples. " +
-     "The red line is the gap between them: bond fear minus stock fear.</p>" +
-     "<p><b>How to read it.</b> When the red line is near zero, stocks and bonds agree about risk. " +
-     "When it spikes above <b>+2</b>, the bond market is much more scared than the stock market, bonds are pricing in danger that stocks are ignoring. " +
-     "When it drops below <b>−2</b>, stocks are more fearful than bonds.</p>" +
+     "The orange line is bond fear (MOVE) and the white line is stock fear (VIX); the gap between them is bond fear minus stock fear.</p>" +
+     "<p><b>How to read it.</b> When the two lines sit on top of each other, stocks and bonds agree about risk. " +
+     "When the gap widens beyond <b>+2</b>, with orange far above white, the bond market is much more scared than the stock market, bonds are pricing in danger that stocks are ignoring. " +
+     "When the gap drops below <b>−2</b>, with white far above orange, stocks are more fearful than bonds.</p>" +
      "<p><b>What does today\u2019s reading mean?</b> Divergence is <b>" + (div >= 0 ? "+" : "") + div.toFixed(2) + " (" + read + ")</b>, " +
      "MOVE z-score " + (mz >= 0 ? "+" : "") + mz.toFixed(2) + ", VIX z-score " + (vz >= 0 ? "+" : "") + vz.toFixed(2) + ". " +
      (Math.abs(div) >= 2
@@ -4649,10 +4645,10 @@ function mcclellanBreadthHtml() {
     return wrap(
      "<p><b>What am I looking at?</b> This chart compares stress in corporate credit markets against stock-market fear. " +
      "The spread proxy (SHY minus HYG, the gap between safe short-term Treasuries and risky high-yield bonds) is converted to a z-score, " +
-     "as is the VIX. The red line is the difference: credit stress minus equity fear.</p>" +
+     "as is the VIX. The blue line is credit spreads and the white line is the VIX; the gap between them is the difference, credit stress minus equity fear.</p>" +
      "<p><b>How to read it.</b> Credit markets tend to move first, and bond investors often sniff out trouble before stock investors. " +
-     "When the red line spikes above <b>+2</b>, credit is flashing warning signs that stocks haven\u2019t priced in yet. " +
-     "When it drops below <b>−2</b>, stocks are panicking about something credit markets don\u2019t see.</p>" +
+     "When the gap widens beyond <b>+2</b>, with blue far above white, credit is flashing warning signs that stocks haven\u2019t priced in yet. " +
+     "When the gap drops below <b>−2</b>, with white far above blue, stocks are panicking about something credit markets don\u2019t see.</p>" +
      "<p><b>What does today\u2019s reading mean?</b> Spread-minus-VIX is <b>" + (div >= 0 ? "+" : "") + div.toFixed(2) + "</b> " +
      "(spread z " + (cur.spread_z >= 0 ? "+" : "") + cur.spread_z.toFixed(2) + ", VIX z " + (cur.vix_z >= 0 ? "+" : "") + cur.vix_z.toFixed(2) + "). " +
      (Math.abs(div) >= 2
@@ -4922,26 +4918,17 @@ function mcclellanBreadthHtml() {
    const vd = D.vol_div_history;
    if (cv && vd && (vd.history || []).length) {
    try {
-    const hist = vd.history;
-    const labels = hist.map((r) => r.date);
-    const div = hist.map((r) => r.divergence);
-    const vz = hist.map((r) => r.vix_z);
-    const mz = hist.map((r) => r.move_z);
+    const parts = volDivParts(vd.history);
     new Chart(cv, {
      type: "line",
-     data: { labels, datasets: [
-      { label: "Divergence (MOVE z − VIX z)", data: div, borderColor: "#f37d83", backgroundColor: "rgba(242,54,69,0.1)",
-       borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true, order: 1 },
-      { label: "MOVE z-score", data: mz, borderColor: "#ff9800", borderWidth: 1.5,
-       pointRadius: 0, tension: 0.1, borderDash: [5, 3], order: 2 },
-      { label: "VIX z-score", data: vz, borderColor: "#2962ff", borderWidth: 1.5,
-       pointRadius: 0, tension: 0.1, borderDash: [5, 3], order: 2 },
-     ]},
+     data: { labels: parts.labels, datasets: parts.datasets },
+     plugins: parts.plugins,
      options: {
           animation: false, responsive: true, maintainAspectRatio: false,
+      layout: { padding: { right: 64 } },
       interaction: { mode: "index", intersect: false },
       plugins: {
-       legend: { labels: { color: "#dbe5f1", boxWidth: 20, font: { size: 11 } } },
+       legend: { display: false },
        tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1,
         titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10,
         callbacks: {
@@ -4951,7 +4938,7 @@ function mcclellanBreadthHtml() {
       scales: {
        x: { ticks: { color: "#dbe5f1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
        y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" },
-        title: { display: true, text: "z-score", color: "#dbe5f1", font: { size: 11 } } }
+        title: { display: true, text: "z-score (trailing 1Y)", color: "#dbe5f1", font: { size: 11 } } }
       } }
     });
    } catch (e) { console.error("VolDiv chart error", e); }
@@ -5075,27 +5062,92 @@ function mcclellanBreadthHtml() {
      });
     } catch (e) { console.error("SmCap chart error", e); }
    }
+ // End-of-line labels plus a dashed zero line for two-line z-score
+ // comparison charts (blue/orange = first series, white = second).
+ function endLabelPlugin(id) {
+  return {
+   id,
+   afterDatasetsDraw(chart) {
+    const { ctx, chartArea, scales } = chart;
+    if (!scales.y || !chartArea) return;
+    ctx.save();
+    const y0 = scales.y.getPixelForValue(0);
+    if (y0 >= chartArea.top && y0 <= chartArea.bottom) {
+     ctx.strokeStyle = "rgba(245,247,250,0.45)";
+     ctx.setLineDash([5, 4]);
+     ctx.lineWidth = 1;
+     ctx.beginPath();
+     ctx.moveTo(chartArea.left, y0);
+     ctx.lineTo(chartArea.right, y0);
+     ctx.stroke();
+     ctx.setLineDash([]);
+    }
+    const items = [];
+    chart.data.datasets.forEach((ds, i) => {
+     const meta = chart.getDatasetMeta(i);
+     if (!meta || !meta.data || !meta.data.length) return;
+     const pt = meta.data[meta.data.length - 1];
+     items.push({ y: pt.y, color: ds.borderColor, label: (ds.label || "").toUpperCase() });
+    });
+    items.sort((a, b) => a.y - b.y);
+    for (let k = 1; k < items.length; k++) {
+     if (items[k].y - items[k - 1].y < 14) items[k].y = items[k - 1].y + 14;
+    }
+    ctx.font = "700 11px 'IBM Plex Sans', sans-serif";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    items.forEach((it) => {
+     ctx.fillStyle = it.color;
+     ctx.fillText(it.label, chartArea.right + 8, it.y);
+    });
+    ctx.restore();
+   }
+  };
+ }
+ // Credit Spreads vs VIX: two solid vibrant lines, trailing 1Y, no
+ // differential series (blue = credit spreads, white = VIX).
+ function creditVolParts(hist) {
+  const rows = (hist || []).slice(-252);
+  return {
+   labels: rows.map((r) => r.date),
+   datasets: [
+    { label: "Credit Spreads", data: rows.map((r) => r.spread_z), borderColor: "#2b93ff", backgroundColor: "#2b93ff", borderWidth: 2.2, pointRadius: 0, tension: 0.1 },
+    { label: "VIX", data: rows.map((r) => r.vix_z), borderColor: "#ffffff", backgroundColor: "#ffffff", borderWidth: 1.8, pointRadius: 0, tension: 0.1 },
+   ],
+   plugins: [endLabelPlugin("cvEndLabels")],
+  };
+ }
+ // Volatility Divergence: same treatment (orange = MOVE, white = VIX).
+ function volDivParts(hist) {
+  const rows = (hist || []).slice(-252);
+  return {
+   labels: rows.map((r) => r.date),
+   datasets: [
+    { label: "MOVE", data: rows.map((r) => r.move_z), borderColor: "#ff8a00", backgroundColor: "#ff8a00", borderWidth: 2.2, pointRadius: 0, tension: 0.1 },
+    { label: "VIX", data: rows.map((r) => r.vix_z), borderColor: "#ffffff", backgroundColor: "#ffffff", borderWidth: 1.8, pointRadius: 0, tension: 0.1 },
+   ],
+   plugins: [endLabelPlugin("vdEndLabels")],
+  };
+ }
    // Credit Spreads vs VIX interactive chart
    const cvc = document.getElementById("creditvol-chart");
    const cvh = D.credit_vol_history;
    if (cvc && cvh && (cvh.history || []).length) {
     try {
-     const hist = cvh.history;
+     const parts = creditVolParts(cvh.history);
      new Chart(cvc, {
       type: "line",
-      data: { labels: hist.map((r) => r.date), datasets: [
-       { label: "Spread − VIX z-diff", data: hist.map((r) => r.diff), borderColor: "#f37d83", backgroundColor: "rgba(242,54,69,0.1)", borderWidth: 2.5, pointRadius: 0, tension: 0.1, fill: true },
-       { label: "Spread z", data: hist.map((r) => r.spread_z), borderColor: "#ff9800", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-       { label: "VIX z", data: hist.map((r) => r.vix_z), borderColor: "#2962ff", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
-      ]},
+      data: { labels: parts.labels, datasets: parts.datasets },
+      plugins: parts.plugins,
       options: {
           animation: false, responsive: true, maintainAspectRatio: false,
+       layout: { padding: { right: 104 } },
        interaction: { mode: "index", intersect: false },
-       plugins: { legend: { labels: { color: "#dbe5f1", boxWidth: 20, font: { size: 11 } } },
+       plugins: { legend: { display: false },
         tooltip: { backgroundColor: "#101620", borderColor: "#253142", borderWidth: 1, titleColor: "#dbe5f1", bodyColor: "#dbe5f1", padding: 10 } },
        scales: {
         x: { ticks: { color: "#dbe5f1", maxTicksLimit: 6, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-        y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score", color: "#dbe5f1", font: { size: 11 } } } } }
+        y: { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "z-score (trailing 1Y)", color: "#dbe5f1", font: { size: 11 } } } } }
      });
     } catch (e) { console.error("CreditVol chart error", e); }
    }
@@ -5109,8 +5161,8 @@ function mcclellanBreadthHtml() {
       type: "line",
       data: { labels: hist.map((r) => r.date), datasets: [
        { label: "Breadth spread (pp)", data: hist.map((r) => r.breadth_spread), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1, yAxisID: "y" },
-       { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
-       { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#e0aa46", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3], yAxisID: "y1" },
+       { label: "% above 50d", data: hist.map((r) => r.pct_above_50d), borderColor: "#c678dd", borderWidth: 2.2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
+       { label: "% above 200d", data: hist.map((r) => r.pct_above_200d), borderColor: "#e0aa46", borderWidth: 2.2, pointRadius: 0, tension: 0.1, yAxisID: "y1" },
       ]},
       options: {
           animation: false, responsive: true, maintainAspectRatio: false,
@@ -5173,7 +5225,7 @@ function mcclellanBreadthHtml() {
       type: "line",
       data: { labels: hist.map((r) => r.week_ending), datasets: [
        { label: "Bullish %", data: hist.map((r) => r.bullish), borderColor: "#4dd2aa", borderWidth: 2, pointRadius: 0, tension: 0.1 },
-       { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#dbe5f1", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+       { label: "Neutral %", data: hist.map((r) => r.neutral), borderColor: "#dbe5f1", borderWidth: 2, pointRadius: 0, tension: 0.1 },
        { label: "Bearish %", data: hist.map((r) => r.bearish), borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.1 },
       ]},
       options: {
@@ -5262,7 +5314,7 @@ function mcclellanBreadthHtml() {
       data: { labels: hist.map((r) => r.report_date), datasets: [
        { label: "Commercials net", data: hist.map((r) => (r.markets[mkey] || {}).commercials?.net), borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.1 },
        { label: "Large Specs net", data: hist.map((r) => (r.markets[mkey] || {}).large_specs?.net), borderColor: "#c678dd", borderWidth: 2, pointRadius: 0, tension: 0.1 },
-       { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#e0aa46", borderWidth: 1.5, pointRadius: 0, tension: 0.1, borderDash: [5, 3] },
+       { label: "Small Specs net", data: hist.map((r) => (r.markets[mkey] || {}).small_specs?.net), borderColor: "#e0aa46", borderWidth: 2, pointRadius: 0, tension: 0.1 },
       ]},
       options: {
           animation: false, responsive: true, maintainAspectRatio: false,
