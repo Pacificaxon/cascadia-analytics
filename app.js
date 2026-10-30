@@ -751,6 +751,73 @@ const themeLabels = {
  }
 };
 
+ // End-of-line labels plus a dashed zero line for two-line z-score
+ // comparison charts (blue/orange = first series, white = second).
+ function endLabelPlugin(id) {
+  return {
+   id,
+   afterDatasetsDraw(chart) {
+    const { ctx, chartArea, scales } = chart;
+    if (!scales.y || !chartArea) return;
+    ctx.save();
+    const y0 = scales.y.getPixelForValue(0);
+    if (y0 >= chartArea.top && y0 <= chartArea.bottom) {
+     ctx.strokeStyle = "rgba(245,247,250,0.45)";
+     ctx.setLineDash([5, 4]);
+     ctx.lineWidth = 1;
+     ctx.beginPath();
+     ctx.moveTo(chartArea.left, y0);
+     ctx.lineTo(chartArea.right, y0);
+     ctx.stroke();
+     ctx.setLineDash([]);
+    }
+    const items = [];
+    chart.data.datasets.forEach((ds, i) => {
+     const meta = chart.getDatasetMeta(i);
+     if (!meta || !meta.data || !meta.data.length) return;
+     const pt = meta.data[meta.data.length - 1];
+     items.push({ y: pt.y, color: ds.borderColor, label: (ds.label || "").toUpperCase() });
+    });
+    items.sort((a, b) => a.y - b.y);
+    for (let k = 1; k < items.length; k++) {
+     if (items[k].y - items[k - 1].y < 14) items[k].y = items[k - 1].y + 14;
+    }
+    ctx.font = "700 11px 'IBM Plex Sans', sans-serif";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    items.forEach((it) => {
+     ctx.fillStyle = it.color;
+     ctx.fillText(it.label, chartArea.right + 8, it.y);
+    });
+    ctx.restore();
+   }
+  };
+ }
+ // Credit Spreads vs VIX: two solid vibrant lines, trailing 1Y, no
+ // differential series (blue = credit spreads, white = VIX).
+ function creditVolParts(hist) {
+  const rows = (hist || []).slice(-252);
+  return {
+   labels: rows.map((r) => r.date),
+   datasets: [
+    { label: "Credit Spreads", data: rows.map((r) => r.spread_z), borderColor: "#2b93ff", backgroundColor: "#2b93ff", borderWidth: 2.2, pointRadius: 0, tension: 0.1 },
+    { label: "VIX", data: rows.map((r) => r.vix_z), borderColor: "#ffffff", backgroundColor: "#ffffff", borderWidth: 1.8, pointRadius: 0, tension: 0.1 },
+   ],
+   plugins: [endLabelPlugin("cvEndLabels")],
+  };
+ }
+ // Volatility Divergence: same treatment (orange = MOVE, white = VIX).
+ function volDivParts(hist) {
+  const rows = (hist || []).slice(-252);
+  return {
+   labels: rows.map((r) => r.date),
+   datasets: [
+    { label: "MOVE", data: rows.map((r) => r.move_z), borderColor: "#ff8a00", backgroundColor: "#ff8a00", borderWidth: 2.2, pointRadius: 0, tension: 0.1 },
+    { label: "VIX", data: rows.map((r) => r.vix_z), borderColor: "#ffffff", backgroundColor: "#ffffff", borderWidth: 1.8, pointRadius: 0, tension: 0.1 },
+   ],
+   plugins: [endLabelPlugin("vdEndLabels")],
+  };
+ }
 function bindZoomHandlers() {
     // Click/tap to zoom: open modal with larger chart
     document.querySelectorAll(".zoomable-chart").forEach((el) => {
@@ -5062,73 +5129,6 @@ function mcclellanBreadthHtml() {
      });
     } catch (e) { console.error("SmCap chart error", e); }
    }
- // End-of-line labels plus a dashed zero line for two-line z-score
- // comparison charts (blue/orange = first series, white = second).
- function endLabelPlugin(id) {
-  return {
-   id,
-   afterDatasetsDraw(chart) {
-    const { ctx, chartArea, scales } = chart;
-    if (!scales.y || !chartArea) return;
-    ctx.save();
-    const y0 = scales.y.getPixelForValue(0);
-    if (y0 >= chartArea.top && y0 <= chartArea.bottom) {
-     ctx.strokeStyle = "rgba(245,247,250,0.45)";
-     ctx.setLineDash([5, 4]);
-     ctx.lineWidth = 1;
-     ctx.beginPath();
-     ctx.moveTo(chartArea.left, y0);
-     ctx.lineTo(chartArea.right, y0);
-     ctx.stroke();
-     ctx.setLineDash([]);
-    }
-    const items = [];
-    chart.data.datasets.forEach((ds, i) => {
-     const meta = chart.getDatasetMeta(i);
-     if (!meta || !meta.data || !meta.data.length) return;
-     const pt = meta.data[meta.data.length - 1];
-     items.push({ y: pt.y, color: ds.borderColor, label: (ds.label || "").toUpperCase() });
-    });
-    items.sort((a, b) => a.y - b.y);
-    for (let k = 1; k < items.length; k++) {
-     if (items[k].y - items[k - 1].y < 14) items[k].y = items[k - 1].y + 14;
-    }
-    ctx.font = "700 11px 'IBM Plex Sans', sans-serif";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-    items.forEach((it) => {
-     ctx.fillStyle = it.color;
-     ctx.fillText(it.label, chartArea.right + 8, it.y);
-    });
-    ctx.restore();
-   }
-  };
- }
- // Credit Spreads vs VIX: two solid vibrant lines, trailing 1Y, no
- // differential series (blue = credit spreads, white = VIX).
- function creditVolParts(hist) {
-  const rows = (hist || []).slice(-252);
-  return {
-   labels: rows.map((r) => r.date),
-   datasets: [
-    { label: "Credit Spreads", data: rows.map((r) => r.spread_z), borderColor: "#2b93ff", backgroundColor: "#2b93ff", borderWidth: 2.2, pointRadius: 0, tension: 0.1 },
-    { label: "VIX", data: rows.map((r) => r.vix_z), borderColor: "#ffffff", backgroundColor: "#ffffff", borderWidth: 1.8, pointRadius: 0, tension: 0.1 },
-   ],
-   plugins: [endLabelPlugin("cvEndLabels")],
-  };
- }
- // Volatility Divergence: same treatment (orange = MOVE, white = VIX).
- function volDivParts(hist) {
-  const rows = (hist || []).slice(-252);
-  return {
-   labels: rows.map((r) => r.date),
-   datasets: [
-    { label: "MOVE", data: rows.map((r) => r.move_z), borderColor: "#ff8a00", backgroundColor: "#ff8a00", borderWidth: 2.2, pointRadius: 0, tension: 0.1 },
-    { label: "VIX", data: rows.map((r) => r.vix_z), borderColor: "#ffffff", backgroundColor: "#ffffff", borderWidth: 1.8, pointRadius: 0, tension: 0.1 },
-   ],
-   plugins: [endLabelPlugin("vdEndLabels")],
-  };
- }
    // Credit Spreads vs VIX interactive chart
    const cvc = document.getElementById("creditvol-chart");
    const cvh = D.credit_vol_history;
