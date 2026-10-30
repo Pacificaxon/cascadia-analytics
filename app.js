@@ -1561,8 +1561,8 @@ function bindZoomHandlers() {
            datasets: [
             { type: "bar", label: "HF Buys", data: t.hedge_funds.buys, backgroundColor: "#4dd2aa", borderRadius: 3, yAxisID: "yVol" },
             { type: "bar", label: "HF Sells", data: t.hedge_funds.sells, backgroundColor: "#FF5000", borderRadius: 3, yAxisID: "yVol" },
-            { type: "bar", label: "Insider Buys", data: t.insiders.buys, backgroundColor: "#4dd2aa", borderRadius: 3, hidden: true, yAxisID: "yVol" },
-            { type: "bar", label: "Insider Sells", data: t.insiders.sells, backgroundColor: "#FF5000", borderRadius: 3, hidden: true, yAxisID: "yVol" },
+            { type: "bar", label: "Insider Buys", data: t.insiders.buys, backgroundColor: "#4dd2aa", borderRadius: 3, hidden: true, yAxisID: "yIns" },
+            { type: "bar", label: "Insider Sells", data: t.insiders.sells, backgroundColor: "#FF5000", borderRadius: 3, hidden: true, yAxisID: "yIns" },
             { type: "line", label: "Price", data: t.prices, borderColor: "#2979FF", borderWidth: 2.5, pointRadius: 3, tension: 0.3, yAxisID: "yPrice", spanGaps: true },
            ],
           },
@@ -1573,6 +1573,7 @@ function bindZoomHandlers() {
            scales: {
             x: { ticks: { color: "#dbe5f1", maxTicksLimit: 8 }, grid: { color: "rgba(42,46,57,0.4)" } },
             yVol: { position: "left", ticks: { color: "#dbe5f1", callback: (v) => v === 0 ? "0" : (Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(1) + "M" : Math.round(v / 1e3) + "K") }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Shares", color: "#dbe5f1" } },
+            yIns: { display: false, grid: { display: false } },
             yPrice: { position: "right", ticks: { color: "#2979FF", callback: (v) => "$" + v }, grid: { display: false }, title: { display: true, text: "Price", color: "#2979FF" } } } }
          });
         }
@@ -1635,7 +1636,7 @@ function bindZoomHandlers() {
            pointBackgroundColor: "#0d131d", pointBorderColor: "#f97316", pointBorderWidth: 2,
            yAxisID: "yRatio", order: 1, tension: 0.15, spanGaps: true },
          { type: "bar", label: "Cash & equivalents", data: records.map((r) => r.cash),
-           backgroundColor: "#4dd2aa", borderRadius: 3, yAxisID: "yAmount", order: 2 },
+           backgroundColor: "#4dd2aa", borderRadius: 3, yAxisID: "yCash", order: 2 },
          { type: "bar", label: "Total debt", data: records.map((r) => r.total_debt),
            backgroundColor: "#f37d83", borderRadius: 3, yAxisID: "yAmount", order: 3 },
         ] : [
@@ -1673,7 +1674,9 @@ function bindZoomHandlers() {
            yRatio: { position: "left", ticks: { color: "#dbe5f1", callback: (v) => v + (isBal ? "x" : "%") }, grid: { color: "rgba(42,46,57,0.4)" },
             title: { display: true, text: isBal ? "Current ratio" : "FCF margin %", color: "#f97316" } },
            yAmount: { position: "right", ticks: { color: "#dbe5f1", callback: fmtM }, grid: { display: false },
-            title: { display: true, text: isBal ? "Cash / Debt" : "Cash flow", color: "#dbe5f1" } } } }
+            title: { display: true, text: isBal ? "Debt" : "Cash flow", color: "#dbe5f1" } },
+           ...(isBal ? { yCash: { position: "right", ticks: { color: "#4dd2aa", callback: fmtM }, grid: { display: false },
+            title: { display: true, text: "Cash", color: "#4dd2aa" } } } : {}) } }
         });
        } else if (kind === "comps") {
         // Rebuild the comps scatter at modal size, same metric the inline
@@ -8848,14 +8851,19 @@ route("alerts", function () {
    });
    bars = agg;
   }
-  // limit to last 120 bars for readability
-  if (bars.length > 120) bars = bars.slice(-120);
+  // SMAs are computed on the FULL history first (an SMA 200 needs 200
+  // bars), then the display window is cut to the last 120 bars.
+  const allCloses = bars.map((b) => b.c);
+  const smaFull = (n) => allCloses.map((_, i) => i < n - 1 ? null : allCloses.slice(i - n + 1, i + 1).reduce((a, b2) => a + b2, 0) / n);
+  const smaCache = { 10: smaFull(10), 20: smaFull(20), 50: smaFull(50), 200: smaFull(200) };
+  const cut = Math.max(0, bars.length - 120);
+  if (cut > 0) bars = bars.slice(cut);
   const up = bars.map((b) => b.c >= b.o);
   const labels = bars.map((b) => new Date(b.t).toLocaleDateString("en-US", { month: "short", day: "numeric" }));
   const bodies = bars.map((b) => [Math.min(b.o, b.c), Math.max(b.o, b.c)]);
   const closes = bars.map((b) => b.c);
   const vols = bars.map((b) => b.v);
-  const sma = (n) => closes.map((_, i) => i < n - 1 ? null : closes.slice(i - n + 1, i + 1).reduce((a, b2) => a + b2, 0) / n);
+  const sma = (n) => smaCache[n].slice(cut);
   const smaDs = (label, data, color) => ({
    type: "line", label, data,
    borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0, spanGaps: true,
@@ -8894,7 +8902,7 @@ route("alerts", function () {
     smaDs("SMA 10", sma(10), "#f37d83"),
     smaDs("SMA 20", sma(20), "#ff9800"),
     smaDs("SMA 50", sma(50), "#2962ff"),
-    ...(closes.length >= 100 ? [smaDs("SMA 200", sma(200), "#00bcd4")] : []),
+    ...(allCloses.length >= 200 ? [smaDs("SMA 200", sma(200), "#00bcd4")] : []),
    ]},
    options: {
     responsive: true, maintainAspectRatio: false,
@@ -9803,7 +9811,7 @@ route("alerts", function () {
        pointBackgroundColor: "#0d131d", pointBorderColor: "#f97316", pointBorderWidth: 2,
        yAxisID: "yRatio", order: 1, tension: 0.15, spanGaps: true },
      { type: "bar", label: "Cash & equivalents", data: records.map((r) => r.cash),
-       backgroundColor: "#4dd2aa", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 2 },
+       backgroundColor: "#4dd2aa", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yCash", order: 2 },
      { type: "bar", label: "Total debt", data: records.map((r) => r.total_debt),
        backgroundColor: "#f37d83", borderRadius: 3, barPercentage: 0.7, categoryPercentage: 0.65, yAxisID: "yAmount", order: 3 },
     ],
@@ -9831,6 +9839,8 @@ route("alerts", function () {
       grid: { color: (c) => c.tick.value === 0 ? "#647184" : "rgba(42,46,57,0.35)" } },
      yAmount: { type: "linear", position: "right",
       ticks: { color: "#a9b7c9", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
+     yCash: { type: "linear", position: "right",
+      ticks: { color: "#4dd2aa", callback: fmtMoney, font: { size: 11 } }, grid: { display: false } },
     },
    },
   });

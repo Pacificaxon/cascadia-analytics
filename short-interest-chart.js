@@ -92,7 +92,10 @@
   function buildChart(canvas, rows, ticker) {
     var labels = rows.map(function (r) { return fmtDate(r.date); });
     var bars = rows.map(function (r) { return r.shortInterest; });
+    var isDtc = !!(rows.length && rows[0]._isDaysToCover);
+    var lineLabel = isDtc ? "Days to Cover" : "Short float";
     var line = rows.map(function (r) {
+      if (isDtc) return r.daysToCover != null ? r.daysToCover : null;
       return r.shortFloat != null ? r.shortFloat * 100 : null;
     });
 
@@ -116,7 +119,7 @@
             order: 2
           },
           {
-            label: "Short float",
+            label: lineLabel,
             data: line,
             type: "line",
             borderColor: CHART_WHITE,
@@ -145,6 +148,8 @@
               label: function (ctx) {
                 if (ctx.datasetIndex === 0)
                   return " Short interest: " + Number(ctx.raw).toLocaleString();
+                if (isDtc)
+                  return " Days to cover: " + Number(ctx.raw).toFixed(2);
                 return " Short float: " + Number(ctx.raw).toFixed(2) + "%";
               }
             }
@@ -161,7 +166,7 @@
           },
           y: {
             position: "left",
-            beginAtZero: false,
+            beginAtZero: true,
             suggestedMax: maxBar * 1.1,
             grid: { color: GRID_COLOR, borderDash: [2, 4] },
             ticks: {
@@ -177,7 +182,7 @@
             grid: { display: false },
             ticks: {
               color: TEXT_COLOR,
-              callback: function (v) { return v + "%"; }
+              callback: function (v) { return isDtc ? String(v) : v + "%"; }
             }
           }
         }
@@ -198,7 +203,7 @@
       "</div>" +
       '<div style="display:flex;gap:24px;margin-bottom:8px;font-size:13px;color:' + TEXT_COLOR + ';">' +
       '<span><span style="display:inline-block;width:24px;height:4px;background:' + CHART_RED + ';border-radius:2px;vertical-align:middle;margin-right:8px;"></span>Short interest</span>' +
-      '<span><span style="display:inline-block;width:24px;height:4px;background:' + CHART_WHITE + ';border-radius:2px;vertical-align:middle;margin-right:8px;"></span>Short float</span>' +
+      '<span><span style="display:inline-block;width:24px;height:4px;background:' + CHART_WHITE + ';border-radius:2px;vertical-align:middle;margin-right:8px;"></span><span id="' + id + '-line-label">Days to cover</span></span>' +
       "</div>" +
       '<div id="' + id + '-body" class="zoomable-chart" data-chart="short-interest" data-ticker="' + escapeHtml(ticker) + '" style="position:relative;height:300px;cursor:zoom-in;" title="Click to zoom">' +
       '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">&#x26F6; click to zoom</div>' +
@@ -233,6 +238,8 @@
         return;
       }
       chartData = rows;
+      var ll = document.getElementById(id + "-line-label");
+      if (ll) ll.textContent = (rows.length && rows[0]._isDaysToCover) ? "Days to cover" : "Short float";
       body.innerHTML = '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;z-index:5;">&#x26F6; click to zoom</div>' +
         '<canvas id="' + id + '-canvas"></canvas>';
       var canvas = document.getElementById(id + "-canvas");
