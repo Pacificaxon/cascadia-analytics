@@ -16425,9 +16425,10 @@ function volSurfaceHtml() {
   if (!allMemos.length) {
    h += '<div class="card"><p style="color:#a9b7c9;">No memos yet.</p></div>';
   } else {
-   const geoMemos = allMemos.filter((m) => m.section === "Geopolitics").reverse();
-   const macroMemos = allMemos.filter((m) => m.section === "Macro Analysis").reverse();
-   const restMemos = allMemos.filter((m) => m.section !== "Geopolitics" && m.section !== "Macro Analysis").reverse();
+   const isGeoMemo = (m) => m.section === "Geopolitics" || (m.id || "").startsWith("geopolitics-");
+   const geoMemos = allMemos.filter((m) => isGeoMemo(m)).reverse();
+   const macroMemos = allMemos.filter((m) => !isGeoMemo(m) && m.section === "Macro Analysis").reverse();
+   const restMemos = allMemos.filter((m) => !isGeoMemo(m) && m.section !== "Macro Analysis").reverse();
    const memoCard = (m) => {
     let c = '<a href="#/memos/' + esc(m.id) + '" style="text-decoration:none;">';
     c += '<div class="card" style="margin-bottom:16px;cursor:pointer;">';
@@ -16497,6 +16498,11 @@ function volSurfaceHtml() {
     b += '</div>';
     return b;
    };
+   if (restMemos.length) {
+    h += '<div id="memo-sec-research" data-toc="Research Memos" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">RESEARCH MEMOS</div>';
+    h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Company research, trade ideas, and valuation notes.</div>';
+    restMemos.forEach((m) => { h += memoCard(m); });
+   }
    if (geoMemos.length) {
     h += '<div id="memo-sec-geopolitics" data-toc="Geopolitics" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">GEOPOLITICS</div>';
     h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Politics that move markets: energy shocks, elections, unrest, and great-power friction.</div>';
@@ -16516,11 +16522,6 @@ function volSurfaceHtml() {
     h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Data, policy, and the bellwether earnings that read the economy.</div>';
     h += bwBoardHtml();
     macroMemos.forEach((m) => { h += memoCard(m); });
-   }
-   if (restMemos.length) {
-    h += '<div id="memo-sec-research" data-toc="Research Memos" style="font-size:14px;font-weight:700;color:#d9a441;letter-spacing:1px;margin:24px 0 8px;">RESEARCH MEMOS</div>';
-    h += '<div style="font-size:13px;color:#a9b7c9;margin-bottom:16px;">Company research, trade ideas, and valuation notes.</div>';
-    restMemos.forEach((m) => { h += memoCard(m); });
    }
   }
   h += '</div>';
