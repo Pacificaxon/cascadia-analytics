@@ -8117,7 +8117,7 @@ route("alerts", function () {
   if (tkTocResize) { try { window.removeEventListener("resize", tkTocResize); } catch (e) {} tkTocResize = null; }
   if (tkTocScroll) { try { window.removeEventListener("scroll", tkTocScroll); } catch (e) {} tkTocScroll = null; }
   if (tkTocBarCleanup) { try { tkTocBarCleanup(); } catch (e) {} tkTocBarCleanup = null; }
-  ["tk-toc-spacer", "tk-top-btn"].forEach((id) => {
+  ["tk-toc-spacer"].forEach((id) => {
    const n = document.getElementById(id);
    if (n && n.parentNode) n.parentNode.removeChild(n);
   });
@@ -8157,22 +8157,6 @@ route("alerts", function () {
   spacer.style.marginBottom = barCS.marginBottom;
   bar.parentNode.insertBefore(spacer, bar);
   bar.classList.add("is-fixed");
-  // Floating return shortcut: appears once the reader has scrolled well
-  // past the hero (the bar's natural slot is above the viewport), and
-  // smooth-scrolls back to the top of the page where the TOC sits.
-  const topBtn = document.createElement("button");
-  topBtn.type = "button";
-  topBtn.id = "tk-top-btn";
-  topBtn.className = "tk-top-btn";
-  topBtn.textContent = "↑ Sections";
-  topBtn.setAttribute("aria-label", "Back to the sections menu at the top of this page");
-  bar.parentNode.appendChild(topBtn);
-  const onTopBtn = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
-  topBtn.addEventListener("click", onTopBtn);
-  const updateTopBtn = () => {
-   const past = window.scrollY > 400 && spacer.getBoundingClientRect().top < 0;
-   topBtn.classList.toggle("show", past);
-  };
   // Fixed geometry: the bar pins directly beneath the site topbar, and
   // jump targets clear both bars via scroll-margin-top. Measure live so
   // topbar height changes (mobile nav wrapping, resize) stay correct.
@@ -8218,7 +8202,6 @@ route("alerts", function () {
    bar.removeEventListener("touchstart", noteUserBar);
    bar.removeEventListener("wheel", noteUserBar);
    bar.removeEventListener("scroll", onBarScroll);
-   topBtn.removeEventListener("click", onTopBtn);
   };
   // Scrollspy: the active chip is the last section whose top has scrolled
   // up to the sticky stack (topbar + TOC bar) line; before the first
@@ -8262,7 +8245,7 @@ route("alerts", function () {
   tkTocScroll = () => {
    if (spyTicking) return;
    spyTicking = true;
-   requestAnimationFrame(() => { spyTicking = false; spy(); updateTopBtn(); });
+   requestAnimationFrame(() => { spyTicking = false; spy(); });
   };
   window.addEventListener("scroll", tkTocScroll, { passive: true });
   if (typeof IntersectionObserver !== "undefined") {
@@ -8271,7 +8254,6 @@ route("alerts", function () {
    secs.forEach((s) => tkTocObserver.observe(s));
   }
   spy();
-  updateTopBtn();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (document.contains(bar)) stackH = applyOffsets(); });
  }
 
@@ -11110,7 +11092,7 @@ route("alerts", function () {
  let scrTocCleanup = null;
  function cleanupScreenerToc() {
   if (scrTocCleanup) { try { scrTocCleanup(); } catch (e) {} scrTocCleanup = null; }
-  ["scr-toc-spacer", "scr-top-btn"].forEach((id) => {
+  ["scr-toc-spacer"].forEach((id) => {
    const n = document.getElementById(id);
    if (n && n.parentNode) n.parentNode.removeChild(n);
   });
@@ -11136,15 +11118,6 @@ route("alerts", function () {
   spacer.style.marginBottom = barCS.marginBottom;
   bar.parentNode.insertBefore(spacer, bar);
   bar.classList.add("is-fixed");
-  const topBtn = document.createElement("button");
-  topBtn.type = "button";
-  topBtn.id = "scr-top-btn";
-  topBtn.className = "tk-top-btn";
-  topBtn.textContent = "↑ Sections";
-  topBtn.setAttribute("aria-label", "Back to the sections menu at the top of this page");
-  bar.parentNode.appendChild(topBtn);
-  const onTopBtn = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
-  topBtn.addEventListener("click", onTopBtn);
   const applyOffsets = () => {
    const topbar = document.querySelector(".topbar");
    const topH = topbar ? topbar.offsetHeight : 0;
@@ -11181,8 +11154,6 @@ route("alerts", function () {
     let idx = 0;
     secs.forEach((s, i) => { if (s.getBoundingClientRect().top <= line + 2) idx = i; });
     setActive(idx);
-    const past = window.scrollY > 400 && spacer.getBoundingClientRect().top < 0;
-    topBtn.classList.toggle("show", past);
    });
   };
   window.addEventListener("scroll", onScroll, { passive: true });
@@ -11190,7 +11161,6 @@ route("alerts", function () {
   onScroll();
   scrTocCleanup = () => {
    bar.removeEventListener("click", onChip);
-   topBtn.removeEventListener("click", onTopBtn);
    window.removeEventListener("scroll", onScroll);
    window.removeEventListener("resize", applyOffsets);
   };
@@ -11210,7 +11180,7 @@ route("alerts", function () {
  let memoTocCleanup = null;
  function cleanupMemosToc() {
   if (memoTocCleanup) { try { memoTocCleanup(); } catch (e) {} memoTocCleanup = null; }
-  ["memo-toc-spacer", "memo-top-btn"].forEach((id) => {
+  ["memo-toc-spacer"].forEach((id) => {
    const n = document.getElementById(id);
    if (n && n.parentNode) n.parentNode.removeChild(n);
   });
@@ -11236,15 +11206,6 @@ route("alerts", function () {
   spacer.style.marginBottom = barCS.marginBottom;
   bar.parentNode.insertBefore(spacer, bar);
   bar.classList.add("is-fixed");
-  const topBtn = document.createElement("button");
-  topBtn.type = "button";
-  topBtn.id = "memo-top-btn";
-  topBtn.className = "tk-top-btn";
-  topBtn.textContent = "↑ Sections";
-  topBtn.setAttribute("aria-label", "Back to the sections menu at the top of this page");
-  bar.parentNode.appendChild(topBtn);
-  const onTopBtn = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
-  topBtn.addEventListener("click", onTopBtn);
   const applyOffsets = () => {
    const topbar = document.querySelector(".topbar");
    const topH = topbar ? topbar.offsetHeight : 0;
@@ -11281,8 +11242,6 @@ route("alerts", function () {
     let idx = 0;
     secs.forEach((s, i) => { if (s.getBoundingClientRect().top <= line + 2) idx = i; });
     setActive(idx);
-    const past = window.scrollY > 400 && spacer.getBoundingClientRect().top < 0;
-    topBtn.classList.toggle("show", past);
    });
   };
   window.addEventListener("scroll", onScroll, { passive: true });
@@ -11290,7 +11249,6 @@ route("alerts", function () {
   onScroll();
   memoTocCleanup = () => {
    bar.removeEventListener("click", onChip);
-   topBtn.removeEventListener("click", onTopBtn);
    window.removeEventListener("scroll", onScroll);
    window.removeEventListener("resize", applyOffsets);
   };

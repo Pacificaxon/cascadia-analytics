@@ -790,21 +790,6 @@ table.fin-table tr:last-child td { border-bottom: none; }
 .risk-sum-regime { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 .risk-sum-meta { margin-left: auto; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
 .tk-page [data-toc] { scroll-margin-top: 150px; }
-/* Floating return shortcut on ticker pages: created by initTickerToc,
-   shown only once the reader has scrolled well past the hero, and it
-   smooth-scrolls back to the top of the page where the TOC bar sits.
-   z-index stays below the modal layer (.modal-back is 100, the PDF
-   modal 1000) so it never overlaps modal UI. */
-.tk-top-btn {
-  position: fixed; right: calc(14px + env(safe-area-inset-right)); bottom: calc(14px + env(safe-area-inset-bottom));
-  z-index: 60; cursor: pointer; appearance: none;
-  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--gold); background: #151d29; border: 1px solid var(--gold); border-radius: 999px;
-  padding: 9px 14px; box-shadow: var(--shadow);
-  opacity: 0; visibility: hidden; transform: translateY(8px); pointer-events: none;
-  transition: opacity .2s, transform .2s, visibility .2s;
-}
-.tk-top-btn.show { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
 
 /* ---------- artifact internals panel tone (monitor / analysis / risk) ----------
    The artifact's Market Internals panels sit one step lighter than the page
