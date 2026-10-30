@@ -6946,7 +6946,9 @@ function wireAcademyInteractive(kind) {
    const spread = r - wacc;
    const col = spread >= 0 ? "#4dd2aa" : "#f37d83";
    const w = 560, h = 90, pad = 8;
-   const cx = w / 2, scale = (w - pad * 2 - 40) / 2 / 12;
+   // Sliders allow ROIC 2-25 and WACC 4-15, so the spread runs -13pp to
+   // +21pp; the bar scale must cover that or the bar overflows the SVG.
+   const cx = w / 2, scale = (w - pad * 2 - 40) / 2 / 22;
    $("roic-out").innerHTML = acadSvgOpen(w, h) +
     '<line x1="' + cx + '" y1="10" x2="' + cx + '" y2="60" stroke="#1d2938"/>' +
     '<rect x="' + Math.min(cx, cx + spread * scale) + '" y="24" width="' + Math.abs(spread * scale) + '" height="22" rx="4" fill="' + col + '" opacity="0.85"/>' +
@@ -7015,8 +7017,12 @@ function wireAcademyInteractive(kind) {
   const draw = (m) => {
    const w = 560, h = 200, pad = 40;
    const x = (d) => pad + ((d - 5) / 45) * (w - pad - 16);
-   const iv = (d) => m === "normal" ? 22 + 14 * Math.exp(-(d - 12) / 9) - 0.06 * d : 22 - 8 * Math.exp(-(d - 38) / 8) + 0.05 * d;
-   const y = (v) => h - pad - ((v - 14) / 22) * (h - pad - 24);
+   // Both curves stay inside the plotted domain [12, 44]: the old normal
+   // curve peaked at 52 (clipped until delta 11.6, cutting off the put
+   // wing the chart exists to show) and the old inverted curve dove below
+   // -400, invisible for two thirds of the delta range.
+   const iv = (d) => m === "normal" ? 22 + 9 * Math.exp(-(d - 12) / 9) - 0.06 * d : 19 + 13 * Math.exp((d - 50) / 12);
+   const y = (v) => h - pad - ((v - 12) / 32) * (h - pad - 24);
    const pts = [];
    for (let d = 5; d <= 50; d += 1) pts.push([x(d), y(iv(d))]);
    $("sk-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) + acadPath(pts, "#d9a441", 2.5) +
@@ -7126,7 +7132,9 @@ function wireAcademyInteractive(kind) {
    const nom = [n5 - 0.15, n5, n10, n10 + 0.35];
    const tips = [t5 - 0.20, t5, t10, t10 + 0.25];
    const be = nom.map((v, i) => v - tips[i]);
-   const lo = -1, hi = 7;
+   // Reachable extremes from the sliders: breakeven up to 8.0 (7 nominal
+   // less -1 TIPS), 30Y nominal up to 7.35, TIPS down to -1.2.
+   const lo = -2, hi = 9;
    const x = (i) => pad + (i / 3) * (W - pad - 16);
    const y = (v) => H - pad - ((v - lo) / (hi - lo)) * (H - pad - 24);
    const line = (vals, col, dash) => acadPath(vals.map((v, i) => [x(i), y(v)]), col, 2.5, dash);
@@ -7290,10 +7298,15 @@ function wireAcademyInteractive(kind) {
     return prem - Math.max(0, k - s);
    };
    const be = (mode === "long_call" || mode === "short_call") ? k + prem : k - prem;
-   const yMax = 40, yMin = -20;
+   // The domain is derived from the payoff at the window edges so the
+   // tails are never clamped flat (a flat short-call tail read as capped
+   // loss directly under a note saying the risk is uncapped).
+   const isLong = mode.indexOf("long") === 0;
+   const yMax = (isLong ? Math.max(10, 40 - prem) : prem) + 4;
+   const yMin = (isLong ? -prem : prem - 40) - 4;
    const y = (v) => h - pad - ((v - yMin) / (yMax - yMin)) * (h - pad - 24);
    const pts = [];
-   for (let s = lo; s <= hi; s += 1) pts.push([x(s), y(Math.max(yMin, Math.min(yMax, payoff(s))))]);
+   for (let s = lo; s <= hi; s += 1) pts.push([x(s), y(payoff(s))]);
    const col = mode.indexOf("long") === 0 ? "#4dd2aa" : "#f37d83";
    const maxRisk = mode.indexOf("long") === 0 ? "$" + (prem * 100).toFixed(0) : (mode === "short_call" ? "uncapped" : "$" + ((k - prem) * 100).toFixed(0));
    $("sl-out").innerHTML = acadSvgOpen(w, h) + acadAxes(w, h, pad) +
@@ -7331,12 +7344,15 @@ function wireAcademyInteractive(kind) {
     return (Math.max(0, s - s0) + Math.max(0, s0 - s)) - cr;
    };
    let yMax, yMin, maxGain, maxLoss, vega;
-   if (mode === "iron_condor") { yMax = cr + 2; yMin = -(wdt - cr) - 2; maxGain = "$" + (cr * 100).toFixed(0); maxLoss = "$" + ((wdt - cr) * 100).toFixed(0); vega = "short vega"; }
+   // The condor wings sit at spot +/- wdt and the short strikes at
+   // +/- wdt/2, so each spread is wdt/2 wide and the max loss is
+   // (wdt/2 - credit); the axis and the note now use that same width.
+   if (mode === "iron_condor") { yMax = cr + 2; yMin = -(wdt / 2 - cr) - 2; maxGain = "$" + (cr * 100).toFixed(0); maxLoss = "$" + ((wdt / 2 - cr) * 100).toFixed(0); vega = "short vega"; }
    else if (mode === "bull_call") { yMax = (wdt - cr) + 2; yMin = -cr - 2; maxGain = "$" + ((wdt - cr) * 100).toFixed(0); maxLoss = "$" + (cr * 100).toFixed(0); vega = "near zero vega"; }
-   else { yMax = 30; yMin = -cr - 2; maxGain = "uncapped"; maxLoss = "$" + (cr * 100).toFixed(0); vega = "long vega"; }
+   else { yMax = (35 - cr) + 2; yMin = -cr - 2; maxGain = "uncapped"; maxLoss = "$" + (cr * 100).toFixed(0); vega = "long vega"; }
    const y = (v) => h - pad - ((v - yMin) / (yMax - yMin)) * (h - pad - 24);
    const pts = [];
-   for (let s = lo; s <= hi; s += 0.5) pts.push([x(s), y(Math.max(yMin, Math.min(yMax, payoff(s))))]);
+   for (let s = lo; s <= hi; s += 0.5) pts.push([x(s), y(payoff(s))]);
    let strikeMarks = "";
    if (mode === "iron_condor") {
     strikeMarks = [k2, k3].map((k) => '<line x1="' + x(k) + '" y1="8" x2="' + x(k) + '" y2="' + (h - pad) + '" stroke="#4dd2aa" stroke-dasharray="4"/><text x="' + x(k) + '" y="' + (h - pad + 16) + '" fill="#4dd2aa" font-size="10" text-anchor="middle">short ' + k.toFixed(0) + '</text>').join("");
@@ -11491,6 +11507,11 @@ route("alerts", function () {
   const bySec = {};
   recs.forEach((r) => {
    if (usePE && !(r.forwardPe > 0 && r.forwardPe < 150)) return;
+   // Negative EV/Revenue is not a plottable multiple: clamping it to the
+   // axis drew five names at exactly 0x. They leave the scatter (the
+   // table below keeps every name with its true value), mirroring the
+   // P/E view's positivity filter.
+   if (!usePE && !(r.ntmEvRevenue > 0)) return;
    (bySec[r.sector] = bySec[r.sector] || []).push(r);
   });
   // Data-driven axis caps from the names plotted on this view (see the
@@ -12123,13 +12144,26 @@ route("alerts", function () {
  function multiplesChartConfig(pts, metricKey, mst, ticker) {
   const mlabel = (MULT_METRICS.find((m) => m.key === metricKey) || {}).label || metricKey;
   const flat = (v) => pts.map(() => v);
+  // The band and the mean/median lines are computed on the DISPLAYED
+  // horizon, not full history. Full-history stats are dominated by the
+  // early years (for AXON, P/E prints in the hundreds when earnings were
+  // tiny), which stretched the axis to 1000x and crushed the visible
+  // series. The stat cards above the chart keep the full-history basis
+  // and say so; the chart now describes the window it shows.
+  const vals = pts.map((p) => p[metricKey]).filter((v) => v != null && isFinite(v));
+  const n = vals.length;
+  const wMean = n ? vals.reduce((a, b) => a + b, 0) / n : 0;
+  const sorted = vals.slice().sort((a, b) => a - b);
+  const wMedian = n ? (n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2) : 0;
+  const wStd = n > 1 ? Math.sqrt(vals.reduce((a, b) => a + (b - wMean) * (b - wMean), 0) / (n - 1)) : 0;
+  const bandHi = wMean + wStd, bandLo = Math.max(0, wMean - wStd);
   return {
    type: "line",
    data: { labels: pts.map((p) => p.date), datasets: [
-    { label: "+1σ band", data: flat(mst.plus_1sigma), borderColor: "rgba(217,164,65,0)", borderWidth: 0, pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
-    { label: "-1σ band", data: flat(mst.minus_1sigma), borderColor: "rgba(217,164,65,0.45)", backgroundColor: "rgba(217,164,65,0.10)", borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, fill: "-1", tension: 0 },
-    { label: "Median " + multX(mst.median), data: flat(mst.median), borderColor: "#4dd2aa", borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
-    { label: "Mean " + multX(mst.mean), data: flat(mst.mean), borderColor: "#a9b7c9", borderWidth: 1.5, borderDash: [2, 3], pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
+    { label: "+1σ band", data: flat(bandHi), borderColor: "rgba(217,164,65,0)", borderWidth: 0, pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
+    { label: "-1σ band", data: flat(bandLo), borderColor: "rgba(217,164,65,0.45)", backgroundColor: "rgba(217,164,65,0.10)", borderWidth: 1, borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 0, fill: "-1", tension: 0 },
+    { label: "Median " + multX(wMedian), data: flat(wMedian), borderColor: "#4dd2aa", borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
+    { label: "Mean " + multX(wMean), data: flat(wMean), borderColor: "#a9b7c9", borderWidth: 1.5, borderDash: [2, 3], pointRadius: 0, pointHoverRadius: 0, fill: false, tension: 0 },
     { label: ticker + " " + mlabel, data: pts.map((p) => p[metricKey]), borderColor: "#d9a441", borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, fill: false, tension: 0.1, spanGaps: true }
    ]},
    options: { animation: false, responsive: true, maintainAspectRatio: false,
@@ -12283,7 +12317,7 @@ route("alerts", function () {
    d += '<div class="card" style="padding:14px;">' +
     '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:8px;">' +
     '<div style="font-size:13px;font-weight:700;">' + esc(st.ticker) + " " + esc(mlabel) + ' <span style="color:#a9b7c9;font-weight:400;">' + esc(t.name || "") + "</span></div>" +
-    '<div style="font-size:11px;color:#a9b7c9;">Horizon ' + esc(st.horizon) + " · statistics are full history" + (t.history_start ? " since " + esc(t.history_start) : "") + "</div></div>";
+    '<div style="font-size:11px;color:#a9b7c9;">Horizon ' + esc(st.horizon) + " · band, mean and median computed on the displayed horizon; cards above are full history" + (t.history_start ? " since " + esc(t.history_start) : "") + "</div></div>";
    if (mst && validPts.length >= 2) {
     d += '<div style="position:relative;height:340px;width:100%;"><canvas id="mult-chart"></canvas></div>';
    } else if (!mst) {
@@ -15953,12 +15987,16 @@ function volSurfaceHtml() {
     type: "line",
     data: {
      labels: ch.dates,
+     // An SMA dataset is included only when the window actually carries
+     // values for it. Monthly bars span about 60 points, so a 200-period
+     // average can never exist there; advertising it in the legend drew a
+     // line that never renders. Weekly carries it for the later half of
+     // the window only, which is accurate and stays.
      datasets: [
       ds("Price", ch.close, "#d5dbe5", 1.8),
-      ds("SMA 10", ch.sma10, "#f37d83"),
-      ds("SMA 20", ch.sma20, "#ff9800"),
-      ds("SMA 50", ch.sma50, "#2962ff"),
-      ds("SMA 200", ch.sma200, "#00bcd4"),
+      ...[["SMA 10", ch.sma10, "#f37d83"], ["SMA 20", ch.sma20, "#ff9800"], ["SMA 50", ch.sma50, "#2962ff"], ["SMA 200", ch.sma200, "#00bcd4"]]
+       .filter(([, data]) => Array.isArray(data) && data.some((v) => v != null && isFinite(v)))
+       .map(([labelTxt, data, color]) => ds(labelTxt, data, color)),
      ],
     },
     options: {
