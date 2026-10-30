@@ -983,6 +983,8 @@ function bindZoomHandlers() {
         if (d.zero_gamma != null) levels.push({ label: "Zero Gamma (flip)", value: d.zero_gamma, color: "#c678dd" });
         if (d.call_wall != null) levels.push({ label: "Call Wall (resistance)", value: d.call_wall, color: "#4dd2aa" });
         levels.sort((a, b) => a.value - b.value);
+        const lvVals = levels.map((l) => l.value);
+        const lvLo = Math.floor(Math.min(...lvVals) - (Math.max(...lvVals) - Math.min(...lvVals)) * 0.6);
         new Chart(zc, {
          type: "bar",
          data: {
@@ -1002,7 +1004,7 @@ function bindZoomHandlers() {
             callbacks: { label: (c) => " $" + c.parsed.x.toFixed(2) } },
           },
           scales: {
-           x: { ticks: { color: "#dbe5f1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
+           x: { min: lvLo, ticks: { color: "#dbe5f1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
            y: { ticks: { color: "#dbe5f1" }, grid: { display: false } },
           },
          },
@@ -1282,8 +1284,8 @@ function bindZoomHandlers() {
            datasets: [
             { type: "line", label: "Net Liquidity ($B)", data: hist.map((r) => r.netLiquidity),
               borderColor: "#d9a441", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yLiq" },
-            { type: "line", label: "SPY", data: hist.map((r) => r.spy),
-              borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+            { type: "line", label: "SPY", data: hist.map((r) => (r.spy ? r.spy : null)),
+              borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
@@ -1312,7 +1314,7 @@ function bindZoomHandlers() {
               borderColor: "#e0aa46", backgroundColor: "rgba(210,153,34,0.1)", fill: true,
               borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yScore" },
             { type: "line", label: "SPY", data: hist.map((r) => r.spy),
-              borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+              borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
@@ -1341,14 +1343,14 @@ function bindZoomHandlers() {
               borderColor: "#f37d83", backgroundColor: "rgba(248,81,73,0.1)", fill: true,
               borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yOsc" },
             { type: "line", label: "SPY", data: hist.map((r) => r.spy),
-              borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+              borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
            plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
            scales: {
             x: {ticks: {color: "#647184", maxTicksLimit: 10}, grid: {display: false}},
-            yOsc: {position: "left", min: -3, max: 3, ticks: {color: "#f37d83"}, grid: {color: "rgba(42,46,57,0.4)"}},
+            yOsc: {position: "left", min: Math.floor(Math.min(...hist.map((r) => r.oscillator).filter((v) => v != null))) - 1, max: Math.ceil(Math.max(...hist.map((r) => r.oscillator).filter((v) => v != null))) + 1, ticks: {color: "#f37d83"}, grid: {color: "rgba(42,46,57,0.4)"}},
             ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
            }},
          });
@@ -1373,7 +1375,7 @@ function bindZoomHandlers() {
             { type: "line", label: "SPY", data: hist.map((r) => r.spy),
               borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
             { type: "line", label: "RSP", data: hist.map((r) => r.rsp),
-              borderColor: "#a9b7c9", borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.2 },
+              borderColor: "#a9b7c9", borderWidth: 2, pointRadius: 0, tension: 0.2 },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
@@ -1400,7 +1402,7 @@ function bindZoomHandlers() {
             { type: "line", label: "Margin Debt YoY (%)", data: hist.map((r) => r.marginYoY),
               borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.2 },
             { type: "line", label: "SPY YoY (%)", data: hist.map((r) => r.spyYoY),
-              borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2 },
+              borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
            ]},
           options: { animation: false, responsive: true, maintainAspectRatio: false,
            interaction: { mode: "index", intersect: false },
@@ -1506,7 +1508,7 @@ function bindZoomHandlers() {
             callbacks: { label: (c) => " " + c.dataset.label + ": " + c.parsed.y.toFixed(0) + "% (normalized)" } } },
           scales: {
            x: { ticks: { color: "#dbe5f1", maxTicksLimit: 12, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
-           y: { min: -50, max: 150, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
+           y: { min: 0, max: 100, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" },
             title: { display: true, text: "Normalized (0–100%)", color: "#dbe5f1" } } } }
         });
        } else if (kind === "leadership") {
@@ -2590,7 +2592,7 @@ function bindZoomHandlers() {
   const barData = d.strikes.map((s) => s.net_gex);
   const barColors = d.strikes.map((s) => s.net_gex >= 0 ? "#2f6fed" : "#f0a030");
   const aggMap = {};
-  (d.agg || []).forEach((a) => { aggMap[a.strike] = a.agg_gex; });
+  (d.agg || d.agg_curve || []).forEach((a) => { aggMap[a.strike] = a.agg_gex; });
   const aggData = labels.map((k) => aggMap[k] !== undefined ? aggMap[k] : null);
   const ann = {};
   if (d.spot != null) ann.spot = { type: "line", xMin: d.spot, xMax: d.spot, borderColor: "#4dd2aa", borderWidth: 2, label: { display: true, content: "Spot", position: "start", color: "#4dd2aa", font: { size: 10 } } };
@@ -3209,7 +3211,7 @@ function bindZoomHandlers() {
   const hist = (pro && pro.history) || [];
   const bands = cur.bands || {};
   h += '<div style="margin-top:16px;"><div class="section-title">Summation Index vs S&amp;P 500 ' + PRO_BADGE + '</div>' +
-   '<div class="section-sub">Gold line is the Summation Index on the left axis. Grey dashed line is the S&amp;P 500 on the right axis. Click the chart to zoom.</div>' +
+   '<div class="section-sub">Gold line is the Summation Index on the left axis. Grey line is the S&amp;P 500 on the right axis. Click the chart to zoom.</div>' +
    '<div class="card"><div style="position:relative;height:320px;"><canvas id="mcclellan-chart" class="zoomable-chart" data-chart="mcclellan"></canvas></div></div>' +
    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px;">' +
    '<div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;">Overbought above</div><div style="font-size:18px;font-weight:800;color:#dbe5f1;">' + (bands.overbought != null ? sgn(bands.overbought) : "n/a") + '</div></div>' +
@@ -4107,7 +4109,7 @@ function mcclellanBreadthHtml() {
     '<span style="font-size:13px;color:#dbe5f1;">Scaling Mode</span>' +
     '<div style="margin-left:auto;display:flex;background:#0d131d;border-radius:20px;padding:3px;">' +
     '<button id="macro-norm-btn" style="background:#253142;color:#f5f7fa;border:0;border-radius:17px;padding:6px 16px;font-size:12px;cursor:pointer;">Normalized (0–100%)</button>' +
-    '<button id="macro-raw-btn" style="background:transparent;color:#dbe5f1;opacity:0.6;border:0;border-radius:17px;padding:6px 16px;font-size:12px;cursor:pointer;">Raw Prints</button>' +
+    '<button id="macro-raw-btn" style="background:transparent;color:#dbe5f1;opacity:0.6;border:0;border-radius:17px;padding:6px 16px;font-size:12px;cursor:pointer;">Indexed (start = 100)</button>' +
     "</div></div>" +
     '<div class="zoomable-chart" data-chart="macro" style="position:relative;height:320px;cursor:zoom-in;" title="Click to zoom"><canvas id="macro-chart"></canvas>' +
     '<div style="position:absolute;top:8px;right:10px;font-size:11px;color:#dbe5f1;background:rgba(19,23,34,0.8);padding:2px 8px;border-radius:4px;">⛶ click to zoom</div></div>' +
@@ -5380,12 +5382,17 @@ function mcclellanBreadthHtml() {
       const range = mx - mn || 1;
       return vals.map((v) => v == null ? null : ((v - mn) / range) * 100);
      };
+     const index100 = (vals) => {
+      const first = vals.find((v) => v != null);
+      if (first == null || first === 0) return vals;
+      return vals.map((v) => v == null ? null : (v / first) * 100);
+     };
      let normalizedMode = true;
      const buildDatasets = () => series.map((s) => {
       const raw = hist.map((r) => r[s.key]);
       return {
        label: s.label,
-       data: normalizedMode ? normalize(raw) : raw,
+       data: normalizedMode ? normalize(raw) : index100(raw),
        borderColor: s.color,
        backgroundColor: s.color,
        borderWidth: 2, pointRadius: 3, pointBackgroundColor: s.color,
@@ -5415,8 +5422,8 @@ function mcclellanBreadthHtml() {
        scales: {
         x: { ticks: { color: "#dbe5f1", maxTicksLimit: 9, maxRotation: 0 }, grid: { color: "rgba(42,46,57,0.4)" } },
         y: normalizedMode
-         ? { min: -50, max: 150, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
-         : { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" } },
+         ? { min: 0, max: 100, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
+         : { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Indexed, first month = 100", color: "#dbe5f1", font: { size: 11 } } },
        } }
      });
      // Bottom legend
@@ -5435,8 +5442,8 @@ function mcclellanBreadthHtml() {
       normalizedMode = norm;
       chart.data.datasets = buildDatasets();
       chart.options.scales.y = norm
-       ? { min: -50, max: 150, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
-       : { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" } };
+       ? { min: 0, max: 100, ticks: { color: "#dbe5f1", callback: (v) => v + "%" }, grid: { color: "rgba(42,46,57,0.4)" } }
+       : { ticks: { color: "#dbe5f1" }, grid: { color: "rgba(42,46,57,0.4)" }, title: { display: true, text: "Indexed, first month = 100", color: "#dbe5f1", font: { size: 11 } } };
       chart.update();
       if (normBtn && rawBtn) {
        normBtn.style.background = norm ? "#253142" : "transparent";
@@ -5502,6 +5509,8 @@ function mcclellanBreadthHtml() {
       if (d.call_wall != null) levels.push({ label: "Call Wall", value: d.call_wall, color: "#4dd2aa" });
       // Sort by price for the bar chart
       levels.sort((a, b) => a.value - b.value);
+      const lvVals = levels.map((l) => l.value);
+      const lvLo = Math.floor(Math.min(...lvVals) - (Math.max(...lvVals) - Math.min(...lvVals)) * 0.6);
       new Chart(cv, {
        type: "bar",
        data: {
@@ -5523,7 +5532,7 @@ function mcclellanBreadthHtml() {
           callbacks: { label: (c) => " $" + c.parsed.x.toFixed(2) } },
         },
         scales: {
-         x: { ticks: { color: "#dbe5f1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
+         x: { min: lvLo, ticks: { color: "#dbe5f1", callback: (v) => "$" + v.toFixed(0) }, grid: { color: "rgba(42,46,57,0.4)" } },
          y: { ticks: { color: "#dbe5f1", font: { size: 11 } }, grid: { display: false } },
         },
        },
@@ -5833,7 +5842,7 @@ function mcclellanChartConfig(hist) {
     type: "line",
     data: { labels: hist.map((r) => r.date), datasets: [
       { label: "McClellan Summation Index", data: hist.map((r) => r.msi), borderColor: "#d9a441", borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.1, yAxisID: "y" },
-      { label: "S&P 500", data: hist.map((r) => r.spx), borderColor: "#8e9fb5", borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 4, tension: 0.1, yAxisID: "y1" },
+      { label: "S&P 500", data: hist.map((r) => r.spx), borderColor: "#8e9fb5", borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4, tension: 0.1, yAxisID: "y1" },
     ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
       interaction: { mode: "index", intersect: false },
@@ -13052,9 +13061,9 @@ function oasDistressHtml() {
    data: {
     labels: hist.map((r) => r.date),
     datasets: [
-     { type: "line", label: "HY OAS (bps)", data: hist.map((r) => r.hy_oas),
+     { type: "line", label: "HY OAS (%)", data: hist.map((r) => r.hy_oas),
        borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.2 },
-     { type: "line", label: "Quality Spread (bps)", data: hist.map((r) => r.spread),
+     { type: "line", label: "Quality Spread (%)", data: hist.map((r) => r.spread),
        borderColor: "#e0aa46", borderWidth: 2, pointRadius: 0, tension: 0.2 },
     ]},
    options: { animation: false, responsive: true, maintainAspectRatio: false,
@@ -13586,20 +13595,20 @@ function macroRegimeHtml() {
     labels: hist.map((r) => r.date),
     datasets: [
      { type: "line", label: "Fiscal Blowout %", data: hist.map((r) => r.p_blowout),
-       borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+       borderColor: "#f37d83", backgroundColor: "rgba(243,125,131,0.5)", fill: true, stack: "regime", borderWidth: 1.5, pointRadius: 0, tension: 0.2 },
      { type: "line", label: "Plateau %", data: hist.map((r) => r.p_plateau),
-       borderColor: "#e0aa46", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+       borderColor: "#e0aa46", backgroundColor: "rgba(224,170,70,0.5)", fill: true, stack: "regime", borderWidth: 1.5, pointRadius: 0, tension: 0.2 },
      { type: "line", label: "Growth Decel. %", data: hist.map((r) => r.p_growth),
-       borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+       borderColor: "#58a6ff", backgroundColor: "rgba(88,166,255,0.5)", fill: true, stack: "regime", borderWidth: 1.5, pointRadius: 0, tension: 0.2 },
      { type: "line", label: "Liquidity Shock %", data: hist.map((r) => r.p_liquidity),
-       borderColor: "#a371f7", borderWidth: 2, pointRadius: 0, tension: 0.2 },
+       borderColor: "#a371f7", backgroundColor: "rgba(163,113,247,0.5)", fill: true, stack: "regime", borderWidth: 1.5, pointRadius: 0, tension: 0.2 },
     ]},
    options: { animation: false, responsive: true, maintainAspectRatio: false,
     interaction: { mode: "index", intersect: false },
     plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
     scales: {
      x: { ticks: { color: "#647184", maxTicksLimit: 8 }, grid: { display: false } },
-     y: { title: { display: true, text: "probability %", color: "#a9b7c9" },
+     y: { stacked: true, min: 0, max: 100, title: { display: true, text: "probability % (stacked)", color: "#a9b7c9" },
           ticks: { color: "#a9b7c9" }, grid: { color: "rgba(42,46,57,0.4)" } },
     }},
   };
@@ -14307,7 +14316,7 @@ function canaryRsChartConfig() {
     { label: "Canary " + canTk + " vs " + secTk, data: hist.map((r) => r.canaryRsToSector),
       borderColor: "#f37d83", borderWidth: 2.5, pointRadius: 0, tension: 0.2 },
     { label: secTk + " vs SPY", data: hist.map((r) => r.sectorRsToSpy),
-      borderColor: "#d9a441", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2 },
+      borderColor: "#d9a441", borderWidth: 2, pointRadius: 0, tension: 0.2 },
    ]},
   options: { animation: false, responsive: true, maintainAspectRatio: false,
    interaction: { mode: "index", intersect: false },
@@ -16737,8 +16746,8 @@ function volSurfaceHtml() {
      datasets: [
       { type: "line", label: "Net Liquidity ($B)", data: ldHist.map((r) => r.netLiquidity),
         borderColor: "#d9a441", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yLiq" },
-      { type: "line", label: "SPY", data: ldHist.map((r) => r.spy),
-        borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+      { type: "line", label: "SPY", data: ldHist.map((r) => (r.spy ? r.spy : null)),
+        borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
@@ -16769,7 +16778,7 @@ function volSurfaceHtml() {
         borderColor: "#e0aa46", backgroundColor: "rgba(210,153,34,0.1)", fill: true,
         borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yScore" },
       { type: "line", label: "SPY", data: cgHist.map((r) => r.spy),
-        borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+        borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
@@ -16796,14 +16805,14 @@ function volSurfaceHtml() {
         borderColor: "#f37d83", backgroundColor: "rgba(248,81,73,0.1)", fill: true,
         borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "yOsc" },
       { type: "line", label: "SPY", data: fdHist.map((r) => r.spy),
-        borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 4], pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
+        borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2, yAxisID: "ySpy" },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
      plugins: { legend: { labels: { color: "#a9b7c9", boxWidth: 12 } } },
      scales: {
       x: {ticks: {color: "#647184", maxTicksLimit: 8}, grid: {display: false}},
-      yOsc: {position: "left", min: -3, max: 3, ticks: {color: "#f37d83"}, grid: {color: "rgba(42,46,57,0.4)"}},
+      yOsc: {position: "left", min: Math.floor(Math.min(...fdHist.map((r) => r.oscillator).filter((v) => v != null))) - 1, max: Math.ceil(Math.max(...fdHist.map((r) => r.oscillator).filter((v) => v != null))) + 1, ticks: {color: "#f37d83"}, grid: {color: "rgba(42,46,57,0.4)"}},
       ySpy: {position: "right", ticks: {color: "#58a6ff"}, grid: {display: false}},
      }},
    });
@@ -16826,7 +16835,7 @@ function volSurfaceHtml() {
       { type: "line", label: "SPY", data: kcHist.map((r) => r.spy),
         borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
       { type: "line", label: "RSP", data: kcHist.map((r) => r.rsp),
-        borderColor: "#a9b7c9", borderWidth: 2, borderDash: [4, 4], pointRadius: 0, tension: 0.2 },
+        borderColor: "#a9b7c9", borderWidth: 2, pointRadius: 0, tension: 0.2 },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
@@ -16851,7 +16860,7 @@ function volSurfaceHtml() {
       { type: "line", label: "Margin Debt YoY (%)", data: mlHist.map((r) => r.marginYoY),
         borderColor: "#f37d83", borderWidth: 2, pointRadius: 0, tension: 0.2 },
       { type: "line", label: "SPY YoY (%)", data: mlHist.map((r) => r.spyYoY),
-        borderColor: "#58a6ff", borderWidth: 2, borderDash: [5, 5], pointRadius: 0, tension: 0.2 },
+        borderColor: "#58a6ff", borderWidth: 2, pointRadius: 0, tension: 0.2 },
      ]},
     options: { animation: false, responsive: true, maintainAspectRatio: false,
      interaction: { mode: "index", intersect: false },
