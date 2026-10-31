@@ -6230,5 +6230,63 @@
     "free_cash_flow": 316141000
    }
   ]
+ },
+ "LIFE": {
+  "income": [
+   {
+    "year": 2025,
+    "revenue": 387608000,
+    "gross_profit": null,
+    "operating_income": 72922000,
+    "net_income": 71151000,
+    "diluted_eps": 1.22,
+    "ebitda": 78281000
+   },
+   {
+    "year": 2024,
+    "revenue": 254926000,
+    "gross_profit": null,
+    "operating_income": 48747000,
+    "net_income": 48832000,
+    "diluted_eps": 0.85,
+    "ebitda": 54185000
+   }
+  ],
+  "balance": [
+   {
+    "year": 2025,
+    "total_assets": 515337000,
+    "total_liabilities": 135456000,
+    "total_equity": -24116000,
+    "cash": 91091000,
+    "long_term_debt": null,
+    "total_debt": null
+   },
+   {
+    "year": 2024,
+    "total_assets": 395881000,
+    "total_liabilities": 99034000,
+    "total_equity": -107150000,
+    "cash": 35075000,
+    "long_term_debt": null,
+    "total_debt": null
+   }
+  ],
+  "cashflow": [
+   {
+    "year": 2025,
+    "operating_cash_flow": 36225000,
+    "capex": -1491000,
+    "financing_cash_flow": -12049000,
+    "free_cash_flow": 34734000
+   },
+   {
+    "year": 2024,
+    "operating_cash_flow": -10908000,
+    "capex": -776000,
+    "financing_cash_flow": 21857000,
+    "free_cash_flow": -11684000
+   }
+  ]
  }
 }

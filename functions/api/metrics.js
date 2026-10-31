@@ -11,7 +11,7 @@
  */
 
 import { verifyPro, jsonResponse, handleOptions } from "./_auth.js";
-import { getCrumb } from "./_stock.js";
+import { getCrumb, getCikMap, secFetchJson } from "./_stock.js";
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
@@ -114,8 +114,41 @@ async function onRequestGet(context) {
     const ps = num(summ.priceToSalesTrailing12Months);
 
     // Financial health
-    const totalAssets = num(bs0.totalAssets);
-    const currentLiab = num(bs0.totalCurrentLiabilities);
+    let totalAssets = num(bs0.totalAssets);
+    let currentLiab = num(bs0.totalCurrentLiabilities);
+    // Yahoo's quoteSummary balance sheet ships no usable fields for some
+    // recent IPOs (LIFE, October 2026: Total Assets and Current Liabilities
+    // rendered "--" while its Q2 2026 10-Q reports both). Fall back to the
+    // filer's latest EDGAR balance sheet (Assets / LiabilitiesCurrent,
+    // newest 10-Q or 10-K instant value), the same filing-first pattern
+    // stock-financials.js uses. Only fills fields Yahoo left blank; a
+    // Yahoo value always wins when present.
+    if (totalAssets === null || currentLiab === null) {
+      try {
+        const cikMap = await getCikMap(context);
+        const cik = cikMap[ticker];
+        if (cik) {
+          const latestInstant = async (tag) => {
+            const doc = await secFetchJson(
+              "https://data.sec.gov/api/xbrl/companyconcept/CIK" + cik + "/us-gaap/" + tag + ".json"
+            );
+            const units = (doc && doc.units && doc.units.USD) || [];
+            let best = null;
+            for (const e of units) {
+              if (!e || typeof e.val !== "number" || !e.end) continue;
+              if (e.form && !/^(10-Q|10-K)(\/A)?$/.test(e.form)) continue;
+              if (!best || e.end > best.end ||
+                  (e.end === best.end && String(e.filed || "") > String(best.filed || ""))) best = e;
+            }
+            return best ? best.val : null;
+          };
+          if (totalAssets === null) totalAssets = await latestInstant("Assets");
+          if (currentLiab === null) currentLiab = await latestInstant("LiabilitiesCurrent");
+        }
+      } catch (e) {
+        /* EDGAR fallback is best-effort; a Yahoo gap stays null */
+      }
+    }
     const debtToEquity = num(fin.debtToEquity) !== null ? num(fin.debtToEquity) / 100 : null;
     const ebitda = num(fin.ebitda);
 
